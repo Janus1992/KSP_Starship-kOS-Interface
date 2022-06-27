@@ -1,0 +1,133 @@
+{
+    "entries": [
+        {
+            "value": "Landing Coordinates",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "-0.0972,-74.5577",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "Log Data",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "false",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "Roll",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "0",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "Ship Name",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "Bronze Age (Crew)",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "Auto-Warp",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "false",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "Setting2",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "true",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "Setting4",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "true",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "Setting5",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "true",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "ArmsHeight",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": 86.420532442280091,
+            "$type": "kOS.Safe.Encapsulation.ScalarDoubleValue"
+        },
+        {
+            "value": "Launch Coordinates",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "-0.0972,-74.5577",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "Setting1",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "false",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "Tower:arms:rotation",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": 8,
+            "$type": "kOS.Safe.Encapsulation.ScalarIntValue"
+        },
+        {
+            "value": "Tower:arms:angle",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": 0,
+            "$type": "kOS.Safe.Encapsulation.ScalarIntValue"
+        },
+        {
+            "value": "Tower:pushers:extension",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": 0,
+            "$type": "kOS.Safe.Encapsulation.ScalarIntValue"
+        },
+        {
+            "value": "Tower:arms:height",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": 3,
+            "$type": "kOS.Safe.Encapsulation.ScalarIntValue"
+        },
+        {
+            "value": "Tower:stabilizers:extension",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": 0,
+            "$type": "kOS.Safe.Encapsulation.ScalarIntValue"
+        }
+    ],
+    "$type": "kOS.Safe.Encapsulation.Lexicon"
+}
