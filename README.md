@@ -9,19 +9,19 @@ TO INSTALL:
 
 
 IMPORTANT:
--Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker").
+- Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker").
 
 REQUIRES:
--Starship Expansion Project and its dependencies
--Trajectories
--kOS
--TundraExplorations "TundraExploration.dll" (absolutely required for Booster Landing)
--Starship Launch Expansion (for the tower)
+- Starship Expansion Project and its dependencies
+- Trajectories
+- kOS
+- TundraExplorations "TundraExploration.dll" (absolutely required for Booster Landing)
+- Starship Launch Expansion (for the tower)
 
 OPTIONAL:
--Community Resource Pack (for using "liquid methane" as fuel instead of ksp's standard "liquid fuel").
+- Community Resource Pack (for using "liquid methane" as fuel instead of ksp's standard "liquid fuel").
 
 DOES NOT WORK WITH:
--RSS/RO
--FMRS
--Cryotanks
+- RSS/RO
+- FMRS
+- Cryotanks
