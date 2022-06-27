@@ -43,6 +43,7 @@ set config:ipu to 500.
 
 
 set startup to false.
+set NrOfGuisOpened to 0.
 set exit to false.
 set AbortInProgress to false.
 set AbortComplete to false.
@@ -260,6 +261,13 @@ if SHIP:PARTSNAMED("SEP.S20.CREW"):length > 0 {
     lights on.
 }
 
+list targets in targetlist.
+for x in targetlist {
+    if x:distance < 350 {
+        set NrOfGuisOpened to NrOfGuisOpened + 1.
+    }
+}
+
 
 //-------------Start Graphic User Interface-------------//
 
@@ -271,7 +279,7 @@ local g is GUI(600).
     set g:style:padding:v to 0.
     set g:style:padding:h to 0.
     set g:x to -150.
-    set g:y to 150.
+    set g:y to 150 + (NrOfGuisOpened * 200).
 
 
 //-------------------------Skin-------------------------//
@@ -3471,6 +3479,10 @@ set TargetPicker:onchange to {
         set TargetSelected to false.
     }
     else {
+        if KUniverse:activevessel = vessel(ship:name) {}
+        else {
+            set KUniverse:activevessel to vessel(ship:name).
+        }
         set target to Vessel(choice).
         set TargetSelected to true.
     }
@@ -3483,39 +3495,42 @@ set maneuver3button:onclick to {
 
         }
         if ManeuverPicker:text = "<b><color=white>Auto-Dock</color></b>" {
-            InhibitButtons(1,1,0).
-            HideEngineToggles(1).
-            ShowButtons(0).
-            set ship:control:translation to v(0, 0, 0).
-            set AutodockingIsRunning to true.
-            set message1:style:textcolor to white.
-            set message1:style:textcolor to white.
-            set message1:style:textcolor to white.
-            set maneuver3button:enabled to false.
-            set ManeuverPicker:enabled to false.
-            set TargetPicker:enabled to false.
-            GoHome().
-            sas off.
-            lock steering to AutoDockSteering().
+            if TargetPicker:text = "" or TargetPicker:text = "<color=grey><b>Select Target</b></color>" {}
+            else {
+                InhibitButtons(1,1,0).
+                HideEngineToggles(1).
+                ShowButtons(0).
+                set ship:control:translation to v(0, 0, 0).
+                set AutodockingIsRunning to true.
+                set message1:style:textcolor to white.
+                set message1:style:textcolor to white.
+                set message1:style:textcolor to white.
+                set maneuver3button:enabled to false.
+                set ManeuverPicker:enabled to false.
+                set TargetPicker:enabled to false.
+                GoHome().
+                sas off.
+                lock steering to AutoDockSteering().
 
-            until ship:dockingports[0]:state = "Docked (docker)" or ship:dockingports[0]:state = "Docked (dockee)" or ship:dockingports[0]:state = "Docked (same vessel)" or cancelconfirmed {}
+                until ship:dockingports[0]:state = "Docked (docker)" or ship:dockingports[0]:state = "Docked (dockee)" or ship:dockingports[0]:state = "Docked (same vessel)" or cancelconfirmed {}
 
-            set maneuver3button:enabled to true.
-            set ManeuverPicker:enabled to true.
-            set TargetPicker:enabled to true.
-            unlock steering.
-            Droppriority().
-            HideEngineToggles(0).
-            ShowButtons(1).
-            set ship:control:translation to v(0, 0, 0).
-            set AutodockingIsRunning to false.
-            wait 1.
-            HUDTEXT("Current Status: Docked!", 10, 2, 20, green, false).
-            if ship:dockingports[0]:haspartner {
-                set ManeuverPicker:index to 0.
+                set maneuver3button:enabled to true.
+                set ManeuverPicker:enabled to true.
+                set TargetPicker:enabled to true.
+                unlock steering.
+                Droppriority().
+                HideEngineToggles(0).
+                ShowButtons(1).
+                set ship:control:translation to v(0, 0, 0).
+                set AutodockingIsRunning to false.
+                wait 1.
+                HUDTEXT("Current Status: Docked!", 10, 2, 20, green, false).
+                if ship:dockingports[0]:haspartner {
+                    set ManeuverPicker:index to 0.
+                }
+                rcs off.
+                ClearInterfaceAndSteering().
             }
-            rcs off.
-            ClearInterfaceAndSteering().
         }
         if ManeuverPicker:text = "<b><color=white>Circularize at Pe</color></b>" {
             set PerformingManeuver to true.
@@ -3616,7 +3631,7 @@ function AutoDockSteering {
     //print "Rel Dist z: " + round(RelativeDistanceZ,2).
     //print "Distance: " + round(PortDistanceVector:mag,2).
 
-    set message1:text to "<b><color=green>Auto-Docking in Progress..</color></b>".
+    set message1:text to "<b><color=green>Auto-Docking in Progress..</color></b>  <size=14>(DON'T CHANGE VESSEL)</size>".
     if Continue {
         set message2:text to "<b>Target:</b>  Docking Port  (" + round(PortDistanceVector:mag, 1) + "m)".
     }
@@ -7364,11 +7379,16 @@ function BackGroundUpdate {
             else {
                 towerbutton:hide().
             }
-            if ship:status = "ORBITING" or ship:status = "ESCAPING" or ship:status = "SUB_ORBITAL" and periapsis > 40000 {
-                maneuverbutton:show().
+            if LaunchButtonIsRunning or LandButtonIsRunning or AttitudeIsRunning {
+                maneuverbutton:hide().
             }
             else {
-                maneuverbutton:hide().
+                if ship:status = "ORBITING" or ship:status = "ESCAPING" or ship:status = "SUB_ORBITAL" and periapsis > 40000 {
+                    maneuverbutton:show().
+                }
+                else {
+                    maneuverbutton:hide().
+                }
             }
             if orbitbutton:pressed {updateOrbit().}
             if statusbutton:pressed {updateStatus().}

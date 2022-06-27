@@ -33,6 +33,7 @@ Version 1.0 - GNUGPL3
         - Booster/Ship Recovery/ Automatic Re-Stacking operations incomplete.
         - Booster/Ship Docking doesn't work.
         - SLE Tower doesn't produce Liquid Methane for refueling.
+- Scripts can probably handle only 1 OLM.
 
 
 List of seldomly encountered errors:
@@ -44,6 +45,7 @@ List of problems encountered by others, but not by me:
 
 -------------------Ideas--------------------
 - Tooltips for main screen info text?
+- Check for circ at ap when ship is escaping.
 - Use Scrollbox or page enlargement for added functions?
         - Maneuver Page:
                 - Suicide Burn?
