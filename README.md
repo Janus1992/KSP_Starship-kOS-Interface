@@ -5,7 +5,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 # TO INSTALL:
 - Download the zip file.
 - Extract the contents to a folder.
-- Copy the contents of this folder into your /Kerbal Space Program fodler.
+- Copy the contents of this folder into your /Kerbal Space Program folder.
 
 
 # IMPORTANT:
