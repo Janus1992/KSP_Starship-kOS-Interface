@@ -5,10 +5,7 @@ Janus92s SEP kOS Scripts
 
 IMPORTANT:
 -Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker").
--Does not work with:
-        -RSS/RO
-        -FMRS
-        -Cryotanks
+
 
 REQUIRES:
 -Starship Expansion Project and its dependencies
@@ -20,6 +17,10 @@ REQUIRES:
 OPTIONAL:
 -Community Resource Pack (for using "liquid methane" as fuel instead of ksp's standard "liquid fuel").
 
+DOES NOT WORK WITH:
+-RSS/RO
+-FMRS
+-Cryotanks
 
 
 Version 1.0 - GNUGPL3

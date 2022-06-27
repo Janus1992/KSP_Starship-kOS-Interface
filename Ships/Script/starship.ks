@@ -4605,6 +4605,7 @@ if addons:tr:available and not startup {
             HideEngineToggles(0).
         }
         if SHIP:PARTSNAMED("SEP.S20.CARGO"):length > 0 {
+            cargobutton:show().
             if nose[0]:getmodule("ModuleAnimateGeneric"):hasevent("close cargo door") {
                 set cargoimage:style:bg to "starship_img/starship_cargobay_open".
                 set cargo1text:text to "Open".
@@ -4617,6 +4618,7 @@ if addons:tr:available and not startup {
             }
         }
         if SHIP:PARTSNAMED("SEP.S20.CREW"):length > 0 {
+            cargobutton:show().
             if nose[0]:getmodule("ModuleAnimateGeneric"):hasevent("close docking hatch") {
                 set cargoimage:style:bg to "starship_img/starship_crew_hatch_open".
                 set cargo1text:text to "Open".
