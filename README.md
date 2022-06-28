@@ -1,6 +1,7 @@
 # KSP_Starship-kOS-Interface
-An Interface for automating the 'Starship Expansion Project' and 'Starship Launch Expansion' mods within Kerbal Space Program 
+An Interface for automating the 'Starship Expansion Project' and 'Starship Launch Expansion' mods within Kerbal Space Program.
 
+![Alt text](/Infographic.jpg)
 
 # TO INSTALL:
 - Download the zip file.
@@ -25,3 +26,24 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - RSS/RO
 - FMRS
 - Cryotanks
+
+
+
+# Tips & Tricks:
+To Load Cargo in the Cargo Ship:
+- Drag the whole ship down to access the cargo-bay (root: Ships tank section).
+- Connect your payload.
+- Check the staging!! (stage separators/decouplers must be all the way up)
+- Drage the whole ship up so far that the Tower is completely above ground (or the OLM will explode on booster return)
+
+
+# Notes:
+- Automatic re-stacking/refueling is currently impossible because the SEP & SLE mods lack the ability to dock together.
+- When using multiple ships of the same name, they might get renamed by my scripts to avoid Interface crashes.
+- Seldom Interface crashes may occur (it makes a little crashing noise). Toggling power on the kOS segment of the Ships Tank Section will restart the Interface.
+- If the Interface crashes in a repeatable way, maybe make a screenshot of the cpu (righthand kOS window in game, the cpu will show some error message), and report it as a bug so I can work on it.
+
+
+
+# By the author:
+This has been a pet project of mine since 2021, and I had a lot of fun making this Interface. I hope you do too!
