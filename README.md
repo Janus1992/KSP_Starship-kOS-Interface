@@ -42,6 +42,7 @@ To Load Cargo in the Cargo Ship:
 - When using multiple ships of the same name, they might get renamed by my scripts to avoid Interface crashes.
 - Seldom Interface crashes may occur (it makes a little crashing noise). Toggling power on the kOS segment of the Ships Tank Section will restart the Interface.
 - If the Interface crashes in a repeatable way, maybe make a screenshot of the cpu (righthand kOS window in game, the cpu will show some error message), and report it as a bug so I can work on it.
+- After an update your ships will keep the old Interface until you load a new craft, which will have the updated Interface.
 
 
 
