@@ -45,7 +45,6 @@ List of problems encountered by others, but not by me:
 
 -------------------Ideas--------------------
 - Tooltips for main screen info text?
-- Check for circ at ap when ship is escaping.
 - Use Scrollbox or page enlargement for added functions?
         - Maneuver Page:
                 - Suicide Burn?

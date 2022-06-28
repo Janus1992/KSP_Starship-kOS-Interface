@@ -27,6 +27,7 @@
 //------------Configurables-------------//
 
 
+set CustomLZ to "0.0000,0.0000".
 set LandingOffset to 6.
 set MaxCargoToOrbit to 69420.
 set MaxReEntryCargoKerbin to 10000.
@@ -295,11 +296,13 @@ set g:skin:popupwindow:focused:bg to "starship_img/starship_background".
 set g:skin:popupwindow:focused_on:bg to "starship_img/starship_background".
 set g:skin:popupwindow:border:v to 10.
 set g:skin:popupwindow:border:h to 10.
-set g:skin:popupwindow:height to 90.
 set g:skin:popupwindow:margin:v to 0.
 set g:skin:popupwindow:margin:h to 0.
 set g:skin:popupwindow:padding:v to 0.
 set g:skin:popupwindow:padding:h to 0.
+set g:skin:popupwindow:height to 125.
+set g:skin:popupmenuitem:fontsize to 18.
+
 
 set g:skin:button:bg to "starship_img/starship_background".
 set g:skin:button:on:bg to "starship_img/starship_background_light".
@@ -921,9 +924,8 @@ local TargetLZPicker is settingsstackvlayout2:addpopupmenu().
     set TargetLZPicker:style:active_on:bg to "starship_img/starship_background_light".
     set TargetLZPicker:style:focused:bg to "starship_img/starship_background_light".
     set TargetLZPicker:style:focused_on:bg to "starship_img/starship_background_light".
-    set TargetLZPicker:options to list("<color=grey><b>Select existing LZ</b></color>", "<b><color=white>KSC Pad</color></b>", "<b><color=white>Desert Pad</color></b>", "<b><color=white>Woomerang Pad</color></b>").
+    set TargetLZPicker:options to list("<color=grey><b>Select existing LZ</b></color>", "<b><color=white>KSC Pad</color></b>", "<b><color=white>Desert Pad</color></b>", "<b><color=white>Woomerang Pad</color></b>", "<b><color=white>Custom LZ</color></b>").
     set TargetLZPicker:tooltip to "Select a predefined Landing Zone here:  e.g.  KSC, Desert, Woomerang".
-    set TargetLZPicker:maxvisible to 4.
 
 local setting5 is settingsstackvlayout2:addcheckbox("<b>  </b>").
     set setting5:style:margin:left to 10.
@@ -1071,6 +1073,13 @@ set TargetLZPicker:onchange to {
         set landingzone to latlng(45.2896,136.11).
         if homeconnection:isconnected {
             SaveToSettings("Landing Coordinates", "45.2896,136.11").
+        }
+    }
+    if choice = "<b><color=white>Custom LZ</color></b>" {
+        set setting3:text to CustomLZ.
+        set landingzone to latlng(CustomLZ:split(",")[0]:toscalar(0), CustomLZ:split(",")[1]:toscalar(0)).
+        if homeconnection:isconnected {
+            SaveToSettings("Landing Coordinates", CustomLZ).
         }
     }
 }.
@@ -1389,7 +1398,7 @@ local attitude2label is attitudestackvlayout1:addlabel("AoA: -").
     set attitude2label:style:margin:left to 20.
     set attitude2label:style:fontsize to 19.
     set attitude2label:style:textcolor to grey.
-    set attitude2label:tooltip to "Current AoA. Trk/X-Track Error shown < 50km (Kerbin) / 35km (Duna)".
+    set attitude2label:tooltip to "Current AoA. Trk/X-Track Error shown < 50km Alt (Kerbin) / 35km Alt (Duna)".
     set attitude2label:style:wordwrap to false.
     set attitude2label:style:width to 200.
     set attitude2label:style:bg to "starship_img/attitude_page_background".
@@ -3326,7 +3335,7 @@ local maneuver1label1 is maneuverstackvlayout1:addlabel("<b>Selected Maneuver:</
     set maneuver1label1:style:width to 200.
     set maneuver1label1:style:height to 35.
     set maneuver1label1:style:align to "LEFT".
-    set maneuver1label1:tooltip to "".
+    set maneuver1label1:tooltip to "Select a Maneuver in the next window to start".
 local ManeuverPicker is maneuverstackvlayout2:addpopupmenu().
     set ManeuverPicker:style:textcolor to white.
     set ManeuverPicker:style:fontsize to 18.
@@ -3344,29 +3353,26 @@ local ManeuverPicker is maneuverstackvlayout2:addpopupmenu().
     set ManeuverPicker:style:active_on:bg to "starship_img/starship_background_light".
     set ManeuverPicker:style:focused:bg to "starship_img/starship_background_light".
     set ManeuverPicker:style:focused_on:bg to "starship_img/starship_background_light".
-    set ManeuverPicker:options to list("<color=grey><b>Select Maneuver</b></color>", "<b><color=white>Auto-Dock</color></b>", "<b><color=white>Circularize at Pe</color></b>", "<b><color=white>Circularize at Ap</color></b>").
-    set ManeuverPicker:tooltip to "Select a Maneuver here:  e.g.  docking, equalizing".
-    set ManeuverPicker:maxvisible to 4.
+    set ManeuverPicker:options to list("<color=grey><b>Select Maneuver</b></color>", "<b><color=white>Auto-Dock</color></b>", "<b><color=white>Circularize at Pe</color></b>", "<b><color=white>Circularize at Ap</color></b>", "<b><color=white>Execute Burn</color></b>").
+    set ManeuverPicker:tooltip to "Select a Maneuver here:  e.g.  docking, circularizing, performing a burn".
 local maneuver3button is maneuverstackvlayout3:addbutton("<b>CREATE</b>").
     set maneuver3button:style:margin:top to 5.
     set maneuver3button:style:margin:left to 50.
     set maneuver3button:style:width to 100.
     set maneuver3button:style:height to 35.
     set maneuver3button:style:fontsize to 18.
-    set maneuver3button:tooltip to "Create Maneuver Node for the selected maneuver".
+    set maneuver3button:tooltip to "Create / Start / Execute Maneuver".
 set maneuver3button:enabled to false.
 
 local maneuver2label1 is maneuverstackvlayout1:addlabel("").
     set maneuver2label1:style:wordwrap to false.
-    //set maneuver2label1:style:margin:top to 5.
     set maneuver2label1:style:fontsize to 18.
     set maneuver2label1:style:width to 200.
     set maneuver2label1:style:height to 30.
     set maneuver2label1:style:align to "LEFT".
-    set maneuver2label1:tooltip to "".
+    set maneuver2label1:tooltip to "Select a Target for Auto-Docking (needs to be within 10km distance)".
 local maneuver2label2 is maneuverstackvlayout2:addlabel("").
     set maneuver2label2:style:wordwrap to false.
-    //set maneuver2label2:style:margin:top to 5.
     set maneuver2label2:style:fontsize to 18.
     set maneuver2label2:style:width to 200.
     set maneuver2label2:style:height to 30.
@@ -3389,18 +3395,15 @@ local TargetPicker is maneuverstackvlayout2:addpopupmenu().
     set TargetPicker:style:focused:bg to "starship_img/starship_background_light".
     set TargetPicker:style:focused_on:bg to "starship_img/starship_background_light".
     set TargetPicker:options to list("<color=grey><b>Select Target</b></color>").
-    set TargetPicker:tooltip to "Select a Target here".
-    set TargetPicker:maxvisible to 4.
+    set TargetPicker:tooltip to "Select a Target here (targets are checked every 5 seconds)".
 TargetPicker:hide().
 local maneuver2textfield2 is maneuverstackvlayout2:addtextfield("75").
     set maneuver2textfield2:style:width to 175.
     set maneuver2textfield2:style:height to 30.
-    //set maneuver2textfield2:style:margin:top to 10.
     set maneuver2textfield2:tooltip to "".
 maneuver2textfield2:hide().
 local maneuver2label3 is maneuverstackvlayout3:addlabel("").
     set maneuver2label3:style:wordwrap to false.
-    //set maneuver2label3:style:margin:top to 5.
     set maneuver2label3:style:fontsize to 18.
     set maneuver2label3:style:width to 175.
     set maneuver2label3:style:height to 30.
@@ -3409,7 +3412,6 @@ local maneuver2label3 is maneuverstackvlayout3:addlabel("").
 
 local maneuver3label1 is maneuverstackvlayout1:addlabel("").
     set maneuver3label1:style:wordwrap to false.
-    //set maneuver3label1:style:margin:top to 5.
     set maneuver3label1:style:fontsize to 18.
     set maneuver3label1:style:width to 200.
     set maneuver3label1:style:height to 30.
@@ -3417,7 +3419,6 @@ local maneuver3label1 is maneuverstackvlayout1:addlabel("").
     set maneuver3label1:tooltip to "".
 local maneuver3label2 is maneuverstackvlayout2:addlabel("").
     set maneuver3label2:style:wordwrap to false.
-    //set maneuver3label2:style:margin:top to 5.
     set maneuver3label2:style:fontsize to 18.
     set maneuver3label2:style:width to 200.
     set maneuver3label2:style:height to 30.
@@ -3425,7 +3426,6 @@ local maneuver3label2 is maneuverstackvlayout2:addlabel("").
     set maneuver3label2:tooltip to "".
 local maneuver3label3 is maneuverstackvlayout3:addlabel("").
     set maneuver3label3:style:wordwrap to false.
-    //set maneuver3label3:style:margin:top to 5.
     set maneuver3label3:style:fontsize to 18.
     set maneuver3label3:style:width to 175.
     set maneuver3label3:style:height to 30.
@@ -3462,6 +3462,14 @@ set ManeuverPicker:onchange to {
     if choice = "<b><color=white>Circularize at Ap</color></b>" {
         set maneuver2label1:text to "<b></b>".
         set maneuver3button:text to "<b>CREATE</b>".
+        set maneuver3button:enabled to true.
+        maneuver2textfield2:hide().
+        TargetPicker:hide().
+        maneuver2label2:show().
+    }
+    if choice = "<b><color=white>Execute Burn</color></b>" {
+        set maneuver2label1:text to "<b></b>".
+        set maneuver3button:text to "<b>EXECUTE</b>".
         set maneuver3button:enabled to true.
         maneuver2textfield2:hide().
         TargetPicker:hide().
@@ -3534,31 +3542,61 @@ set maneuver3button:onclick to {
         }
         if ManeuverPicker:text = "<b><color=white>Circularize at Pe</color></b>" {
             set PerformingManeuver to true.
-            if hasnode {
-                remove nextnode.
-                wait 0.001.
+            if eta:periapsis > 0 {
+                if hasnode {
+                    remove nextnode.
+                    wait 0.001.
+                }
+                set OrbitalVelocity to ship:body:radius * sqrt(Planet1G / (ship:body:radius + periapsis)).
+                set ProgradeVelocity to OrbitalVelocity - velocityat(ship, time:seconds + eta:periapsis):orbit:mag.
+                if not (KUniverse:activevessel = vessel(ship:name)) {
+                    set KUniverse:activevessel to vessel(ship:name).
+                }
+                PerformBurn(eta:periapsis, ProgradeVelocity, 0).
             }
-            set OrbitalVelocity to ship:body:radius * sqrt(9.81 / (ship:body:radius + periapsis)).
-            set ProgradeVelocity to OrbitalVelocity - velocityat(ship, time:seconds + eta:periapsis):orbit:mag.
-            if not (KUniverse:activevessel = vessel(ship:name)) {
-                set KUniverse:activevessel to vessel(ship:name).
+            else {
+                GoHome().
+                set message1:text to "<b><color=yellow>Can't circularize when escaping..</color></b>".
+                wait 3.
             }
-            PerformBurn(eta:periapsis, ProgradeVelocity).
             set PerformingManeuver to false.
             ClearInterfaceAndSteering().
         }
         if ManeuverPicker:text = "<b><color=white>Circularize at Ap</color></b>" {
             set PerformingManeuver to true.
+            if apoapsis > 0 {
+                if hasnode {
+                    remove nextnode.
+                    wait 0.001.
+                }
+                set OrbitalVelocity to ship:body:radius * sqrt(Planet1G / (ship:body:radius + apoapsis)).
+                set ProgradeVelocity to OrbitalVelocity - velocityat(ship, time:seconds + eta:apoapsis):orbit:mag.
+                if not (KUniverse:activevessel = vessel(ship:name)) {
+                    set KUniverse:activevessel to vessel(ship:name).
+                }
+                PerformBurn(eta:apoapsis, ProgradeVelocity, 0).
+            }
+            else {
+                GoHome().
+                set message1:text to "<b><color=yellow>Can't circularize when escaping..</color></b>".
+                wait 3.
+            }
+            set PerformingManeuver to false.
+            ClearInterfaceAndSteering().
+        }
+        if ManeuverPicker:text = "<b><color=white>Execute Burn</color></b>" {
+            set PerformingManeuver to true.
             if hasnode {
-                remove nextnode.
-                wait 0.001.
+                if not (KUniverse:activevessel = vessel(ship:name)) {
+                    set KUniverse:activevessel to vessel(ship:name).
+                }
+                PerformBurn(0, 0, 1).
             }
-            set OrbitalVelocity to ship:body:radius * sqrt(9.81 / (ship:body:radius + apoapsis)).
-            set ProgradeVelocity to OrbitalVelocity - velocityat(ship, time:seconds + eta:apoapsis):orbit:mag.
-            if not (KUniverse:activevessel = vessel(ship:name)) {
-                set KUniverse:activevessel to vessel(ship:name).
+            else {
+                GoHome().
+                set message1:text to "<b><color=yellow>No Maneuver Node found..</color></b>".
+                wait 3.
             }
-            PerformBurn(eta:apoapsis, ProgradeVelocity).
             set PerformingManeuver to false.
             ClearInterfaceAndSteering().
         }
@@ -4399,7 +4437,7 @@ set landbutton:ontoggle to {
                                         if hasnode {
                                             if vang(deorbitburn:burnvector, ship:facing:forevector) < 2 and cancelconfirmed = false {
                                                 LogToFile("Starting De-Orbit Burn").
-                                                until vdot(deorbitburnstart, deorbitburn:deltav) < 1 and vdot(deorbitburnstart, deorbitburn:deltav) > -1 or cancelconfirmed = true and not ClosingIsRunning {
+                                                until vdot(deorbitburnstart, deorbitburn:deltav) < 1 or cancelconfirmed = true and not ClosingIsRunning {
                                                     BackGroundUpdate().
                                                     rcs on.
                                                     set ship:control:translation to v(0, 0, 1).
@@ -5640,7 +5678,7 @@ function ReEntrySteering {
             LogToFile("Engines Activated").
 
             if ship:body = BODY("Kerbin") {
-                set Planet1G to 9.81.
+                set Planet1G to 9.80665.
                 if LngLatErrorList[0] - LandingOffset > 50 or LngLatErrorList[0] - LandingOffset < -50 or LngLatErrorList[1] > 15 or LngLatErrorList[1] < -15 {
                     set LandSomewhereElse to true.
                     LogToFile("Landing parameters out of bounds, Landing Off-Target").
@@ -7383,7 +7421,7 @@ function BackGroundUpdate {
                 maneuverbutton:hide().
             }
             else {
-                if ship:status = "ORBITING" or ship:status = "ESCAPING" or ship:status = "SUB_ORBITAL" and periapsis > 40000 {
+                if ship:status = "ORBITING" or ship:status = "ESCAPING" or ship:status = "SUB_ORBITAL" and apoapsis > 50000 or ship:status = "FLYING" and apoapsis > 50000 {
                     maneuverbutton:show().
                 }
                 else {
@@ -7778,6 +7816,7 @@ function SetPlanetData {
         set aoa to 67.
         set Planet1Degree to 10.471975.
     }
+    set Planet1G to CONSTANT():G * (ship:body:mass / (ship:body:radius * ship:body:radius)).
 }
 
 
@@ -8080,19 +8119,36 @@ function updateManeuver {
 
 
 function PerformBurn {
-    parameter Burntime, ProgradeVelocity.
-    set burn to node(timespan(BurnTime), 0, 0, ProgradeVelocity).
-    add burn.
-    set burnstart to burn:deltav.
-    set burnstarttime to timestamp(time:seconds + eta:periapsis).
-    lock deltaV to burn:deltav:mag.
-    lock MaxAccel to (VACEngines[0]:possiblethrust * NrOfVacEngines) / ship:mass.
+    parameter Burntime, ProgradeVelocity, AlreadyHasNode.
+    if AlreadyHasNode {
+
+    }
+    else {
+        set burn to node(timespan(BurnTime), 0, 0, ProgradeVelocity).
+        add burn.
+    }
+    set burnstart to nextnode:deltav.
+    set burnstarttime to timestamp(time:seconds + BurnTime).
+    lock deltaV to nextnode:deltav:mag.
+    if deltaV < 50 {
+        lock MaxAccel to 40/ship:mass.
+        set UseRCSforBurn to true.
+    }
+    else {
+        lock MaxAccel to (VACEngines[0]:possiblethrust * NrOfVacEngines) / ship:mass.
+        set UseRCSforBurn to false.
+    }
     lock BurnAccel to min(19.62, MaxAccel).
     lock BurnDuration to deltaV / BurnAccel.
     GoHome().
     set runningprogram to "Input".
-    set message1:text to "<b>Circularize at Altitude:</b>  <color=yellow>" + round(periapsis) + "m</color>".
-    set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(ProgradeVelocity, 1) + "m/s".
+    if AlreadyHasNode {
+        set message1:text to "<b>Execute Custom Burn:</b>".
+    }
+    else {
+        set message1:text to "<b>Circularize at Altitude:</b>  <color=yellow>" + round(periapsis) + "m</color>".
+    }
+    set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s".
     set message3:style:textcolor to cyan.
     if quicksetting1:pressed {
         set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
@@ -8102,65 +8158,87 @@ function PerformBurn {
     }
     InhibitButtons(0, 0, 0).
     if confirm() {
-        LogToFile("Re-orienting for Circularization").
+        LogToFile("Re-orienting for Burn").
         InhibitButtons(1, 1, 0).
+        ShowButtons(0).
         if not (KUniverse:activevessel = vessel(ship:name)) {
             set KUniverse:activevessel to vessel(ship:name).
         }
         set message3:style:textcolor to white.
-        set runningprogram to "Circularizing".
+        set runningprogram to "Performing Burn".
         HideEngineToggles(1).
         Nose[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
         Tank[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
         sas off.
         rcs off.
-        lock steering to lookdirup(burn:burnvector, ship:facing:topvector).
-        if quicksetting1:pressed and burn:eta - 0.5 * BurnDuration > 60 {
+        lock steering to lookdirup(nextnode:burnvector, ship:facing:topvector).
+        if quicksetting1:pressed and nextnode:eta - 0.5 * BurnDuration > 60 {
             set kuniverse:timewarp:warp to 4.
         }
-        if quicksetting1:pressed and burn:eta - 0.5 * BurnDuration > 600 {
+        if quicksetting1:pressed and nextnode:eta - 0.5 * BurnDuration > 600 {
             set kuniverse:timewarp:warp to 5.
         }
-        until burn:eta < 0.5 * BurnDuration or cancelconfirmed and not ClosingIsRunning {
+        until nextnode:eta < 0.5 * BurnDuration or cancelconfirmed and not ClosingIsRunning {
             BackGroundUpdate().
-            if quicksetting1:pressed and kuniverse:timewarp:warp = 5 and burn:eta - 0.5 * BurnDuration < 900 or burn:eta - 0.5 * BurnDuration < 900 and kuniverse:timewarp:warp = 5 {
+            if quicksetting1:pressed and kuniverse:timewarp:warp = 5 and nextnode:eta - 0.5 * BurnDuration < 900 or nextnode:eta - 0.5 * BurnDuration < 900 and kuniverse:timewarp:warp = 5 {
                 set kuniverse:timewarp:warp to 4.
             }
-            if burn:eta - 0.5 * BurnDuration < 35 {
+            if nextnode:eta - 0.5 * BurnDuration < (ship:mass / 50) * 35 {
                 set kuniverse:timewarp:warp to 0.
                 rcs on.
             }
             else {rcs off.}
-            set message1:text to "<b>Starting Burn in:</b>  " + timeSpanCalculator(burn:eta - 0.5 * BurnDuration).
+            set message1:text to "<b>Starting Burn in:</b>  " + timeSpanCalculator(nextnode:eta - 0.5 * BurnDuration).
             set message2:text to "<b>Target Attitude:</b>    Burnvector".
             set message3:text to "<b>Burn Duration:</b>      " + round(BurnDuration) + "s".
         }
         if hasnode {
-            if vang(burn:burnvector, ship:facing:forevector) < 2 and cancelconfirmed = false {
+            if vang(nextnode:burnvector, ship:facing:forevector) < 2 and cancelconfirmed = false {
                 LogToFile("Starting Burn").
-                set quickengine3:pressed to true.
-                until vdot(burnstart, burn:deltav) < 0.025 and vdot(burnstart, burn:deltav) > -1 or cancelconfirmed = true and not ClosingIsRunning {
+                if UseRCSforBurn {
+                    set BurnAccuracy to 0.025.
+                }
+                else {
+                    set quickengine3:pressed to true.
+                    set BurnAccuracy to 1.
+                }
+                set steering to lookdirup(nextnode:burnvector, ship:facing:topvector).
+                until vdot(burnstart, nextnode:deltav) < BurnAccuracy or cancelconfirmed = true and not ClosingIsRunning {
                     BackGroundUpdate().
-                    rcs off.
-                    if vang(facing:forevector, burn:burnvector) < 5 {
-                        set throttle to min(burn:deltav:mag / MaxAccel, BurnAccel / MaxAccel).
+                    if vang(facing:forevector, nextnode:burnvector) < 5 {
+                        if UseRCSforBurn {
+                            rcs on.
+                            set ship:control:translation to v(0, 0, 1).
+                            set ship:control:rotation to v(0, 0, 0).
+                        }
+                        else {
+                            set throttle to min(nextnode:deltav:mag / MaxAccel, BurnAccel / MaxAccel).
+                        }
                     }
                     set kuniverse:timewarp:warp to 0.
                     set message1:text to "<b>Performing Burn..</b>".
                     set message3:text to "<b>Burn Duration:</b>      " + round(BurnDuration) + "s".
                 }
-                set quickengine3:pressed to false.
-                remove burn.
+                if UseRCSforBurn {
+                    rcs off.
+                    set ship:control:translation to v(0, 0, 0).
+                    set ship:control:rotation to v(0, 0, 0).
+                }
+                else {
+                    set quickengine3:pressed to false.
+                }
+                remove nextnode.
                 sas on.
                 set throttle to 0.
                 unlock steering.
                 HideEngineToggles(0).
                 rcs off.
                 LogToFile("Stopping Burn").
+                ClearInterfaceAndSteering().
                 return.
             }
             else if not cancelconfirmed {
-                remove burn.
+                remove nextnode.
                 set throttle to 0.
                 unlock steering.
                 unlock throttle.
@@ -8172,6 +8250,7 @@ function PerformBurn {
                 set message1:style:textcolor to yellow.
                 set message2:text to "<b>Incorrect orientation or stopped..</b>".
                 set message2:style:textcolor to yellow.
+                wait 1.
             }
             else {
                 ClearInterfaceAndSteering().
