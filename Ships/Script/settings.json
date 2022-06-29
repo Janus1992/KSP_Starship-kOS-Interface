@@ -29,7 +29,7 @@
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": "Bronze Age (Crew)",
+            "value": "Starship Tanker",
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
@@ -69,7 +69,7 @@
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": 86.420532442280091,
+            "value": 86.420529106399044,
             "$type": "kOS.Safe.Encapsulation.ScalarDoubleValue"
         },
         {
@@ -127,6 +127,14 @@
         {
             "value": 0,
             "$type": "kOS.Safe.Encapsulation.ScalarIntValue"
+        },
+        {
+            "value": "Last Update Time",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": 1656513114.5781379,
+            "$type": "kOS.Safe.Encapsulation.ScalarDoubleValue"
         }
     ],
     "$type": "kOS.Safe.Encapsulation.Lexicon"

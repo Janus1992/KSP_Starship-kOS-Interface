@@ -24,6 +24,36 @@
 //
 
 
+//--------------Self-Update-------------//
+
+
+wait until ship:unpacked.
+unlock steering.
+clearguis().
+clearscreen.
+
+if homeconnection:isconnected {
+    if exists("0:/settings.json") {
+        set L to readjson("0:/settings.json").
+        if L:haskey("Last Update Time") {
+            set LastUpdateTime to L["Last Update Time"].
+        }
+    }
+    if LastUpdateTime + 15 < kuniverse:realtime {
+        switch to 0.
+        print "Starting background update..".
+        compile starship.
+        copypath("starship.ksm", "1:").
+        set core:BOOTFILENAME to "starship.ksm".
+        print "Starship Interface background update completed! Rebooting now..".
+        wait 1.
+        set LastUpdateTime to kuniverse:realtime.
+        SaveToSettings("Last Update Time", LastUpdateTime).
+        reboot.
+    }
+}
+
+
 //------------Configurables-------------//
 
 
@@ -98,6 +128,8 @@ set towerPageIsRunning to false.
 set ManeuverPageIsRunning to false.
 set AutodockingIsRunning to false.
 set PerformingManeuver to false.
+set ShipIsDocked to false.
+set ShipType to "".
 set CrewOnboard to false.
 set EngineTogglesHidden to false.
 set Refueling to false.
@@ -116,6 +148,7 @@ set PreviousAoAError to 0.
 set AvailableLandingSpots to list(0, latlng(0,0), 0, 0, 0).
 set TargetSelected to false.
 set docked to false.
+set OnOrbitalMount to false.
 set ship:control:translation to v(0, 0, 0).
 
 
@@ -124,6 +157,7 @@ set ship:control:translation to v(0, 0, 0).
 
 function FindParts {
     if ship:dockingports[0]:haspartner {
+        set ShipIsDocked to true.
         if startup {}
         else {
             HUDTEXT("Current Status: Docked! Waiting until undock before Interface will show up..", 30, 2, 20, red, false).
@@ -131,6 +165,7 @@ function FindParts {
         }
     }
     else {
+        set ShipIsDocked to false.
         set SLEngines to SHIP:PARTSNAMED("SEP.RAPTOR.SL").
         set VACEngines to SHIP:PARTSNAMED("SEP.RAPTOR.VAC").
         set NrOfVacEngines to VACEngines:length.
@@ -179,12 +214,15 @@ function FindParts {
 
         if SHIP:PARTSNAMED("SEP.S20.CARGO"):length > 0 {
             set Nose to SHIP:PARTSNAMED("SEP.S20.CARGO").
+            set ShipType to "Cargo".
         }
         if SHIP:PARTSNAMED("SEP.S20.CREW"):length > 0 {
             set Nose to SHIP:PARTSNAMED("SEP.S20.CREW").
+            set ShipType to "Crew".
         }
         if SHIP:PARTSNAMED("SEP.S20.TANKER"):length > 0 {
             set Nose to SHIP:PARTSNAMED("SEP.S20.TANKER").
+            set ShipType to "Tanker".
         }
         set HeaderTank to SHIP:PARTSNAMED("SEP.S20.HEADER").
         set Tank to SHIP:PARTSNAMED("SEP.S20.BODY").
@@ -239,11 +277,6 @@ function FindParts {
 //-------------Initial Program Start-Up--------------------//
 
 
-wait until ship:unpacked.
-unlock steering.
-clearguis().
-clearscreen.
-
 FindParts().
 SetRadarAltitude().
 set throttle to 0.
@@ -258,7 +291,7 @@ if OnOrbitalMount {
     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaStabilizers,0").
 }
 set ship:type to "Ship".
-if SHIP:PARTSNAMED("SEP.S20.CREW"):length > 0 {
+if ShipType = "Crew" {
     lights on.
 }
 
@@ -268,6 +301,8 @@ for x in targetlist {
         set NrOfGuisOpened to NrOfGuisOpened + 1.
     }
 }
+
+print "Starship Interface startup complete!".
 
 
 //-------------Start Graphic User Interface-------------//
@@ -1319,7 +1354,7 @@ set cargo1button:onclick to {
     set CargoBayOperationComplete to false.
     set CargoBayDoorHalfOpen to false.
     set CargoBayOperationStart to time:seconds.
-    if SHIP:PARTSNAMED("SEP.S20.CARGO"):length > 0 {
+    if ShipType = "Cargo" {
         nose[0]:getmodule("ModuleAnimateGeneric"):DoAction("toggle cargo door", true).
     }
     else {
@@ -1327,7 +1362,7 @@ set cargo1button:onclick to {
     }
     set cargo1text:text to nose[0]:getmodule("ModuleAnimateGeneric"):getfield("status").
     set cargo1text:style:textcolor to cyan.
-    if SHIP:PARTSNAMED("SEP.S20.CARGO"):length > 0 {
+    if ShipType = "Cargo" {
         when time:seconds > CargoBayOperationStart + 1.55 and not CargoBayDoorHalfOpen then {
             set CargoBayDoorHalfOpen to true.
             set cargoimage:style:bg to "starship_img/starship_cargobay_moving".
@@ -1340,7 +1375,7 @@ set cargo1button:onclick to {
         }
     }
     when time:seconds > CargoBayOperationStart + 3.1 then {
-        if SHIP:PARTSNAMED("SEP.S20.CARGO"):length > 0 {
+        if ShipType = "Cargo" {
             if nose[0]:getmodule("ModuleAnimateGeneric"):hasevent("close cargo door") {
                 set cargoimage:style:bg to "starship_img/starship_cargobay_open".
                 set cargo1text:text to "Open".
@@ -3331,6 +3366,7 @@ local maneuverstackvlayout3 is maneuverstackhlayout:addvlayout().
 local maneuver1label1 is maneuverstackvlayout1:addlabel("<b>Selected Maneuver:</b>").
     set maneuver1label1:style:wordwrap to false.
     set maneuver1label1:style:margin:top to 5.
+    set maneuver1label1:style:margin:left to 10.
     set maneuver1label1:style:fontsize to 18.
     set maneuver1label1:style:width to 200.
     set maneuver1label1:style:height to 35.
@@ -3367,6 +3403,7 @@ set maneuver3button:enabled to false.
 local maneuver2label1 is maneuverstackvlayout1:addlabel("").
     set maneuver2label1:style:wordwrap to false.
     set maneuver2label1:style:fontsize to 18.
+    set maneuver2label1:style:margin:left to 10.
     set maneuver2label1:style:width to 200.
     set maneuver2label1:style:height to 30.
     set maneuver2label1:style:align to "LEFT".
@@ -3413,6 +3450,7 @@ local maneuver2label3 is maneuverstackvlayout3:addlabel("").
 local maneuver3label1 is maneuverstackvlayout1:addlabel("").
     set maneuver3label1:style:wordwrap to false.
     set maneuver3label1:style:fontsize to 18.
+    set maneuver3label1:style:margin:left to 10.
     set maneuver3label1:style:width to 200.
     set maneuver3label1:style:height to 30.
     set maneuver3label1:style:align to "LEFT".
@@ -3518,6 +3556,7 @@ set maneuver3button:onclick to {
                 set TargetPicker:enabled to false.
                 GoHome().
                 sas off.
+                set Continue to false.
                 lock steering to AutoDockSteering().
 
                 until ship:dockingports[0]:state = "Docked (docker)" or ship:dockingports[0]:state = "Docked (dockee)" or ship:dockingports[0]:state = "Docked (same vessel)" or cancelconfirmed {}
@@ -3531,10 +3570,10 @@ set maneuver3button:onclick to {
                 ShowButtons(1).
                 set ship:control:translation to v(0, 0, 0).
                 set AutodockingIsRunning to false.
-                wait 1.
-                HUDTEXT("Current Status: Docked!", 10, 2, 20, green, false).
                 if ship:dockingports[0]:haspartner {
+                    wait 1.
                     set ManeuverPicker:index to 0.
+                    HUDTEXT("Docking Port Acquired! 'Docking Complete' may take a few more seconds (when wobbly)..", 10, 2, 20, green, false).
                 }
                 rcs off.
                 ClearInterfaceAndSteering().
@@ -3621,11 +3660,15 @@ function AutoDockSteering {
     }
     if target:distance < 2000 {
         set PortDistanceVector to target:dockingports[0]:nodeposition - ship:dockingports[0]:nodeposition.
+        set CheckVector to PortDistanceVector.
     }
     else {
         set PortDistanceVector to target:position - ship:position.
+        set CheckVector to PortDistanceVector.
     }
-    //print "Angle: " + vang(target:facing:topvector, PortDistanceVector).
+    print "Angle: " + vang(target:facing:topvector, PortDistanceVector).
+    print "Continue: " + Continue.
+    print "Distance: " + round(PortDistanceVector:mag,1).
     if KUniverse:activevessel = vessel(ship:name) {}
     else {
         set KUniverse:activevessel to vessel(ship:name).
@@ -3634,16 +3677,18 @@ function AutoDockSteering {
         set cancelconfirmed to true.
         return lookdirup(facing:forevector, facing:topvector).
     }
-    if vang(target:facing:topvector, PortDistanceVector) < 120 and PortDistanceVector:mag > 60 {
-        if target:distance < 2000 {
-            set PortDistanceVector to target:dockingports[0]:nodeposition + 50 * target:facing:topvector + -50 * target:facing:forevector + 50 * target:facing:starvector - ship:dockingports[0]:nodeposition.
-        }
-        else {
-            set PortDistanceVector to target:position + 50 * target:facing:topvector + -50 * target:facing:forevector + 50 * target:facing:starvector - ship:position.
-        }
-        set Continue to false.
+    if vang(target:facing:topvector, CheckVector) < 120 and Continue = "False" {
+        DetermineSafeVector().
+        print "Distance <120*: " + round(PortDistanceVector:mag,1).
+    }
+    else if Continue = "False" and vang(target:facing:topvector, CheckVector) < 135 {
+        DetermineSafeVector().
+        print "Distance >120*: " + round(PortDistanceVector:mag,1).
     }
     else {
+        set Continue to true.
+    }
+    if vang(target:facing:topvector, CheckVector) > 135 and Continue = "False" or PortDistanceVector:mag < 25 and Continue = "False" {
         set Continue to true.
     }
     set RelativeDistanceX to vdot(facing:forevector, PortDistanceVector).
@@ -3669,7 +3714,7 @@ function AutoDockSteering {
     //print "Rel Dist z: " + round(RelativeDistanceZ,2).
     //print "Distance: " + round(PortDistanceVector:mag,2).
 
-    set message1:text to "<b><color=green>Auto-Docking in Progress..</color></b>  <size=14>(DON'T CHANGE VESSEL)</size>".
+    set message1:text to "<b><color=green>Auto-Docking in Progress..</color></b>  <size=13><color=yellow>(DON'T CHANGE VESSEL)</color></size>".
     if Continue {
         set message2:text to "<b>Target:</b>  Docking Port  (" + round(PortDistanceVector:mag, 1) + "m)".
     }
@@ -3731,6 +3776,29 @@ function AutoDockSteering {
             set ship:control:translation to v(0 + RCSFactor * RelativeVelocityY, 0 + RCSFactor * RelativeVelocityZ, 1.25 * RCSFactor + RCSFactor * RelativeVelocityX).
         }
         return lookdirup(PortDistanceVector, facing:topvector).
+    }
+}
+
+function DetermineSafeVector {
+    if target:distance < 2000 {
+        set SafeVector1 to target:dockingports[0]:nodeposition + 75 * target:facing:topvector + -50 * target:facing:forevector + 50 * target:facing:starvector - ship:dockingports[0]:nodeposition.
+        set SafeVector2 to target:dockingports[0]:nodeposition + 75 * target:facing:topvector + -50 * target:facing:forevector - 50 * target:facing:starvector - ship:dockingports[0]:nodeposition.
+        if SafeVector1:mag < SafeVector2:mag {
+            set PortDistanceVector to SafeVector1.
+        }
+        else {
+            set PortDistanceVector to SafeVector2.
+        }
+    }
+    else {
+        set SafeVector1 to target:position + 75 * target:facing:topvector + -50 * target:facing:forevector + 50 * target:facing:starvector - ship:dockingports[0]:nodeposition.
+        set SafeVector2 to target:position + 75 * target:facing:topvector + -50 * target:facing:forevector - 50 * target:facing:starvector - ship:dockingports[0]:nodeposition.
+        if SafeVector1:mag < SafeVector2:mag {
+            set PortDistanceVector to SafeVector1.
+        }
+        else {
+            set PortDistanceVector to SafeVector2.
+        }
     }
 }
 
@@ -3879,17 +3947,17 @@ set launchbutton:ontoggle to {
                             LogToFile("Starting Launch Function").
                             if TargetShip = 0 {}
                             else {
-                                if SHIP:PARTSNAMED("SEP.S20.CARGO"):length > 0 {
+                                if ShipType = "Cargo" {
                                     set TimeOffset to 14.
                                     set LaunchTimeSpanInSeconds to 232 + (Cargo / MaxCargoToOrbit) * 20.
                                     set LaunchDistance to 162500.
                                 }
-                                if SHIP:PARTSNAMED("SEP.S20.CREW"):length > 0 {
+                                if ShipType = "Crew" {
                                     set TimeOffset to 13.
                                     set LaunchTimeSpanInSeconds to 232.
                                     set LaunchDistance to 155000.
                                 }
-                                if SHIP:PARTSNAMED("SEP.S20.TANKER"):length > 0 {
+                                if ShipType = "Tanker" {
                                     set TimeOffset to 12.
                                     set LaunchTimeSpanInSeconds to 246.
                                     set LaunchDistance to 160000.
@@ -4657,7 +4725,7 @@ if addons:tr:available and not startup {
         else {
             HideEngineToggles(0).
         }
-        if SHIP:PARTSNAMED("SEP.S20.CARGO"):length > 0 {
+        if ShipType = "Cargo" {
             cargobutton:show().
             if nose[0]:getmodule("ModuleAnimateGeneric"):hasevent("close cargo door") {
                 set cargoimage:style:bg to "starship_img/starship_cargobay_open".
@@ -4670,7 +4738,7 @@ if addons:tr:available and not startup {
                 set cargo1text:style:textcolor to green.
             }
         }
-        if SHIP:PARTSNAMED("SEP.S20.CREW"):length > 0 {
+        if ShipType = "Crew" {
             cargobutton:show().
             if nose[0]:getmodule("ModuleAnimateGeneric"):hasevent("close docking hatch") {
                 set cargoimage:style:bg to "starship_img/starship_crew_hatch_open".
@@ -4682,10 +4750,6 @@ if addons:tr:available and not startup {
                 set cargo1text:text to "Closed".
                 set cargo1text:style:textcolor to green.
             }
-        }
-        if SHIP:PARTSNAMED("SEP.S20.TANKER"):length > 0 {
-            cargobutton:hide().
-            set cargo1text:text to "Closed".
         }
     }
     else {
@@ -4812,13 +4876,15 @@ function Launch {
 
         if RadarAlt < 100 {
             lock throttle to 1.
-            if SHIP:PARTSNAMED("SEP.S20.CREW"):length = 0 {
+            if ShipType = "Cargo" or ShipType = "Tanker" {
                 InhibitButtons(1, 1, 1).
             }
             if OnOrbitalMount {
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "LiftOff").
             }
-            stage.
+            SHIP:PARTSNAMED("SLE.SS.OLP")[0]:getmodule("LaunchClamp"):DoAction("release clamp", true).
+            BoosterEngines[0]:getmodulebyindex(1):doaction("activate engine", true).
+            //stage.
             set OnOrbitalMount to False.
             if round(ship:geoposition:lat, 3) = round(landingzone:lat, 3) or round(ship:geoposition:lng, 3) = round(landingzone:lng, 3) {}
             else {
@@ -4859,7 +4925,8 @@ function Launch {
                     }
                 }
                 //BoosterInterstage[0]:getmodule("ModuleDecouple"):DoAction("decouple", true).
-                stage.
+                BoosterInterstage[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
+                //stage.
                 set Boosterconnected to false.
                 set CargoAfterSeparation to TotalCargoMass[0].
                 InhibitButtons(1, 1, 1).
@@ -5137,11 +5204,12 @@ Function Abort {
         if Boosterconnected {
             BoosterEngines[0]:shutdown.
             wait 0.1.
-            stage.
-            wait 0.1.
-            if stage:number = 2 {
-            stage.
-            }
+            //stage.
+            BoosterInterstage[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
+            //wait 0.1.
+            //if stage:number = 2 {
+            //    stage.
+            //}
             set Boosterconnected to false.
         }
         set runningprogram to "Abort!".
@@ -6437,7 +6505,7 @@ function updatestatusbar {
                 TotalCargoMass().
                 set prevTime to time:seconds.
             }
-            if ship:crew:length <> 0 {
+            if ShipType = "Crew" {
                 if Cargo = 0 {
                     set message12:text to "          " + ship:crew:length + " CREW".
                     set message12:style:textcolor to white.
@@ -6456,7 +6524,7 @@ function updatestatusbar {
                 if Cargo = 0 {
                     set message12:text to "          0 kg".
                     set message12:style:textcolor to grey.
-                    if SHIP:PARTSNAMED("SEP.S20.TANKER"):length > 0 {
+                    if ShipType = "Tanker" {
                         set message12:style:bg to "starship_img/starship_fuel_grey".
                     }
                     else {
@@ -6466,7 +6534,7 @@ function updatestatusbar {
                 else {
                     set message12:text to "          " + round(Cargo) + " kg".
                     set message12:style:textcolor to white.
-                    if SHIP:PARTSNAMED("SEP.S20.TANKER"):length > 0 {
+                    if ShipType = "Tanker" {
                         set message12:style:bg to "starship_img/starship_fuel".
                     }
                     else {
@@ -6475,6 +6543,12 @@ function updatestatusbar {
                 }
 
             }
+        }
+        if ShipType = "Tanker" {
+            cargobutton:hide().
+        }
+        else {
+            cargobutton:show().
         }
         set StatusBarIsRunning to false.
     }
@@ -6579,7 +6653,7 @@ function updateStatus {
             set status1label5:text to "<b>MASS:</b>  " + round(ship:mass - SHIP:PARTSNAMED("SLE.SS.OLP")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.Base")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.Core")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.Top")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.MZ")[0]:mass, 1) + "t".
         }
         else {
-            set status1label5:text to "<b>MASS:</b>  " + round(ship:mass, 1) + "t".
+            set status1label5:text to "<b>MASS:</b>  " + round(ShipMass / 1000, 1) + "t".
         }
         set status2label5:text to "<b>" + round(LQFpct) + "% CH4</b>".
         if LQFpct < 20 {
@@ -7643,60 +7717,69 @@ function HideEngineToggles {
 function TotalCargoMass {
     if not CargoCalculationIsRunning {
         set CargoCalculationIsRunning to true.
-        set CargoList to ship:parts.
-        set CargoList to CargoList:copy.
-        set CargoMass to 0.
-        set ShipMass to 0.
-        set CargoCoG to 0.
+        if ship:dockingports[0]:haspartner {
+            set CargoCalculationIsRunning to false.
+            return list(0, 0, 0).
+        }
+        else {
+            set CargoList to ship:parts.
+            set CargoList to CargoList:copy.
+            set CargoMass to 0.
+            set ShipMass to 0.
+            set CargoCoG to 0.
 
-        if Boosterconnected {
-            if BoosterEngines:length > 0 {
-                CargoList:remove(CargoList:find(BoosterEngines[0])).
-                CargoList:remove(CargoList:find(BoosterInterstage[0])).
-                CargoList:remove(CargoList:find(BoosterCore[0])).
-                for fin in GridFins {
-                    CargoList:remove(CargoList:find(fin)).
+            if Boosterconnected {
+                if BoosterEngines:length > 0 {
+                    CargoList:remove(CargoList:find(BoosterEngines[0])).
+                    CargoList:remove(CargoList:find(BoosterInterstage[0])).
+                    CargoList:remove(CargoList:find(BoosterCore[0])).
+                    for fin in GridFins {
+                        CargoList:remove(CargoList:find(fin)).
+                    }
                 }
             }
-        }
-        if OnOrbitalMount {
-            if SHIP:PARTSNAMED("SLE.SS.OLP"):length > 0 {
-                CargoList:remove(CargoList:find(SHIP:PARTSNAMED("SLE.SS.OLP")[0])).
-                CargoList:remove(CargoList:find(SHIP:PARTSNAMED("SLE.SS.OLIT.Base")[0])).
-                CargoList:remove(CargoList:find(SHIP:PARTSNAMED("SLE.SS.OLIT.Core")[0])).
-                CargoList:remove(CargoList:find(SHIP:PARTSNAMED("SLE.SS.OLIT.Top")[0])).
-                CargoList:remove(CargoList:find(SHIP:PARTSNAMED("SLE.SS.OLIT.MZ")[0])).
+            if OnOrbitalMount {
+                if SHIP:PARTSNAMED("SLE.SS.OLP"):length > 0 {
+                    CargoList:remove(CargoList:find(SHIP:PARTSNAMED("SLE.SS.OLP")[0])).
+                    CargoList:remove(CargoList:find(SHIP:PARTSNAMED("SLE.SS.OLIT.Base")[0])).
+                    CargoList:remove(CargoList:find(SHIP:PARTSNAMED("SLE.SS.OLIT.Core")[0])).
+                    CargoList:remove(CargoList:find(SHIP:PARTSNAMED("SLE.SS.OLIT.Top")[0])).
+                    CargoList:remove(CargoList:find(SHIP:PARTSNAMED("SLE.SS.OLIT.MZ")[0])).
+                }
             }
-        }
 
-        for x in CargoList {
-            set ShipMass to ShipMass + (x:mass * 1000).
-        }
+            for x in CargoList {
+                set ShipMass to ShipMass + (x:mass * 1000).
+            }
 
-        CargoList:remove(CargoList:find(FLflap[0])).
-        CargoList:remove(CargoList:find(FRflap[0])).
-        CargoList:remove(CargoList:find(ALflap[0])).
-        CargoList:remove(CargoList:find(ARflap[0])).
-        CargoList:remove(CargoList:find(Tank[0])).
-        CargoList:remove(CargoList:find(Nose[0])).
-        CargoList:remove(CargoList:find(HeaderTank[0])).
-        for eng in SLEngines {
-            CargoList:remove(CargoList:find(eng)).
-        }
-        for eng in VACEngines {
-            CargoList:remove(CargoList:find(eng)).
-        }
+            CargoList:remove(CargoList:find(FLflap[0])).
+            CargoList:remove(CargoList:find(FRflap[0])).
+            CargoList:remove(CargoList:find(ALflap[0])).
+            CargoList:remove(CargoList:find(ARflap[0])).
+            CargoList:remove(CargoList:find(Tank[0])).
+            CargoList:remove(CargoList:find(Nose[0])).
+            CargoList:remove(CargoList:find(HeaderTank[0])).
+            for eng in SLEngines {
+                CargoList:remove(CargoList:find(eng)).
+            }
+            for eng in VACEngines {
+                CargoList:remove(CargoList:find(eng)).
+            }
 
-        for x in CargoList {
-            set CargoMass to CargoMass + (x:mass * 1000).
-            set CargoCoG to CargoCoG + vdot(x:position - Tank[0]:position, facing:forevector) * x:mass.
-        }
+            if ShipType = "Cargo" or ShipType = "Crew" {
+                for x in CargoList {
+                    set CargoMass to CargoMass + (x:mass * 1000).
+                    set CargoCoG to CargoCoG + vdot(x:position - Tank[0]:position, facing:forevector) * x:mass.
+                }
+            }
 
-        if SHIP:PARTSNAMED("SEP.S20.TANKER"):length > 0 {
-            set CargoMass to CargoMass + 1000 * (Nose[0]:mass - Nose[0]:drymass).
+            if ShipType = "Tanker" {
+                set CargoMass to CargoMass + 1000 * (Nose[0]:mass - Nose[0]:drymass).
+                set CargoMass to CargoMass + 1000 * (Tank[0]:mass - Tank[0]:drymass).
+            }
+            set Cargo to CargoMass.
+            set CargoCG to CargoCoG.
         }
-        set Cargo to CargoMass.
-        set CargoCG to CargoCoG.
         set CargoCalculationIsRunning to false.
         return list(CargoMass, CargoList:length, CargoCoG).
     }

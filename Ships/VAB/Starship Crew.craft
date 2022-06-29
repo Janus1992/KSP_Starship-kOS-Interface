@@ -35,8 +35,8 @@ PART
 	sepI = 0
 	attm = 0
 	sameVesselCollision = False
-	modCost = 27765.5313
-	modMass = 0.00124513952
+	modCost = 40216.5313
+	modMass = 0.00373541843
 	modSize = 0,0,0
 	link = SEP.S20.AFT.LEFT_4294042912
 	link = SEP.S20.AFT.RIGHT_4294042270
@@ -138,7 +138,7 @@ PART
 	{
 		name = ModuleDockingNode
 		isEnabled = True
-		acquireForceTweak = 200
+		acquireForceTweak = 100
 		crossfeed = True
 		nodeIsLocked = True
 		targetAngle = 0
@@ -476,12 +476,12 @@ PART
 		name = kOSProcessor
 		isEnabled = True
 		bootFile = /boot/starship.ks
-		diskSpace = 510000
+		diskSpace = 1020000
 		baseDiskSpace = 255000
 		baseModuleMass = 0
-		additionalCost = 6226
+		additionalCost = 18677
 		MaxPartId = 100
-		RequiredPower = 0.400000006
+		RequiredPower = 0.0399999991
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -587,7 +587,7 @@ PART
 	part = SEP.S20.AFT.LEFT_4294042912
 	partName = Part
 	persistentId = 4266648373
-	pos = 0.154115558,63.0917091,3.62195325
+	pos = 0.154115558,63.0917091,3.6219542
 	attPos = 0,0,0
 	attPos0 = -3.2848568,-5.02600288,-0.0231346339
 	rot = -0.463903815,0.463903815,-0.533660352,0.533660352
@@ -781,7 +781,7 @@ PART
 	part = SEP.S20.AFT.RIGHT_4294042270
 	partName = Part
 	persistentId = 2774799196
-	pos = 0.154113412,63.0917091,-2.94785285
+	pos = 0.154113412,63.0917091,-2.9478538
 	attPos = 0,0,0
 	attPos0 = 3.28485632,-5.02600288,-0.023135826
 	rot = 0.533660412,0.533660412,0.463903725,0.463903725
@@ -975,7 +975,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293986328
 	partName = Part
 	persistentId = 3406174983
-	pos = 1.85061073,60.3877602,-0.629069448
+	pos = 1.85061121,60.3877602,-0.629069686
 	attPos = 0,0,0
 	attPos0 = 0.966107607,-7.72994995,1.67333782
 	rot = 0,0,0,1.00000012
@@ -1220,7 +1220,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293931996
 	partName = Part
 	persistentId = 3290598468
-	pos = -1.49611676,60.3877602,-0.629071593
+	pos = -1.49611735,60.3877602,-0.629071951
 	attPos = 0,0,0
 	attPos0 = 0.966105402,-7.72994995,-1.67333853
 	rot = 0,0.866025448,0,0.49999997
@@ -1457,7 +1457,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293931510
 	partName = Part
 	persistentId = 2897807817
-	pos = 0.177251816,60.3877602,2.26928043
+	pos = 0.177251816,60.3877602,2.26928091
 	attPos = 0,0,0
 	attPos0 = -1.93220675,-7.72994995,1.78813855E-06
 	rot = 0,0.866025388,0,-0.50000006
@@ -1694,7 +1694,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293930182
 	partName = Part
 	persistentId = 692488545
-	pos = 0.177248359,60.3877602,-1.59518015
+	pos = 0.177248359,60.3877602,-1.59518063
 	attPos = 0,0,0
 	attPos0 = 1.93220687,-7.72994995,-1.19209244E-06
 	rot = 0,0,0,1.00000012
@@ -1931,7 +1931,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293928524
 	partName = Part
 	persistentId = 413674189
-	pos = -1.49610996,60.3877602,1.30317032
+	pos = -1.49611044,60.3877602,1.30317056
 	attPos = 0,0,0
 	attPos0 = -0.966108024,-7.72994995,-1.67333663
 	rot = 0,0.866025448,0,0.49999997
@@ -2168,7 +2168,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293928038
 	partName = Part
 	persistentId = 1200617036
-	pos = 1.85061777,60.3877602,1.30317199
+	pos = 1.85061836,60.3877602,1.30317235
 	attPos = 0,0,0
 	attPos0 = -0.96610564,-7.72994995,1.6733402
 	rot = 0,0.866025388,0,-0.50000006
@@ -2405,7 +2405,7 @@ PART
 	part = SEP.RAPTOR.SL_4293925840
 	partName = Part
 	persistentId = 1292824898
-	pos = -0.333473921,59.5089989,0.337050915
+	pos = -0.33347404,59.5089989,0.337050915
 	attPos = 0,0,0
 	attPos0 = -6.55650922E-07,-8.60871124,-0.510717869
 	rot = 0,0,0,1.00000012
@@ -2747,7 +2747,7 @@ PART
 	part = SEP.RAPTOR.SL_4293922032
 	partName = Part
 	persistentId = 2096403267
-	pos = 0.432613403,59.5089989,0.779350996
+	pos = 0.432613462,59.5089989,0.779351115
 	attPos = 0,0,0
 	attPos0 = -0.442294866,-8.60871124,0.255360544
 	rot = 0,0.866025448,0,0.49999997
@@ -3081,7 +3081,7 @@ PART
 	part = SEP.RAPTOR.SL_4293921454
 	partName = Part
 	persistentId = 3317374759
-	pos = 0.432611883,59.5089989,-0.105250955
+	pos = 0.432611942,59.5089989,-0.105251074
 	attPos = 0,0,0
 	attPos0 = 0.442295283,-8.60871124,0.255359143
 	rot = 0,0.866025388,0,-0.50000006
@@ -3962,7 +3962,7 @@ PART
 	part = SEP.S20.FWD.LEFT_4294040836
 	partName = Part
 	persistentId = 2376354719
-	pos = 0.177412868,84.3830872,3.14748144
+	pos = 0.177412868,84.3830872,3.14748192
 	attPos = 0,0,0
 	attPos0 = -2.81042528,0.717590332,0.000164628029
 	rot = 0.549525201,-0.444996834,0.549525201,-0.444996834
@@ -4156,7 +4156,7 @@ PART
 	part = SEP.S20.FWD.RIGHT_4294041450
 	partName = Part
 	persistentId = 3905709463
-	pos = 0.177411437,84.3830872,-2.47337961
+	pos = 0.177411437,84.3830872,-2.47338009
 	attPos = 0,0,0
 	attPos0 = 2.81042385,0.717590332,0.000163674355
 	rot = 0.549525321,0.444997013,0.549525082,0.444996655
@@ -4662,7 +4662,7 @@ PART
 	{
 		name = ModuleDockingNode
 		isEnabled = True
-		acquireForceTweak = 200
+		acquireForceTweak = 100
 		crossfeed = True
 		nodeIsLocked = True
 		targetAngle = 0
@@ -4916,7 +4916,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294131004
 	partName = Part
 	persistentId = 2096481950
-	pos = 2.08268452,58.4344559,-2.96355724
+	pos = 2.08268499,58.4344559,-2.9635582
 	attPos = 0,0,0
 	attPos0 = 3.30055976,0.589805603,1.90540981
 	rot = -0.500000238,0,-0.866025448,0
@@ -5104,7 +5104,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294129548
 	partName = Part
 	persistentId = 144239615
-	pos = -1.72831905,58.4344559,-2.96349239
+	pos = -1.72831976,58.4344559,-2.96349359
 	attPos = 0,0,0
 	attPos0 = 3.30048656,0.589805603,-1.90553701
 	rot = -0.866025567,0,-0.499999881,0
@@ -5284,7 +5284,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294128866
 	partName = Part
 	persistentId = 4169471528
-	pos = -1.72818303,58.4344559,3.6376586
+	pos = -1.72818351,58.4344559,3.63765955
 	attPos = 0,0,0
 	attPos0 = -3.30056119,0.589805603,-1.90541053
 	rot = -0.866025448,0,0.500000238,0
@@ -5464,7 +5464,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294128194
 	partName = Part
 	persistentId = 1410723546
-	pos = 2.08281469,58.4344559,3.63758516
+	pos = 2.08281517,58.4344559,3.63758588
 	attPos = 0,0,0
 	attPos0 = -3.300488,0.589805603,1.90553868
 	rot = -0.499999881,0,0.866025567,0
@@ -5798,7 +5798,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 0
 		MaxPartId = 100
-		RequiredPower = 0.400000006
+		RequiredPower = 0.0399999991
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -6762,7 +6762,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 0
 		MaxPartId = 100
-		RequiredPower = 0.400000006
+		RequiredPower = 0.0399999991
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -6852,7 +6852,7 @@ PART
 	part = SLE.SS.OLIT.Base_4293118876
 	partName = Part
 	persistentId = 300331249
-	pos = -20.6675014,3.96963501,-0.722033739
+	pos = -20.6675091,3.96963501,-0.722033739
 	attPos = 3.81469727E-05,-0.150917053,0
 	attPos0 = 20.8443985,-1.93387127,1.05908227
 	rot = 0,-1.00000012,0,0
@@ -7104,7 +7104,7 @@ PART
 	part = SLE.SS.OLIT.Core_4293118754
 	partName = Part
 	persistentId = 439700507
-	pos = -20.6675091,7.48857117,-0.722033739
+	pos = -20.6675167,7.48857117,-0.722033739
 	attPos = 0,0,0
 	attPos0 = 7.62939453E-06,3.51894379,0
 	rot = 0,1.00000012,0,0
@@ -7266,7 +7266,7 @@ PART
 	part = SLE.SS.OLIT.MZ_4293118266
 	partName = Part
 	persistentId = 195680203
-	pos = -15.3058748,79.3024139,0.0326631069
+	pos = -15.3058825,79.3024139,0.0326631069
 	attPos = 0,0,0
 	attPos0 = -5.36181641,71.8138199,-0.75470078
 	rot = 0,1.00000012,0,0
@@ -7861,7 +7861,7 @@ PART
 	part = SLE.SS.OLIT.Top_4293117760
 	partName = Part
 	persistentId = 2946990986
-	pos = -20.6675167,80.9674835,-0.722035646
+	pos = -20.6675243,80.9674835,-0.722035646
 	attPos = 0,0,0
 	attPos0 = 7.62939453E-06,73.4788971,1.90734863E-06
 	rot = 0,1.00000012,0,0

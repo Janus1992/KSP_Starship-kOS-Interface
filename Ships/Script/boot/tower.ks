@@ -110,7 +110,7 @@ until False {
 
 
 function LiftOff {
-    SHIP:PARTSNAMED("SLE.SS.OLP")[0]:getmodule("LaunchClamp"):DoAction("release clamp", true).
+    //SHIP:PARTSNAMED("SLE.SS.OLP")[0]:getmodule("LaunchClamp"):DoAction("release clamp", true).
     wait 0.1.
     set ship:name to "OrbitalLaunchMount".
     wait 5.
