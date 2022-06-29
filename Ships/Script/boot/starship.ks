@@ -3893,7 +3893,7 @@ set launchbutton:ontoggle to {
                     else {
                         set rolldir to heading(90,0).
                     }
-                    if vang(ship:facing:topvector, rolldir:vector) < 30 and TotalCargoMass[0] < MaxCargoToOrbit + 1 and cargo1text:text = "Closed" {
+                    if vang(ship:facing:topvector, rolldir:vector) < 30 and CargoMass < MaxCargoToOrbit + 1 and cargo1text:text = "Closed" {
                         GoHome().
                         InhibitButtons(0, 0, 0).
                         if ShipsInOrbit():length > 0 {
@@ -4750,6 +4750,9 @@ if addons:tr:available and not startup {
                 set cargo1text:text to "Closed".
                 set cargo1text:style:textcolor to green.
             }
+        }
+        if ShipType = "Tanker" {
+            set cargo1text:text to "Closed".
         }
     }
     else {
@@ -7775,7 +7778,7 @@ function TotalCargoMass {
 
             if ShipType = "Tanker" {
                 set CargoMass to CargoMass + 1000 * (Nose[0]:mass - Nose[0]:drymass).
-                set CargoMass to CargoMass + 1000 * (Tank[0]:mass - Tank[0]:drymass).
+                //set CargoMass to CargoMass + 1000 * (Tank[0]:mass - Tank[0]:drymass).
             }
             set Cargo to CargoMass.
             set CargoCG to CargoCoG.
