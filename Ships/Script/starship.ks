@@ -160,7 +160,7 @@ function FindParts {
         set ShipIsDocked to true.
         if startup {}
         else {
-            HUDTEXT("Current Status: Docked! Waiting until undock before Interface will show up..", 30, 2, 20, red, false).
+            HUDTEXT("Docked.. Waiting until UNDOCK before starting Interface..", 30, 2, 20, red, false).
             wait until ship:dockingports[0]:haspartner = false.
         }
     }
@@ -3666,9 +3666,9 @@ function AutoDockSteering {
         set PortDistanceVector to target:position - ship:position.
         set CheckVector to PortDistanceVector.
     }
-    print "Angle: " + vang(target:facing:topvector, PortDistanceVector).
-    print "Continue: " + Continue.
-    print "Distance: " + round(PortDistanceVector:mag,1).
+    //print "Angle: " + vang(target:facing:topvector, PortDistanceVector).
+    //print "Continue: " + Continue.
+    //print "Distance: " + round(PortDistanceVector:mag,1).
     if KUniverse:activevessel = vessel(ship:name) {}
     else {
         set KUniverse:activevessel to vessel(ship:name).
@@ -4598,6 +4598,7 @@ if addons:tr:available and not startup {
     if Career():canmakenodes = true and Career():candoactions = true and Career():patchlimit > 0 {
         InhibitButtons(0, 1, 1).
         set runningprogram to "None".
+        FindParts().
         if homeconnection:isconnected {
             if exists("0:/settings.json") {
                 set L to readjson("0:/settings.json").
@@ -6436,15 +6437,20 @@ function updatestatusbar {
             if FuelMass = 0 {
                 set FuelMass to 0.001.
             }
-            set currentdeltav to round(9.81 * EngineISP * ln(ShipMass / (ShipMass - (FuelMass * 1000)))).
-            if currentdeltav > 350 {set status2:style:textcolor to white.}
-            else if currentdeltav < 325 {set status2:style:textcolor to red.}
-            else {set status2:style:textcolor to yellow.}
-            if ShowSLdeltaV {
-                set status2:text to "<b>ΔV: </b>" + currentdeltav + "m/s <b><size=12>@SL</size></b>".
+            if ship:dockingports[0]:haspartner {
+                set status2:text to "<b><color=green>Docked..</color></b>".
             }
             else {
-                set status2:text to "<b>ΔV: </b>" + currentdeltav + "m/s <b><size=12>@VAC</size></b>".
+                set currentdeltav to round(9.81 * EngineISP * ln(ShipMass / (ShipMass - (FuelMass * 1000)))).
+                if currentdeltav > 350 {set status2:style:textcolor to white.}
+                else if currentdeltav < 325 {set status2:style:textcolor to red.}
+                else {set status2:style:textcolor to yellow.}
+                if ShowSLdeltaV {
+                    set status2:text to "<b>ΔV: </b>" + currentdeltav + "m/s <b><size=12>@SL</size></b>".
+                }
+                else {
+                    set status2:text to "<b>ΔV: </b>" + currentdeltav + "m/s <b><size=12>@VAC</size></b>".
+                }
             }
         }
         if defined bat {
@@ -6654,6 +6660,9 @@ function updateStatus {
         if OXpct < 6 {set status3label5:style:textcolor to red.}
         if OnOrbitalMount {
             set status1label5:text to "<b>MASS:</b>  " + round(ship:mass - SHIP:PARTSNAMED("SLE.SS.OLP")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.Base")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.Core")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.Top")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.MZ")[0]:mass, 1) + "t".
+        }
+        else if ship:dockingports[0]:haspartner {
+            set status1label5:text to "<b>MASS:</b>  <color=grey><size=12>docked..</size></color>".
         }
         else {
             set status1label5:text to "<b>MASS:</b>  " + round(ShipMass / 1000, 1) + "t".
