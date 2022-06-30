@@ -153,7 +153,12 @@ function MechazillaPushers {
     parameter PushersOpen.
     Mechazilla:getmodulebyindex(7):SetField("target extension", targetextension:toscalar).
     Mechazilla:getmodulebyindex(7):SetField("target speed", targetspeed:toscalar).
-    Mechazilla:getmodulebyindex(7):SetField("pushers open limit", pushersopenlimit:toscalar).
+    if Mechazilla:getmodulebyindex(7):HasField("pushers close limit") {
+        Mechazilla:getmodulebyindex(7):SetField("pushers close limit", pushersopenlimit:toscalar).
+    }
+    if Mechazilla:getmodulebyindex(7):HasField("pushers open limit") {
+        Mechazilla:getmodulebyindex(7):SetField("pushers open limit", pushersopenlimit:toscalar).
+    }
     if PushersOpen = "true" and Mechazilla:getmodulebyindex(7):hasevent("open pushers") {
         Mechazilla:getmodulebyindex(7):DoAction("toggle pushers", true).
     }
