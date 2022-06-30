@@ -36,7 +36,7 @@ Version 1.0 - GNUGPL3
         - SEP Booster Engines can't switch the three modes of operation.
         - SEP Ship Flap Angle is not published/available for reading.
         - SEP Booster and Ship mass is wrong:
-                - Booster returns with too much fuel (payload: 69t).
+                - Booster returns with too much fuel (w/ payload: 69t).
                 - Crew Ship has same nose weight as empty cargo/tanker:
                         - 5-10 tons of additional weight would be more realistic and still aerodynamically acceptable.
 - Auto-docking balance rcs.

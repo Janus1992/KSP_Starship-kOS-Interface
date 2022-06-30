@@ -1,3 +1,9 @@
+# V1.0.1a
+- Ship mass correct during launch.
+- More hudtexts built in to inform the user.
+- Delta-V Calculation fixed. It caused a crash when some required value returned a false value.
+- Fixed background update while waiting for launch to rendezvous.
+
 # V1.0.1
 - New Ships will from now on *automatically update* (if a connection to the KSC is available) on loading when you download and install a new version of my interface!
     - This means you won't have to delete all the active ships (and create new ships at the VAB) anymore.

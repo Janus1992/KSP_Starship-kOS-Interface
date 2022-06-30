@@ -41,16 +41,19 @@ if homeconnection:isconnected {
     }
     if LastUpdateTime + 15 < kuniverse:realtime {
         switch to 0.
+        HUDTEXT("Starting Interface..", 10, 2, 20, green, false).
         print "Starting background update..".
         compile starship.
         copypath("starship.ksm", "1:").
         set core:BOOTFILENAME to "starship.ksm".
         print "Starship Interface background update completed! Rebooting now..".
-        wait 1.
         set LastUpdateTime to kuniverse:realtime.
         SaveToSettings("Last Update Time", LastUpdateTime).
         reboot.
     }
+}
+else {
+    HUDTEXT("No connection available! Can't update Interface..", 10, 2, 20, red, false).
 }
 
 
@@ -315,7 +318,7 @@ local g is GUI(600).
     set g:style:padding:v to 0.
     set g:style:padding:h to 0.
     set g:x to -150.
-    set g:y to 150 + (NrOfGuisOpened * 200).
+    set g:y to 150 + (NrOfGuisOpened * 250).
 
 
 //-------------------------Skin-------------------------//
@@ -3979,7 +3982,7 @@ set launchbutton:ontoggle to {
                                 InhibitButtons(1, 1, 0).
                                 set cancel:text to "<b>ABORT</b>".
                                 set cancel:style:textcolor to red.
-
+                                set message3:style:textcolor to white.
                                 until time:seconds > LaunchTime and time:seconds < LaunchTime + 2 or cancelconfirmed {
                                     if kuniverse:timewarp:warp > 5 {
                                         set kuniverse:timewarp:warp to 5.
@@ -3990,9 +3993,12 @@ set launchbutton:ontoggle to {
                                     if LaunchTime - time:seconds < 60 and kuniverse:timewarp:warp > 0 {
                                         set kuniverse:timewarp:warp to 0.
                                     }
-                                    set message1:text to "<b>Launch to:  <color=green>" + TargetShip:name + "</color></b>".
-                                    set message2:text to "<b>Launch Countdown:</b>         " + timeSpanCalculator(LaunchTime - time:seconds + 16).
-                                    set message3:text to "<b></b>".
+                                    set message1:text to "<b>All Systems:              <color=green>GO</color></b>".
+                                    set message2:text to "<b>Launch to:                 <color=green>" + TargetShip:name + "</color></b>".
+                                    set message3:text to "<b>Launch Countdown:</b>  " + timeSpanCalculator(LaunchTime - time:seconds + 16).
+                                    if not BGUisRunning {
+                                        BackGroundUpdate().
+                                    }
                                 }
                                 if cancelconfirmed {
                                     ClearInterfaceAndSteering().
@@ -4318,15 +4324,7 @@ set landbutton:ontoggle to {
                                 if confirm() {
                                     if KUniverse:activevessel = vessel(ship:name) {}
                                     else {
-                                        ClearInterfaceAndSteering().
-                                        LogToFile("Venting Stopped due to wrong ship active").
-                                        set message1:text to "<b>Venting Cancelled.</b>".
-                                        set message1:style:textcolor to yellow.
-                                        set message2:text to "<b>Check Active Ship..</b>".
-                                        set message2:style:textcolor to yellow.
-                                        wait 3.
-                                        ClearInterfaceAndSteering().
-                                        return.
+                                        set KUniverse:activevessel to vessel(ship:name).
                                     }
                                     LogToFile("Start Venting").
                                     set landlabel:style:textcolor to green.
@@ -4377,6 +4375,11 @@ set landbutton:ontoggle to {
                             }
                             if LFShip < FuelVentCutOffValue {
                                 set runningprogram to "Input".
+                                if KUniverse:activevessel = vessel(ship:name) {}
+                                else {
+                                    set KUniverse:activevessel to vessel(ship:name).
+                                    wait 3.
+                                }
                                 GoHome().
                                 LandingZoneFinder().
                                 InhibitButtons(1,1,1).
@@ -4467,7 +4470,8 @@ set landbutton:ontoggle to {
                                     if confirm() {
                                         LogToFile("Re-orienting for De-Orbit").
                                         InhibitButtons(1, 1, 0).
-                                        if not (KUniverse:activevessel = vessel(ship:name)) {
+                                        if KUniverse:activevessel = vessel(ship:name) {}
+                                        else {
                                             set KUniverse:activevessel to vessel(ship:name).
                                         }
                                         set landlabel:style:textcolor to green.
@@ -4501,6 +4505,10 @@ set landbutton:ontoggle to {
                                                 set message1:text to "<b>Starting Burn in:</b>  " + timeSpanCalculator(deorbitburn:eta - 0.5 * BurnDuration).
                                                 set message2:text to "<b>Target Attitude:</b>    Burnvector".
                                                 set message3:text to "<b>Burn Duration:</b>      " + round(BurnDuration) + "s".
+                                        }
+                                        if KUniverse:activevessel = vessel(ship:name) {}
+                                        else {
+                                            set KUniverse:activevessel to vessel(ship:name).
                                         }
                                         if hasnode {
                                             if vang(deorbitburn:burnvector, ship:facing:forevector) < 2 and cancelconfirmed = false {
@@ -5428,8 +5436,8 @@ function ReEntryAndLand {
         set landlabel:style:textcolor to green.
         set launchlabel:style:textcolor to grey.
         HideEngineToggles(1).
-        ActivateEngines(0).
-        ShutdownEngines.
+        //ActivateEngines(0).
+        //ShutdownEngines.
         set launchlabel:style:bg to "starship_img/starship_background".
         ShowButtons(0).
         InhibitButtons(1, 1, 0).
@@ -6432,13 +6440,14 @@ function updatestatusbar {
                 set EngineISP to 378.
             }
             if ShipMass = 0 {
-                set ShipMass to 50.
+                set ShipMass to 200.
             }
             if FuelMass = 0 {
                 set FuelMass to 0.001.
             }
             if ship:dockingports[0]:haspartner {
-                set status2:text to "<b><color=green>Docked..</color></b>".
+                set status2:style:textcolor to green.
+                set status2:text to "<b><color=white>Status: </color>Docked</b>".
             }
             else {
                 set currentdeltav to round(9.81 * EngineISP * ln(ShipMass / (ShipMass - (FuelMass * 1000)))).
@@ -6665,7 +6674,7 @@ function updateStatus {
             set status1label5:text to "<b>MASS:</b>  <color=grey><size=12>docked..</size></color>".
         }
         else {
-            set status1label5:text to "<b>MASS:</b>  " + round(ShipMass / 1000, 1) + "t".
+            set status1label5:text to "<b>MASS:</b>  " + round(ship:mass, 1) + "t".
         }
         set status2label5:text to "<b>" + round(LQFpct) + "% CH4</b>".
         if LQFpct < 20 {
@@ -6711,7 +6720,7 @@ function CalculateShipTemperature {
     else {
         set FlapsControl to "none".
     }
-    set ShipTemperature to max(body:atm:alttemp(altitude) - 273.15, -86) + (0.15 * max(vang(facing:forevector, velocity:surface), 10) * (ship:q * (airspeed / 100)^3)).
+    set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -86) + (0.15 * max(vang(facing:forevector, velocity:surface), 10) * (ship:q * (airspeed / 100)^3)), 1750).
     if ShipTemperature > 1200 {
         set status2label1:style:textcolor to red.
         set status2label3:style:textcolor to red.
@@ -8241,7 +8250,7 @@ function PerformBurn {
         set message1:text to "<b>Execute Custom Burn:</b>".
     }
     else {
-        set message1:text to "<b>Circularize at Altitude:</b>  <color=yellow>" + round(periapsis) + "m</color>".
+        set message1:text to "<b>Circularize at Altitude:</b>  <color=yellow>" + round(((positionat(ship, burnstarttime) - ship:body:position):mag - ship:body:radius) / 1000, 1) + "km</color>".
     }
     set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s".
     set message3:style:textcolor to cyan.
@@ -8277,6 +8286,9 @@ function PerformBurn {
             BackGroundUpdate().
             if quicksetting1:pressed and kuniverse:timewarp:warp = 5 and nextnode:eta - 0.5 * BurnDuration < 900 or nextnode:eta - 0.5 * BurnDuration < 900 and kuniverse:timewarp:warp = 5 {
                 set kuniverse:timewarp:warp to 4.
+            }
+            if quicksetting1:pressed and kuniverse:timewarp:warp = 6 and nextnode:eta - 0.5 * BurnDuration < 5400 or nextnode:eta - 0.5 * BurnDuration < 5400 and kuniverse:timewarp:warp = 6 {
+                set kuniverse:timewarp:warp to 5.
             }
             if nextnode:eta - 0.5 * BurnDuration < (ship:mass / 50) * 35 {
                 set kuniverse:timewarp:warp to 0.
