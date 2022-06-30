@@ -159,13 +159,22 @@ function MechazillaPushers {
     if Mechazilla:getmodulebyindex(7):HasField("pushers open limit") {
         Mechazilla:getmodulebyindex(7):SetField("pushers open limit", pushersopenlimit:toscalar).
     }
-    if PushersOpen = "true" and Mechazilla:getmodulebyindex(7):hasevent("open pushers") {
-        Mechazilla:getmodulebyindex(7):DoAction("toggle pushers", true).
+    if Mechazilla:getmodulebyindex(7):HasField("pushers open limit") {
+        if PushersOpen = "true" and Mechazilla:getmodulebyindex(7):hasevent("open pushers") {
+            Mechazilla:getmodulebyindex(7):DoAction("toggle pushers", true).
+        }
+        if PushersOpen = "false" and Mechazilla:getmodulebyindex(7):hasevent("close pushers") {
+            Mechazilla:getmodulebyindex(7):DoAction("toggle pushers", true).
+        }
     }
-    if PushersOpen = "false" and Mechazilla:getmodulebyindex(7):hasevent("close pushers") {
-        Mechazilla:getmodulebyindex(7):DoAction("toggle pushers", true).
+    if Mechazilla:getmodulebyindex(7):HasField("pushers close limit") {
+        if PushersOpen = "false" and Mechazilla:getmodulebyindex(7):hasevent("open pushers") {
+            Mechazilla:getmodulebyindex(7):DoAction("toggle pushers", true).
+        }
+        if PushersOpen = "true" and Mechazilla:getmodulebyindex(7):hasevent("close pushers") {
+            Mechazilla:getmodulebyindex(7):DoAction("toggle pushers", true).
+        }
     }
-
 }
 
 
