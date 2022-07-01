@@ -32,6 +32,8 @@ unlock steering.
 clearguis().
 clearscreen.
 
+wait 1.
+
 if homeconnection:isconnected {
     if exists("0:/settings.json") {
         set L to readjson("0:/settings.json").
@@ -39,7 +41,8 @@ if homeconnection:isconnected {
             set LastUpdateTime to L["Last Update Time"].
         }
     }
-    if LastUpdateTime + 15 < kuniverse:realtime {
+    //print "Time Difference: " + round(kuniverse:realtime - LastUpdateTime, 2).
+    if LastUpdateTime + 5 < kuniverse:realtime {
         switch to 0.
         HUDTEXT("Starting Interface..", 10, 2, 20, green, false).
         print "Starting background update..".
@@ -3682,11 +3685,11 @@ function AutoDockSteering {
     }
     if vang(target:facing:topvector, CheckVector) < 120 and Continue = "False" {
         DetermineSafeVector().
-        print "Distance <120*: " + round(PortDistanceVector:mag,1).
+        //print "Distance <120*: " + round(PortDistanceVector:mag,1).
     }
     else if Continue = "False" and vang(target:facing:topvector, CheckVector) < 135 {
         DetermineSafeVector().
-        print "Distance >120*: " + round(PortDistanceVector:mag,1).
+        //print "Distance >120*: " + round(PortDistanceVector:mag,1).
     }
     else {
         set Continue to true.
@@ -6450,6 +6453,9 @@ function updatestatusbar {
                 set status2:text to "<b><color=white>Status: </color>Docked</b>".
             }
             else {
+                if FuelMass * 1000 > ShipMass {
+                    set FuelMass to 0.001.
+                }
                 set currentdeltav to round(9.81 * EngineISP * ln(ShipMass / (ShipMass - (FuelMass * 1000)))).
                 if currentdeltav > 350 {set status2:style:textcolor to white.}
                 else if currentdeltav < 325 {set status2:style:textcolor to red.}
@@ -8276,10 +8282,10 @@ function PerformBurn {
         sas off.
         rcs off.
         lock steering to lookdirup(nextnode:burnvector, ship:facing:topvector).
-        if quicksetting1:pressed and nextnode:eta - 0.5 * BurnDuration > 60 {
+        if quicksetting1:pressed and nextnode:eta - 0.5 * BurnDuration > 120 {
             set kuniverse:timewarp:warp to 4.
         }
-        if quicksetting1:pressed and nextnode:eta - 0.5 * BurnDuration > 600 {
+        if quicksetting1:pressed and nextnode:eta - 0.5 * BurnDuration > 900 {
             set kuniverse:timewarp:warp to 5.
         }
         until nextnode:eta < 0.5 * BurnDuration or cancelconfirmed and not ClosingIsRunning {
@@ -8290,7 +8296,7 @@ function PerformBurn {
             if quicksetting1:pressed and kuniverse:timewarp:warp = 6 and nextnode:eta - 0.5 * BurnDuration < 5400 or nextnode:eta - 0.5 * BurnDuration < 5400 and kuniverse:timewarp:warp = 6 {
                 set kuniverse:timewarp:warp to 5.
             }
-            if nextnode:eta - 0.5 * BurnDuration < (ship:mass / 50) * 35 {
+            if nextnode:eta - 0.5 * BurnDuration < 60 {
                 set kuniverse:timewarp:warp to 0.
                 rcs on.
             }
@@ -8303,14 +8309,11 @@ function PerformBurn {
             if vang(nextnode:burnvector, ship:facing:forevector) < 2 and cancelconfirmed = false {
                 LogToFile("Starting Burn").
                 if UseRCSforBurn {
-                    set BurnAccuracy to 0.025.
                 }
                 else {
                     set quickengine3:pressed to true.
-                    set BurnAccuracy to 1.
                 }
-                set steering to lookdirup(nextnode:burnvector, ship:facing:topvector).
-                until vdot(burnstart, nextnode:deltav) < BurnAccuracy or cancelconfirmed = true and not ClosingIsRunning {
+                until vdot(facing:forevector, nextnode:deltav) < 0 or cancelconfirmed = true and not ClosingIsRunning {
                     BackGroundUpdate().
                     if vang(facing:forevector, nextnode:burnvector) < 5 {
                         if UseRCSforBurn {
@@ -8321,6 +8324,9 @@ function PerformBurn {
                         else {
                             set throttle to min(nextnode:deltav:mag / MaxAccel, BurnAccel / MaxAccel).
                         }
+                    }
+                    if nextnode:deltav:mag > 5 {
+                        set steering to lookdirup(nextnode:burnvector, ship:facing:topvector).
                     }
                     set kuniverse:timewarp:warp to 0.
                     set message1:text to "<b>Performing Burn..</b>".

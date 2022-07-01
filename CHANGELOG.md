@@ -1,3 +1,8 @@
+# V1.0.1b
+- More accurate maneuver page burns.
+- More reliable auto-updating itself.
+- Yet another delta-v calculation crash fixed.
+
 # V1.0.1a
 - Ship mass correct during launch.
 - More hudtexts built in to inform the user.

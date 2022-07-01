@@ -13,14 +13,20 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker").
 
 # REQUIRES:
-- Starship Expansion Project and its dependencies
+- Starship Expansion Project
+    https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
 - Trajectories
+    https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/
 - kOS
-- TundraExplorations "TundraExploration.dll" (absolutely required for Booster Landing)
+    https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/
+- TundraExploration
+    https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/
 - Starship Launch Expansion
+    https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229
 
 # OPTIONAL:
-- Community Resource Pack (for using "liquid methane" instead of ksp's standard "liquid fuel").
+- Community Resource Pack (for using "liquid methane" instead of ksp's standard "liquid fuel")
+    https://forum.kerbalspaceprogram.com/index.php?/topic/83007-1x-community-resource-pack/
 
 # DOES NOT WORK WITH:
 - RSS/RO
