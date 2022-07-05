@@ -1,3 +1,6 @@
+# V1.0.1c
+- More reliable Booster Engine Mode switching.
+
 # V1.0.1b
 - More accurate maneuver page burns.
 - More reliable auto-updating itself.

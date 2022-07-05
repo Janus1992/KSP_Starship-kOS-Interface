@@ -55,7 +55,7 @@ function Boostback {
     set CurrentTime to time:seconds.
     set kuniverse:timewarp:warp to 0.
 
-    BoosterEngines[0]:getmodulebyindex(0):DOACTION("next engine mode", true).
+    BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
     rcs on.
     if roll = 0 {
         set ship:control:pitch to 0.2.
@@ -191,7 +191,7 @@ function Boostback {
     }
 
     when verticalspeed > -100 and (stopDist3 / RadarAlt) < 1 then {
-        BoosterEngines[0]:getmodulebyindex(0):DOACTION("next engine mode", true).
+        BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
         lock TotalstopTime to verticalspeed / max(maxDecel, 0.000001).
         lock TotalstopDist to 0.5 * max(maxDecel, 0.000001) * TotalstopTime * TotalstopTime.
         lock landingRatio to TotalstopDist / RadarAlt.

@@ -4898,7 +4898,7 @@ function Launch {
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "LiftOff").
             }
             SHIP:PARTSNAMED("SLE.SS.OLP")[0]:getmodule("LaunchClamp"):DoAction("release clamp", true).
-            BoosterEngines[0]:getmodulebyindex(1):doaction("activate engine", true).
+            BoosterEngines[0]:getmodule("ModuleEnginesFX"):doaction("activate engine", true).
             //stage.
             set OnOrbitalMount to False.
             if round(ship:geoposition:lat, 3) = round(landingzone:lat, 3) or round(ship:geoposition:lng, 3) = round(landingzone:lng, 3) {}
@@ -5440,7 +5440,7 @@ function ReEntryAndLand {
         set launchlabel:style:textcolor to grey.
         HideEngineToggles(1).
         //ActivateEngines(0).
-        //ShutdownEngines.
+        ShutdownEngines.
         set launchlabel:style:bg to "starship_img/starship_background".
         ShowButtons(0).
         InhibitButtons(1, 1, 0).
@@ -5809,7 +5809,7 @@ function ReEntrySteering {
             when verticalspeed > -40 and landingRatio < 0.5 and ship:body = BODY("Duna") or verticalspeed > -40 and ship:body = BODY("Kerbin") then {
                 if ship:body = BODY("Kerbin") {
                     SLEngines[1]:shutdown.
-                    SLEngines[1]:getmodulebyindex(5):DoAction("toggle actuate out", true).
+                    SLEngines[1]:getmodule("ModuleSEPRaptor"):DoAction("toggle actuate out", true).
                     LogToFile("3rd engine shutdown; performing a 2-engine landing").
                 }
                 if ship:body = BODY("Duna") {
