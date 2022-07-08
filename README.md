@@ -6,7 +6,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 # TO INSTALL:
 - Download the zip file.
 - Extract the contents to a folder.
-- Copy the contents of this folder into your /Kerbal Space Program folder.
+- Copy the 'GameData' and 'Ships' folders into your /Kerbal Space Program folder.
 
 
 # IMPORTANT:
@@ -28,10 +28,11 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Community Resource Pack (for using "liquid methane" instead of ksp's standard "liquid fuel")
     https://forum.kerbalspaceprogram.com/index.php?/topic/83007-1x-community-resource-pack/
 
-# DOES NOT WORK WITH:
+# USERS REPORT IT DOES NOT WORK WITH:
 - RSS/RO
 - FMRS
 - Cryotanks
+- Atmospheric Autopilot
 
 
 

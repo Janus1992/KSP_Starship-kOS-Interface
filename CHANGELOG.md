@@ -1,5 +1,6 @@
 # V1.0.1c
 - More reliable Booster Engine Mode switching.
+- Incompatibility added with Atmospheric Autopilot. It changes the names of certain modules.
 
 # V1.0.1b
 - More accurate maneuver page burns.
