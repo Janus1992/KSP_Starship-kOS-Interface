@@ -1,3 +1,17 @@
+# V1.0.2
+- Due to BIG structural and procedural CHANGES please dispose of (or land) any already existing starships in your savegame to avoid kerbal deaths!
+- Booster/Ship flight profile is now flatter:
+    - Booster has more fuel and the ship has less fuel, better matching the real starship.
+    - Booster glides more during final re-entry.
+- Reconfigured the fuel tanks for more consistency:
+    - Methane - Oxidizer ratio is now 1 : 3.6.
+    - Liquid Fuel - Oxidizer ratio is now 1 : 3.6.
+    - RCS more efficient (to simulate running on ullage gas).
+- Ship now supports both 6 and 9-engine versions (you need to modify the craft yourself).
+- Fixed missing circulation-fan symbol on the crew page.
+- Orbit Insertion Burn is slightly more accurate.
+- Launch to Rendezvous text bug fixed.
+
 # V1.0.1c
 - More reliable Booster Engine Mode switching.
 - Incompatibility added with Atmospheric Autopilot. It changes the names of certain modules.

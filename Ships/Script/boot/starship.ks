@@ -100,12 +100,14 @@ set cancelconfirmed to 0.
 set InhibitExecute to 1.
 set InhibitCancel to 1.
 set InhibitPages to 0.
-set currVel TO SHIP:VELOCITY:ORBIT.
-set currTime TO TIME:SECONDS.
-set prevVel TO currVel.
-set prevTime TO currTime.
+set currVel to SHIP:VELOCITY:ORBIT.
+set currTime to time:seconds.
+set prevVel to SHIP:VELOCITY:ORBIT.
+set prevTime to time:seconds.
+set prevFanTime to time:seconds.
 set prevTargetFindingTime to time:seconds - 4.
 set PrevUpdateTime to TIME:SECONDS.
+set prevCargoPageTime to time:seconds.
 set prevattroll to 0.
 set prevattpitch to aoa.
 set towerrot to 8.
@@ -255,22 +257,22 @@ function FindParts {
             if res:name = "LiquidFuel" {
                 set LiquidMethaneOnBoard to false.
                 if ship:body = BODY("Kerbin") {
-                    set FuelVentCutOffValue to 700.
+                    set FuelVentCutOffValue to 375.
                 }
                 if ship:body = BODY("Duna") {
                     set FuelVentCutOffValue to 8721 - (Cargo / MaxCargoToOrbit) * 6720.
                 }
-                set VentRate to 36.71.
+                set VentRate to 17.73.
             }
             if res:name = "LqdMethane" {
                 set LiquidMethaneOnBoard to true.
                 if ship:body = BODY("Kerbin") {
-                    set FuelVentCutOffValue to 3646.
+                    set FuelVentCutOffValue to 375.
                 }
                 if ship:body = BODY("Duna") {
                     set FuelVentCutOffValue to 45423 - (Cargo / MaxCargoToOrbit) * 35000.
                 }
-                set VentRate to 194.95.
+                set VentRate to 17.73.
             }
             if res:name = "Oxidizer" {
                 set Oxcap to res:capacity.
@@ -2099,7 +2101,7 @@ local engine2label2 is enginestackvlayout2:addlabel().
     set engine2label2:style:overflow:right to -50.
     set engine2label2:style:overflow:bottom to 0.
 local engine2label3 is enginestackvlayout3:addlabel().
-    set engine2label3:style:bg to "starship_img/starship_engine_none_active".
+    set engine2label3:style:bg to "starship_img/starship_9engine_none_active".
     set engine2label3:style:wordwrap to false.
     set engine2label3:style:width to 70.
     set engine2label3:style:height to 48.
@@ -3907,10 +3909,10 @@ set launchbutton:ontoggle to {
                             until false {
                                 for ship in ShipsInOrbit {
                                     if quicksetting2:pressed {
-                                        set message1:text to "<b>Launch to Target</b>  (within ± 10km)".
+                                        set message1:text to "<b>Launch to Target</b>  (within ± 15km)".
                                     }
                                     else {
-                                        set message1:text to "<b>Launch to Target</b>  (within ± 10km, 180° Roll)".
+                                        set message1:text to "<b>Launch to Target</b>  (within ± 15km, 180° Roll)".
                                     }
                                     set message2:text to "<b>Rendezvous Target:  <color=green>" + ship:name + "</color></b>".
                                     set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
@@ -3953,22 +3955,14 @@ set launchbutton:ontoggle to {
                             LogToFile("Starting Launch Function").
                             if TargetShip = 0 {}
                             else {
-                                if ShipType = "Cargo" {
-                                    set TimeOffset to 14.
-                                    set LaunchTimeSpanInSeconds to 232 + (Cargo / MaxCargoToOrbit) * 20.
-                                    set LaunchDistance to 162500.
-                                }
-                                if ShipType = "Crew" {
-                                    set TimeOffset to 13.
-                                    set LaunchTimeSpanInSeconds to 232.
-                                    set LaunchDistance to 155000.
-                                }
-                                if ShipType = "Tanker" {
-                                    set TimeOffset to 12.
-                                    set LaunchTimeSpanInSeconds to 246.
-                                    set LaunchDistance to 160000.
+                                set LaunchTimeSpanInSeconds to 244 + (Cargo / MaxCargoToOrbit) * 18.
+                                set LaunchDistance to 183000 + (Cargo / MaxCargoToOrbit) * 14000.
+                                if NrOfVacEngines = 3 {
+                                    set LaunchTimeSpanInSeconds to LaunchTimeSpanInSeconds + 3.
                                 }
                                 set LongitudeToRendezvous to 360 * (LaunchTimeSpanInSeconds / TargetShip:orbit:period).
+                                set OrbitalCircumferenceDelta to (((LongitudeToRendezvous / 360) * 471239) / 4241150) * 360 * 0.5.
+                                set LongitudeToRendezvous to LongitudeToRendezvous - OrbitalCircumferenceDelta.
                                 //print "delta Longitude: " + LongitudeToRendezvous.
                                 set IdealLaunchTargetShipsLongitude to ship:geoposition:lng + (LaunchDistance / (1000 * Planet1Degree)) - LongitudeToRendezvous.
                                 //print "Launch when Target passes Longitude: " + IdealLaunchTargetShipsLongitude.
@@ -3980,12 +3974,13 @@ set launchbutton:ontoggle to {
                                 set LaunchToRendezvousTime to (LaunchToRendezvousLng / 360) * TargetShip:orbit:period.
                                 set LaunchToRendezvousTime to LaunchToRendezvousTime + ((((LaunchToRendezvousTime + LaunchTimeSpanInSeconds) / (6 * 3600)) * 360) / 360) * TargetShip:orbit:period.
 
-                                set LaunchTime to time:seconds + LaunchToRendezvousTime - 16 + TimeOffset.
+                                set LaunchTime to time:seconds + LaunchToRendezvousTime - 16.
 
                                 InhibitButtons(1, 1, 0).
                                 set cancel:text to "<b>ABORT</b>".
                                 set cancel:style:textcolor to red.
                                 set message3:style:textcolor to white.
+                                set runningprogram to "Countdown".
                                 until time:seconds > LaunchTime and time:seconds < LaunchTime + 2 or cancelconfirmed {
                                     if kuniverse:timewarp:warp > 5 {
                                         set kuniverse:timewarp:warp to 5.
@@ -4281,7 +4276,7 @@ set landbutton:ontoggle to {
                         else if apoapsis > 100000 and ship:body = BODY("Kerbin") or periapsis < 70000 and ship:body = BODY("Kerbin") or apoapsis > 75000 and ship:body = BODY("Duna") or periapsis < 50000 and ship:body = BODY("Duna") or max(ship:orbit:inclination, -ship:orbit:inclination) + 2.5 < max(setting3:text:split(",")[0]:toscalar(5), -setting3:text:split(",")[0]:toscalar(5)) {
                             ClearInterfaceAndSteering().
                             LogToFile("De-Orbit cancelled due to orbit requirements not fulfilled").
-                            set message1:text to "<b>Automatic De-Orbit requirements:</b>".
+                            set message1:text to "<b>Automatic De-Orbit Requirements:</b>".
                             if ship:body = BODY("Kerbin") {
                                 set message2:text to "<b>Ap/Pe 70-100km   LZ latitude < Inclination</b>".
                             }
@@ -4293,8 +4288,41 @@ set landbutton:ontoggle to {
                             set message3:style:textcolor to yellow.
                         }
                         else {
-                            set message1:text to "<b>Confirm Target Landing Zone:</b>".
-                            set message2:text to "<b>Latitude/Longitude:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>".
+                            set message1:text to "<b>Target Landing Zone:</b>".
+                            if homeconnection:isconnected {
+                                if exists("0:/settings.json") {
+                                    set L to readjson("0:/settings.json").
+                                    if L:haskey("Launch Coordinates") and L:haskey("Landing Coordinates") {
+                                        if L["Landing Coordinates"] = L["Launch Coordinates"] {
+                                            if OLMexists() {
+                                                if L["Landing Coordinates"] = "-0.0972,-74.5577" {
+                                                    set message2:text to "<b><color=yellow>  KSC Mechazilla</color></b>".
+                                                }
+                                                else {
+                                                    set message2:text to "<b><color=yellow>  Mechazilla</color></b>".
+                                                }
+                                            }
+                                            else {
+                                                if L["Landing Coordinates"] = "-0.0972,-74.5577" {
+                                                    set message2:text to "<b><color=yellow>  KSC Launch Pad</color></b>".
+                                                }
+                                                else if L["Landing Coordinates"] = "-6.5604,-143.9500" {
+                                                    set message2:text to "<b><color=yellow>  Desert Launch Pad</color></b>".
+                                                }
+                                                else {
+                                                    set message2:text to "<b>Latitude/Longitude:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>".
+                                                }
+                                            }
+                                        }
+                                        else {
+                                            set message2:text to "<b>Latitude/Longitude:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>".
+                                        }
+                                    }
+                                }
+                            }
+                            else {
+                                set message2:text to "<b>Latitude/Longitude:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>".
+                            }
                             set message3:style:textcolor to cyan.
                             set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
                             set execute:text to "<b>CONFIRM</b>".
@@ -4856,7 +4884,7 @@ function Launch {
         wait 0.001.
 
         set targetap to 75000.
-        set OrbitBurnPitchCorrectionPID to PIDLOOP(0.1, 0, 0, -35, 0).
+        set OrbitBurnPitchCorrectionPID to PIDLOOP(0.075, 0, 0, -30, 0).
         set OrbitBurnPitchCorrectionPID:setpoint to targetap.
 
         if OnOrbitalMount {
@@ -4866,24 +4894,26 @@ function Launch {
             sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,true").
             sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,2,12.5,true").
             sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaStabilizers,0").
+            sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,8,0.5").
             set x to time:seconds + 15.
             until x < time:seconds or cancelconfirmed {
-                set message1:text to "<b>All Systems:  <color=green>GO</color></b>".
-                set message3:text to "<b>Launch Countdown: </b>" + round(x - time:seconds) + "<b> seconds</b>".
+                set message1:text to "<b>All Systems:               <color=green>GO</color></b>".
+                set message3:text to "<b>Launch Countdown:  </b>" + round(x - time:seconds) + "<b> seconds</b>".
                 if not BGUisRunning {
                     BackGroundUpdate().
                 }
                 if x - time:seconds > 5 {
-                    set message2:text to "<b><color=yellow>Tower disconnecting & arms retracting..</color></b>".
+                    set message2:text to "<b>Stage 0/Mechazilla:    <color=yellow>Disconnecting..</color></b>".
                 }
                 else {
-                    set message2:text to "<b><color=green>Vehicle Start-Up Confirmed..</color></b>".
+                    set message2:text to "<b>Booster/Ship:             <color=green>Start-Up Confirmed..</color></b>".
                 }
             }
             if cancelconfirmed {
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,0.7,true").
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
+                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,3,0.5").
                 ClearInterfaceAndSteering().
                 return.
             }
@@ -4899,7 +4929,6 @@ function Launch {
             }
             SHIP:PARTSNAMED("SLE.SS.OLP")[0]:getmodule("LaunchClamp"):DoAction("release clamp", true).
             BoosterEngines[0]:getmodule("ModuleEnginesFX"):doaction("activate engine", true).
-            //stage.
             set OnOrbitalMount to False.
             if round(ship:geoposition:lat, 3) = round(landingzone:lat, 3) or round(ship:geoposition:lng, 3) = round(landingzone:lng, 3) {}
             else {
@@ -4910,7 +4939,7 @@ function Launch {
             SaveToSettings("Launch Coordinates", (landingzone:lat + "," + landingzone:lng)).
             LogToFile("Lift-Off").
         }
-        if apoapsis < targetap {
+        else if apoapsis < targetap {
             lock throttle to 1.
             LogToFile("Launching").
         }.
@@ -4939,9 +4968,7 @@ function Launch {
                         sendMessage(Processor(volume("Booster")), "Boostback, 180 Roll").
                     }
                 }
-                //BoosterInterstage[0]:getmodule("ModuleDecouple"):DoAction("decouple", true).
                 BoosterInterstage[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
-                //stage.
                 set Boosterconnected to false.
                 set CargoAfterSeparation to TotalCargoMass[0].
                 InhibitButtons(1, 1, 1).
@@ -4963,6 +4990,9 @@ function Launch {
                 set config:ipu to 2000.
                 if NrOfVacEngines = 3 {
                     set quickengine2:pressed to true.
+                    SLEngines[0]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
+                    SLEngines[1]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
+                    SLEngines[2]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
                 }
                 set quickengine3:pressed to true.
                 unlock throttle.
@@ -4985,6 +5015,11 @@ function Launch {
             HUDTEXT("Changing Focus to: Booster", 5, 2, 20, red, false).
             wait 0.001.
             set throttle to 0.
+            if NrOfVacEngines = 3 {
+                SLEngines[0]:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
+                SLEngines[1]:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
+                SLEngines[2]:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
+            }
 
             wait 0.001.
             unlock throttle.
@@ -5053,10 +5088,10 @@ Function LaunchSteering {
     if quicksetting1:pressed and altitude > 150 and altitude < 1000 {
         set kuniverse:timewarp:warp to 4.
     }
-    if quicksetting1:pressed and altitude > 1000 and altitude < 2500 or kuniverse:timewarp:warp > 0 and altitude > 1000 and altitude < 2500 {
+    if quicksetting1:pressed and altitude > 500 and altitude < 2000 or kuniverse:timewarp:warp > 0 and altitude > 500 and altitude < 2000 {
         set kuniverse:timewarp:warp to 1.
     }
-    if quicksetting1:pressed and altitude > 2500 and apoapsis < 50000 {
+    if quicksetting1:pressed and altitude > 2000 and apoapsis < 50000 or altitude > 2000 and altitude < 2500 and kuniverse:timewarp:warp = 1 {
         set kuniverse:timewarp:warp to 4.
     }
     if periapsis > targetap {
@@ -5066,7 +5101,7 @@ Function LaunchSteering {
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
     }
     set DownRange to ((latlng(-0.0972,-74.5577):lng - ship:geoposition:lng) * -Planet1Degree).
-    if altitude < 1000 {
+    if altitude < 500 {
         if not ClosingIsRunning {
             set message1:text to "<b>Actual/Target Apoapsis:</b>   " + round(apoapsis/1000,1) + "/" + (targetap / 1000) + "km".
             set message2:text to "<b>Guidance Target:</b>                 " + 90 + "° Pitch".
@@ -5095,7 +5130,7 @@ Function LaunchSteering {
             }
         }
         if Boosterconnected {
-            set targetpitch to 90 - (7.5 * SQRT(max((altitude - 1000), 0)/1000)).
+            set targetpitch to 90 - (10 * SQRT(max((altitude - 500), 0)/1000)).
             if not ClosingIsRunning {
                 set message2:text to "<b>Guidance Target:</b>                 " + round(targetpitch, 1) + "° Pitch".
                 set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
@@ -5124,17 +5159,12 @@ Function LaunchSteering {
 
             if ETA:APOAPSIS > 0.5 * BurnDuration and not hasnode {
                 if quickengine3:pressed {
-                    if apoapsis < (targetap - 500) {
-                        lock throttle to max(ship:mass / 142 * 0.33, 0.33).
+                    if periapsis < 0 {
+                        set throttle to (0.925 * 9.81) / MaxAccel.
                     }
-                    else {
-                        if periapsis < 0 {
-                            set throttle to 0.33.
-                        }
-                        if periapsis > 0 {
-                            set throttle to 0.
-                            set OrbitBurnPitchCorrection to 0.
-                        }
+                    if periapsis > 35000 {
+                        set throttle to 0.
+                        set OrbitBurnPitchCorrection to 0.
                     }
                 }
                 if quicksetting2:pressed {
@@ -6525,7 +6555,7 @@ function updatestatusbar {
             }
         }
         if defined shipcrewnr {
-            if time:seconds > prevTime + 0.2 {
+            if time:seconds > prevTime + 0.1 {
                 TotalCargoMass().
                 set prevTime to time:seconds.
             }
@@ -6865,10 +6895,20 @@ function updateEnginePage {
             set engine2label5:tooltip to "Thrust in kN of the Vacuum Raptor Engines".
             if SLEngines[0]:ignition = false and VACEngines[0]:ignition = false {
                 if ship:control:translation:z > 0 or ship:control:pilottranslation:z > 0 {
-                    set engine2label3:style:bg to "starship_img/starship_engine_rcs".
+                    if NrOfVacEngines = 6 {
+                        set engine2label3:style:bg to "starship_img/starship_9engine_rcs".
+                    }
+                    if NrOfVacEngines = 3 {
+                        set engine2label3:style:bg to "starship_img/starship_6engine_rcs".
+                    }
                 }
                 else {
-                    set engine2label3:style:bg to "starship_img/starship_engine_none_active".
+                    if NrOfVacEngines = 6 {
+                        set engine2label3:style:bg to "starship_img/starship_9engine_none_active".
+                    }
+                    if NrOfVacEngines = 3 {
+                        set engine2label3:style:bg to "starship_img/starship_6engine_none_active".
+                    }
                 }
                 set engine1label1:style:textcolor to white.
                 set engine1label5:style:textcolor to white.
@@ -6898,9 +6938,21 @@ function updateEnginePage {
             }
             if SLEngines[0]:ignition = true and VACEngines[0]:ignition = false {
                 if SLEngines[0]:thrust > 0 {
-                    set engine2label3:style:bg to "starship_img/starship_engine_sl_active".}
+                    if NrOfVacEngines = 6 {
+                        set engine2label3:style:bg to "starship_img/starship_9engine_sl_active".
+                    }
+                    if NrOfVacEngines = 3 {
+                        set engine2label3:style:bg to "starship_img/starship_6engine_sl_active".
+                    }
+                }
                 else {
-                    set engine2label3:style:bg to "starship_img/starship_engine_sl_ready".}
+                    if NrOfVacEngines = 6 {
+                        set engine2label3:style:bg to "starship_img/starship_9engine_sl_ready".
+                    }
+                    if NrOfVacEngines = 3 {
+                        set engine2label3:style:bg to "starship_img/starship_6engine_sl_ready".
+                    }
+                }
                 set engine1label1:style:textcolor to cyan.
                 set engine1label5:style:textcolor to white.
                 set engine1label2:style:textcolor to cyan.
@@ -6929,9 +6981,21 @@ function updateEnginePage {
             }
             if SLEngines[0]:ignition = false and VACEngines[0]:ignition = true {
                 if VACEngines[0]:thrust > 0 {
-                    set engine2label3:style:bg to "starship_img/starship_engine_vac_active".}
+                    if NrOfVacEngines = 6 {
+                        set engine2label3:style:bg to "starship_img/starship_9engine_vac_active".
+                    }
+                    if NrOfVacEngines = 3 {
+                        set engine2label3:style:bg to "starship_img/starship_6engine_vac_active".
+                    }
+                }
                 else {
-                    set engine2label3:style:bg to "starship_img/starship_engine_vac_ready".}
+                    if NrOfVacEngines = 6 {
+                        set engine2label3:style:bg to "starship_img/starship_9engine_vac_ready".
+                    }
+                    if NrOfVacEngines = 3 {
+                        set engine2label3:style:bg to "starship_img/starship_6engine_vac_ready".
+                    }
+                }
                 set engine1label1:style:textcolor to white.
                 set engine1label5:style:textcolor to cyan.
                 set engine1label2:style:textcolor to grey.
@@ -6960,9 +7024,21 @@ function updateEnginePage {
             }
             if SLEngines[0]:ignition = true and VACEngines[0]:ignition = true {
                 if SLEngines[0]:thrust > 0 {
-                    set engine2label3:style:bg to "starship_img/starship_engine_all_active".}
+                    if NrOfVacEngines = 6 {
+                        set engine2label3:style:bg to "starship_img/starship_9engine_all_active".
+                    }
+                    if NrOfVacEngines = 3 {
+                        set engine2label3:style:bg to "starship_img/starship_6engine_all_active".
+                    }
+                }
                 else {
-                    set engine2label3:style:bg to "starship_img/starship_engine_all_ready".}
+                    if NrOfVacEngines = 6 {
+                        set engine2label3:style:bg to "starship_img/starship_9engine_all_ready".
+                    }
+                    if NrOfVacEngines = 3 {
+                        set engine2label3:style:bg to "starship_img/starship_6engine_all_ready".
+                    }
+                }
                 set engine1label1:style:textcolor to cyan.
                 set engine1label5:style:textcolor to cyan.
                 set engine1label2:style:textcolor to cyan.
@@ -7396,7 +7472,7 @@ function updateCrew {
             set crew1label10:text to "".
             set crew3label10:text to "".
         }
-        if time:seconds > prevTime + 0.5 {
+        if time:seconds > prevFanTime + 0.5 {
             if fan {
                 set crewlabel6:style:bg to "starship_img/fan_spinning_1".
                 set fan to false.
@@ -7415,7 +7491,7 @@ function updateCrew {
             else {
                 set crewlabel5:text to "<b>AQM:  <color=green>OK</color></b>".
             }
-            set prevTime to time:seconds.
+            set prevFanTime to time:seconds.
         }
         set CrewPageIsRunning to false.
     }
@@ -7713,7 +7789,12 @@ function HideEngineToggles {
             set engine2label3:style:overflow:right to 65.
             set engine2label3:style:overflow:top to -5.
             set engine2label3:style:overflow:bottom to 55.
-            set engine2label3:style:bg to "starship_img/starship_engine_none_active".
+            if NrOfVacEngines = 6 {
+                set engine2label3:style:bg to "starship_img/starship_9engine_none_active".
+            }
+            if NrOfVacEngines = 3 {
+                set engine2label3:style:bg to "starship_img/starship_6engine_none_active".
+            }
             set engine1label4:text to "-".
         }
     }
@@ -7816,7 +7897,7 @@ function TotalCargoMass {
 function updateCargoPage {
     if not CargoPageIsRunning {
         set CargoPageIsRunning to true.
-        if time:seconds > prevTime + 0.1 {
+        if time:seconds > prevCargoPageTime + 0.1 {
             local CargoList is TotalCargoMass().
             if CargoList[1] = 0 {
                 set cargo1label2:style:textcolor to grey.
@@ -7847,7 +7928,7 @@ function updateCargoPage {
                     }
                 }
             }
-            set prevTime to time:seconds.
+            set prevCargoPageTime to time:seconds.
         }
         set CargoPageIsRunning to false.
     }
@@ -8103,7 +8184,7 @@ function ShipsInOrbit {
                 }
                 if x:name = ship:name {
                     for y in range(SNStart, 10000) {
-                        set ship:name to ship:name + " (SN " + y + ")".
+                        set ship:name to ship:name + " (S" + y + ")".
                         if x:name = ship:name {
                             set y to y + 1.
                         }

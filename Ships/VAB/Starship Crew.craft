@@ -16,9 +16,9 @@ PART
 {
 	part = SEP.S20.BODY_4294126630
 	partName = Part
-	persistentId = 558689326
-	pos = 0.177249789,68.1177063,0.3370502
-	attPos = 0,0.23084259,0
+	persistentId = 3260334659
+	pos = 0.200000003,68.0187073,0.400000006
+	attPos = 0.0227502137,0.131843567,0.0629498065
 	attPos0 = 0.177249789,67.8868637,0.3370502
 	rot = 0,0.707106829,0,0.707106829
 	attRot = 0,0.707106769,0,0.707106769
@@ -35,7 +35,7 @@ PART
 	sepI = 0
 	attm = 0
 	sameVesselCollision = False
-	modCost = 40216.5313
+	modCost = 21970.998
 	modMass = 0.00373541843
 	modSize = 0,0,0
 	link = SEP.S20.AFT.LEFT_4294042912
@@ -394,40 +394,6 @@ PART
 		name = ModuleB9PartSwitch
 		isEnabled = True
 		stagingEnabled = True
-		moduleID = SEPRCSSwitch
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
-		moduleID = SEPVentSwtich
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
 		moduleID = SEP_Fuel
 		currentSubtype = SEPLMOX
 		EVENTS
@@ -481,7 +447,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 18677
 		MaxPartId = 100
-		RequiredPower = 0.0399999991
+		RequiredPower = 0.100000001
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -531,6 +497,40 @@ PART
 	}
 	MODULE
 	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPVentSwitch
+		currentSubtype = LCH4OX
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPRCSSwitch
+		currentSubtype = LCH4OX
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = ModuleWaterfallFX
 		isEnabled = True
 		stagingEnabled = True
@@ -562,8 +562,8 @@ PART
 	RESOURCE
 	{
 		name = Oxidizer
-		amount = 14078.125
-		maxAmount = 14078.125
+		amount = 10800.00390625
+		maxAmount = 10800.00390625
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -573,8 +573,8 @@ PART
 	RESOURCE
 	{
 		name = LqdMethane
-		amount = 42234.375
-		maxAmount = 42234.375
+		amount = 2999.995849609375
+		maxAmount = 2999.995849609375
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -586,8 +586,8 @@ PART
 {
 	part = SEP.S20.AFT.LEFT_4294042912
 	partName = Part
-	persistentId = 4266648373
-	pos = 0.154115558,63.0917091,3.6219542
+	persistentId = 3421137055
+	pos = 0.176865771,62.9927101,3.68491268
 	attPos = 0,0,0
 	attPos0 = -3.2848568,-5.02600288,-0.0231346339
 	rot = -0.463903815,0.463903815,-0.533660352,0.533660352
@@ -780,8 +780,8 @@ PART
 {
 	part = SEP.S20.AFT.RIGHT_4294042270
 	partName = Part
-	persistentId = 2774799196
-	pos = 0.154113412,63.0917091,-2.9478538
+	persistentId = 3485392219
+	pos = 0.176863626,62.9927101,-2.88491249
 	attPos = 0,0,0
 	attPos0 = 3.28485632,-5.02600288,-0.023135826
 	rot = 0.533660412,0.533660412,0.463903725,0.463903725
@@ -974,8 +974,8 @@ PART
 {
 	part = SEP.RAPTOR.VAC_4293986328
 	partName = Part
-	persistentId = 3406174983
-	pos = 1.85061121,60.3877602,-0.629069686
+	persistentId = 1568815145
+	pos = 1.87336576,60.2887611,-0.566122055
 	attPos = 0,0,0
 	attPos0 = 0.966107607,-7.72994995,1.67333782
 	rot = 0,0,0,1.00000012
@@ -1142,23 +1142,6 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
-		moduleID = SEPFuelSwitch
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -1178,6 +1161,23 @@ PART
 		name = ModuleWaterfallFX
 		isEnabled = True
 		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPFuelSwitch
+		currentSubtype = LCH4OX
 		EVENTS
 		{
 		}
@@ -1219,8 +1219,8 @@ PART
 {
 	part = SEP.RAPTOR.VAC_4293931996
 	partName = Part
-	persistentId = 3290598468
-	pos = -1.49611735,60.3877602,-0.629071951
+	persistentId = 3913266863
+	pos = -1.47337246,60.2887611,-0.566125393
 	attPos = 0,0,0
 	attPos0 = 0.966105402,-7.72994995,-1.67333853
 	rot = 0,0.866025448,0,0.49999997
@@ -1379,23 +1379,6 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
-		moduleID = SEPFuelSwitch
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -1415,6 +1398,23 @@ PART
 		name = ModuleWaterfallFX
 		isEnabled = True
 		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPFuelSwitch
+		currentSubtype = LCH4OX
 		EVENTS
 		{
 		}
@@ -1456,8 +1456,8 @@ PART
 {
 	part = SEP.RAPTOR.VAC_4293931510
 	partName = Part
-	persistentId = 2897807817
-	pos = 0.177251816,60.3877602,2.26928091
+	persistentId = 3674019608
+	pos = 0.20000203,60.2887611,2.3322351
 	attPos = 0,0,0
 	attPos0 = -1.93220675,-7.72994995,1.78813855E-06
 	rot = 0,0.866025388,0,-0.50000006
@@ -1616,23 +1616,6 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
-		moduleID = SEPFuelSwitch
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -1652,6 +1635,23 @@ PART
 		name = ModuleWaterfallFX
 		isEnabled = True
 		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPFuelSwitch
+		currentSubtype = LCH4OX
 		EVENTS
 		{
 		}
@@ -1693,8 +1693,8 @@ PART
 {
 	part = SEP.RAPTOR.VAC_4293930182
 	partName = Part
-	persistentId = 692488545
-	pos = 0.177248359,60.3877602,-1.59518063
+	persistentId = 1736163702
+	pos = 0.199998572,60.2887611,-1.53223515
 	attPos = 0,0,0
 	attPos0 = 1.93220687,-7.72994995,-1.19209244E-06
 	rot = 0,0,0,1.00000012
@@ -1853,23 +1853,6 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
-		moduleID = SEPFuelSwitch
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -1889,6 +1872,23 @@ PART
 		name = ModuleWaterfallFX
 		isEnabled = True
 		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPFuelSwitch
+		currentSubtype = LCH4OX
 		EVENTS
 		{
 		}
@@ -1930,8 +1930,8 @@ PART
 {
 	part = SEP.RAPTOR.VAC_4293928524
 	partName = Part
-	persistentId = 413674189
-	pos = -1.49611044,60.3877602,1.30317056
+	persistentId = 250555928
+	pos = -1.47336447,60.2887611,1.36612248
 	attPos = 0,0,0
 	attPos0 = -0.966108024,-7.72994995,-1.67333663
 	rot = 0,0.866025448,0,0.49999997
@@ -2090,23 +2090,6 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
-		moduleID = SEPFuelSwitch
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -2126,6 +2109,23 @@ PART
 		name = ModuleWaterfallFX
 		isEnabled = True
 		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPFuelSwitch
+		currentSubtype = LCH4OX
 		EVENTS
 		{
 		}
@@ -2167,8 +2167,8 @@ PART
 {
 	part = SEP.RAPTOR.VAC_4293928038
 	partName = Part
-	persistentId = 1200617036
-	pos = 1.85061836,60.3877602,1.30317235
+	persistentId = 3172427938
+	pos = 1.87337399,60.2887611,1.36612535
 	attPos = 0,0,0
 	attPos0 = -0.96610564,-7.72994995,1.6733402
 	rot = 0,0.866025388,0,-0.50000006
@@ -2327,23 +2327,6 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
-		moduleID = SEPFuelSwitch
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -2363,6 +2346,23 @@ PART
 		name = ModuleWaterfallFX
 		isEnabled = True
 		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPFuelSwitch
+		currentSubtype = LCH4OX
 		EVENTS
 		{
 		}
@@ -2404,8 +2404,8 @@ PART
 {
 	part = SEP.RAPTOR.SL_4293925840
 	partName = Part
-	persistentId = 1292824898
-	pos = -0.33347404,59.5089989,0.337050915
+	persistentId = 3624222681
+	pos = -0.310724914,59.4099998,0.400000721
 	attPos = 0,0,0
 	attPos0 = -6.55650922E-07,-8.60871124,-0.510717869
 	rot = 0,0,0,1.00000012
@@ -2669,23 +2669,6 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
-		moduleID = SEPFuelSwitch
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -2705,6 +2688,23 @@ PART
 		name = ModuleWaterfallFX
 		isEnabled = True
 		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPFuelSwitch
+		currentSubtype = LCH4OX
 		EVENTS
 		{
 		}
@@ -2746,8 +2746,8 @@ PART
 {
 	part = SEP.RAPTOR.SL_4293922032
 	partName = Part
-	persistentId = 2096403267
-	pos = 0.432613462,59.5089989,0.779351115
+	persistentId = 3933076994
+	pos = 0.455364227,59.4099998,0.842302084
 	attPos = 0,0,0
 	attPos0 = -0.442294866,-8.60871124,0.255360544
 	rot = 0,0.866025448,0,0.49999997
@@ -3003,23 +3003,6 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
-		moduleID = SEPFuelSwitch
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -3039,6 +3022,23 @@ PART
 		name = ModuleWaterfallFX
 		isEnabled = True
 		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPFuelSwitch
+		currentSubtype = LCH4OX
 		EVENTS
 		{
 		}
@@ -3080,8 +3080,8 @@ PART
 {
 	part = SEP.RAPTOR.SL_4293921454
 	partName = Part
-	persistentId = 3317374759
-	pos = 0.432611942,59.5089989,-0.105251074
+	persistentId = 3748305714
+	pos = 0.455362678,59.4099998,-0.0423023403
 	attPos = 0,0,0
 	attPos0 = 0.442295283,-8.60871124,0.255359143
 	rot = 0,0.866025388,0,-0.50000006
@@ -3337,23 +3337,6 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
-		moduleID = SEPFuelSwitch
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -3373,6 +3356,23 @@ PART
 		name = ModuleWaterfallFX
 		isEnabled = True
 		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPFuelSwitch
+		currentSubtype = LCH4OX
 		EVENTS
 		{
 		}
@@ -3414,8 +3414,8 @@ PART
 {
 	part = SEP.S20.CREW_4294226120
 	partName = Part
-	persistentId = 1518611595
-	pos = 0.177248001,83.6654968,0.3370502
+	persistentId = 4275906171
+	pos = 0.199998215,83.5664978,0.400000006
 	attPos = 0,0,0
 	attPos0 = 2.27373675E-13,15.5477943,-1.78813957E-06
 	rot = 0,0.707106829,0,0.707106829
@@ -3803,40 +3803,6 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
-		moduleID = SEPRCSSwitch
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
-		moduleID = SEPVentSwtich
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -3856,6 +3822,40 @@ PART
 		name = ModuleWaterfallFX
 		isEnabled = True
 		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPVentSwitch
+		currentSubtype = LCH4OX
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPRCSSwitch
+		currentSubtype = LCH4OX
 		EVENTS
 		{
 		}
@@ -3961,8 +3961,8 @@ PART
 {
 	part = SEP.S20.FWD.LEFT_4294040836
 	partName = Part
-	persistentId = 2376354719
-	pos = 0.177412868,84.3830872,3.14748192
+	persistentId = 193782600
+	pos = 0.200163081,84.2840881,3.21043611
 	attPos = 0,0,0
 	attPos0 = -2.81042528,0.717590332,0.000164628029
 	rot = 0.549525201,-0.444996834,0.549525201,-0.444996834
@@ -4155,8 +4155,8 @@ PART
 {
 	part = SEP.S20.FWD.RIGHT_4294041450
 	partName = Part
-	persistentId = 3905709463
-	pos = 0.177411437,84.3830872,-2.47338009
+	persistentId = 1960899320
+	pos = 0.200161651,84.2840881,-2.41043448
 	attPos = 0,0,0
 	attPos0 = 2.81042385,0.717590332,0.000163674355
 	rot = 0.549525321,0.444997013,0.549525082,0.444996655
@@ -4349,8 +4349,8 @@ PART
 {
 	part = SEP.S20.HEADER_4294112770
 	partName = Part
-	persistentId = 3381195690
-	pos = 0.177276611,88.9910431,0.337082028
+	persistentId = 780740931
+	pos = 0.200026825,88.8920441,0.400031835
 	attPos = 0,0,0
 	attPos0 = -3.18288876E-05,5.32554245,2.86102295E-05
 	rot = 0,0,0,1.00000012
@@ -4368,7 +4368,7 @@ PART
 	sepI = 0
 	attm = 0
 	sameVesselCollision = False
-	modCost = 1625.625
+	modCost = 411.749847
 	modMass = 0.130867004
 	modSize = 0,0,0
 	attN = node_bottom,SEP.S20.CREW_4294226120_0|-7.15256192E-06|-3.18214334E-05_0|-1.00000012|-1.1920929E-07_0|-7.15256192E-06|-3.18214334E-05_0|-1.00000012|-1.1920929E-07
@@ -4465,9 +4465,9 @@ PART
 	}
 	RESOURCE
 	{
-		name = LqdMethane
-		amount = 3187.5
-		maxAmount = 3187.5
+		name = Oxidizer
+		amount = 1350.00048828125
+		maxAmount = 1350.00048828125
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -4476,9 +4476,9 @@ PART
 	}
 	RESOURCE
 	{
-		name = Oxidizer
-		amount = 1062.5
-		maxAmount = 1062.5
+		name = LqdMethane
+		amount = 374.99948120117188
+		maxAmount = 374.99948120117188
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -4491,7 +4491,7 @@ PART
 	part = SEP.B4.INTER_4294133184
 	partName = Part
 	persistentId = 849237476
-	pos = 0.17725113,57.8446503,0.3370502
+	pos = 0.200001344,57.7456512,0.400000006
 	attPos = 0,-14.0196991,0
 	attPos0 = -1.13686838E-13,-10.273056,1.34110462E-06
 	rot = 0,0.707106829,0,0.707106829
@@ -4916,7 +4916,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294131004
 	partName = Part
 	persistentId = 2096481950
-	pos = 2.08268499,58.4344559,-2.9635582
+	pos = 2.10543942,58.3354568,-2.90061688
 	attPos = 0,0,0
 	attPos0 = 3.30055976,0.589805603,1.90540981
 	rot = -0.500000238,0,-0.866025448,0
@@ -5104,7 +5104,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294129548
 	partName = Part
 	persistentId = 144239615
-	pos = -1.72831976,58.4344559,-2.96349359
+	pos = -1.70557594,58.3354568,-2.90055442
 	attPos = 0,0,0
 	attPos0 = 3.30048656,0.589805603,-1.90553701
 	rot = -0.866025567,0,-0.499999881,0
@@ -5284,7 +5284,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294128866
 	partName = Part
 	persistentId = 4169471528
-	pos = -1.72818351,58.4344559,3.63765955
+	pos = -1.70543754,58.3354568,3.70061803
 	attPos = 0,0,0
 	attPos0 = -3.30056119,0.589805603,-1.90541053
 	rot = -0.866025448,0,0.500000238,0
@@ -5464,7 +5464,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294128194
 	partName = Part
 	persistentId = 1410723546
-	pos = 2.08281517,58.4344559,3.63758588
+	pos = 2.10557079,58.3354568,3.70054555
 	attPos = 0,0,0
 	attPos0 = -3.300488,0.589805603,1.90553868
 	rot = -0.499999881,0,0.866025567,0
@@ -5644,7 +5644,7 @@ PART
 	part = SEP.B4.CORE_4294135344
 	partName = Part
 	persistentId = 1959471919
-	pos = 0.177253395,36.092701,0.3370502
+	pos = 0.200003609,35.9937019,0.400000006
 	attPos = -3.63425207,-0.545879364,-3.71428347
 	attPos0 = 3.8114593,36.4077492,4.0513711
 	rot = 0,0.707106829,0,0.707106829
@@ -5662,7 +5662,7 @@ PART
 	sepI = 1
 	attm = 0
 	sameVesselCollision = False
-	modCost = 81281.25
+	modCost = 18665.9922
 	modMass = 0
 	modSize = 0,0,0
 	link = SEP.B4.33.CLUSTER_4293923788
@@ -5728,23 +5728,6 @@ PART
 		name = ModuleB9PartSwitch
 		isEnabled = True
 		stagingEnabled = True
-		moduleID = SEPRCSSwitch
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
 		moduleID = SEP_Fuel
 		currentSubtype = SEPLMOX
 		EVENTS
@@ -5798,7 +5781,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 0
 		MaxPartId = 100
-		RequiredPower = 0.0399999991
+		RequiredPower = 0.100000001
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -5848,6 +5831,23 @@ PART
 	}
 	MODULE
 	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPRCSSwitch
+		currentSubtype = LCH4OX
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = ModuleB9PartInfo
 		isEnabled = True
 		stagingEnabled = True
@@ -5864,8 +5864,8 @@ PART
 	RESOURCE
 	{
 		name = Oxidizer
-		amount = 53125
-		maxAmount = 53125
+		amount = 61200.0234375
+		maxAmount = 61200.0234375
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -5875,8 +5875,8 @@ PART
 	RESOURCE
 	{
 		name = LqdMethane
-		amount = 159375
-		maxAmount = 159375
+		amount = 16999.9765625
+		maxAmount = 16999.9765625
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -5889,7 +5889,7 @@ PART
 	part = SEP.B4.33.CLUSTER_4293923788
 	partName = Part
 	persistentId = 4170641647
-	pos = 0.177255929,15.2369652,0.337049931
+	pos = 0.200006142,15.1379662,0.399999738
 	attPos = 0,0,0
 	attPos0 = 2.68220418E-07,-20.8557358,2.53319718E-06
 	rot = 0,0,0,1.00000012
@@ -6372,23 +6372,6 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleB9PartSwitch
-		isEnabled = True
-		stagingEnabled = True
-		moduleID = SEPEngineSwitch
-		currentSubtype = LCH4OX
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -6450,6 +6433,23 @@ PART
 	}
 	MODULE
 	{
+		name = ModuleB9PartSwitch
+		isEnabled = True
+		stagingEnabled = True
+		moduleID = SEPEngineSwitch
+		currentSubtype = LCH4OX
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = ModuleB9PartInfo
 		isEnabled = False
 		stagingEnabled = True
@@ -6480,7 +6480,7 @@ PART
 	part = SLE.SS.OLP_4293815154
 	partName = Part
 	persistentId = 4154575911
-	pos = 0.177255988,5.9034996,0.337050229
+	pos = 0.200006202,5.80450058,0.400000036
 	attPos = 0,0,0
 	attPos0 = 5.96047087E-08,-9.33346558,2.98023366E-07
 	rot = 0,1.00000012,0,0
@@ -6762,7 +6762,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 0
 		MaxPartId = 100
-		RequiredPower = 0.0399999991
+		RequiredPower = 0.100000001
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -6852,7 +6852,7 @@ PART
 	part = SLE.SS.OLIT.Base_4293118876
 	partName = Part
 	persistentId = 300331249
-	pos = -20.6675091,3.96963501,-0.722033739
+	pos = -20.6448269,3.87063599,-0.659083962
 	attPos = 3.81469727E-05,-0.150917053,0
 	attPos0 = 20.8443985,-1.93387127,1.05908227
 	rot = 0,-1.00000012,0,0
@@ -7104,7 +7104,7 @@ PART
 	part = SLE.SS.OLIT.Core_4293118754
 	partName = Part
 	persistentId = 439700507
-	pos = -20.6675167,7.48857117,-0.722033739
+	pos = -20.6448345,7.38957214,-0.659083962
 	attPos = 0,0,0
 	attPos0 = 7.62939453E-06,3.51894379,0
 	rot = 0,1.00000012,0,0
@@ -7266,7 +7266,7 @@ PART
 	part = SLE.SS.OLIT.MZ_4293118266
 	partName = Part
 	persistentId = 195680203
-	pos = -15.3058825,79.3024139,0.0326631069
+	pos = -15.2832012,79.2034149,0.0956129134
 	attPos = 0,0,0
 	attPos0 = -5.36181641,71.8138199,-0.75470078
 	rot = 0,1.00000012,0,0
@@ -7480,9 +7480,9 @@ PART
 	{
 		name = ModuleSLEAnimate
 		isEnabled = True
-		AnimatePosition = 4.72000027
+		AnimatePosition = 0.000941455597
 		AnimationLength = 10
-		ExtensionLimit = 5.9000001
+		ExtensionLimit = 0
 		ExtensionSpeed = 0.200000003
 		stagingEnabled = True
 		EVENTS
@@ -7529,9 +7529,9 @@ PART
 	{
 		name = ModuleSLEAnimate
 		isEnabled = True
-		AnimatePosition = 4.72000027
+		AnimatePosition = 0.000941455597
 		AnimationLength = 10
-		ExtensionLimit = 5.9000001
+		ExtensionLimit = 0
 		ExtensionSpeed = 0.200000003
 		stagingEnabled = True
 		EVENTS
@@ -7861,7 +7861,7 @@ PART
 	part = SLE.SS.OLIT.Top_4293117760
 	partName = Part
 	persistentId = 2946990986
-	pos = -20.6675243,80.9674835,-0.722035646
+	pos = -20.6448421,80.8684845,-0.65908587
 	attPos = 0,0,0
 	attPos0 = 7.62939453E-06,73.4788971,1.90734863E-06
 	rot = 0,1.00000012,0,0

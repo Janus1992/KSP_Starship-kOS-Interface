@@ -1,6 +1,5 @@
 set LogData to false.
 set BoosterHeight to 44.2.
-set BoosterOffset to -30.
 set LandSomewhereElse to 0.
 set idealVS to 0.
 set LatCtrl to 0.
@@ -153,9 +152,17 @@ function Boostback {
         SteeringCorrections(0).
     }
     set BoosterCore[0]:thrustlimit to 100.
+    rcs off.
+
+    when LngError > 400 and LatError < 35 and LatError > -35 or LngError < -400 and LatError < 35 and LatError > -35 then {
+        set LngCtrlPID to PIDLOOP(0.35, 0, 0, -15, 15).
+        when LngError < 50 and LngError > -150 then {
+            set LngCtrlPID to PIDLOOP(0.35, 0, 0, -7.5, 7.5).
+        }
+    }
 
     lock maxDecel to (ship:availablethrust / ship:mass) - 9.81.
-    lock maxDecel3 to ((ship:availablethrust / ship:mass) / 3) - 9.81.
+    lock maxDecel3 to max((1650 / ship:mass) - 9.81, 1.175).
     lock stopTime9 to (verticalspeed + 100) / max(maxDecel, 0.000001).
     lock stopDist9 to 0.5 * max(maxDecel, 0.000001) * stopTime9 * stopTime9.
     lock stopTime3 to min(100, -verticalspeed) / max(maxDecel3, 0.000001).
@@ -164,15 +171,22 @@ function Boostback {
     lock TotalstopDist to stopDist9 + stopDist3.
     lock landingRatio to TotalstopDist / RadarAlt.
 
-    until landingRatio > 1 and altitude < 2250 {
+    until landingRatio > 1 and altitude < 2250 or altitude < 2000 {
         SteeringCorrections(0).
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
+        if altitude < 7500 {
+            rcs on.
+        }
+        else {
+            rcs off.
+        }
     }
     
     HUDTEXT("Performing Landing Burn..", 3, 2, 20, green, false).
     lock throttle to 1.
     lock steering to lookdirup(up:vector - 0.03 * velocity:surface - 0.0175 * ErrorVector, north:starvector).
     set LandingBurnAltitude to altitude.
+    rcs on.
 
     when altitude < 2000 then {
         if OLMexists() {
@@ -196,10 +210,19 @@ function Boostback {
         lock TotalstopDist to 0.5 * max(maxDecel, 0.000001) * TotalstopTime * TotalstopTime.
         lock landingRatio to TotalstopDist / RadarAlt.
         lock throttle to landingRatio.
+        if LngError > 100 or LngError < -150 or LatError > 40 or LatError < -40 {
+            lock RadarAlt to alt:radar - BoosterHeight.
+            set LandSomewhereElse to true.
+            lock steering to lookdirup(-1 * velocity:surface, north:starvector).
+        }
     }
 
     when verticalspeed > -25 then {
         lock steering to lookdirup(up:vector - 0.02 * velocity:surface, north:starvector).
+        if LngError > 20 or LngError < -20 or LatError > 10 or LatError < -10 {
+            lock RadarAlt to alt:radar - BoosterHeight.
+            set LandSomewhereElse to true.
+        }
     }
 
     until verticalspeed > -0.01 and RadarAlt < 5 and ship:status = "LANDED" or verticalspeed > 0.5 {
@@ -207,7 +230,6 @@ function Boostback {
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         //set LdgVectorDraw to vecdraw(v(0, 0, 0), up:vector - 0.03 * velocity:surface - 0.0125 * ErrorVector, green, "Landing Vector", 20, true, 0.005, true, true).
     }
-    print "capture at: " + RadarAlt + "m RA".
 
     set ship:control:translation to v(0, 0, 0).
     unlock steering.
@@ -220,96 +242,100 @@ function Boostback {
     lock throttle to 0.
     BoosterEngines[0]:shutdown.
 
-    SET KUNIVERSE:DEFAULTLOADDISTANCE:FLYING:UNLOAD TO 22500.
-    SET KUNIVERSE:DEFAULTLOADDISTANCE:FLYING:LOAD TO 2250.
-    WAIT 0.001.
-    SET KUNIVERSE:DEFAULTLOADDISTANCE:FLYING:PACK TO 25000.
-    SET KUNIVERSE:DEFAULTLOADDISTANCE:FLYING:UNPACK TO 2000.
-    wait 0.001.
+    if not LandSomewhereElse {
+        print "capture at: " + RadarAlt + "m RA".
 
-    SET KUNIVERSE:DEFAULTLOADDISTANCE:SUBORBITAL:UNLOAD TO 15000.
-    SET KUNIVERSE:DEFAULTLOADDISTANCE:SUBORBITAL:LOAD TO 2250.
-    WAIT 0.001.
-    SET KUNIVERSE:DEFAULTLOADDISTANCE:SUBORBITAL:PACK TO 10000.
-    SET KUNIVERSE:DEFAULTLOADDISTANCE:SUBORBITAL:UNPACK TO 200.
-    wait 0.001.
+        SET KUNIVERSE:DEFAULTLOADDISTANCE:FLYING:UNLOAD TO 22500.
+        SET KUNIVERSE:DEFAULTLOADDISTANCE:FLYING:LOAD TO 2250.
+        WAIT 0.001.
+        SET KUNIVERSE:DEFAULTLOADDISTANCE:FLYING:PACK TO 25000.
+        SET KUNIVERSE:DEFAULTLOADDISTANCE:FLYING:UNPACK TO 2000.
+        wait 0.001.
 
-    print "Landing Burn started at: " + round(LandingBurnAltitude) + "m Altitude".
+        SET KUNIVERSE:DEFAULTLOADDISTANCE:SUBORBITAL:UNLOAD TO 15000.
+        SET KUNIVERSE:DEFAULTLOADDISTANCE:SUBORBITAL:LOAD TO 2250.
+        WAIT 0.001.
+        SET KUNIVERSE:DEFAULTLOADDISTANCE:SUBORBITAL:PACK TO 10000.
+        SET KUNIVERSE:DEFAULTLOADDISTANCE:SUBORBITAL:UNPACK TO 200.
+        wait 0.001.
 
-    if OLMexists() {
-        HUDTEXT("Booster Landing Confirmed! Stand by for Mechazilla Operation..", 10, 2, 20, green, false).
-        set LandingTime to time:seconds.
-        lock RollAngle to vang(facing:starvector, heading(180,0):vector).
-        set TowerReset to false.
-        set PusherSpeed5 to false.
-        set PusherSpeed2 to false.
-        set PusherSpeed1 to false.
-        set RollAngleExceeded to false.
-        set BoosterSecured to false.
-        set BoosterBroughtDown to false.
-        set MechazillaGoesUp to false.
-        set MechazillaResetsItself to false.
-        print "Tower Operation in Progress..".
-        sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,1,0.2,true").
-        sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaStabilizers," + maxstabengage)).
-        until TowerReset {
-            clearscreen.
-            print "Roll Angle: " + round(RollAngle,1).
-            if time:seconds > LandingTime + 3.25 and not PusherSpeed5 {
-                sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,0.5,0.2,true").
-                set PusherSpeed5 to true.
+        print "Landing Burn started at: " + round(LandingBurnAltitude) + "m Altitude".
+
+        if OLMexists() {
+            HUDTEXT("Booster Landing Confirmed! Stand by for Mechazilla Operation..", 10, 2, 20, green, false).
+            set LandingTime to time:seconds.
+            lock RollAngle to vang(facing:starvector, heading(180,0):vector).
+            set TowerReset to false.
+            set PusherSpeed5 to false.
+            set PusherSpeed2 to false.
+            set PusherSpeed1 to false.
+            set RollAngleExceeded to false.
+            set BoosterSecured to false.
+            set BoosterBroughtDown to false.
+            set MechazillaGoesUp to false.
+            set MechazillaResetsItself to false.
+            print "Tower Operation in Progress..".
+            sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,1,0.2,true").
+            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaStabilizers," + maxstabengage)).
+            until TowerReset {
+                clearscreen.
+                print "Roll Angle: " + round(RollAngle,1).
+                if time:seconds > LandingTime + 3.25 and not PusherSpeed5 {
+                    sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,0.5,0.2,true").
+                    set PusherSpeed5 to true.
+                }
+                if time:seconds > LandingTime + 5.75 and not PusherSpeed2 {
+                    sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,0.2,0.2,true").
+                    set PusherSpeed2 to true.
+                }
+                if time:seconds > LandingTime + 8.25 and not PusherSpeed1 {
+                    sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,0.1,0.2,true").
+                    set PusherSpeed1 to true.
+                }
+                if time:seconds > LandingTime + 15 and time:seconds < LandingTime + 75 and not BoosterSecured {
+                    sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaHeight,28,0.5").
+                }
+                if time:seconds > LandingTime + 75 and not BoosterSecured {
+                    sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaHeight,42,0.5").
+                    set BoosterSecured to true.
+                }
+                if time:seconds > LandingTime + 105 and not BoosterBroughtDown {
+                    sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaArms,8,2.5,60,true").
+                    set BoosterBroughtDown to true.
+                }
+                if time:seconds > LandingTime + 114 and not MechazillaGoesUp {
+                    sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaHeight,0,2").
+                    set MechazillaGoesUp to true.
+                }
+                if time:seconds > LandingTime + 117 and not MechazillaResetsItself {
+                    sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaArms,8,5,90,true").
+                    sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,0.2,12,true").
+                    sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaStabilizers,0").
+                    set MechazillaResetsItself to true.
+                }
+                if time:seconds > LandingTime + 135 {
+                    set TowerReset to true.
+                    break.
+                }
+                if RollAngle > 15 or RollAngle < -15 {
+                    set RollAngleExceeded to true.
+                    break.
+                }
             }
-            if time:seconds > LandingTime + 5.75 and not PusherSpeed2 {
-                sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,0.2,0.2,true").
-                set PusherSpeed2 to true.
+            if not RollAngleExceeded {
+                print "Booster has been recovered & Tower has been reset!".
             }
-            if time:seconds > LandingTime + 8.25 and not PusherSpeed1 {
-                sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,0.1,0.2,true").
-                set PusherSpeed1 to true.
+            else {
+                sendMessage(Vessel("OrbitalLaunchMount"), "EmergencyStop").
+                print "Emergency Stop Activated! Roll Angle exceeded: " + round(RollAngle, 1).
+                print "Continue manually with great care..".
             }
-            if time:seconds > LandingTime + 15 and time:seconds < LandingTime + 75 and not BoosterSecured {
-                sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaHeight,28,0.5").
-            }
-            if time:seconds > LandingTime + 75 and not BoosterSecured {
-                sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaHeight,42,0.5").
-                set BoosterSecured to true.
-            }
-            if time:seconds > LandingTime + 105 and not BoosterBroughtDown {
-                sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaArms,8,2.5,60,true").
-                set BoosterBroughtDown to true.
-            }
-            if time:seconds > LandingTime + 114 and not MechazillaGoesUp {
-                sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaHeight,0,2").
-                set MechazillaGoesUp to true.
-            }
-            if time:seconds > LandingTime + 117 and not MechazillaResetsItself {
-                sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaArms,8,5,90,true").
-                sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,0.2,12,true").
-                sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaStabilizers,0").
-                set MechazillaResetsItself to true.
-            }
-            if time:seconds > LandingTime + 135 {
-                set TowerReset to true.
-                break.
-            }
-            if RollAngle > 15 or RollAngle < -15 {
-                set RollAngleExceeded to true.
-                break.
-            }
-        }
-        if not RollAngleExceeded {
-            print "Booster has been recovered & Tower has been reset!".
+            HUDTEXT("Tower has been reset, Booster may now be recovered!", 10, 2, 20, green, false).
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), "EmergencyStop").
-            print "Emergency Stop Activated! Roll Angle exceeded: " + round(RollAngle, 1).
-            print "Continue manually with great care..".
+            print "Booster has been secured".
+            HUDTEXT("Booster may now be recovered!", 10, 2, 20, green, false).
         }
-        HUDTEXT("Tower has been reset, Booster may now be recovered!", 10, 2, 20, green, false).
-    }
-    else {
-        print "Booster has been secured".
-        HUDTEXT("Booster may now be recovered!", 10, 2, 20, green, false).
     }
     unlock throttle.
 }
@@ -344,7 +370,6 @@ FUNCTION SteeringCorrections {
             set addons:tr:descentangles to list(180, 180, 180, 180).
             if not addons:tr:hastarget {
                 ADDONS:TR:SETTARGET(landingzone).
-                set LngCtrlPID:setpoint to BoosterOffset.
             }
             wait 0.001.
             if addons:tr:hasimpact {
@@ -359,9 +384,10 @@ FUNCTION SteeringCorrections {
 
             set LatCtrl to -LatCtrlPID:UPDATE(time:seconds, LatError).
             set LngCtrl to -LngCtrlPID:UPDATE(time:seconds, LngError).
+            set LngCtrlPID:setpoint to (altitude / 1000) * -25 - 75.
 
             if LatError > 25 and altitude > 2500 or LatError < -25 and altitude > 2500 {
-                set LatCtrl to -15 * LatCtrl.
+                set LatCtrl to -7.5 * LatCtrl.
             }
 
             set magnitude to (altitude + 400) / 100.
@@ -380,7 +406,7 @@ FUNCTION SteeringCorrections {
             set LngCtrl to -LngCtrlPID:UPDATE(time:seconds, LngError + LngEstimate).
 
             if (LatError + LatEstimate) > 25 and altitude > 2500 or (LatError + LatEstimate) < -25 and altitude > 2500 {
-                set LatCtrl to -15 * LatCtrl.
+                set LatCtrl to -7.5 * LatCtrl.
             }
 
             set ErrorVector to vxcl(up:vector, latlng(ship:geoposition:lat + (LatEstimate / 10471.1975), ((ship:geoposition:lng) + (LngEstimate / 10471.1975))):position - landingzone:POSITION).
