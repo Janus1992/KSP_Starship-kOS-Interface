@@ -1,3 +1,6 @@
+# V1.0.2a
+- Fixed the patch to work with the CryoTanks mod.
+
 # V1.0.2
 - Due to BIG structural and procedural CHANGES please dispose of (or land) any already existing starships in your savegame to avoid kerbal deaths!
 - Booster/Ship flight profile is now flatter:

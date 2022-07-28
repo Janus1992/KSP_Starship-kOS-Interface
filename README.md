@@ -31,7 +31,6 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 # USERS REPORT IT DOES NOT WORK WITH:
 - RSS/RO
 - FMRS
-- Cryotanks
 - Atmospheric Autopilot
 
 
