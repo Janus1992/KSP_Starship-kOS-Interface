@@ -1,3 +1,6 @@
+# V1.0.2b
+- Changed the patch to hopefully make things more reliable for users with many mods. In case a mod is detected that is not compatible no kOS modules will be added to the vehicle and therefore failing to load the interface.
+
 # V1.0.2a
 - Fixed the patch to work with the CryoTanks mod.
 

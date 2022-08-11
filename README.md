@@ -29,9 +29,10 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
     https://forum.kerbalspaceprogram.com/index.php?/topic/83007-1x-community-resource-pack/
 
 # USERS REPORT IT DOES NOT WORK WITH:
-- RSS/RO
+- RSS
+- Realism Overhaul
 - FMRS
-- Atmospheric Autopilot
+- AtmosphereAutopilot
 
 
 
