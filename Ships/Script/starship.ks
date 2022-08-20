@@ -42,7 +42,7 @@ if homeconnection:isconnected {
         }
     }
     //print "Time Difference: " + round(kuniverse:realtime - LastUpdateTime, 2).
-    if LastUpdateTime + 5 < kuniverse:realtime {
+    if LastUpdateTime + 15 < kuniverse:realtime {
         switch to 0.
         HUDTEXT("Starting Interface..", 10, 2, 20, green, false).
         print "Starting background update..".
@@ -4296,7 +4296,7 @@ set landbutton:ontoggle to {
                                         if L["Landing Coordinates"] = L["Launch Coordinates"] {
                                             if OLMexists() {
                                                 if L["Landing Coordinates"] = "-0.0972,-74.5577" {
-                                                    set message2:text to "<b><color=yellow>  KSC Mechazilla</color></b>".
+                                                    set message2:text to "<b><color=yellow>KSC Mechazilla</color></b>".
                                                 }
                                                 else {
                                                     set message2:text to "<b><color=yellow>  Mechazilla</color></b>".

@@ -11,6 +11,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 # IMPORTANT:
 - Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker").
+- If the Interface doesn't show up, check again that you don't have any of the mods installed that the Interface doesn't work with (listed below).
 
 # REQUIRES:
 - Starship Expansion Project

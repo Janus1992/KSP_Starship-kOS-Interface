@@ -1,3 +1,6 @@
+# V1.0.2c
+- Hopefully a fix for auto-update loop on startup.
+
 # V1.0.2b
 - Changed the patch to hopefully make things more reliable for users with many mods. In case a mod is detected that is not compatible no kOS modules will be added to the vehicle and therefore failing to load the interface.
 
