@@ -1,3 +1,6 @@
+# V1.0.2d
+- Added to incompatible mods that I can't figure out a patch for: ConfigurableContainers and AnimatedAttachment.
+
 # V1.0.2c
 - Hopefully a fix for auto-update loop on startup.
 

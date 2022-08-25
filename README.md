@@ -9,7 +9,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Copy the 'GameData' and 'Ships' folders into your /Kerbal Space Program folder.
 
 
-# IMPORTANT:
+# IMPORTANT!:
 - Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker").
 - If the Interface doesn't show up, check again that you don't have any of the mods installed that the Interface doesn't work with (listed below).
 
@@ -33,9 +33,10 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - RSS
 - Realism Overhaul
 - FMRS
+    (perhaps depends on usage?)
 - AtmosphereAutopilot
-
-
+- AnimatedAttachment
+- ConfigurableContainers
 
 # Tips & Tricks:
 To Load Cargo in the Cargo Ship:
