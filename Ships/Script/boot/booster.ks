@@ -212,7 +212,7 @@ function Boostback {
         lock TotalstopDist to 0.5 * max(maxDecel, 0.000001) * TotalstopTime * TotalstopTime.
         lock landingRatio to TotalstopDist / RadarAlt.
         lock throttle to landingRatio.
-        if LngError > 55 or LngError < -55 or LatError > 40 or LatError < -40 {
+        if LngError > 55 or LngError < -75 or LatError > 40 or LatError < -40 {
             lock RadarAlt to alt:radar - BoosterHeight.
             set LandSomewhereElse to true.
             lock steering to lookdirup(-1 * velocity:surface, north:starvector).
