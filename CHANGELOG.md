@@ -1,3 +1,6 @@
+# V1.0.2e
+- Changed the Boosters final approach mechanism. Hopefully fixes the overshooting/undershooting due to users having a different Booster trajectory than I have.
+
 # V1.0.2d
 - Added to incompatible mods that I can't figure out a patch for: ConfigurableContainers and AnimatedAttachment.
 

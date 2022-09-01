@@ -12,13 +12,15 @@ set BoosterEngines to SHIP:PARTSNAMED("SEP.B4.33.CLUSTER").
 set GridFins to SHIP:PARTSNAMED("SEP.B4.GRIDFIN").
 set BoosterCore to SHIP:PARTSNAMED("SEP.B4.CORE").
 set LngCtrlPID to PIDLOOP(0.35, 0.001, 0.001, -7.5, 7.5).
-set LatCtrlPID to PIDLOOP(0.5, 0.001, 0.001, -1, 1).
+set LatCtrlPID to PIDLOOP(0.35, 0.001, 0.001, -1, 1).
+set InitialError to -9999.
 set maxDecel to 0.
 set TotalstopTime to 0.
 set TotalstopDist to 0.
 set stopDist3 to 0.
 set landingRatio to 0.
 set maxstabengage to 50.
+set GSWest to 0.
 lock RadarAlt to alt:radar - BoosterHeight.
 if stage:number > 2 {
     if exists("0:/BoosterFlightData.csv") {
@@ -210,7 +212,7 @@ function Boostback {
         lock TotalstopDist to 0.5 * max(maxDecel, 0.000001) * TotalstopTime * TotalstopTime.
         lock landingRatio to TotalstopDist / RadarAlt.
         lock throttle to landingRatio.
-        if LngError > 100 or LngError < -150 or LatError > 40 or LatError < -40 {
+        if LngError > 55 or LngError < -55 or LatError > 40 or LatError < -40 {
             lock RadarAlt to alt:radar - BoosterHeight.
             set LandSomewhereElse to true.
             lock steering to lookdirup(-1 * velocity:surface, north:starvector).
@@ -381,13 +383,19 @@ FUNCTION SteeringCorrections {
             if addons:tr:hasimpact {
                 set LngError to (ADDONS:TR:IMPACTPOS:lng - landingzone:lng) * 10471.1975.
             }
+            set GSWest to vdot(vxcl(up:vector, velocity:surface), north:starvector).
 
             set LatCtrl to -LatCtrlPID:UPDATE(time:seconds, LatError).
             set LngCtrl to -LngCtrlPID:UPDATE(time:seconds, LngError).
-            set LngCtrlPID:setpoint to (altitude / 1000) * -25 - 75.
+            if InitialError = -9999 and addons:tr:hasimpact {
+                set InitialError to LngError.
+            }
+            else {
+                set LngCtrlPID:setpoint to max(min(-3 * GSWest, 125), -125).
+            }
 
             if LatError > 25 and altitude > 2500 or LatError < -25 and altitude > 2500 {
-                set LatCtrl to -7.5 * LatCtrl.
+                set LatCtrl to -2.5 * LatCtrl.
             }
 
             set magnitude to (altitude + 400) / 100.
@@ -406,7 +414,7 @@ FUNCTION SteeringCorrections {
             set LngCtrl to -LngCtrlPID:UPDATE(time:seconds, LngError + LngEstimate).
 
             if (LatError + LatEstimate) > 25 and altitude > 2500 or (LatError + LatEstimate) < -25 and altitude > 2500 {
-                set LatCtrl to -7.5 * LatCtrl.
+                set LatCtrl to -2.5 * LatCtrl.
             }
 
             set ErrorVector to vxcl(up:vector, latlng(ship:geoposition:lat + (LatEstimate / 10471.1975), ((ship:geoposition:lng) + (LngEstimate / 10471.1975))):position - landingzone:POSITION).
@@ -426,6 +434,11 @@ FUNCTION SteeringCorrections {
         print "Radar Altitude: " + round(RadarAlt).
         print "Lng Error: " + round(LngError).
         print "Lat Error: " + round(LatError).
+        print "GS West: " + round(GSWest).
+        print "setpoint: " + round(LngCtrlPID:setpoint).
+        if LandSomewhereElse {
+            print "Target LZ out of bounds, landing elsewhere..".
+        }
         if KUniverse:activevessel = VESSEL("Booster") {}
         else {
             //print "Lng Error Prediction: " + round(LngError + LngEstimate).

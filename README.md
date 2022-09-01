@@ -32,8 +32,6 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 # USERS REPORT IT DOES NOT WORK WITH:
 - RSS
 - Realism Overhaul
-- FMRS
-    (perhaps depends on usage?)
 - AtmosphereAutopilot
 - AnimatedAttachment
 - ConfigurableContainers
@@ -51,6 +49,7 @@ To Load Cargo in the Cargo Ship:
 - Seldom Interface crashes may occur (it makes a little crashing noise). Toggling power on the kOS segment of the Ships Tank Section will restart the Interface.
 - If the Interface crashes in a repeatable way, maybe make a screenshot of the cpu (righthand kOS window in game, the cpu will show some error message), and report it as a bug so I can work on it.
 - Existing Ships after v1.01 will automatically update the Interface after installing the latest version from here.
+- The KSP delta-V calculations are not correct anymore when using liquid methane (CRP), trust the Interface instead! :)
 
 
 
