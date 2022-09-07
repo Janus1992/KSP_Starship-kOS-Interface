@@ -1,8 +1,15 @@
+# V1.0.3 (2022-09-07)
+- Fixed an issue where the correct Angle-of-Attack would not be correctly set when transferring from Duna to Kerbin, causing a failure of the auto de-orbit function.
+- Introduced a new function that automatically dumps excess fuel during the re-entry after a manual de-orbit, to avoid returning manually, activating the re-entry procedure only and failing the landing due to too high Mass (and fuel).
+- Fixed an issue with the Crew Ship. Due to the increased mass of the crew module, the flaps didn't have their proper neutral angle. Reduced Crew Module Mass slightly (15t now vs. SEP default 10t).
+- Fixed the acceleration (g-force) measuring that I broke some time ago.
+- Fixed an issue where the Center of Gravity was affected when Community Resource Pack was installed, resulting in failed ship re-entries.
+
 # V1.0.2e
-- Changed the Boosters final approach mechanism. Hopefully fixes the overshooting/undershooting due to users having a different Booster trajectory than I have.
+- Changed the Boosters final approach mechanism. Hopefully fixes the overshooting/undershooting due to users having a different Booster trajectory than I have (still to be investigated).
 
 # V1.0.2d
-- Added to incompatible mods that I can't figure out a patch for: ConfigurableContainers and AnimatedAttachment.
+- Added these mods as incompatible mods that I can't figure out a patch for: ConfigurableContainers and AnimatedAttachment.
 
 # V1.0.2c
 - Hopefully a fix for auto-update loop on startup.

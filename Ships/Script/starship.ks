@@ -56,7 +56,7 @@ if homeconnection:isconnected {
     }
 }
 else {
-    HUDTEXT("No connection available! Can't update Interface..", 10, 2, 20, red, false).
+    HUDTEXT("No connection available! Can't check for Interface Updates..", 10, 2, 20, red, false).
 }
 
 
@@ -74,6 +74,8 @@ set MaxTilt to 2.5.  // Defines maximum allowed slope for the Landing Zone Searc
 set ShipHeight to 31.1.
 set maxstabengage to 50.  // Defines max closing of the stabilizers after landing.
 set config:ipu to 500.
+set FWDFlapDefault to 55.
+set AFTFlapDefault to 50.
 
 
 //---------Program Variables-----------//
@@ -103,6 +105,7 @@ set InhibitPages to 0.
 set currVel to SHIP:VELOCITY:ORBIT.
 set currTime to time:seconds.
 set prevVel to SHIP:VELOCITY:ORBIT.
+set prevACCTime to time:seconds.
 set prevTime to time:seconds.
 set prevFanTime to time:seconds.
 set prevTargetFindingTime to time:seconds - 4.
@@ -1710,10 +1713,10 @@ function AttitudeSteering {
         if flapcorr > 10 {set flapcorr to 10.}
         if flapcorr < -10 {set flapcorr to -10.}
         if ship:body = BODY("Kerbin") {
-            setflaps(55 + flapcorr + flapcargomasscorr, 50 + flapcorr, 1, 30).
+            setflaps(FWDFlapDefault + flapcorr + flapcargomasscorr, AFTFlapDefault + flapcorr, 1, 30).
         }
         if ship:body = BODY("Duna") {
-            setflaps(55 + flapcorr + flapcargomasscorr, 50 + flapcorr - 0.5 * flapcargomasscorr, 1, 30).
+            setflaps(FWDFlapDefault + flapcorr + flapcargomasscorr, AFTFlapDefault + flapcorr - 0.5 * flapcargomasscorr, 1, 30).
         }
     }
 
@@ -1998,17 +2001,17 @@ set quickstatus1:ontoggle to {
                 set flapcargomasscorr to 0.
             }
             LogToFile("Flap control ON").
-            setflaps(55 + flapcargomasscorr, 50, 1, 30).
+            setflaps(FWDFlapDefault + flapcargomasscorr, AFTFlapDefault, 1, 30).
         }
     }
     else {
         if not LandButtonIsRunning {
             LogToFile("Flap control OFF").
-            setflaps(55, 50, 0, 30).
+            setflaps(FWDFlapDefault, AFTFlapDefault, 0, 30).
         }
         else if AttitudeIsRunning {
             LogToFile("Flap control OFF").
-            setflaps(55, 50, 0, 30).
+            setflaps(FWDFlapDefault, AFTFlapDefault, 0, 30).
         }
         else if runningprogram = "After Landing" or runningprogram = "Landing" or runningprogram = "Final Approach" or runningprogram = "De-orbit & Landing" {
             set quickstatus1:pressed to true.
@@ -4299,15 +4302,15 @@ set landbutton:ontoggle to {
                                                     set message2:text to "<b><color=yellow>KSC Mechazilla</color></b>".
                                                 }
                                                 else {
-                                                    set message2:text to "<b><color=yellow>  Mechazilla</color></b>".
+                                                    set message2:text to "<b><color=yellow>Mechazilla</color></b>".
                                                 }
                                             }
                                             else {
                                                 if L["Landing Coordinates"] = "-0.0972,-74.5577" {
-                                                    set message2:text to "<b><color=yellow>  KSC Launch Pad</color></b>".
+                                                    set message2:text to "<b><color=yellow>KSC Launch Pad</color></b>".
                                                 }
                                                 else if L["Landing Coordinates"] = "-6.5604,-143.9500" {
-                                                    set message2:text to "<b><color=yellow>  Desert Launch Pad</color></b>".
+                                                    set message2:text to "<b><color=yellow>Desert Launch Pad</color></b>".
                                                 }
                                                 else {
                                                     set message2:text to "<b>Latitude/Longitude:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>".
@@ -5457,6 +5460,9 @@ function ReEntryAndLand {
         SetRadarAltitude().
         TotalCargoMass().
         set flapcargomasscorr to round(10 - ((Cargo / 10000) * 10)).
+        if ShipType = "Crew" {
+            set flapcargomasscorr to 0.
+        }
         if flapcargomasscorr < 0 and ship:body = BODY("Kerbin") {
             set flapcargomasscorr to 0.
         }
@@ -5469,7 +5475,6 @@ function ReEntryAndLand {
         set landlabel:style:textcolor to green.
         set launchlabel:style:textcolor to grey.
         HideEngineToggles(1).
-        //ActivateEngines(0).
         ShutdownEngines.
         set launchlabel:style:bg to "starship_img/starship_background".
         ShowButtons(0).
@@ -5479,16 +5484,23 @@ function ReEntryAndLand {
         set RepositionOxidizer:ACTIVE to TRUE.
         sas off.
         rcs off.
+        ActivateEngines(0).
         set SteeringManager:ROLLCONTROLANGLERANGE to 20.
         set STEERINGMANAGER:PITCHTS to 5.
         set STEERINGMANAGER:YAWTS to 5.
+        if LFShip > FuelVentCutOffValue {
+            Nose[0]:activate.
+            Tank[0]:activate.
+            when LFShip < FuelVentCutOffValue then {
+                ShutdownEngines().
+            }
+        }
         set PitchPID to PIDLOOP(0.0025, 0, 0, -13, 12).
         set YawPID to PIDLOOP(0.025, 0, 0, -60, 60).
         lock STEERING to ReEntrySteering().
         if quicksetting1:pressed and altitude > 30000 {
             set kuniverse:timewarp:warp to 4.
         }
-        
         
         when altitude < 70000 and ship:body = BODY("Kerbin") or altitude < 50000 and ship:body = BODY("Duna") then {
             set quickstatus1:pressed to true.
@@ -5508,7 +5520,7 @@ function ReEntryAndLand {
                 set YawPID to PIDLOOP(0.25, 0.025, 0.025, -15, 15).
                 set STEERINGMANAGER:PITCHTS to 2.5.
                 set STEERINGMANAGER:YAWTS to 1.
-                set FlipAltitude to (ship:mass / 50) * 500.
+                set FlipAltitude to max((ship:mass / 50) * 500, 500).
                 set runningprogram to "Final Approach".
                 LogToFile("Vehicle is Subsonic, precise steering activated").
                 when RadarAlt < 10000 then {
@@ -5640,11 +5652,11 @@ function ReEntrySteering {
         if flapcorr < -10 {set flapcorr to -10.}
         if ship:body = BODY("Kerbin") {
             if not AbortInProgress {
-                setflaps(55 + flapcorr + flapcargomasscorr, 50 + flapcorr, 1, 30).
+                setflaps(FWDFlapDefault + flapcorr + flapcargomasscorr, AFTFlapDefault + flapcorr, 1, 30).
             }
         }
         if ship:body = BODY("Duna") {
-            setflaps(55 + flapcorr + flapcargomasscorr, 50 + flapcorr - 0.5 * flapcargomasscorr, 1, 30).
+            setflaps(FWDFlapDefault + flapcorr + flapcargomasscorr, AFTFlapDefault + flapcorr - 0.5 * flapcargomasscorr, 1, 30).
         }
         
         
@@ -6668,10 +6680,11 @@ function updateStatus {
         
         if kuniverse:timewarp:warp = 0 {
             set currVel to SHIP:VELOCITY:ORBIT. set currTime to TIME:SECONDS.
-            local timeDelta to currTime - prevTime.
+            local timeDelta to currTime - prevACCTime.
             if timeDelta <> 0 {
                 set acc to (currVel - prevVel) * (1 / timeDelta) + UP:FOREVECTOR * (SHIP:BODY:MU / (SHIP:BODY:RADIUS + SHIP:ALTITUDE)^2).}
-            set prevVel to SHIP:VELOCITY:ORBIT. set prevTime to TIME:SECONDS.
+            set prevVel to SHIP:VELOCITY:ORBIT.
+            set prevACCTime to TIME:SECONDS.
             set GForce to acc:MAG / 9.81.
             if GForce < 0.1 {
                 set status3label4:text to "<b>ACC:</b>  0.00G".
@@ -8007,6 +8020,9 @@ function SetPlanetData {
         set aoa to 67.
         set Planet1Degree to 10.471975.
     }
+    set addons:tr:descentmodes to list(true, true, true, true).
+    set addons:tr:descentgrades to list(false, false, false, false).
+    set addons:tr:descentangles to list(aoa, aoa, aoa, aoa).
     set Planet1G to CONSTANT():G * (ship:body:mass / (ship:body:radius * ship:body:radius)).
 }
 
