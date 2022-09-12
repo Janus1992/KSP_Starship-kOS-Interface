@@ -1,3 +1,6 @@
+# V1.0.3a (2022-09-12)
+- Fixed a crash that happened after undocking.
+
 # V1.0.3 (2022-09-07)
 - Fixed an issue where the correct Angle-of-Attack would not be correctly set when transferring from Duna to Kerbin, causing a failure of the auto de-orbit function.
 - Introduced a new function that automatically dumps excess fuel during the re-entry after a manual de-orbit, to avoid returning manually, activating the re-entry procedure only and failing the landing due to too high Mass (and fuel).
@@ -6,13 +9,13 @@
 - Fixed an issue where the Center of Gravity was affected when Community Resource Pack was installed, resulting in failed ship re-entries.
 
 # V1.0.2e
-- Changed the Boosters final approach mechanism. Hopefully fixes the overshooting/undershooting due to users having a different Booster trajectory than I have (still to be investigated).
+- Changed the Boosters final approach mechanism. Fixes the overshooting/undershooting due to users having a different Booster trajectory than I have (still to be investigated).
 
 # V1.0.2d
 - Added these mods as incompatible mods that I can't figure out a patch for: ConfigurableContainers and AnimatedAttachment.
 
 # V1.0.2c
-- Hopefully a fix for auto-update loop on startup.
+- Fix for auto-update loop on startup.
 
 # V1.0.2b
 - Changed the patch to hopefully make things more reliable for users with many mods. In case a mod is detected that is not compatible no kOS modules will be added to the vehicle and therefore failing to load the interface.

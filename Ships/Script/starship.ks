@@ -8020,9 +8020,11 @@ function SetPlanetData {
         set aoa to 67.
         set Planet1Degree to 10.471975.
     }
-    set addons:tr:descentmodes to list(true, true, true, true).
-    set addons:tr:descentgrades to list(false, false, false, false).
-    set addons:tr:descentangles to list(aoa, aoa, aoa, aoa).
+    if (KUniverse:activevessel = vessel(ship:name)) {
+        set addons:tr:descentmodes to list(true, true, true, true).
+        set addons:tr:descentgrades to list(false, false, false, false).
+        set addons:tr:descentangles to list(aoa, aoa, aoa, aoa).
+    }
     set Planet1G to CONSTANT():G * (ship:body:mass / (ship:body:radius * ship:body:radius)).
 }
 
