@@ -1,10 +1,15 @@
+# V1.0.4a (2022-10-07)
+- Fixed some Mun Landing Bugs.
+- Planning a de-orbit on the mun will always plan a point 8km over the Landing Zone before landing vertically.
+- Single/Dual engine landings now show only one or two engine running on the engines page.
+- Mun landings are smoother and less scary (at the cost of a little delta-v).
+
 # V1.0.4 (2022-10-06)
 - Preliminary Mun Automatic De-Orbit & Landing capability introduced.
 - Major change to the process of looking for a suitable de-orbit trajectory.
     - I sacrificed looking 6 hours ahead for a de-orbit for a faster and more reliable lookup of only the 1 orbit ahead.
 - Added a sticker on the homepage of the Interface to identify which Ships Interface you're looking at (useful when you have multiple craft close by in orbit).
 - Fixed some minor bugs I found.
-
 
 # V1.0.3a (2022-09-12)
 - Fixed a crash that happened after undocking.

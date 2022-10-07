@@ -63,7 +63,6 @@ else {
 //------------Configurables-------------//
 
 
-set CustomLZ to "0.0000,0.0000".
 set LandingOffset to 6.
 set MaxCargoToOrbit to 69420.
 set MaxReEntryCargoKerbin to 10000.
@@ -988,7 +987,7 @@ local TargetLZPicker is settingsstackvlayout2:addpopupmenu().
     set TargetLZPicker:style:active_on:bg to "starship_img/starship_background_light".
     set TargetLZPicker:style:focused:bg to "starship_img/starship_background_light".
     set TargetLZPicker:style:focused_on:bg to "starship_img/starship_background_light".
-    set TargetLZPicker:options to list("<color=grey><b>Select existing LZ</b></color>", "<b><color=white>KSC Pad</color></b>", "<b><color=white>Desert Pad</color></b>", "<b><color=white>Woomerang Pad</color></b>", "<b><color=white>Custom LZ</color></b>").
+    set TargetLZPicker:options to list("<color=grey><b>Select existing LZ</b></color>", "<b><color=white>KSC Pad</color></b>", "<b><color=white>Desert Pad</color></b>", "<b><color=white>Woomerang Pad</color></b>", "<b><color=white>Current Impact</color></b>").
     set TargetLZPicker:tooltip to "Select a predefined Landing Zone here:  e.g.  KSC, Desert, Woomerang".
 
 local setting5 is settingsstackvlayout2:addcheckbox("<b>  </b>").
@@ -1139,11 +1138,16 @@ set TargetLZPicker:onchange to {
             SaveToSettings("Landing Coordinates", "45.2896,136.11").
         }
     }
-    if choice = "<b><color=white>Custom LZ</color></b>" {
-        set setting3:text to CustomLZ.
-        set landingzone to latlng(CustomLZ:split(",")[0]:toscalar(0), CustomLZ:split(",")[1]:toscalar(0)).
-        if homeconnection:isconnected {
-            SaveToSettings("Landing Coordinates", CustomLZ).
+    if choice = "<b><color=white>Current Impact</color></b>" {
+        if addons:tr:hasimpact {
+            set impactpos to addons:tr:impactpos.
+            set impactpos to latlng(round(impactpos:lat, 4), round(impactpos:lng, 4)).
+            set landingzone to impactpos.
+            set impactpos to impactpos:lat + "," + impactpos:lng.
+            set setting3:text to impactpos.
+            if homeconnection:isconnected {
+                SaveToSettings("Landing Coordinates", impactpos).
+            }
         }
     }
 }.
@@ -4129,6 +4133,7 @@ set landbutton:ontoggle to {
     parameter click.
     if not LandButtonIsRunning {
         set LandButtonIsRunning to true.
+        set config:ipu to 2000.
         LogToFile("Land button clicked").
         ShowButtons(0).
         ShipsInOrbit().
@@ -4236,7 +4241,7 @@ set landbutton:ontoggle to {
                         else {
                             GoHome().
                             set message1:text to aoa + "° <b>AoA Re-Entry</b>".
-                            if homeconnection:isconnected {
+                            if homeconnection:isconnected and ship:body = BODY("Kerbin") {
                                 if exists("0:/settings.json") {
                                     set L to readjson("0:/settings.json").
                                     if L:haskey("Launch Coordinates") and L:haskey("Landing Coordinates") {
@@ -4319,7 +4324,7 @@ set landbutton:ontoggle to {
                         }
                         else {
                             set message1:text to "<b>Target Landing Zone:</b>".
-                            if homeconnection:isconnected {
+                            if homeconnection:isconnected and ship:body = BODY("Kerbin") {
                                 if exists("0:/settings.json") {
                                     set L to readjson("0:/settings.json").
                                     if L:haskey("Launch Coordinates") and L:haskey("Landing Coordinates") {
@@ -4783,6 +4788,7 @@ set landbutton:ontoggle to {
                             set Burnlist to DeOrbitVelocity().
                             set ProgradeVelocity to Burnlist[0].
                             set NormalVelocity to Burnlist[1].
+                            set AltitudeOverLZ to Burnlist[2].
                             if ProgradeVelocity = 0 {
                                 set message1:text to "<b>Error: Not passing overhead the LZ..</b>".
                                 set message1:style:textcolor to yellow.
@@ -4850,8 +4856,10 @@ function LandwithoutAtmo {
         sas off.
         rcs on.
         ActivateEngines(1).
-        VACEngines[2]:shutdown.
-        VACEngines[3]:shutdown.
+        if NrOfVacEngines = 6 {
+            VACEngines[2]:shutdown.
+            VACEngines[3]:shutdown.
+        }
         lock throttle to 0.
         lock STEERING to LandwithoutAtmoSteering.
         if quicksetting1:pressed and altitude > 10000 {
@@ -4865,12 +4873,13 @@ function LandwithoutAtmo {
                 }
                 InhibitButtons(1, 1, 1).
                 set runningprogram to "Landing".
+                set LandingFacingVector to vxcl(up:vector, ApproachVector).
                 set CancelVelocityHasStarted to true.
                 lock throttle to min(LngLatErrorList[0] / 1000, 29.43 / MaxAccel).
                 when groundspeed < 75 and LngLatErrorList[0] < 50 and LngLatErrorList[0] > -50 then {
                     set throttle to 0.
-                    when landingRatio > 0.5 and groundspeed < 75 then {
-                        lock throttle to min(landingRatio, 29.43 / MaxAccel).
+                    when landingRatio > 1 and groundspeed < 75 then {
+                        lock throttle to min(((DesiredDecel + Planet1G) / max(MaxAccel, 0.000001)) * landingRatio, 2 * 9.81 / max(MaxAccel, 0.000001)).
                     }
                 }
             }
@@ -4880,15 +4889,16 @@ function LandwithoutAtmo {
                 set kuniverse:timewarp:warp to 0.
             }
             InhibitButtons(1, 1, 1).
+            set LandingFacingVector to vxcl(up:vector, landingzone:position - ship:position):normalized.
             set runningprogram to "Landing".
             set CancelVelocityHasStarted to true.
-            when landingRatio > 0.5 and groundspeed < 75 then {
+            when landingRatio > 0.33 and groundspeed < 75 then {
                 lock throttle to min(landingRatio, 29.43 / MaxAccel).
             }
         }
 
 
-        wait until verticalspeed > -0.02 and ship:status = "LANDED" and RadarAlt < 5 or verticalspeed > -0.02 or cancelconfirmed and not ClosingIsRunning.
+        wait until verticalspeed > -0.02 and ship:status = "LANDED" and RadarAlt < 5 or verticalspeed > -0.02 and RadarAlt < 2 or ship:status = "LANDED" or cancelconfirmed and not ClosingIsRunning.
 
 
         if cancelconfirmed and not ClosingIsRunning {
@@ -4931,13 +4941,15 @@ function LandwithoutAtmo {
         unlock throttle.
         set ship:control:neutralize to true.
         unlock steering.
+        wait 0.001.
+        set throttle to 0.
         set message1:text to "<b><color=green>Vehicle Self-Check OK!</color></b>".
         set message1:style:textcolor to white.
-        set message2:text to "<b>Land w/o Atmosphere Program completed..</b>".
+        set message2:text to "<b>Landing Program completed..</b>".
         set message3:text to "<b>Hatches may now be opened..</b>".
         set runningprogram to "None".
         unlock steering.
-        LogToFile("Self-Check Complete, Land w/o Atmosphere Program Complete.").
+        LogToFile("Self-Check Complete, Landing Program Complete.").
         set textbox:style:bg to "starship_img/starship_main_square_bg".
         wait 3.
         ClearInterfaceAndSteering().
@@ -4950,17 +4962,32 @@ function LandwithoutAtmo {
 
 function LandwithoutAtmoSteering {
     set LngLatErrorList to LngLatError().
+
     lock MaxAccel to max(ship:availablethrust / ship:mass, 0.000001).
     lock BurnAccel to min(29.43, MaxAccel).
-    lock stopTime to airspeed / BurnAccel.
-    lock stopDist to 0.5 * BurnAccel * stopTime * stopTime.
+    lock DesiredDecel to 4.
+    lock stopTime to airspeed / DesiredDecel.
+    lock stopDist to 0.5 * DesiredDecel * stopTime * stopTime.
     lock landingRatio to stopDist / RadarAlt.
 
     set horDist to (ship:geoposition:position - landingzone:position):mag.
     set horStopTime to groundspeed / BurnAccel.
-    set horStopDist to 0.5 * BurnAccel * stopTime * stopTime.
+    set horStopDist to 0.5 * BurnAccel * horStopTime * horStopTime.
     set CancelHorVelRatio to horStopDist / horDist.
 
+    if ErrorVector:mag > max(min(RadarAlt / 20, 10), 2.5) {
+        set ErrorVector to ErrorVector:normalized * max(min(RadarAlt / 20, 10), 2.5).
+    }
+
+    set SecondsToCancelHorVelocity to (horDist - horStopDist) / groundspeed.
+    set x to SecondsToCancelHorVelocity.
+    set OVHDlng to -180.
+    until OVHDlng > landingzone:lng {
+        set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
+        set x to x + 1.
+    }
+    set TimeToOVHD to x.
+    set ApproachAltitude to ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)).
 
     //clearscreen.
     //print "stop time: " + stopTime.
@@ -4969,15 +4996,22 @@ function LandwithoutAtmoSteering {
     //print "horizontal distance: " + horDist.
     //print "cancel ratio: " + CancelHorVelRatio.
     //print "Radar Alt: " + RadarAlt.
+    //print "Time to Overhead: " + TimeToOVHD.
+    //print "Approach Altitude: " + round(ApproachAltitude).
 
-    if vang(facing:topvector, up:vector) < 45 {
-        set ship:control:translation to v(-LngLatErrorList[1] / 100, 0, 0).
+    if vang(facing:topvector, up:vector) < 45 and not CancelVelocityHasStarted and not (ship:body = BODY("Minmus")) and not (ship:body = BODY("Gilly")) {
+        set ship:control:translation to v(-LngLatErrorList[1] / 100, -(ApproachAltitude - 8000) / 5000, 0).
     }
-    else if groundspeed < 75 and RadarAlt < 1000 {
-        set ship:control:translation to v(-LngLatErrorList[1] / 10, -LngLatErrorList[0] / 10, 0).
+    else if vang(facing:topvector, up:vector) < 45 and not CancelVelocityHasStarted {
+        set ship:control:translation to v(-LngLatErrorList[1] / 100, (-LngLatErrorList[0] + 2500) / 500, 0).
+    }
+    else if groundspeed < 75 and RadarAlt > 1000 {
+        set ship:control:translation to v(-LngLatErrorList[1] / 100, -LngLatErrorList[0] / 100, 0).
     }
     else if groundspeed < 75 {
-        set ship:control:translation to v(-LngLatErrorList[1] / 100, -LngLatErrorList[0] / 100, 0).
+        if addons:tr:hasimpact and not (ship:status = "LANDED") {
+            set ship:control:translation to v(-LngLatErrorList[1] / 10, -LngLatErrorList[0] / 10, 0).
+        }
     }
     else {
         set ship:control:translation to v(0, 0, 0).
@@ -5014,7 +5048,7 @@ function LandwithoutAtmoSteering {
         set message1:text to "<b>Remaining Flight Time:</b>  " + timeSpanCalculator(ADDONS:TR:TIMETILLIMPACT).
     }
     else {
-        set message1:text to "<b>Slowing down Ship in:</b>    " + timeSpanCalculator((horDist - horStopDist) / groundspeed).
+        set message1:text to "<b>Slowing down Ship in:</b>    " + timeSpanCalculator(SecondsToCancelHorVelocity).
     }
     if DistanceToTarget < 10 {
         set message2:text to "<b>Distance to Target:</b>           " + round(DistanceToTarget, 2) + "km".
@@ -5036,8 +5070,12 @@ function LandwithoutAtmoSteering {
     if not BGUisRunning {
         BackGroundUpdate().
     }
-
-    return lookDirUp(result, up:vector).
+    if groundspeed < 75 and vang(facing:forevector, up:vector) < 45 {
+        return lookDirUp(result, LandingFacingVector).
+    }
+    else {
+        return lookDirUp(result, up:vector).
+    }
 }
 
 
@@ -5919,7 +5957,6 @@ function ReEntryAndLand {
             }
             
             when airspeed < 300 and ship:body = BODY("Kerbin") or airspeed < 450 and ship:body = BODY("Duna") then {
-                set config:ipu to 2000.
                 if ship:body = BODY("Kerbin") {
                     set PitchPID to PIDLOOP(0.075, 0.02, 0.05, -18, 7).
                 }
@@ -6202,7 +6239,6 @@ function ReEntrySteering {
             LogToFile("Engines Activated").
 
             if ship:body = BODY("Kerbin") {
-                set Planet1G to 9.80665.
                 if LngLatErrorList[0] - LandingOffset > 50 or LngLatErrorList[0] - LandingOffset < -50 or LngLatErrorList[1] > 15 or LngLatErrorList[1] < -15 {
                     set LandSomewhereElse to true.
                     SetRadarAltitude().
@@ -6210,7 +6246,6 @@ function ReEntrySteering {
                 }
             }
             if ship:body = BODY("Duna") {
-                set Planet1G to 2.94.
                 if LngLatErrorList[0] - LandingOffset > 250 or LngLatErrorList[0] - LandingOffset < -250 or LngLatErrorList[1] > 50 or LngLatErrorList[1] < -50 {
                     set LandSomewhereElse to true.
                     LogToFile("Landing parameters out of bounds, Landing Off-Target").
@@ -6531,9 +6566,12 @@ function LngLatError {
                     set ApproachUPVector to (landingzone:position - body:position):normalized.
                     set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, ApproachTime):surface):normalized.
                 }
-                else {
+                else if vang(facing:forevector, up:vector) > 45 {
                     set ApproachUPVector to (landingzone:position - body:position):normalized.
                     set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, time:seconds + addons:tr:TIMETILLIMPACT - 120):surface):normalized.
+                }
+                else {
+                    set ApproachVector to LandingFacingVector.
                 }
             }
 
@@ -6647,9 +6685,7 @@ function confirm {
 
 
 function CalculateDeOrbitBurn {
-    //parameter WaitNrOfOrbits.
     set correctedIdealLng to 0.
-    //set DeOrbitFailed to false.
     set lngPredict to 180.
     if ship:body = BODY("Kerbin") or ship:body = BODY("Duna") or ship:body = BODY("Laythe") {
         set DegreestoLDGzone to 120.
@@ -6657,17 +6693,12 @@ function CalculateDeOrbitBurn {
     else {
         set DegreestoLDGzone to 90.
     }
-    //set x to 10 + (WaitNrOfOrbits * ship:orbit:period).
     set x to 10.
     until lngPredict > correctedIdealLng - 2 and lngPredict < correctedIdealLng + 2 {
         set idealLng to landingzone:lng - DegreestoLDGzone + (x / (body:rotationperiod / 360)).
         if idealLng < -180 {set correctedIdealLng to idealLng + 360.} else {set correctedIdealLng to idealLng.}
         set lngPredict to body:geopositionof(positionat(ship, time:seconds + x)):lng.
         set x to x + 10.
-        //if x > body:rotationperiod {
-            //set DeOrbitFailed to true.
-        //    break.
-        //}
     }
     return x.
 }
@@ -6676,7 +6707,6 @@ function CalculateDeOrbitBurn {
 function DeOrbitVelocity {
     set Error to 999999.
     set PrevError to Error.
-    //set WaitNrOfOrbits to 0.
     set message3:style:textcolor to white.
     if ship:body = BODY("Kerbin") {
         set ErrorTolerance to 40000.
@@ -6733,17 +6763,36 @@ function DeOrbitVelocity {
             set ErrorVector to ADDONS:TR:IMPACTPOS:POSITION - landingzone:POSITION.
             set LngError to (vdot(ApproachVector, ErrorVector)).
             set message2:text to "<b>Longitude Error: </b>" + round(LngError / 1000, 1) + "km".
-            set ProgradeVelocity to ProgradeVelocity - LngError /10000.
+            set ProgradeVelocity to ProgradeVelocity - LngError / 20000.
             remove burn.
         }
     }
     else {
-        set ApproachTime to deorbitburnstarttime + 0.24 * ship:orbit:period.
+        set x to (deorbitburnstarttime + 0.24 * ship:orbit:period):seconds - time:seconds.
+        set OVHDlng to -180.
+        until OVHDlng > landingzone:lng {
+            set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
+            set x to x + 1.
+        }
+        set TimeToOVHD to x.
+        set ApproachTime to timestamp(time:seconds + x).
+
         set ApproachUPVector to (landingzone:position - body:position):normalized.
         set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, ApproachTime):surface):normalized.
         until false {
             set burn to node(deorbitburnstarttime, 0, NormalVelocity, ProgradeVelocity).
             add burn.
+
+            set x to (deorbitburnstarttime + 0.24 * ship:orbit:period):seconds - time:seconds.
+            set OVHDlng to -180.
+            until OVHDlng > landingzone:lng {
+                set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
+                set x to x + 1.
+            }
+            set TimeToOVHD to x.
+            set ApproachTime to timestamp(time:seconds + x).
+            set AltitudeOverLZ to ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)).
+
             set ApproachUPVector to (landingzone:position - body:position):normalized.
             set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, ApproachTime):surface):normalized.
             set LZatNewTime to latlng(landingzone:lat, landingzone:lng + (((deorbitburnstarttime:seconds - time:seconds + 0.2 *  ship:orbit:period) / 138984) * 360)).
@@ -6757,13 +6806,12 @@ function DeOrbitVelocity {
             if ship:body:altitudeof(positionat(ship, ApproachTime)) < 8010 and ship:body:altitudeof(positionat(ship, ApproachTime)) > 7990 and vdot(ApproachVector:direction:topvector, ToLZVector) < 1 and vdot(ApproachVector:direction:topvector, ToLZVector) > -1 {
                 break.
             }
-
             set ProgradeVelocity to ProgradeVelocity - ((ship:body:altitudeof(positionat(ship, ApproachTime)) - 8000) / 10000).
             set NormalVelocity to NormalVelocity + ApproachDifference / 5000.
             remove burn.
         }
         remove burn.
-        return list(ProgradeVelocity, NormalVelocity).
+        return list(ProgradeVelocity, NormalVelocity, AltitudeOverLZ).
     }
     remove burn.
     return ProgradeVelocity.
@@ -7405,11 +7453,29 @@ function updateEnginePage {
             }
             if SLEngines[0]:ignition = true and VACEngines[0]:ignition = false {
                 if SLEngines[0]:thrust > 0 {
-                    if NrOfVacEngines = 6 {
-                        set engine2label3:style:bg to "starship_img/starship_9engine_sl_active".
+                    if SLEngines[1]:ignition = true and SLEngines[2]:ignition = true {
+                        if NrOfVacEngines = 6 {
+                            set engine2label3:style:bg to "starship_img/starship_9engine_sl_active".
+                        }
+                        if NrOfVacEngines = 3 {
+                            set engine2label3:style:bg to "starship_img/starship_6engine_sl_active".
+                        }
                     }
-                    if NrOfVacEngines = 3 {
-                        set engine2label3:style:bg to "starship_img/starship_6engine_sl_active".
+                    else if SLEngines[2]:ignition = true {
+                        if NrOfVacEngines = 6 {
+                            set engine2label3:style:bg to "starship_img/starship_9engine_2sl_active".
+                        }
+                        if NrOfVacEngines = 3 {
+                            set engine2label3:style:bg to "starship_img/starship_6engine_2sl_active".
+                        }
+                    }
+                    else {
+                        if NrOfVacEngines = 6 {
+                            set engine2label3:style:bg to "starship_img/starship_9engine_1sl_active".
+                        }
+                        if NrOfVacEngines = 3 {
+                            set engine2label3:style:bg to "starship_img/starship_6engine_1sl_active".
+                        }
                     }
                 }
                 else {
@@ -7432,7 +7498,15 @@ function updateEnginePage {
                 set engine3label5:style:textcolor to magenta.
                 set engine3label2:text to round(SLEngines[0]:gimbal:pitchangle * SLEngines[0]:gimbal:range) + "°".
                 set engine3label4:text to round(SLEngines[0]:gimbal:yawangle * SLEngines[0]:gimbal:range) + "°".
-                set engine2label1:text to round(3 * SLEngines[0]:thrust):tostring + " kN".
+                if SLEngines[1]:ignition = true and SLEngines[2]:ignition = true {
+                    set engine2label1:text to round(3 * SLEngines[0]:thrust):tostring + " kN".
+                }
+                else if SLEngines[2]:ignition = true {
+                    set engine2label1:text to round(2 * SLEngines[0]:thrust):tostring + " kN".
+                }
+                else {
+                    set engine2label1:text to round(1 * SLEngines[0]:thrust):tostring + " kN".
+                }
                 set engine2label1:style:overflow:right to -100 + (100 * (SLEngines[0]:thrust / max(SLEngines[0]:availablethrust, 0.000001))).
                 set engine2label1:style:border:h to throttleborder.
                 set engine2label1:style:border:v to throttleborder.
@@ -7448,19 +7522,39 @@ function updateEnginePage {
             }
             if SLEngines[0]:ignition = false and VACEngines[0]:ignition = true {
                 if VACEngines[0]:thrust > 0 {
-                    if NrOfVacEngines = 6 {
-                        set engine2label3:style:bg to "starship_img/starship_9engine_vac_active".
+                    if VACEngines[2]:ignition = true {
+                        if NrOfVacEngines = 6 {
+                            set engine2label3:style:bg to "starship_img/starship_9engine_vac_active".
+                        }
+                        if NrOfVacEngines = 3 {
+                            set engine2label3:style:bg to "starship_img/starship_6engine_vac_active".
+                        }
                     }
-                    if NrOfVacEngines = 3 {
-                        set engine2label3:style:bg to "starship_img/starship_6engine_vac_active".
+                    else {
+                        if NrOfVacEngines = 6 {
+                            set engine2label3:style:bg to "starship_img/starship_9engine_4vac_active".
+                        }
+                        if NrOfVacEngines = 3 {
+                            set engine2label3:style:bg to "starship_img/starship_6engine_vac_active".
+                        }
                     }
                 }
                 else {
-                    if NrOfVacEngines = 6 {
-                        set engine2label3:style:bg to "starship_img/starship_9engine_vac_ready".
+                    if VACEngines[2]:ignition = true {
+                        if NrOfVacEngines = 6 {
+                            set engine2label3:style:bg to "starship_img/starship_9engine_vac_ready".
+                        }
+                        if NrOfVacEngines = 3 {
+                            set engine2label3:style:bg to "starship_img/starship_6engine_vac_ready".
+                        }
                     }
-                    if NrOfVacEngines = 3 {
-                        set engine2label3:style:bg to "starship_img/starship_6engine_vac_ready".
+                    else {
+                        if NrOfVacEngines = 6 {
+                            set engine2label3:style:bg to "starship_img/starship_9engine_4vac_ready".
+                        }
+                        if NrOfVacEngines = 3 {
+                            set engine2label3:style:bg to "starship_img/starship_6engine_vac_ready".
+                        }
                     }
                 }
                 set engine1label1:style:textcolor to white.
@@ -7481,7 +7575,12 @@ function updateEnginePage {
                 set engine2label4:style:border:h to throttleborder.
                 set engine2label4:style:border:v to throttleborder.
                 set engine2label1:style:overflow:right to -100.
-                set engine2label5:text to round(NrOfVacEngines * VACEngines[0]:thrust):tostring + " kN".
+                if VACEngines[2]:ignition = true {
+                    set engine2label5:text to round(NrOfVacEngines * VACEngines[0]:thrust):tostring + " kN".
+                }
+                else {
+                    set engine2label5:text to round(4 * VACEngines[0]:thrust):tostring + " kN".
+                }
                 if EngineTogglesHidden {
                     set engine2label4:style:overflow:right to 39 + (100 * (VACEngines[0]:thrust / max(VACEngines[0]:availablethrust, 0.000001))).
                 }
@@ -8039,6 +8138,13 @@ function ClearInterfaceAndSteering {
     set landlabel:style:textcolor to white.
     set landlabel:style:bg to "starship_img/starship_background_dark".
     ShowButtons(1).
+    if defined AltitudeOverLZ {
+        unset AltitudeOverLZ.
+    }
+    if defined LandingFacingVector {
+        unset LandingFacingVector.
+    }
+    set config:ipu to 500.
     LogToFile("Interface cleared").
 }
 
@@ -8859,13 +8965,18 @@ function PerformBurn {
     if AlreadyHasNode {
         set message1:text to "<b>Execute Custom Burn:</b>".
     }
-    else if addons:tr:hasimpact and verticalspeed < 0 {
+    if defined AltitudeOverLZ {
+        set message1:text to "<size=19><b>Suggested De-Orbit Burn to Point OVHD LZ:</b></size>".
+        set message2:text to "<size=19><b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s   <b>Alt over LZ:</b>  " + round(AltitudeOverLZ/1000, 1) + "km</size>".
+    }
+    else if addons:tr:hasimpact and periapsis > 0 {
         set message1:text to "<b>Suggested De-Orbit Burn:</b>".
+        set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s".
     }
     else {
         set message1:text to "<b>Circularize at Altitude:</b>  <color=yellow>" + round(((positionat(ship, burnstarttime) - ship:body:position):mag - ship:body:radius) / 1000, 1) + "km</color>".
+        set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s".
     }
-    set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s".
     set message3:style:textcolor to cyan.
     if quicksetting1:pressed {
         set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
