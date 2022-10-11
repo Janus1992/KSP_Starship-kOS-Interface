@@ -1,3 +1,9 @@
+# V1.0.4b (2022-10-11)
+- Fixed an issue causing the towers arms not to open before ship catching sometimes.
+- Fixed an issue causing the booster to sometimes land a few meters offset from the actual target (target was set wrongly).
+- Fixed some mun landing bugs.
+
+
 # V1.0.4a (2022-10-07)
 - Fixed some Mun Landing Bugs.
 - Planning a de-orbit on the mun will always plan a point 8km over the Landing Zone before landing vertically.
