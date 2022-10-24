@@ -1,3 +1,6 @@
+# V1.0.4c (2022-10-24)
+- Fixed a bug when confirming a planned maneuver too close to the start of the burn.
+
 # V1.0.4b (2022-10-11)
 - Fixed an issue causing the towers arms not to open before ship catching sometimes.
 - Fixed an issue causing the booster to sometimes land a few meters offset from the actual target (target was set wrongly).

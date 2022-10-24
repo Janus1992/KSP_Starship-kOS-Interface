@@ -4546,6 +4546,20 @@ set landbutton:ontoggle to {
                                     set deorbitburnstart to deorbitburn:deltav.
                                     InhibitButtons(0, 0, 0).
                                     if confirm() {
+                                        set deorbitAccel to 40/ship:mass.
+                                        set BurnDuration to deorbitburn:deltav:mag/deorbitAccel.
+                                        if deorbitburn:eta < 0.5 * BurnDuration + 10 {
+                                            LogToFile("Stopping De-Orbit Burn due to wrong orientation").
+                                            ClearInterfaceAndSteering().
+                                            set textbox:style:bg to "starship_img/starship_main_square_bg".
+                                            set message1:text to "<b>De-Orbit Burn Cancelled.</b>".
+                                            set message1:style:textcolor to yellow.
+                                            set message2:text to "<b>Planned Burn is too close to perform..</b>".
+                                            set message2:style:textcolor to yellow.
+                                            wait 3.
+                                            ClearInterfaceAndSteering().
+                                            return.
+                                        }
                                         LogToFile("Re-orienting for De-Orbit").
                                         InhibitButtons(1, 1, 0).
                                         ShutdownEngines().
@@ -4560,8 +4574,6 @@ set landbutton:ontoggle to {
                                         rcs on.
                                         Nose[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
                                         Tank[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
-                                        set deorbitAccel to 40/ship:mass.
-                                        set BurnDuration to deorbitburn:deltav:mag/deorbitAccel.
                                         sas off.
                                         rcs off.
                                         lock steering to lookdirup(deorbitburn:burnvector, ship:facing:topvector).
@@ -4652,6 +4664,10 @@ set landbutton:ontoggle to {
                                         LogToFile("Stopping De-Orbit Burn").
                                         ClearInterfaceAndSteering().
                                     }
+                                }
+                                else {
+                                    ClearInterfaceAndSteering().
+                                    LogToFile("Land Function Stopped").
                                 }
                             }
                         }
@@ -9053,6 +9069,18 @@ function PerformBurn {
     }
     InhibitButtons(0, 0, 0).
     if confirm() {
+        if nextnode:eta < 0.5 * BurnDuration + 10 {
+            LogToFile("Stopping De-Orbit Burn due to wrong orientation").
+            ClearInterfaceAndSteering().
+            set textbox:style:bg to "starship_img/starship_main_square_bg".
+            set message1:text to "<b>Burn Cancelled.</b>".
+            set message1:style:textcolor to yellow.
+            set message2:text to "<b>Planned Burn is too close to perform..</b>".
+            set message2:style:textcolor to yellow.
+            wait 3.
+            ClearInterfaceAndSteering().
+            return.
+        }
         LogToFile("Re-orienting for Burn").
         InhibitButtons(1, 1, 0).
         ShowButtons(0).
