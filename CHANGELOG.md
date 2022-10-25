@@ -1,3 +1,9 @@
+# V1.0.4d (2022-10-25)
+- Fixed Tower if the order of the modules was messed up (bug noticed after an OS reinstall, which changed some behaviours and caused some issues).
+- When EVA'ing during fuel vent the Interface no longer hangs.
+- When clicking 'log data' and no connection is available, the Interface no longer crashes.
+- Fixed an Interface crash upon booster separation (a small time delay avoids looking for the Booster when it hasn't fully separated yet).
+
 # V1.0.4c (2022-10-24)
 - Fixed a bug when confirming a planned maneuver too close to the start of the burn.
 
@@ -5,7 +11,6 @@
 - Fixed an issue causing the towers arms not to open before ship catching sometimes.
 - Fixed an issue causing the booster to sometimes land a few meters offset from the actual target (target was set wrongly).
 - Fixed some mun landing bugs.
-
 
 # V1.0.4a (2022-10-07)
 - Fixed some Mun Landing Bugs.
