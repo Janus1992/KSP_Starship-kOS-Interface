@@ -14,11 +14,80 @@ Set TowerTop to SHIP:PARTSNAMED("SLE.SS.OLIT.Top")[0].
 Set Mechazilla to SHIP:PARTSNAMED("SLE.SS.OLIT.MZ")[0].
 set config:ipu to 500.
 set PrevTime to time:seconds.
+clearscreen.
+
+
+//-------------Get Module Order-------------//
 
 
 
-//------------Program Start-Up-----------//
+for x in range(0, Mechazilla:modules:length) {
+    if Mechazilla:getmodulebyindex(x):hasaction("stop trolley") {
+        set NrforVertMoveMent to x.
+        break.
+    }
+}
+print "vertical movement: " + NrforVertMoveMent.
 
+for x in range(0, Mechazilla:modules:length) {
+    if Mechazilla:getmodulebyindex(x):hasaction("stop arm") {
+        set NrforStopArm1 to x.
+        break.
+    }
+}
+print "stop Arm 1: " + NrforStopArm1.
+
+for x in range(NrforStopArm1 + 1, Mechazilla:modules:length) {
+    if Mechazilla:getmodulebyindex(x):hasaction("stop arm") {
+        set NrforStopArm2 to x.
+        break.
+    }
+}
+print "stop Arm 2: " + NrforStopArm2.
+
+for x in range(0, Mechazilla:modules:length) {
+    if Mechazilla:getmodulebyindex(x):hasaction("stop pusher") {
+        set NrforStopPusher1 to x.
+        break.
+    }
+}
+print "stop Pusher 1: " + NrforStopPusher1.
+
+for x in range(NrforStopPusher1 + 1, Mechazilla:modules:length) {
+    if Mechazilla:getmodulebyindex(x):hasaction("stop pusher") {
+        set NrforStopPusher2 to x.
+        break.
+    }
+}
+print "stop Pusher 2: " + NrforStopPusher2.
+
+for x in range(0, Mechazilla:modules:length) {
+    if Mechazilla:getmodulebyindex(x):hasfield("current angle") {
+        set NrforOpenCloseArms to x.
+        break.
+    }
+}
+print "Open/Close Arms: " + NrforOpenCloseArms.
+
+for x in range(0, Mechazilla:modules:length) {
+    if Mechazilla:getmodulebyindex(x):hasaction("toggle pushers") {
+        set NrforOpenClosePushers to x.
+        break.
+    }
+}
+print "Open/Close Pushers: " + NrforOpenClosePushers.
+
+for x in range(0, Mechazilla:modules:length) {
+    if Mechazilla:getmodulebyindex(x):hasaction("stop stabilizers") {
+        set NrforStabilizers to x.
+        break.
+    }
+}
+print "Stabilizers: " + NrforStabilizers.
+
+
+
+//----------------Program Start-Up---------------//
 
 
 clearscreen.
@@ -35,16 +104,16 @@ print "Tower Nominal Operation, awaiting command..".
 
 until False {
     if time:seconds > PrevTime + 0.1 {
-        SaveToSettings("Tower:arms:rotation", Mechazilla:getmodulebyindex(6):getfield("current angle")).
-        if Mechazilla:getmodulebyindex(6):hasevent("open arms") {
+        SaveToSettings("Tower:arms:rotation", Mechazilla:getmodulebyindex(NrforOpenCloseArms):getfield("current angle")).
+        if Mechazilla:getmodulebyindex(NrforOpenCloseArms):hasevent("open arms") {
             SaveToSettings("Tower:arms:angle", 0).
         }
         else {
-            SaveToSettings("Tower:arms:angle", Mechazilla:getmodulebyindex(6):getfield("arms open angle")).
+            SaveToSettings("Tower:arms:angle", Mechazilla:getmodulebyindex(NrforOpenCloseArms):getfield("arms open angle")).
         }
-        SaveToSettings("Tower:pushers:extension", Mechazilla:getmodulebyindex(7):getfield("current extension")).
-        SaveToSettings("Tower:stabilizers:extension", Mechazilla:getmodulebyindex(8):getfield("current extension")).
-        SaveToSettings("Tower:arms:height", Mechazilla:getmodulebyindex(1):getfield("current extension")).
+        SaveToSettings("Tower:pushers:extension", Mechazilla:getmodulebyindex(NrforOpenClosePushers):getfield("current extension")).
+        SaveToSettings("Tower:stabilizers:extension", Mechazilla:getmodulebyindex(NrforStabilizers):getfield("current extension")).
+        SaveToSettings("Tower:arms:height", Mechazilla:getmodulebyindex(NrforVertMoveMent):getfield("current extension")).
         set PrevTime to time:seconds.
     }
 
@@ -124,8 +193,8 @@ function LiftOff {
 function MechazillaHeight {
     parameter targetheight.
     parameter targetspeed.
-    Mechazilla:getmodulebyindex(1):SetField("target extension", targetheight:toscalar).
-    Mechazilla:getmodulebyindex(1):SetField("target speed", targetspeed:toscalar).
+    Mechazilla:getmodulebyindex(NrforVertMoveMent):SetField("target extension", targetheight:toscalar).
+    Mechazilla:getmodulebyindex(NrforVertMoveMent):SetField("target speed", targetspeed:toscalar).
 }
 
 
@@ -134,14 +203,14 @@ function MechazillaArms {
     parameter targetspeed.
     parameter armsopenangle.
     parameter ArmsOpen.
-    Mechazilla:getmodulebyindex(6):SetField("target angle", targetangle:toscalar).
-    Mechazilla:getmodulebyindex(6):SetField("target speed", targetspeed:toscalar).
-    Mechazilla:getmodulebyindex(6):SetField("arms open angle", armsopenangle:toscalar).
-    if ArmsOpen = "true" and Mechazilla:getmodulebyindex(6):hasevent("open arms") {
-        Mechazilla:getmodulebyindex(6):DoAction("toggle arms", true).
+    Mechazilla:getmodulebyindex(NrforOpenCloseArms):SetField("target angle", targetangle:toscalar).
+    Mechazilla:getmodulebyindex(NrforOpenCloseArms):SetField("target speed", targetspeed:toscalar).
+    Mechazilla:getmodulebyindex(NrforOpenCloseArms):SetField("arms open angle", armsopenangle:toscalar).
+    if ArmsOpen = "true" and Mechazilla:getmodulebyindex(NrforOpenCloseArms):hasevent("open arms") {
+        Mechazilla:getmodulebyindex(NrforOpenCloseArms):DoAction("toggle arms", true).
     }
-    if ArmsOpen = "false" and Mechazilla:getmodulebyindex(6):hasevent("close arms") {
-        Mechazilla:getmodulebyindex(6):DoAction("toggle arms", true).
+    if ArmsOpen = "false" and Mechazilla:getmodulebyindex(NrforOpenCloseArms):hasevent("close arms") {
+        Mechazilla:getmodulebyindex(NrforOpenCloseArms):DoAction("toggle arms", true).
     }
 }
 
@@ -151,28 +220,28 @@ function MechazillaPushers {
     parameter targetspeed.
     parameter pushersopenlimit.
     parameter PushersOpen.
-    Mechazilla:getmodulebyindex(7):SetField("target extension", targetextension:toscalar).
-    Mechazilla:getmodulebyindex(7):SetField("target speed", targetspeed:toscalar).
-    if Mechazilla:getmodulebyindex(7):HasField("pushers close limit") {
-        Mechazilla:getmodulebyindex(7):SetField("pushers close limit", pushersopenlimit:toscalar).
+    Mechazilla:getmodulebyindex(NrforOpenClosePushers):SetField("target extension", targetextension:toscalar).
+    Mechazilla:getmodulebyindex(NrforOpenClosePushers):SetField("target speed", targetspeed:toscalar).
+    if Mechazilla:getmodulebyindex(NrforOpenClosePushers):HasField("pushers close limit") {
+        Mechazilla:getmodulebyindex(NrforOpenClosePushers):SetField("pushers close limit", pushersopenlimit:toscalar).
     }
-    if Mechazilla:getmodulebyindex(7):HasField("pushers open limit") {
-        Mechazilla:getmodulebyindex(7):SetField("pushers open limit", pushersopenlimit:toscalar).
+    if Mechazilla:getmodulebyindex(NrforOpenClosePushers):HasField("pushers open limit") {
+        Mechazilla:getmodulebyindex(NrforOpenClosePushers):SetField("pushers open limit", pushersopenlimit:toscalar).
     }
-    if Mechazilla:getmodulebyindex(7):HasField("pushers open limit") {
-        if PushersOpen = "true" and Mechazilla:getmodulebyindex(7):hasevent("open pushers") {
-            Mechazilla:getmodulebyindex(7):DoAction("toggle pushers", true).
+    if Mechazilla:getmodulebyindex(NrforOpenClosePushers):HasField("pushers open limit") {
+        if PushersOpen = "true" and Mechazilla:getmodulebyindex(NrforOpenClosePushers):hasevent("open pushers") {
+            Mechazilla:getmodulebyindex(NrforOpenClosePushers):DoAction("toggle pushers", true).
         }
-        if PushersOpen = "false" and Mechazilla:getmodulebyindex(7):hasevent("close pushers") {
-            Mechazilla:getmodulebyindex(7):DoAction("toggle pushers", true).
+        if PushersOpen = "false" and Mechazilla:getmodulebyindex(NrforOpenClosePushers):hasevent("close pushers") {
+            Mechazilla:getmodulebyindex(NrforOpenClosePushers):DoAction("toggle pushers", true).
         }
     }
-    if Mechazilla:getmodulebyindex(7):HasField("pushers close limit") {
-        if PushersOpen = "false" and Mechazilla:getmodulebyindex(7):hasevent("open pushers") {
-            Mechazilla:getmodulebyindex(7):DoAction("toggle pushers", true).
+    if Mechazilla:getmodulebyindex(NrforOpenClosePushers):HasField("pushers close limit") {
+        if PushersOpen = "false" and Mechazilla:getmodulebyindex(NrforOpenClosePushers):hasevent("open pushers") {
+            Mechazilla:getmodulebyindex(NrforOpenClosePushers):DoAction("toggle pushers", true).
         }
-        if PushersOpen = "true" and Mechazilla:getmodulebyindex(7):hasevent("close pushers") {
-            Mechazilla:getmodulebyindex(7):DoAction("toggle pushers", true).
+        if PushersOpen = "true" and Mechazilla:getmodulebyindex(NrforOpenClosePushers):hasevent("close pushers") {
+            Mechazilla:getmodulebyindex(NrforOpenClosePushers):DoAction("toggle pushers", true).
         }
     }
 }
@@ -180,16 +249,16 @@ function MechazillaPushers {
 
 function MechazillaStabilizers {
     parameter StabilizerPercent.
-    Mechazilla:getmodulebyindex(8):SetField("target extension", StabilizerPercent:toscalar(0)).
+    Mechazilla:getmodulebyindex(NrforStabilizers):SetField("target extension", StabilizerPercent:toscalar(0)).
 }
 
 
 function EmergencyStop {
-    Mechazilla:getmodulebyindex(1):SetField("target extension", Mechazilla:getmodulebyindex(1):GetField("current extension")).
-    Mechazilla:getmodulebyindex(2):DoAction("stop arm", true).
-    Mechazilla:getmodulebyindex(3):DoAction("stop arm", true).
-    Mechazilla:getmodulebyindex(4):DoAction("stop pusher", true).
-    Mechazilla:getmodulebyindex(5):DoAction("stop pusher", true).
+    Mechazilla:getmodulebyindex(NrforVertMoveMent):SetField("target extension", Mechazilla:getmodulebyindex(NrforVertMoveMent):GetField("current extension")).
+    Mechazilla:getmodulebyindex(NrforStopArm1):DoAction("stop arm", true).
+    Mechazilla:getmodulebyindex(NrforStopArm2):DoAction("stop arm", true).
+    Mechazilla:getmodulebyindex(NrforStopPusher1):DoAction("stop pusher", true).
+    Mechazilla:getmodulebyindex(NrforStopPusher2):DoAction("stop pusher", true).
     HUDTEXT("Emergency Stop Activated! Operate the tower yourself with care..", 3, 2, 20, red, false).
 }
 

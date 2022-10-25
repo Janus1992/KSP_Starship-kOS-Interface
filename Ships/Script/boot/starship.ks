@@ -161,13 +161,14 @@ set TargetSelected to false.
 set docked to false.
 set OnOrbitalMount to false.
 set ship:control:translation to v(0, 0, 0).
+set CargoMass to 0.
 
 
 //---------------Finding Parts-----------------//
 
 
 function FindParts {
-    if ship:dockingports[0]:haspartner {
+    if ship:dockingports[0]:haspartner and SHIP:PARTSNAMED("SEP.B4.Core"):length = 0 {
         set ShipIsDocked to true.
         if startup {}
         else {
@@ -1217,23 +1218,31 @@ set quicksetting2:ontoggle to {
 set quicksetting3:ontoggle to {
     parameter pressed.
     if pressed {
-        if exists("0:/LaunchData.csv") {
-            if ship:status = "PRELAUNCH" {
-                deletepath("0:/LaunchData.csv").
+        if homeconnection:isconnected {
+            if exists("0:/LaunchData.csv") {
+                if ship:status = "PRELAUNCH" {
+                    deletepath("0:/LaunchData.csv").
+                }
             }
+            if exists("0:/LandingData.csv") {
+                deletepath("0:/LandingData.csv").
+            }
+            if exists("0:/FlightData.txt") {
+                deletepath("0:/FlightData.txt").
+            }
+            if defined PrevLogTime {
+                unset PrevLogTime.
+            }
+            SaveToSettings("Log Data", "true").
+            set Logging to true.
+            LogToFile("Flight Data Recorder Started").
         }
-        if exists("0:/LandingData.csv") {
-            deletepath("0:/LandingData.csv").
+        else {
+            set quicksetting3:text to "<b><color=red>Log Data</color></b>".
+            wait 0.25.
+            set quicksetting3:text to "<b>Log Data</b>".
+            set quicksetting3:pressed to false.
         }
-        if exists("0:/FlightData.txt") {
-            deletepath("0:/FlightData.txt").
-        }
-        if defined PrevLogTime {
-            unset PrevLogTime.
-        }
-        SaveToSettings("Log Data", "true").
-        set Logging to true.
-        LogToFile("Flight Data Recorder Started").
     }
     if not pressed {
         SaveToSettings("Log Data", "false").
@@ -4373,9 +4382,7 @@ set landbutton:ontoggle to {
                             set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
                             set execute:text to "<b>CONFIRM</b>".
                             InhibitButtons(0, 0, 0).
-                            if confirm() {
-
-                            }
+                            if confirm() {}
                             else {
                                 set execute:text to "<b>EXECUTE</b>".
                                 ClearInterfaceAndSteering().
@@ -4420,7 +4427,10 @@ set landbutton:ontoggle to {
                                         if not cancelconfirmed {
                                             if KUniverse:activevessel = vessel(ship:name) {}
                                             else {
-                                                break.
+                                                ShutdownEngines().
+                                                LogToFile("Stop Venting").
+                                                ClearInterfaceAndSteering().
+                                                return.
                                             }
                                             set message2:text to round((((drainBegin - FuelVentCutOffValue) - (LFShip - FuelVentCutOffValue)) / (LFcap - (LFcap - drainBegin) - FuelVentCutOffValue)) * 100, 1):tostring + "% Complete".
                                             set message3:text to "<b>Time Remaining:</b> " + timeSpanCalculator((LFShip - FuelVentCutOffValue) / VentRate).
@@ -5493,6 +5503,8 @@ function Launch {
                     }
                 }
                 BoosterInterstage[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
+                wait 0.1.
+                set StageSeparationTime to time:seconds.
                 set Boosterconnected to false.
                 set CargoAfterSeparation to TotalCargoMass[0].
                 InhibitButtons(1, 1, 1).
@@ -5504,7 +5516,6 @@ function Launch {
                 SaveToSettings("Ship Name", ship:name).
                 HideEngineToggles(1).
                 if not cancelconfirmed {
-                    set StageSeparationTime to time:seconds.
                     until time:seconds > StageSeparationTime + 5 {
                         if not BGUisRunning {
                             BackGroundUpdate().
@@ -6655,7 +6666,6 @@ function LngLatError {
             set lngresult to vdot(ApproachVector, ErrorVector).
             set latresult to vdot(ApproachVector:direction:topvector, ErrorVector).
             set GSEast to -vdot(vxcl(up:vector, velocity:surface), north:starvector).
-            print GSEast.
             if GSEast < 0 {
                 set latresult to -latresult.
             }
@@ -7074,7 +7084,7 @@ function updatestatusbar {
             if FuelMass = 0 {
                 set FuelMass to 0.001.
             }
-            if ship:dockingports[0]:haspartner {
+            if ship:dockingports[0]:haspartner and SHIP:PARTSNAMED("SEP.B4.Core"):length = 0 {
                 set status2:style:textcolor to green.
                 set status2:text to "<b><color=white>Status: </color>Docked</b>".
             }
@@ -7303,7 +7313,7 @@ function updateStatus {
         if OnOrbitalMount {
             set status1label5:text to "<b>MASS:</b>  " + round(ship:mass - SHIP:PARTSNAMED("SLE.SS.OLP")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.Base")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.Core")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.Top")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.MZ")[0]:mass, 1) + "t".
         }
-        else if ship:dockingports[0]:haspartner {
+        else if ship:dockingports[0]:haspartner and SHIP:PARTSNAMED("SEP.B4.Core"):length = 0 {
             set status1label5:text to "<b>MASS:</b>  <color=grey><size=12>docked..</size></color>".
         }
         else {
