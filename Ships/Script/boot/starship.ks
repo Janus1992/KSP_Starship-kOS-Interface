@@ -1101,6 +1101,7 @@ set setting3:onconfirm to {
         set value to value:split(",").
         if value[0]:toscalar(-9999) = -9999 or value[1]:toscalar(-9999) = -9999 {
             set value to "-0.0972,-74.5577".
+            set landingzone to latlng(-0.0972,-74.5577).
             set setting3:text to value.
             SaveToSettings("Landing Coordinates", value).
         }
@@ -5413,7 +5414,7 @@ function Launch {
         wait 0.001.
 
         set targetap to 75000.
-        set OrbitBurnPitchCorrectionPID to PIDLOOP(0.075, 0, 0, -30, 0).
+        set OrbitBurnPitchCorrectionPID to PIDLOOP(0.05, 0, 0, -30, 0). //was 0.075
         set OrbitBurnPitchCorrectionPID:setpoint to targetap.
 
         if OnOrbitalMount {
@@ -5490,6 +5491,10 @@ function Launch {
                 unlock steering.
                 LogToFile("Starting stage-separation").
                 if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
+                set message1:text to "<b>Booster Separation in progress..</b>".
+                set message2:text to "".
+                set message3:text to "".
+                GoHome().
                 wait 0.001.
                 lock throttle to 0.
                 set CargoBeforeSeparation to TotalCargoMass[0].
@@ -6718,10 +6723,10 @@ function sendMessage{
     set cnx to v:connection.
     if cnx:isconnected {
         if cnx:sendmessage(msg) {
-            print "message sent..(" + msg + ")".
+            print "message sent: (" + msg + ")".
         }
         else {
-            print "message could not be sent..".
+            print "message could not be sent!! (" + msg + ")".
         }.
     }
     else {
@@ -8436,7 +8441,7 @@ function SaveToSettings {
         writejson(L, "0:/settings.json").
     }
     else {
-        print "No connection".
+        print "No connection, " + (key) + " : " +  (value) + " not saved".
     }
 }
 
@@ -8506,7 +8511,7 @@ function HideEngineToggles {
 function TotalCargoMass {
     if not CargoCalculationIsRunning {
         set CargoCalculationIsRunning to true.
-        if ship:dockingports[0]:haspartner {
+        if ship:dockingports[0]:haspartner and SHIP:PARTSNAMED("SEP.B4.Core"):length = 0 {
             set CargoCalculationIsRunning to false.
             return list(0, 0, 0).
         }

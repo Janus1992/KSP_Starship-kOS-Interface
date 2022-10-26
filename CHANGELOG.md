@@ -1,3 +1,7 @@
+# V1.0.4e (2022-10-26)
+- Oscillation during orbit entry for starship tanker fixed.
+- new: a Booster separation message.
+
 # V1.0.4d (2022-10-25)
 - Fixed Tower if the order of the modules was messed up (bug noticed after an OS reinstall, which changed some behaviours and caused some issues).
 - When EVA'ing during fuel vent the Interface no longer hangs.
