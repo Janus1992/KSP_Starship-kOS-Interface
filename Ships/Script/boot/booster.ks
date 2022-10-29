@@ -356,7 +356,7 @@ FUNCTION SteeringCorrections {
             set calcVS to calcVS - (9.81 * timestep).
             set calcAlt to calcAlt + (calcVS * timestep).
         }
-        set GSEast to -vdot(vxcl(up:vector, velocity:surface), north:starvector).
+        set GSEast to vdot(vxcl(up:vector, velocity:surface), heading(090,0):vector).
         set GSNorth to vdot(vxcl(up:vector, velocity:surface), north:vector).
 
         set NewLng to ship:geoposition:lng + (GSEast * timetoimpact) / 10471.1975.
@@ -479,7 +479,7 @@ function LogBoosterFlightData {
 
 
 function EstimateFlightPath {
-    set GSEast to -vdot(vxcl(up:vector, velocity:surface), north:starvector).
+    set GSEast to vdot(vxcl(up:vector, velocity:surface), heading(090,0):vector).
     set GSNorth to vdot(vxcl(up:vector, velocity:surface), north:vector).
 
     set TimeToGround to (RadarAlt / -verticalspeed).

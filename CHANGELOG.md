@@ -1,3 +1,13 @@
+# V1.0.4f (2022-10-29)
+- Overhauled the indexing of all ships parts, and the calculation of all Masses. Shows correct mass and delta-v of the ship that the Interface belongs to while being docked to another.
+- Fixed overlapping Interfaces for up to 2 ships in close proximity. The Interface for the active ship will always be on top, and the inactive ship below. When docked: crew or cargo on top, tanker at the bottom. crew + cargo will still overlap.
+- Fixed a bug where the ship would steer the wrong way during re-entry.
+- New calculation of the flap angles to reflect that they need time to move (actual values are unfortunately not shared by the mod).
+- New temperature calculation for the heatshield (still just eye-candy).
+- Improved Duna Landings (no oscillations found anymore).
+- Improved ksp performance (reduced the time that the cpu runs the highest possible 2000 lines per second).
+- When a message is succesfully sent, the symbol on the main page will now light up green.
+
 # V1.0.4e (2022-10-26)
 - Oscillation during orbit entry for starship tanker fixed.
 - new: a Booster separation message.
