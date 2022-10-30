@@ -6826,18 +6826,24 @@ function sendMessage{
     if cnx:isconnected {
         if cnx:sendmessage(msg) {
             print "message sent: (" + msg + ")".
-            set message32:style:bg to "starship_img/starship_signal_green".
+            if defined message32 {
+                set message32:style:bg to "starship_img/starship_signal_green".
+            }
             set LastMessageSentTime to time:seconds.
         }
         else {
             print "message could not be sent!! (" + msg + ")".
-            set message32:style:bg to "starship_img/starship_signal_red".
+            if defined message32 {
+                set message32:style:bg to "starship_img/starship_signal_red".
+            }
             set LastMessageSentTime to time:seconds.
         }.
     }
     else {
         print "connection could not be established..".
-        set message32:style:bg to "starship_img/starship_signal_red".
+        if defined message32 {
+            set message32:style:bg to "starship_img/starship_signal_red".
+        }
         set LastMessageSentTime to time:seconds.
     }
 }

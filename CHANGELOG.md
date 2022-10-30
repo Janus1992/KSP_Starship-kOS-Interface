@@ -1,3 +1,6 @@
+# V1.0.4.g (2022-10-30)
+- fixed the message sent crash.
+
 # V1.0.4f (2022-10-29)
 - Overhauled the indexing of all ships parts, and the calculation of all Masses. Shows correct mass and delta-v of the ship that the Interface belongs to while being docked to another.
 - Fixed overlapping Interfaces for up to 2 ships in close proximity. The Interface for the active ship will always be on top, and the inactive ship below. When docked: crew or cargo on top, tanker at the bottom. crew + cargo will still overlap.
