@@ -1,5 +1,8 @@
 # V1.0.4.g (2022-10-30)
 - fixed the message sent crash.
+- Slightly more accurate Launch-to-Rendezvous (LFO and LCH4).
+- Fixed an automatic mun deorbit bug causing too high approach over LZ, and a bug that caused correcting in the wrong direction in some cases.
+- Delta-V Calculation shown properly depending on engines selected and preflight situation.
 
 # V1.0.4f (2022-10-29)
 - Overhauled the indexing of all ships parts, and the calculation of all Masses. Shows correct mass and delta-v of the ship that the Interface belongs to while being docked to another.

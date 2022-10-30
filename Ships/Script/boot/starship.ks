@@ -75,6 +75,8 @@ set maxstabengage to 50.  // Defines max closing of the stabilizers after landin
 set config:ipu to 500.
 set FWDFlapDefault to 55.
 set AFTFlapDefault to 50.
+set rcsRaptorBoundary to 100.  // Defines the custom burn boundary velocity where the ship will burn either RCS below it or Raptors above it.
+set SafeAltOverLZ to 1500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
 
 
 //---------Initial Program Variables-----------//
@@ -91,7 +93,6 @@ set MechaZillaShouldCatchShip to false.
 set currentdeltav to 0.
 set ShipMass to 0.
 set FuelMass to 1.
-set FlipAltitude to 500.
 set TargetShip to false.
 set FuelVentCutOffValue to 3500.
 set FindNewTarget to false.
@@ -155,7 +156,7 @@ set fan to false.
 set FlapsYawEngaged to true.
 set CargoBay to false.
 set IdealRCS to 100.
-set JustCheckingWhatTheErrorIs to false.
+//set JustCheckingWhatTheErrorIs to false.
 set PreviousAoAError to 0.
 set AvailableLandingSpots to list(0, latlng(0,0), 0, 0, 0).
 set TargetSelected to false.
@@ -169,6 +170,8 @@ set prevCalcTime to time:seconds.
 set PrevActiveStatus to KUniverse:activevessel.
 set LZFinderCancelled to false.
 set LastMessageSentTime to time:seconds.
+set CancelVelocityHasStarted to false.
+set LandingFacingVector to v(0, 0, 0).
 
 
 
@@ -2305,6 +2308,7 @@ set quickengine2:ontoggle to {
             wait 0.25.
             set quickengine2:text to "<b>SL Raptors</b>".
             set quickengine2:pressed to false.
+            set ShowSLdeltaV to false.
         }
         else {
             LogToFile("SL Engines ON").
@@ -2317,6 +2321,7 @@ set quickengine2:ontoggle to {
         if quickengine3:pressed {
             for eng in SLEngines {eng:shutdown.}.
             LogToFile("SL Engines OFF").
+            set ShowSLdeltaV to false.
         }
         else {
             ShutDownAllEngines().
@@ -2332,6 +2337,7 @@ set quickengine3:ontoggle to {
             wait 0.25.
             set quickengine3:text to "<b>VAC Raptors</b>".
             set quickengine3:pressed to false.
+            set ShowSLdeltaV to false.
         }
         else {
             LogToFile("VAC Engines ON").
@@ -2339,8 +2345,12 @@ set quickengine3:ontoggle to {
             ActivateEngines(1).
             set ShowSLdeltaV to false.
         }
+        if quickengine2:pressed {
+            set ShowSLdeltaV to true.
+        }
     }
     else {
+        set ShowSLdeltaV to true.
         if quickengine2:pressed {
             for eng in VACEngines {eng:shutdown.}.
             LogToFile("VAC Engines OFF").
@@ -3643,6 +3653,9 @@ set maneuver3button:onclick to {
         if ManeuverPicker:text = "<b><color=white>Auto-Dock</color></b>" {
             if TargetPicker:text = "" or TargetPicker:text = "<color=grey><b>Select Target</b></color>" {}
             else {
+                if ship:dockingports[0]:haspartner {
+                    return.
+                }
                 InhibitButtons(1,1,0).
                 HideEngineToggles(1).
                 ShowButtons(0).
@@ -4058,8 +4071,14 @@ set launchbutton:ontoggle to {
                             LogToFile("Starting Launch Function").
                             if TargetShip = 0 {}
                             else {
-                                set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 15.
-                                set LaunchDistance to 183000 + (CargoMass / MaxCargoToOrbit) * 20000.
+                                if LiquidMethaneOnBoard {
+                                    set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
+                                    set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
+                                }
+                                else {
+                                    set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
+                                    set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
+                                }
                                 if NrOfVacEngines = 3 {
                                     set LaunchTimeSpanInSeconds to LaunchTimeSpanInSeconds + 3.
                                 }
@@ -4165,7 +4184,7 @@ set launchbutton:ontoggle to {
                     ClearInterfaceAndSteering().
                 }
             }
-            else if airspeed > 10 and periapsis < 0 {
+            else if airspeed > 10 and periapsis < 0 and verticalspeed > 0 {
                 Launch().
             }
             else {
@@ -4207,6 +4226,7 @@ set landbutton:ontoggle to {
             return.
         }
         set LandButtonIsRunning to true.
+        set config:ipu to 2000.
         LogToFile("Land button clicked").
         ShowButtons(0).
         ShipsInOrbit().
@@ -4284,9 +4304,9 @@ set landbutton:ontoggle to {
                             ClearInterfaceAndSteering().
                             return.
                         }
-                        set JustCheckingWhatTheErrorIs to true.
+                        //set JustCheckingWhatTheErrorIs to true.
                         set LngLatErrorList to LngLatError().
-                        set JustCheckingWhatTheErrorIs to false.
+                        //set JustCheckingWhatTheErrorIs to false.
                         if ship:body = BODY("Kerbin") {
                             set LongitudinalAcceptanceLimit to 50000.
                             set LatitudinalAcceptanceLimit to 20000.
@@ -4788,9 +4808,9 @@ set landbutton:ontoggle to {
                             ClearInterfaceAndSteering().
                             return.
                         }
-                        set JustCheckingWhatTheErrorIs to true.
+                        //set JustCheckingWhatTheErrorIs to true.
                         set LngLatErrorList to LngLatError().
-                        set JustCheckingWhatTheErrorIs to false.
+                        //set JustCheckingWhatTheErrorIs to false.
                         set LongitudinalAcceptanceLimit to 50000.
                         set LatitudinalAcceptanceLimit to 50000.
                         if LngLatErrorList[0] > LongitudinalAcceptanceLimit or LngLatErrorList[0] < -LongitudinalAcceptanceLimit or LngLatErrorList[1] > LatitudinalAcceptanceLimit or LngLatErrorList[1] < -LatitudinalAcceptanceLimit {
@@ -4945,6 +4965,8 @@ set landbutton:ontoggle to {
 function LandwithoutAtmo {
     if addons:tr:hasimpact {
         set LandButtonIsRunning to true.
+        set TimeToOVHD to 90.
+        set config:ipu to 500.
         set textbox:style:bg to "starship_img/starship_main_square_bg".
         set LandSomewhereElse to false.
         set CancelVelocityHasStarted to false.
@@ -4974,7 +4996,6 @@ function LandwithoutAtmo {
             VACEngines[3]:shutdown.
         }
         lock throttle to 0.
-        lock STEERING to LandwithoutAtmoSteering.
         if quicksetting1:pressed and altitude > 10000 {
             set kuniverse:timewarp:warp to 4.
         }
@@ -4990,7 +5011,7 @@ function LandwithoutAtmo {
                 set runningprogram to "Landing".
                 set LandingFacingVector to vxcl(up:vector, ApproachVector).
                 set CancelVelocityHasStarted to true.
-                lock throttle to min(LngLatErrorList[0] / 1000, 29.43 / MaxAccel).
+                lock throttle to min(LngLatErrorList[0] / 1000, min(29.43 / MaxAccel, CancelHorVelRatio)).
                 when groundspeed < 75 and LngLatErrorList[0] < 50 and LngLatErrorList[0] > -50 then {
                     set throttle to 0.
                     when landingRatio > 1 and groundspeed < 75 then {
@@ -5011,8 +5032,9 @@ function LandwithoutAtmo {
                 lock throttle to min(((DesiredDecel + Planet1G) / max(MaxAccel, 0.000001)) * landingRatio, 2 * 9.81 / max(MaxAccel, 0.000001)).
             }
         }
+        lock STEERING to LandwithoutAtmoSteering.
 
-        when RadarAlt < 2500 and LngLatErrorList[0] > 250 or RadarAlt < 2500 and LngLatErrorList[0] < -250 or RadarAlt < 2500 and LngLatErrorList[1] > 250 or RadarAlt < 2500 and LngLatErrorList[1] < -250 then {
+        when RadarAlt < SafeAltOverLZ - 100 and LngLatErrorList[0] > 250 or RadarAlt < SafeAltOverLZ - 100 and LngLatErrorList[0] < -250 or RadarAlt < SafeAltOverLZ - 100 and LngLatErrorList[1] > 250 or RadarAlt < SafeAltOverLZ - 100 and LngLatErrorList[1] < -250 then {
             CheckLZReachable().
             set LandingFacingVector to vxcl(up:vector, landingzone:position - ship:position):normalized.
             set NewTargetSet to true.
@@ -5083,17 +5105,23 @@ function LandwithoutAtmo {
 function LandwithoutAtmoSteering {
     set LngLatErrorList to LngLatError().
 
-    lock MaxAccel to max(ship:availablethrust / ship:mass, 0.000001).
-    lock BurnAccel to min(29.43, MaxAccel).
-    lock DesiredDecel to 4.
-    lock stopTime to airspeed / DesiredDecel.
-    lock stopDist to 0.5 * DesiredDecel * stopTime * stopTime.
-    lock landingRatio to stopDist / RadarAlt.
+    set MaxAccel to max(ship:availablethrust / ship:mass, 0.000001).
+    set BurnAccel to min(29.43, MaxAccel).
+    set DesiredDecel to 4.
+    set stopTime to airspeed / DesiredDecel.
+    set stopDist to 0.5 * DesiredDecel * stopTime * stopTime.
+    set landingRatio to stopDist / RadarAlt.
 
-    set horDist to (ship:geoposition:position - landingzone:position):mag.
-    set horStopTime to groundspeed / BurnAccel.
-    set horStopDist to 0.5 * BurnAccel * horStopTime * horStopTime.
-    set CancelHorVelRatio to horStopDist / horDist.
+
+    if groundspeed > 75 {
+        if not (CancelVelocityHasStarted) {
+            set CosAngle to cos(vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface))).
+        }
+        set horDist to (ship:geoposition:position - landingzone:position):mag.
+        set horStopTime to groundspeed / (BurnAccel * CosAngle).
+        set horStopDist to 0.5 * BurnAccel * horStopTime * horStopTime.
+        set CancelHorVelRatio to horStopDist / horDist.
+    }
 
     if RadarAlt < 1000 and ErrorVector:MAG > (RadarAlt + 15) and not LandSomewhereElse {
         set LandSomewhereElse to true.
@@ -5104,31 +5132,37 @@ function LandwithoutAtmoSteering {
         set ErrorVector to ErrorVector:normalized * max(min(RadarAlt / 20, 10), 2.5).
     }
 
-    set SecondsToCancelHorVelocity to (horDist - horStopDist) / groundspeed.
-    set x to SecondsToCancelHorVelocity.
-    set OVHDlng to -180.
-    until OVHDlng > landingzone:lng {
-        set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
-        set x to x + 1.
+    if groundspeed > 75 and not CancelVelocityHasStarted {
+        set SecondsToCancelHorVelocity to (horDist - horStopDist) / groundspeed.
+        set x to SecondsToCancelHorVelocity.
+        set OVHDlng to -180.
+        until OVHDlng > landingzone:lng + x / (ship:body:rotationperiod / 360) {
+            set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
+            set x to x + 1.
+        }
+        set TimeToOVHD to x.
+        set ApproachAltitude to ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)).
     }
-    set TimeToOVHD to x.
-    set ApproachAltitude to ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)).
 
     //clearscreen.
     //print "stop time: " + stopTime.
     //print "stop dist: " + stopDist.
     //print "landing ratio: " + landingRatio.
     //print "horizontal distance: " + horDist.
+    //print "horizontal stop time: " + horStopTime.
+    //print "horizontal stop distance: " + horStopDist.
     //print "cancel ratio: " + CancelHorVelRatio.
     //print "Radar Alt: " + RadarAlt.
     //print "Time to Overhead: " + TimeToOVHD.
     //print "Approach Altitude: " + round(ApproachAltitude).
+    //print "Angle: " + vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface)).
+    //print "Cos Angle: " + cos(vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface))).
 
     if vang(facing:topvector, up:vector) < 45 and not CancelVelocityHasStarted and not (ship:body = BODY("Minmus")) and not (ship:body = BODY("Gilly")) {
-        set ship:control:translation to v(-LngLatErrorList[1] / 100, -(ApproachAltitude - 8000) / 5000, 0).
+        set ship:control:translation to v(-LngLatErrorList[1] / 500, -(ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ)) / 5000, 0).
     }
     else if vang(facing:topvector, up:vector) < 45 and not CancelVelocityHasStarted {
-        set ship:control:translation to v(-LngLatErrorList[1] / 100, (-LngLatErrorList[0] + 2500) / 500, 0).
+        set ship:control:translation to v(-LngLatErrorList[1] / 500, (-LngLatErrorList[0] + 2500) / 500, 0).
     }
     else if groundspeed < 75 and RadarAlt > 1000 {
         rcs on.
@@ -5185,8 +5219,8 @@ function LandwithoutAtmoSteering {
         set DistanceToTarget to sqrt(LngDistanceToTarget * LngDistanceToTarget + LatDistanceToTarget * LatDistanceToTarget).
     }
 
-    if CancelVelocityHasStarted {
-        if RadarAlt > 2500 {
+    if CancelVelocityHasStarted or RadarAlt < SafeAltOverLZ + 500 {
+        if RadarAlt > SafeAltOverLZ + 500 {
             set message1:text to "<b>Remaining Flight Time:</b>  " + timeSpanCalculator(ADDONS:TR:TIMETILLIMPACT).
         }
         else {
@@ -5214,13 +5248,20 @@ function LandwithoutAtmoSteering {
         set message3:text to "<b><color=yellow>Landing somewhere else..</color></b>".
     }
 
-    if (horDist - horStopDist) / groundspeed < 90 and kuniverse:timewarp:warp > 0 {
-        set kuniverse:timewarp:warp to 0.
+    if groundspeed > 75 {
+        if (horDist - horStopDist) / groundspeed < 120 and kuniverse:timewarp:warp > 3 {
+            set kuniverse:timewarp:warp to 3.
+        }
+
+        if (horDist - horStopDist) / groundspeed < 60 and kuniverse:timewarp:warp > 0 {
+            set kuniverse:timewarp:warp to 0.
+        }
     }
 
     if not BGUisRunning {
         BackGroundUpdate().
     }
+
     if groundspeed < 75 and vang(facing:forevector, up:vector) < 45 {
         return lookDirUp(result, LandingFacingVector).
     }
@@ -5545,7 +5586,13 @@ function Launch {
                 SaveToSettings("Landing Coordinates", (landingzone:lat + "," + landingzone:lng)).
             }
             SaveToSettings("Launch Coordinates", (landingzone:lat + "," + landingzone:lng)).
-            LogToFile("Lift-Off").
+            if defined LaunchTime {
+                LogToFile("Lift-Off! Time difference from Launch-to-Rendezvous-Time to Lift-off: " + timeSpanCalculator(time:seconds - LaunchTime - 16)).
+            }
+            else {
+                LogToFile("Lift-Off!").
+            }
+            set LiftOffTime to time:seconds.
         }
         else if apoapsis < targetap {
             lock throttle to 1.
@@ -5640,9 +5687,11 @@ function Launch {
                 wait 0.001.
             }
             ShutDownAllEngines().
+            set DistanceToTarget to ((landingzone:lng - ship:geoposition:lng) * Planet1Degree).
+            LogToFile("Distance flown from Launch Site to Orbit Complete: " + round(DistanceToTarget, 3) + "km").
+            LogToFile("Circularization Burn Finished. Time since Lift-Off: " + timeSpanCalculator(time:seconds - LiftOffTime)).
             sas on.
             set message1:text to "<b>Current Orbit:</b>                        " + round(APOAPSIS / 1000, 1) + "km x " + round(PERIAPSIS / 1000, 1) + "km".
-            LogToFile("Circularization Burn Finished").
             wait 0.001.
             HideEngineToggles(1).
             wait 0.001.
@@ -6069,8 +6118,10 @@ Function AbortSteering {
 function ReEntryAndLand {
     if addons:tr:hasimpact{
         set LandButtonIsRunning to true.
+        set config:ipu to 500.
         set LandSomewhereElse to false.
         SetPlanetData().
+        set FlipAltitude to 500.
         set addons:tr:descentmodes to list(true, true, true, true).
         set addons:tr:descentgrades to list(false, false, false, false).
         set addons:tr:descentangles to list(aoa, aoa, aoa, aoa).
@@ -6138,7 +6189,12 @@ function ReEntryAndLand {
                 set YawPID to PIDLOOP(0.25, 0, 0, -15, 15).
                 set STEERINGMANAGER:PITCHTS to 2.5.
                 set STEERINGMANAGER:YAWTS to 1.
-                set FlipAltitude to max((ship:mass / 50) * 500, 500).
+                if ship:body = BODY("Kerbin") {
+                    set FlipAltitude to max((ship:mass / 50) * 500, 500).
+                }
+                if ship:body = BODY("Duna") {
+                    set FlipAltitude to 2000.
+                }
                 set runningprogram to "Final Approach".
                 LogToFile("Vehicle is Subsonic, precise steering activated").
                 when RadarAlt < 10000 then {
@@ -6179,8 +6235,8 @@ function ReEntryAndLand {
             LogToFile("Radar Altimeter < " + round(FlipAltitude) + " (" + round(RadarAlt) + "), starting Landing Procedure").
         }
         if ship:body = BODY("Duna") {
-            wait until RadarAlt < 2000 or altitude - AvailableLandingSpots[4] < 2000 or cancelconfirmed and not ClosingIsRunning.
-            LogToFile("Radar Altimeter < 2000, starting Landing Procedure").
+            wait until RadarAlt < FlipAltitude or altitude - AvailableLandingSpots[4] < FlipAltitude or cancelconfirmed and not ClosingIsRunning.
+            LogToFile("Radar Altimeter < FlipAltitude, starting Landing Procedure").
         }
         if cancelconfirmed {
             ClearInterfaceAndSteering().
@@ -6753,29 +6809,46 @@ function LngLatError {
                 if ApproachVector = v(0,0,0) or addons:tr:TIMETILLIMPACT < 150 {
                     set ApproachUPVector to (landingzone:position - body:position):normalized.
                     set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, time:seconds + addons:tr:TIMETILLIMPACT - 120):surface):normalized.
-                    //set ApproachVectorDraw to vecdraw(v(0, 0, 0), ApproachVector, green, "Approach Vector", 20, true, 0.005, true, true).
                 }
             }
             else {
-                if ApproachVector = v(0,0,0) or (time:seconds < ApproachTime) and not (ApproachTime = 0) {
+                if ApproachVector = v(0,0,0) and not (ApproachTime = 0) or (time:seconds < ApproachTime) and not (ApproachTime = 0) {
                     set ApproachUPVector to (landingzone:position - body:position):normalized.
                     set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, ApproachTime):surface):normalized.
                 }
-                else if vang(facing:forevector, up:vector) > 45 {
+                else if not (CancelVelocityHasStarted) {
                     set ApproachUPVector to (landingzone:position - body:position):normalized.
                     set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, time:seconds + addons:tr:TIMETILLIMPACT - 120):surface):normalized.
                 }
-                else {
+                else if not (LandingFacingVector = v(0, 0, 0)) {
+                    set ApproachUPVector to (landingzone:position - body:position):normalized.
                     set ApproachVector to LandingFacingVector.
                 }
             }
 
+            //clearvecdraws().
+            //set ApproachVectorDraw to vecdraw(v(0, 0, 0), ApproachVector, green, "Approach Vector", 20, true, 0.005, true, true).
+            //set ApproachTopVectorDraw to vecdraw(v(0, 0, 0), AngleAxis(-90, ApproachUPVector) * ApproachVector, magenta, "Approach TOPVector", 20, true, 0.005, true, true).
+            //set ApproachUPVectorDraw to vecdraw(v(0, 0, 0), ApproachUPVector, Blue, "Approach UP Vector", 20, true, 0.005, true, true).
+            //if defined LandingFacingVector {
+                //set LDGFacingVectorDraw to vecdraw(v(0, 0, 0), LandingFacingVector, red, "LandingFacingVector", 20, true, 0.005, true, true).
+            //}
+            //set ErrorVectorDraw to vecdraw(v(0, 0, 0), ErrorVector, yellow, "ErrorVector", 20, true, 0.005, true, true).
+            //set CorrectedSFVVectorDraw to vecdraw(v(0, 0, 0), vxcl(ApproachUPVector, velocity:surface), cyan, "Corrected SFC", 20, true, 0.005, true, true).
+
+
             set lngresult to vdot(ApproachVector, ErrorVector).
-            set latresult to vdot(ApproachVector:direction:topvector, ErrorVector).
-            set GSEast to vdot(vxcl(up:vector, velocity:surface), heading(090,0):vector).
-            if GSEast < 0 {
-                set latresult to -latresult.
-            }
+            set latresult to vdot(AngleAxis(-90, ApproachUPVector) * ApproachVector, ErrorVector).
+
+            //set GSEast to vdot(vxcl(up:vector, velocity:surface), heading(090,0):vector).
+            //print "GS East: " + GSEast.
+            //print "vdot Approach vector/SFC vel: " + vdot(ApproachVector, vxcl(ApproachUPVector, velocity:surface)).
+            //print "lng difference: " + abs(ship:geoposition:lng - landingzone:lng).
+            //if GSEast < 0 or vdot(ApproachVector, vxcl(ApproachUPVector, velocity:surface)) < 0 and abs(ship:geoposition:lng - landingzone:lng) < 10 {
+            //    if GSEast < 0 and vdot(ApproachVector, vxcl(ApproachUPVector, velocity:surface)) < 0 and abs(ship:geoposition:lng - landingzone:lng) < 10 {}
+            //    set latresult to -latresult.
+            //}
+
             if ship:body = BODY("Kerbin") {
                 if OLMexists() and MechaZillaShouldCatchShip {
                     set LngLatOffset to ((60 / ship:mass) * 130) - 117.5.
@@ -6790,11 +6863,14 @@ function LngLatError {
             else {
                 set LngLatOffset to 0.
             }
+
             set lngresult to lngresult + LngLatOffset.
+
             if LandSomewhereElse {
                 set lngresult to 0.
                 set latresult to 0.
             }
+
             return list(lngresult, latresult).
         }
     }
@@ -6900,8 +6976,11 @@ function CalculateDeOrbitBurn {
     if ship:body = BODY("Kerbin") or ship:body = BODY("Duna") or ship:body = BODY("Laythe") {
         set DegreestoLDGzone to 120.
     }
-    else {
+    else if ship:body = BODY("Mun") {
         set DegreestoLDGzone to 90.
+    }
+    else if ship:body = BODY("Minmus") or ship:body = BODY("Gilly") or ship:body = BODY("Ike") {
+        set DegreestoLDGzone to 60.
     }
     set x to 10.
     until lngPredict > correctedIdealLng - 2 and lngPredict < correctedIdealLng + 2 {
@@ -6915,7 +6994,6 @@ function CalculateDeOrbitBurn {
 
 
 function DeOrbitVelocity {
-    set config:ipu to 2000.
     set Error to 999999.
     set PrevError to Error.
     set message3:style:textcolor to white.
@@ -6982,9 +7060,10 @@ function DeOrbitVelocity {
         }
     }
     else {
+        set GoalAltOverLZ to landingzone:terrainheight + SafeAltOverLZ.
         set x to (deorbitburnstarttime + 0.24 * ship:orbit:period):seconds - time:seconds.
         set OVHDlng to -180.
-        until OVHDlng > landingzone:lng {
+        until OVHDlng > landingzone:lng + x / (ship:body:rotationperiod / 360) {
             set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
             set x to x + 1.
         }
@@ -6997,9 +7076,9 @@ function DeOrbitVelocity {
             set burn to node(deorbitburnstarttime, 0, NormalVelocity, ProgradeVelocity).
             add burn.
 
-            set x to (deorbitburnstarttime + 0.24 * ship:orbit:period):seconds - time:seconds.
+            set x to x - 5.
             set OVHDlng to -180.
-            until OVHDlng > landingzone:lng {
+            until OVHDlng > landingzone:lng + x / (ship:body:rotationperiod / 360) {
                 set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
                 set x to x + 1.
             }
@@ -7007,25 +7086,32 @@ function DeOrbitVelocity {
             set ApproachTime to timestamp(time:seconds + x).
             set AltitudeOverLZ to ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)).
 
+            //print "OVHD Point: " + ship:body:geopositionof(positionat(ship, time:seconds + TimeToOVHD)):lng.
+            //print "Time to overhead: " + round(TimeToOVHD).
+            //print "Altitude over LZ: " + round(AltitudeOverLZ).
+
+            //set OVHDpoint to vecdraw(positionat(ship, time:seconds + TimeToOVHD), ship:position - positionat(ship, time:seconds + TimeToOVHD), green, "OVHD Point", 1, true).
+
             set ApproachUPVector to (landingzone:position - body:position):normalized.
             set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, ApproachTime):surface):normalized.
-            set LZatNewTime to latlng(landingzone:lat, landingzone:lng + (((deorbitburnstarttime:seconds - time:seconds + 0.2 *  ship:orbit:period) / 138984) * 360)).
-            set ToLZVector to (LZatNewTime:position - positionat(ship, ApproachTime)).
+            set LZatNewTime to latlng(landingzone:lat, landingzone:lng + (((deorbitburnstarttime:seconds - time:seconds + 0.2 *  ship:orbit:period) / ship:body:rotationperiod) * 360)).
+            set ToLZVector to (LZatNewTime:position - positionat(ship, time:seconds + TimeToOVHD)).
             set ApproachDifference to vdot(ApproachVector:direction:topvector, ToLZVector).
             //set apprvec to vecdraw(ship:position, 25 * ApproachVector, green, "Approach Vector", 1, true).
-            //set tolzvec to vecdraw(positionat(ship, ApproachTime), ToLZVector, blue, "toLZ Vector", 1, true).
+            //set tolzvec to vecdraw(positionat(ship, time:seconds + TimeToOVHD), ToLZVector, blue, "toLZ Vector", 1, true).
             wait 0.001.
             //set message2:text to "<b>bla: </b>".
 
-            if ship:body:altitudeof(positionat(ship, ApproachTime)) < 8010 and ship:body:altitudeof(positionat(ship, ApproachTime)) > 7990 and vdot(ApproachVector:direction:topvector, ToLZVector) < 1 and vdot(ApproachVector:direction:topvector, ToLZVector) > -1 {
+            if AltitudeOverLZ < GoalAltOverLZ + 10 and AltitudeOverLZ > GoalAltOverLZ - 10 and vdot(ApproachVector:direction:topvector, ToLZVector) < 1 and vdot(ApproachVector:direction:topvector, ToLZVector) > -1 {
                 break.
             }
-            set ProgradeVelocity to ProgradeVelocity - ((ship:body:altitudeof(positionat(ship, ApproachTime)) - 8000) / 10000).
+            set ProgradeVelocity to ProgradeVelocity - ((ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)) - GoalAltOverLZ) / 10000).
             set NormalVelocity to NormalVelocity + ApproachDifference / 5000.
             remove burn.
         }
         remove burn.
         set config:ipu to 500.
+        set AltitudeOverLZ to AltitudeOverLZ - landingzone:terrainheight.
         return list(ProgradeVelocity, NormalVelocity, AltitudeOverLZ).
     }
     remove burn.
@@ -7518,8 +7604,11 @@ function CalculateShipTemperature {
         if ship:body = BODY("Kerbin") {
             set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -86) + max(vang(facing:forevector, velocity:surface), 10)/90 * (GForce * airspeed), 2653).
         }
-        if ship:body = BODY("Duna") {
-            set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -86) + max(vang(facing:forevector, velocity:surface), 10)/90 * (GForce * 3 * airspeed), 2653).
+        else if ship:body = BODY("Duna") {
+            set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -87) + max(vang(facing:forevector, velocity:surface), 10)/90 * (GForce * 3 * airspeed), 2653).
+        }
+        else {
+            set ShipTemperature to -85.
         }
     }
     else {
@@ -8399,6 +8488,7 @@ function ClearInterfaceAndSteering {
     }
     set ApproachVector to v(0,0,0).
     set LZFinderCancelled to false.
+    set config:ipu to 500.
     LogToFile("Interface cleared").
 }
 
@@ -9153,7 +9243,7 @@ function PerformBurn {
         set burnstarttime to timestamp(time:seconds + BurnTime).
     }
     lock deltaV to nextnode:deltav:mag.
-    if deltaV < 100 {
+    if deltaV < rcsRaptorBoundary {
         lock MaxAccel to 40/ship:mass.
         set UseRCSforBurn to true.
     }
