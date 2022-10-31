@@ -1,3 +1,8 @@
+# V1.0.4.h (2022-10-31)
+- fixed a mun-landing encapsulation crash on touchdown.
+- Cleaned up code a bit.
+- fixed steeper angle mun landings. Deceleration burn was wrongly calculated.
+
 # V1.0.4.g (2022-10-30)
 - fixed the message sent crash.
 - Slightly more accurate Launch-to-Rendezvous (LFO and LCH4).
