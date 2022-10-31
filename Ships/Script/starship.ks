@@ -95,7 +95,7 @@ set currentdeltav to 0.
 set ShipMass to 0.
 set FuelMass to 1.
 set TargetShip to false.
-set FuelVentCutOffValue to 3500.
+set FuelVentCutOffValue to 375.
 set FindNewTarget to false.
 set executeconfirmed to 0.
 set cancelconfirmed to 0.
@@ -4537,7 +4537,6 @@ set landbutton:ontoggle to {
                                     set message3:text to "".
                                     if cancelconfirmed {
                                         ShutDownAllEngines().
-
                                         HideEngineToggles(0).
                                         LogToFile("Venting stopped by user").
                                         set BGUisRunning to false.
@@ -4552,7 +4551,7 @@ set landbutton:ontoggle to {
                                     ClearInterfaceAndSteering().
                                 }
                             }
-                            else {
+                            if LFShip < FuelVentCutOffValue + 0.01 {
                                 set runningprogram to "Input".
                                 if KUniverse:activevessel = vessel(ship:name) {}
                                 else {
@@ -7624,7 +7623,7 @@ function CalculateShipTemperature {
     else {
         set FlapsControl to "none".
     }
-    if Gforce > 0.1 and throttle = 0 {
+    if Gforce > 0.15 and throttle = 0 {
         if ship:body = BODY("Kerbin") {
             set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -86) + max(vang(facing:forevector, velocity:surface), 10)/90 * (GForce * airspeed), 2653).
         }
