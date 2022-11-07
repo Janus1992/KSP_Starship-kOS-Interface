@@ -32,7 +32,7 @@ unlock steering.
 clearguis().
 clearscreen.
 
-if not (ship:status = "FLYING") and not (ship:status = "SUBORBITAL") {
+if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
     wait 1.
     if homeconnection:isconnected {
         if exists("0:/settings.json") {
@@ -5524,7 +5524,7 @@ if addons:tr:available and not startup {
     }
     updatestatusbar.
     updateCargoPage.
-    if ship:status = "FLYING" or ship:status = "SUBORBITAL" {
+    if ship:status = "FLYING" or ship:status = "SUB_ORBITAL" {
         Launch().
     }
     set startup to true.
@@ -9525,7 +9525,7 @@ function SetInterfaceLocation {
             set g:y to 150.
         }
     }
-    else if LaunchButtonIsRunning {
+    else if LaunchButtonIsRunning or ship:status = "LANDED" or ship:status = "PRELAUNCH" {
         set g:y to 150.
     }
     else {
@@ -9539,7 +9539,7 @@ function BoosterExists {
     set ShipsInOrbitList to list().
     if shiplist:length > 0 {
         for x in shiplist {
-            if x:status = "SUBORBITAL" {
+            if x:status = "SUB_ORBITAL" or x:status = "FLYING" {
                 if x:name:contains("Booster") {
                     return true.
                 }
