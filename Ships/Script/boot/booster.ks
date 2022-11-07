@@ -80,7 +80,6 @@ function Boostback {
     rcs on.
     sas off.
     if verticalspeed > 0 {
-        //BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
         if roll = 0 {
             set ship:control:pitch to 0.2.
         }

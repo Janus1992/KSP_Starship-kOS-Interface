@@ -339,8 +339,6 @@ SetRadarAltitude().
 set throttle to 0.
 unlock throttle.
 
-//Tank:getmodule("ModuleB9PartSwitch"):DoEvent("select docking system").
-
 if OnOrbitalMount {
     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,3,0.5").
     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,1,97.5,false").
@@ -351,6 +349,7 @@ set ship:type to "Ship".
 if ShipType = "Crew" {
     lights on.
 }
+ShipsInOrbit().
 
 print "Starship Interface startup complete!".
 
@@ -9201,27 +9200,37 @@ function ShipsInOrbit {
                 }
             }
             if x:name = ship:name {
-                if x:name:contains(" (s") {
-                    set shipindex to x:name:find(" (s").
-                    set shipnameonly to x:name:substring(0, shipindex).
-                    set shipnr to x:name:substring(shipindex + 3, 2).
-                    set ship:name to shipnameonly + " (S" + (shipnr:toscalar(0) + 1) + ")".
-                }
-                else {
-                    for y in range(SNStart, 10000) {
-                        set ship:name to ship:name + " (S" + y + ")".
-                        if x:name = ship:name {
-                            set y to y + 1.
-                        }
-                        else {
-                            break.
-                        }
-                    }
-                }
+                RenameShip().
             }
         }
     }
     return ShipsInOrbitList.
+}
+
+
+function RenameShip {
+    for x in ShipsInOrbitList {
+        if x:name = ship:name {
+            if x:name:contains(" (s") {
+                set shipindex to x:name:find(" (s").
+                set shipnameonly to x:name:substring(0, shipindex).
+                set shipnr to x:name:substring(shipindex + 3, 2).
+                set ship:name to shipnameonly + " (S" + (shipnr:toscalar(0) + 1) + ")".
+            }
+            else {
+                for y in range(SNStart, 10000) {
+                    set ship:name to ship:name + " (S" + y + ")".
+                    if x:name = ship:name {
+                        set y to y + 1.
+                    }
+                    else {
+                        break.
+                    }
+                }
+            }
+            RenameShip().
+        }
+    }
 }
 
 
