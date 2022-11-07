@@ -1,3 +1,8 @@
+# V1.0.5a (2022-11-07)
+- Cancel button becomes the "Undock" button when docked.
+- Still working on ship renaming when two or three exist.
+- Fixed a watchdog issue causing the de-orbit velocity calculation to fail.
+
 # V1.0.5 (2022-11-07)
 - !! You need to recover all your existing ships before applying this update !!
 - Minmus landings now possible.

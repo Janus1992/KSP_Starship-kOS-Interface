@@ -78,6 +78,7 @@ set FWDFlapDefault to 55.
 set AFTFlapDefault to 50.
 set rcsRaptorBoundary to 100.  // Defines the custom burn boundary velocity where the ship will burn either RCS below it or Raptors above it.
 set SafeAltOverLZ to 1500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
+set ShipWasDocked to false.
 
 
 //---------Initial Program Variables-----------//
@@ -4007,6 +4008,10 @@ set cancel:onclick to {
             set cancelconfirmed to 1.
             set cancel:pressed to false.
         }
+        if ShipIsDocked {
+            LogToFile("Undocking").
+            Tank:getmodule("ModuleDockingNode"):doevent("undock").
+        }
     }
 }.
 
@@ -7095,6 +7100,7 @@ function DeOrbitVelocity {
     set NormalVelocity to 0.
     if ship:body = BODY("Kerbin") or ship:body = BODY("Duna") {
         until Error < ErrorTolerance {
+            SendPing().
             set burn to node(deorbitburnstarttime, 0, 0, ProgradeVelocity).
             add burn.
             until addons:tr:hasimpact {}
@@ -7129,6 +7135,7 @@ function DeOrbitVelocity {
         set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, time:seconds + addons:tr:TIMETILLIMPACT - 120):surface):normalized.
         //set apprvec to vecdraw(ship:position, 25 * ApproachVector, green, "Approach Vector", 1, true).
         until LngError < 250 and LngError > -250 {
+            SendPing().
             set burn to node(deorbitburnstarttime, 0, 0, ProgradeVelocity).
             add burn.
             until addons:tr:hasimpact {}
@@ -7154,6 +7161,7 @@ function DeOrbitVelocity {
         set ApproachUPVector to (landingzone:position - body:position):normalized.
         set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, ApproachTime):surface):normalized.
         until false {
+            SendPing().
             set burn to node(deorbitburnstarttime, 0, NormalVelocity, ProgradeVelocity).
             add burn.
 
@@ -8601,6 +8609,22 @@ function BackGroundUpdate {
         }
 
         FindParts().
+        if ShipIsDocked {
+            if Tank:getmodule("ModuleDockingNode"):hasevent("make primary docking node") {
+                InhibitButtons(0, 1, 1).
+                set cancel:text to "<b>CANCEL</b>".
+            }
+            else {
+                InhibitButtons(0, 1, 0).
+                set cancel:text to "<b>UNDOCK</b>".
+            }
+            set ShipWasDocked to true.
+        }
+        else if ShipWasDocked {
+            InhibitButtons(0, 1, 1).
+            set cancel:text to "<b>CANCEL</b>".
+            set ShipWasDocked to false.
+        }
 
         set CalculationsPerSecond to 1 / max(time:seconds - prevCalcTime, 0.1).
         set prevCalcTime to time:seconds.
@@ -8644,9 +8668,14 @@ function BackGroundUpdate {
         if towerbutton:pressed {updateTower().}
         if maneuverbutton:pressed {updateManeuver().}
         SetPlanetData().
-        sendMessage(Processor(volume("watchdog")), "ping").
+        SendPing().
         set BGUisRunning to false.
     }
+}
+
+
+function SendPing {
+    sendMessage(Processor(volume("watchdog")), "ping").
 }
 
 
@@ -9172,13 +9201,21 @@ function ShipsInOrbit {
                 }
             }
             if x:name = ship:name {
-                for y in range(SNStart, 10000) {
-                    set ship:name to ship:name + " (S" + y + ")".
-                    if x:name = ship:name {
-                        set y to y + 1.
-                    }
-                    else {
-                        break.
+                if x:name:contains(" (s") {
+                    set shipindex to x:name:find(" (s").
+                    set shipnameonly to x:name:substring(0, shipindex).
+                    set shipnr to x:name:substring(shipindex + 3, 2).
+                    set ship:name to shipnameonly + " (S" + (shipnr:toscalar(0) + 1) + ")".
+                }
+                else {
+                    for y in range(SNStart, 10000) {
+                        set ship:name to ship:name + " (S" + y + ")".
+                        if x:name = ship:name {
+                            set y to y + 1.
+                        }
+                        else {
+                            break.
+                        }
                     }
                 }
             }
