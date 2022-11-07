@@ -1,9 +1,17 @@
-# V1.0.4.h (2022-10-31)
+# V1.0.5 (2022-11-07)
+- !! You need to recover all your existing ships before applying this update !!
+- Minmus landings now possible.
+- Booster Boostback and landing overhauled. After separation the Booster will now be active to make the boostback more reliable and consistent across different computer setups (using the trajectories mod).
+- Watchdog CPU implemented:
+    - If the Interface doesn't send a ping to the Watchdog CPU for 5 seconds, the watchdog CPU will restart the Interface (in case of crashes/time-outs).
+
+# V1.0.4h (2022-10-31)
 - fixed a mun-landing encapsulation crash on touchdown.
 - Cleaned up code a bit.
 - fixed steeper angle mun landings. Deceleration burn was wrongly calculated.
+- fuel venting bug for tanker ships.
 
-# V1.0.4.g (2022-10-30)
+# V1.0.4g (2022-10-30)
 - fixed the message sent crash.
 - Slightly more accurate Launch-to-Rendezvous (LFO and LCH4).
 - Fixed an automatic mun deorbit bug causing too high approach over LZ, and a bug that caused correcting in the wrong direction in some cases.

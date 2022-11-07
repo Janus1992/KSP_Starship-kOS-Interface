@@ -1,6 +1,8 @@
 set LogData to false.
+set config:ipu to 500.
+set SteeringManager:ROLLCONTROLANGLERANGE to 10.
 set BoosterHeight to 44.2.
-set LandSomewhereElse to 0.
+set LandSomewhereElse to false.
 set idealVS to 0.
 set LatCtrl to 0.
 set LngCtrl to 0.
@@ -11,8 +13,8 @@ set landingzone to latlng(-000.0972,-074.5577).
 set BoosterEngines to SHIP:PARTSNAMED("SEP.B4.33.CLUSTER").
 set GridFins to SHIP:PARTSNAMED("SEP.B4.GRIDFIN").
 set BoosterCore to SHIP:PARTSNAMED("SEP.B4.CORE").
-set LngCtrlPID to PIDLOOP(0.35, 0.001, 0.001, -7.5, 7.5).
-set LatCtrlPID to PIDLOOP(0.35, 0.001, 0.001, -1, 1).
+set LngCtrlPID to PIDLOOP(0.35, 0, 0, -15, 15).
+set LatCtrlPID to PIDLOOP(0.1, 0, 0, -1, 1).
 set InitialError to -9999.
 set maxDecel to 0.
 set TotalstopTime to 0.
@@ -29,11 +31,21 @@ if stage:number > 2 {
 }
 unlock throttle.
 set throttle to 0.
+set DragCurve to getDragCurve().
 
 clearscreen.
 print "Booster Nominal Operation, awaiting command..".
 
 until False {
+    set ShipConnectedToBooster to false.
+    for Part in SHIP:PARTS {
+        if Part:name:contains("SEP.S20.BODY") {
+            set ShipConnectedToBooster to true.
+        }
+    }
+    if not (ShipConnectedToBooster) {
+        Boostback(0).
+    }
     WAIT UNTIL NOT CORE:MESSAGES:EMPTY.
     SET RECEIVED TO CORE:MESSAGES:POP.
     IF RECEIVED:CONTENT = "Boostback, 0 Roll" {
@@ -43,28 +55,54 @@ until False {
         Boostback(180).
     }
     ELSE {
-    PRINT "Unexpected message: " + RECEIVED:CONTENT.
+        PRINT "Unexpected message: " + RECEIVED:CONTENT.
     }
 }
 
 
 function Boostback {
     parameter roll.
+    unlock throttle.
+    wait 0.001.
+    set throttle to 0.
+    unlock steering.
+    lock throttle to 0.
+    set config:ipu to 500.
     set ship:name to "Booster".
+    wait 0.01.
+    HUDTEXT("Performing Boostback Burn..", 30, 2, 20, green, false).
     clearscreen.
     print "Starting Boostback".
     set CurrentTime to time:seconds.
     set kuniverse:timewarp:warp to 0.
+    set impactpos to ship:body:geopositionof(ship:position).
 
-    BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
     rcs on.
-    if roll = 0 {
-        set ship:control:pitch to 0.2.
+    sas off.
+    if verticalspeed > 0 {
+        //BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
+        if roll = 0 {
+            set ship:control:pitch to 0.2.
+        }
+        if roll = 180 {
+            set ship:control:pitch to -0.2.
+        }
+        when vang(facing:forevector, -vxcl(up:vector, ErrorVector)) < 90 then {
+            for fin in GridFins {
+                fin:getmodule("ModuleControlSurface"):DoAction("activate pitch controls", true).
+                fin:getmodule("ModuleControlSurface"):DoAction("activate yaw control", true).
+                fin:getmodule("ModuleControlSurface"):DoAction("activate roll control", true).
+            }
+            set ship:control:neutralize to true.
+        }
+        wait 1.
     }
-    if roll = 180 {
-        set ship:control:pitch to -0.2.
-    }
-    wait 1.
+
+    set ApproachUPVector to (landingzone:position - body:position):normalized.
+    set ApproachVector to vxcl(ApproachUPVector, landingzone:position - ship:position):normalized.
+    //set ApproachVectorDraw to vecdraw(v(0,0,0), ApproachVector, green, "ApproachVector", 20, true, 0.005, true, true).
+
+    SteeringCorrections().
 
     if homeconnection:isconnected {
         if exists("0:/settings.json") {
@@ -82,86 +120,45 @@ function Boostback {
             }
             set LandingCoords to LandingCoords:split(",").
             set landingzone to latlng(LandingCoords[0]:toscalar, LandingCoords[1]:toscalar).
+            if L:haskey("Ship Name") {
+                set starship to L["Ship Name"].
+            }
         }
     }
 
-    when vang(facing:forevector, -vxcl(up:vector, ErrorVector)) < 90 then {
-        for fin in GridFins {
-            fin:getmodule("ModuleControlSurface"):DoAction("activate pitch controls", true).
-            fin:getmodule("ModuleControlSurface"):DoAction("activate yaw control", true).
-            fin:getmodule("ModuleControlSurface"):DoAction("activate roll control", true).
-        }
-        set ship:control:neutralize to true.
-    }
-
-    until vang(facing:forevector, -vxcl(up:vector, ErrorVector)) < 35 and vang(facing:forevector, -vxcl(up:vector, ErrorVector)) < angularvel:y * 90 {
-        SteeringCorrections(1).
+    until vang(facing:forevector, -vxcl(up:vector, ErrorVector)) < 35 or vang(facing:forevector, -vxcl(up:vector, ErrorVector)) < angularvel:y * 90 or verticalspeed < 0 {
+        SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
-        print angularvel.
+        SetBoosterActive().
     }
-    set TempErrorVector to ErrorVector.
     lock throttle to (impactpos:lng - landingzone:lng) + 0.01.
-    lock steering to lookdirup(-vxcl(up:vector, TempErrorVector), facing:topvector).
+    lock steering to lookdirup(vxcl(up:vector, -ErrorVector), ApproachVector - up:vector).
 
-    until impactpos:lng - landingzone:lng < 0.1 {
-        SteeringCorrections(1).
+    until impactpos:lng - landingzone:lng < 0.125 or verticalspeed < 0 {
+        SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
+        SetBoosterActive().
     }
     unlock throttle.
     set throttle to 0.
-    lock steering to lookdirup(-vxcl(up:vector, ErrorVector), facing:topvector).
-    set oldVector to lookdirup(-vxcl(up:vector, ErrorVector), facing:topvector):vector.
-    set BoosterCore[0]:thrustlimit to 25.
+    HUDTEXT("Starship continues its orbit insertion..", 30, 2, 20, green, false).
+    lock steering to lookdirup(up:vector, ApproachVector - up:vector).
+    lock throttle to 0.
+    wait 1.
 
-    until ErrorVector:mag < 25 {
-        SteeringCorrections(1).
-        if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
-        if vang(lookdirup(-vxcl(up:vector, ErrorVector), facing:topvector):vector, facing:forevector) < 3 {
-            set ship:control:translation to v(0, 0, ErrorVector:mag / 500).
-        }
-        else {
-            set ship:control:translation to v(0, 0, 0).
-        }
-        if vang(lookdirup(-vxcl(up:vector, ErrorVector), facing:topvector):vector, oldVector) > 45 {
-            break.
-        }
-    }
-    set ship:control:translation to v(0, 0, 0).
-    lock steering to heading(270, 45).
-    set BoosterCore[0]:thrustlimit to 100.
-    until vang(heading(270, 45):vector, facing:forevector) < 10 {
-        SteeringCorrections(0).
-    }
-    lock steering to up.
-    until vang(up:vector, facing:forevector) < 10 {
-        SteeringCorrections(0).
-    }
-    lock steering to heading(90, 70).
     until verticalspeed < -100 {
-        SteeringCorrections(0).
+        SteeringCorrections().
+        SetStarshipActive().
     }
-    set BoosterCore[0]:thrustlimit to 25.
-    lock steering to lookdirup(-1 * VELOCITY:SURFACE, north:starvector).
-    until altitude < 45000 {
-        SteeringCorrections(0).
-    }
-    set SteeringManager:ROLLCONTROLANGLERANGE to 20.
-    set SteeringManager:PITCHPID:KD to 1.
-    set SteeringManager:YAWPID:KD to 1.
-    lock steering to lookdirup(-1 * VELOCITY:SURFACE * R(LatCtrl, -LngCtrl, LatCtrl), north:starvector).
+    lock steering to lookdirup(-1 * VELOCITY:SURFACE * R(-LatCtrl, LngCtrl, -LatCtrl), ApproachVector - up:vector).
+
+    lock SteeringVectorDraw to vecdraw(v(0,0,0), 20 * lookdirup(-1 * VELOCITY:SURFACE * R(LatCtrl, LngCtrl, LatCtrl), vxcl(ApproachUPVector, landingzone:position - ship:position) + ApproachVector - up:vector):vector, blue, "Steering Vector", 20, true, 0.005, true, true).
+
 
     until altitude < 30000 {
-        SteeringCorrections(0).
+        SetStarshipActive().
     }
-    set BoosterCore[0]:thrustlimit to 100.
-    rcs off.
-
-    when LngError > 400 and LatError < 35 and LatError > -35 or LngError < -400 and LatError < 35 and LatError > -35 then {
-        set LngCtrlPID to PIDLOOP(0.35, 0, 0, -15, 15).
-        when LngError < 50 and LngError > -150 then {
-            set LngCtrlPID to PIDLOOP(0.35, 0, 0, -7.5, 7.5).
-        }
-    }
+    until altitude < 15000 {}
 
     lock maxDecel to (ship:availablethrust / ship:mass) - 9.81.
     lock maxDecel3 to max((1650 / ship:mass) - 9.81, 1.175).
@@ -174,24 +171,20 @@ function Boostback {
     lock landingRatio to TotalstopDist / RadarAlt.
 
     until landingRatio > 1 and altitude < 2250 or altitude < 2000 {
-        SteeringCorrections(0).
+        SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
-        if altitude < 7500 {
-            rcs on.
-        }
-        else {
-            rcs off.
-        }
+        rcs on.
+        SetBoosterActive().
     }
     
     HUDTEXT("Performing Landing Burn..", 3, 2, 20, green, false).
     lock throttle to 1.
-    lock steering to lookdirup(up:vector - 0.03 * velocity:surface - 0.0175 * ErrorVector, north:starvector).
+    lock steering to lookdirup(up:vector - 0.03 * velocity:surface, ApproachVector - up:vector).
     set LandingBurnAltitude to altitude.
     rcs on.
 
     when altitude < 2000 then {
-        if OLMexists() {
+        if OLMexists() and Vessel("OrbitalLaunchMount"):distance < 2000 {
             lock RadarAlt to alt:radar - ((Vessel("OrbitalLaunchMount"):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position - Body("Kerbin"):position):mag - SHIP:BODY:RADIUS - Vessel("OrbitalLaunchMount"):geoposition:terrainheight).
             when RadarAlt < 5 * BoosterHeight then {
                 sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaArms,8,6,60,true").
@@ -212,27 +205,36 @@ function Boostback {
         lock TotalstopDist to 0.5 * max(maxDecel, 0.000001) * TotalstopTime * TotalstopTime.
         lock landingRatio to TotalstopDist / RadarAlt.
         lock throttle to landingRatio.
-        if LngError > 55 or LngError < -75 or LatError > 40 or LatError < -40 {
+        if abs(LngError) > 200 or abs(LatError) > 50 {
             lock RadarAlt to alt:radar - BoosterHeight.
             set LandSomewhereElse to true.
-            lock steering to lookdirup(-1 * velocity:surface, north:starvector).
+            lock steering to lookdirup(-1 * velocity:surface, ApproachVector - up:vector).
         }
     }
 
+    until altitude < 1250 {
+        SteeringCorrections().
+        if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
+        rcs on.
+        SetBoosterActive().
+    }
+    lock steering to lookdirup(up:vector - 0.03 * velocity:surface - 0.02 * ErrorVector, ApproachVector - up:vector).
+
     when verticalspeed > -25 then {
-        lock steering to lookdirup(up:vector - 0.02 * velocity:surface, north:starvector).
-        if LngError > 20 or LngError < -20 or LatError > 10 or LatError < -10 {
+        lock steering to lookdirup(up:vector - 0.02 * velocity:surface, ApproachVector - up:vector).
+        if abs(LngError) > 20 or abs(LatError) > 10 {
             lock RadarAlt to alt:radar - BoosterHeight.
             set LandSomewhereElse to true.
         }
     }
 
     until verticalspeed > -0.01 and RadarAlt < 5 and ship:status = "LANDED" or verticalspeed > 0.5 {
-        SteeringCorrections(0).
+        SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         //set LdgVectorDraw to vecdraw(v(0, 0, 0), up:vector - 0.03 * velocity:surface - 0.0125 * ErrorVector, green, "Landing Vector", 20, true, 0.005, true, true).
     }
 
+    SetBoosterActive().
     set ship:control:translation to v(0, 0, 0).
     unlock steering.
     set throttle to 0.
@@ -345,117 +347,73 @@ function Boostback {
 
 
 FUNCTION SteeringCorrections {
-    parameter CalculateOrbit.
-    if CalculateOrbit {
-        set calcVS to verticalspeed.
-        set calcAlt to altitude.
-        set timetoimpact to 0.
-        set timestep to 0.1.
-        until calcAlt < 0 {
-            set timetoimpact to timetoimpact + timestep.
-            set calcVS to calcVS - (9.81 * timestep).
-            set calcAlt to calcAlt + (calcVS * timestep).
+    clearscreen.
+    if KUniverse:activevessel = ship {
+        set addons:tr:descentmodes to list(true, true, true, true).
+        set addons:tr:descentgrades to list(true, true, true, true).
+        set addons:tr:descentangles to list(180, 180, 180, 180).
+        if not addons:tr:hastarget {
+            ADDONS:TR:SETTARGET(landingzone).
         }
-        set GSEast to vdot(vxcl(up:vector, velocity:surface), heading(090,0):vector).
-        set GSNorth to vdot(vxcl(up:vector, velocity:surface), north:vector).
+        wait 0.001.
 
-        set NewLng to ship:geoposition:lng + (GSEast * timetoimpact) / 10471.1975.
-        set NewLat to ship:geoposition:lat + (GSNorth * timetoimpact) / 10471.1975.
+        if addons:tr:hasimpact {
+            set ErrorVector to ADDONS:TR:IMPACTPOS:POSITION - landingzone:POSITION.
+            set impactpos to ship:body:geopositionof(ADDONS:TR:IMPACTPOS:POSITION).
+        }
+        set LatError to vdot(AngleAxis(-90, ApproachUPVector) * ApproachVector, ErrorVector).
+        set LngError to vdot(ApproachVector, ErrorVector).
 
-        set impactpos to LATLNG(NewLat, NewLng).
-        set ErrorVector to impactpos:POSITION - landingzone:POSITION.
-    }
-    else {
-        if KUniverse:activevessel = VESSEL("Booster") {
-            set addons:tr:descentmodes to list(true, true, true, true).
-            set addons:tr:descentgrades to list(true, true, true, true).
-            set addons:tr:descentangles to list(180, 180, 180, 180).
-            if not addons:tr:hastarget {
-                ADDONS:TR:SETTARGET(landingzone).
-            }
-            wait 0.001.
-            if addons:tr:hasimpact {
-                set ErrorVector to ADDONS:TR:IMPACTPOS:POSITION - landingzone:POSITION.
-            }
-            if addons:tr:hasimpact {
-                set LatError to (ADDONS:TR:IMPACTPOS:lat - landingzone:lat) * 10471.1975.
-            }
-            if addons:tr:hasimpact {
-                set LngError to (ADDONS:TR:IMPACTPOS:lng - landingzone:lng) * 10471.1975.
-            }
+        if altitude < 25000 {
             set GSWest to vdot(vxcl(up:vector, velocity:surface), north:starvector).
 
-            set LatCtrl to -LatCtrlPID:UPDATE(time:seconds, LatError).
-            set LngCtrl to -LngCtrlPID:UPDATE(time:seconds, LngError).
+            if abs(LngError) < 150 {
+                set LngCtrlPID to PIDLOOP(0.2 + (altitude / 100000), 0, 0, -7.5, 7.5).
+            }
+
             if InitialError = -9999 and addons:tr:hasimpact {
                 set InitialError to LngError.
             }
             else {
-                set LngCtrlPID:setpoint to max(min(-3 * GSWest, 125), -125).
+                set LngCtrlPID:setpoint to min(max(3 * GSWest, -125), 125).
             }
 
-            if LatError > 25 and altitude > 2500 or LatError < -25 and altitude > 2500 {
-                set LatCtrl to -2.5 * LatCtrl.
-            }
+            set LatCtrl to -LatCtrlPID:UPDATE(time:seconds, LatError).
+            set LngCtrl to -LngCtrlPID:UPDATE(time:seconds, LngError).
+
 
             set magnitude to (altitude + 400) / 100.
             if ErrorVector:mag > magnitude {
                 set ErrorVector to ErrorVector:normalized * magnitude.
             }
         }
-        else {
-            set LatError to (ship:geoposition:lat - landingzone:lat) * 10471.1975.
-            set LngError to (ship:geoposition:lng - landingzone:lng) * 10471.1975.
-            set FlightPath to EstimateFlightPath().
-            set LngEstimate to FlightPath[0].
-            set LatEstimate to FlightPath[1].
 
-            set LatCtrl to -LatCtrlPID:UPDATE(time:seconds, LatError + LatEstimate).
-            set LngCtrl to -LngCtrlPID:UPDATE(time:seconds, LngError + LngEstimate).
-
-            if (LatError + LatEstimate) > 25 and altitude > 2500 or (LatError + LatEstimate) < -25 and altitude > 2500 {
-                set LatCtrl to -2.5 * LatCtrl.
-            }
-
-            set ErrorVector to vxcl(up:vector, latlng(ship:geoposition:lat + (LatEstimate / 10471.1975), ((ship:geoposition:lng) + (LngEstimate / 10471.1975))):position - landingzone:POSITION).
-            set magnitude to (altitude + 400) / 100.
-            if ErrorVector:mag > magnitude {
-                set ErrorVector to ErrorVector:normalized * magnitude.
-            }
-        }
-    }
-    clearscreen.
-    if CalculateOrbit {
-        print "Impact Position: " + round(impactpos:lng, 4) + "," + round(impactpos:lat, 4).
-        print "Time to Impact: " + timetoimpact.
-        print "GS E/N: " + round(GSEast) + "   " + round(GSNorth).
+        //if not LandSomewhereElse {
+        //    print "Landing parameters OK".
+        //}
+        //else {
+        //    print "Landing somewhere else..".
+        //}
+        //print "Lng Error: " + round(LngError).
+        //print "Lat Error: " + round(LatError).
+        //print "Radar Altitude: " + round(RadarAlt).
+        //if altitude < 25000 {
+        //    print "LngCtrl: " + round(LngCtrl, 2).
+        //    print "LatCtrl: " + round(LatCtrl, 2).
+        //    print " ".
+        //    print "GS West: " + round(GSWest).
+        //    print "setpoint: " + round(LngCtrlPID:setpoint).
+        //    print " ".
+        //    print "Max Decel: " + round(maxDecel, 2).
+        //    print "Stop Time: " + round(TotalstopTime, 2).
+        //    print "Stop Distance: " + round(TotalstopDist, 2).
+        //    print "Stop Distance 3: " + round(stopDist3, 2).
+        //    print "throttle required: " + round(landingRatio, 2).
+        //}
     }
     else {
-        print "Radar Altitude: " + round(RadarAlt).
-        print "Lng Error: " + round(LngError).
-        print "Lat Error: " + round(LatError).
-        print "GS West: " + round(GSWest).
-        print "setpoint: " + round(LngCtrlPID:setpoint).
-        if LandSomewhereElse {
-            print "Target LZ out of bounds, landing elsewhere..".
-        }
-        if KUniverse:activevessel = VESSEL("Booster") {}
-        else {
-            //print "Lng Error Prediction: " + round(LngError + LngEstimate).
-            //print "Lat Error Prediction: " + round(LatError + LatEstimate).
-        }
-        //print "LngCtrl: " + round(LngCtrl, 2).
-        //print "LatCtrl: " + round(LatCtrl, 2).
-        //print "Max Decel: " + round(maxDecel, 2).
-        //print "Stop Time: " + round(TotalstopTime, 2).
-        //print "Stop Distance: " + round(TotalstopDist, 2).
-        //print "Stop Distance 3: " + round(stopDist3, 2).
-        //print "throttle required: " + round(landingRatio, 2).
+        print "State: Booster coasting back to Launch Site..".
     }
-    //print "Error: " + round(ErrorVector:mag).
-    //print "Ship Position: " + round(ship:geoposition:lng, 4) + "," + round(ship:geoposition:lat, 4).
-    //print "Landing Zone: " + landingzone:lng + "," + landingzone:lat.
-
     LogBoosterFlightData().
 }
 
@@ -475,23 +433,6 @@ function LogBoosterFlightData {
             LOG "Time, Distance to Target (km), Altitude (m), Vertical Speed (m/s), Airspeed (m/s), Longitude Error (m), Latitude Error (m), Actual AoA (°), Throttle (%), Mass (kg)" to "0:/BoosterFlightData.csv".
         }
     }
-}
-
-
-function EstimateFlightPath {
-    set GSEast to vdot(vxcl(up:vector, velocity:surface), heading(090,0):vector).
-    set GSNorth to vdot(vxcl(up:vector, velocity:surface), north:vector).
-
-    set TimeToGround to (RadarAlt / -verticalspeed).
-
-    //print "Time to Ground: " + round(TimeToGround, 1).
-    //print "GS East/West: " + -vdot(vxcl(up:vector, velocity:surface), north:starvector).
-    //print "GS North/South: " + vdot(vxcl(up:vector, velocity:surface), north:vector).
-
-    set LngDistance to 0.6 * GSEast * TimeToGround.
-    set LatDistance to 0.6 * GSNorth * TimeToGround.
-
-    return list(LngDistance, LatDistance).
 }
 
 
@@ -526,4 +467,89 @@ function OLMexists {
     else {
         return false.
     }
+}
+
+
+function InterpolateDragLinear {
+    parameter altitude.
+    set index to 0.
+    for key in DragCurve {
+        if altitude >= key[0] {
+            set keys to list(DragCurve[index-1], DragCurve[index]).
+            break.
+        }
+        set index to index + 1.
+    }
+    return ((altitude - keys[1][0]) / (keys[0][0] - keys[1][0]) * (abs(keys[0][1] - keys[1][1]))) + min(keys[0][1], keys[1][1]).
+}
+function getDragCurve {
+    //                   ALT(m)  Drag(kN)
+    local key0 is list  (55000  ,0).
+    local key1 is list  (50000  ,3).
+    local key2 is list  (40000  ,36).
+    local key3 is list  (35037  ,81).
+    local key4 is list  (32532  ,137).
+    local key5 is list  (30515  ,210).
+    local key6 is list  (30022  ,234).
+    local key7 is list  (29021  ,291).
+    local key8 is list  (28002  ,364).
+    local key9 is list  (27017  ,451).
+
+    local key10 is list (26018  ,560).
+    local key11 is list (25005  ,690).
+    local key12 is list (24035  ,841).
+    local key13 is list (22893  ,1061).
+    local key14 is list (22016  ,1264).
+    local key15 is list (21027  ,1533).
+    local key16 is list (19982  ,1863).
+    local key17 is list (18996  ,2226).
+    local key18 is list (17964  ,2662).
+    local key19 is list (16841  ,3193).
+
+    local key20 is list (15951  ,3640).
+    local key21 is list (14982  ,4113).
+    local key22 is list (14001  ,4567).
+    local key23 is list (13018  ,4952).
+    local key24 is list (12008  ,5364).
+    local key25 is list (10996  ,6040).
+    local key26 is list (10551  ,6363).
+    local key27 is list (10023  ,6554).
+    local key28 is list (9511   ,6453).
+    local key29 is list (8999   ,5942).
+
+    local key30 is list (8509   ,4775).
+    local key31 is list (7993   ,2641).
+    local key32 is list (7477   ,1952).
+    local key33 is list (7013   ,1728).
+    local key34 is list (6006   ,1587).
+    local key35 is list (5002   ,1606).
+    local key36 is list (4002   ,1710).
+    local key37 is list (3015   ,1847).
+    local key38 is list (1991   ,1960).
+    local key39 is list (1005   ,2030).
+
+    local key40 is list (0      ,2080).
+
+    return list(
+        key0,key1,key2,key3,key4,key5,key6,key7,key8,key9,
+        key10,key11,key12,key13,key14,key15,key16,key17,key18,key19,
+        key20,key21,key22,key23,key24,key25,key26,key27,key28,key29,
+        key30,key31,key32,key33,key34,key35,key36,key37,key38,key39,
+        key40).
+}
+
+
+function SetBoosterActive {
+    if KUniverse:activevessel = vessel(ship:name) {}
+    else {
+        KUniverse:forceactive(vessel("Booster")).
+    }
+}
+
+
+function SetStarshipActive {
+    if KUniverse:activevessel = vessel(ship:name) {
+        KUniverse:forceactive(vessel(starship)).
+    }
+    else {}
 }

@@ -32,31 +32,32 @@ unlock steering.
 clearguis().
 clearscreen.
 
-wait 1.
-
-if homeconnection:isconnected {
-    if exists("0:/settings.json") {
-        set L to readjson("0:/settings.json").
-        if L:haskey("Last Update Time") {
-            set LastUpdateTime to L["Last Update Time"].
+if not (ship:status = "FLYING") and not (ship:status = "SUBORBITAL") {
+    wait 1.
+    if homeconnection:isconnected {
+        if exists("0:/settings.json") {
+            set L to readjson("0:/settings.json").
+            if L:haskey("Last Update Time") {
+                set LastUpdateTime to L["Last Update Time"].
+            }
+        }
+        //print "Time Difference: " + round(kuniverse:realtime - LastUpdateTime, 2).
+        if LastUpdateTime + 15 < kuniverse:realtime {
+            switch to 0.
+            HUDTEXT("Starting Interface..", 10, 2, 20, green, false).
+            print "Starting background update..".
+            compile starship.
+            copypath("starship.ksm", "1:").
+            set core:BOOTFILENAME to "starship.ksm".
+            print "Starship Interface background update completed! Rebooting now..".
+            set LastUpdateTime to kuniverse:realtime.
+            SaveToSettings("Last Update Time", LastUpdateTime).
+            reboot.
         }
     }
-    //print "Time Difference: " + round(kuniverse:realtime - LastUpdateTime, 2).
-    if LastUpdateTime + 15 < kuniverse:realtime {
-        switch to 0.
-        HUDTEXT("Starting Interface..", 10, 2, 20, green, false).
-        print "Starting background update..".
-        compile starship.
-        copypath("starship.ksm", "1:").
-        set core:BOOTFILENAME to "starship.ksm".
-        print "Starship Interface background update completed! Rebooting now..".
-        set LastUpdateTime to kuniverse:realtime.
-        SaveToSettings("Last Update Time", LastUpdateTime).
-        reboot.
+    else {
+        HUDTEXT("No connection available! Can't check for Interface Updates..", 10, 2, 20, red, false).
     }
-}
-else {
-    HUDTEXT("No connection available! Can't check for Interface Updates..", 10, 2, 20, red, false).
 }
 
 
@@ -157,7 +158,7 @@ set fan to false.
 set FlapsYawEngaged to true.
 set CargoBay to false.
 set IdealRCS to 100.
-//set JustCheckingWhatTheErrorIs to false.
+set LiftOffTime to 0.
 set PreviousAoAError to 0.
 set AvailableLandingSpots to list(0, latlng(0,0), 0, 0, 0).
 set TargetSelected to false.
@@ -173,6 +174,7 @@ set LZFinderCancelled to false.
 set LastMessageSentTime to time:seconds.
 set CancelVelocityHasStarted to false.
 set LandingFacingVector to v(0, 0, 0).
+set MaxAccel to 10.
 
 
 
@@ -230,15 +232,18 @@ function FindParts {
                 else if x:name:contains("SEP.S20.CARGO") {
                     set Nose to x.
                     set ShipType to "Cargo".
+                    set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
                 }
                 else if x:name:contains("SEP.S20.CREW") {
                     set Nose to x.
                     set ShipType to "Crew".
+                    set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
                 }
                 else if x:name:contains("SEP.S20.TANKER") {
                     set Nose to x.
                     set ShipType to "Tanker".
                     set CargoMassStep to CargoMassStep + x:mass - x:drymass.
+                    set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
                 }
                 else {
                     set CargoMassStep to CargoMassStep + x:mass.
@@ -621,6 +626,7 @@ set g_close:onclick to {
             unlock throttle.
             if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
             LogToFile("Closing GUI confirmed").
+            Watchdog:deactivate().
             g:hide().
             shutdown.
         }
@@ -916,7 +922,7 @@ local message22 is textboxvlayout2:addlabel("          AVNCS 0/3").
     set message22:style:fontsize to 15.
     set message22:style:textcolor to grey.
     set message22:style:bg to "starship_img/starship_chip".
-    set message22:tooltip to "Number of basic requirements for the GUI to run".
+    set message22:tooltip to "GUI requirements fulfilled / Watchdog indicator (white/grey)".
 local message32 is textboxvlayout2:addlabel("          NO COM").
     set message32:style:wordwrap to false.
     set message32:style:margin:left to 10.
@@ -3659,6 +3665,8 @@ set maneuver3button:onclick to {
                 InhibitButtons(1,1,0).
                 HideEngineToggles(1).
                 ShowButtons(0).
+                set launchlabel:style:textcolor to grey.
+                set landlabel:style:textcolor to grey.
                 set ship:control:translation to v(0, 0, 0).
                 set AutodockingIsRunning to true.
                 set message1:style:textcolor to white.
@@ -3700,6 +3708,8 @@ set maneuver3button:onclick to {
         }
         if ManeuverPicker:text = "<b><color=white>Circularize at Pe</color></b>" {
             set PerformingManeuver to true.
+            set launchlabel:style:textcolor to grey.
+            set landlabel:style:textcolor to grey.
             if eta:periapsis > 0 {
                 if hasnode {
                     remove nextnode.
@@ -3723,6 +3733,8 @@ set maneuver3button:onclick to {
         }
         if ManeuverPicker:text = "<b><color=white>Circularize at Ap</color></b>" {
             set PerformingManeuver to true.
+            set launchlabel:style:textcolor to grey.
+            set landlabel:style:textcolor to grey.
             if apoapsis > 0 {
                 if hasnode {
                     remove nextnode.
@@ -3746,6 +3758,8 @@ set maneuver3button:onclick to {
         }
         if ManeuverPicker:text = "<b><color=white>Execute Burn</color></b>" {
             set PerformingManeuver to true.
+            set launchlabel:style:textcolor to grey.
+            set landlabel:style:textcolor to grey.
             if hasnode {
                 if not (KUniverse:activevessel = vessel(ship:name)) {
                     set KUniverse:activevessel to vessel(ship:name).
@@ -5023,7 +5037,7 @@ function LandwithoutAtmo {
         Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
 
-        if groundspeed > 50 {
+        if groundspeed > 50 or altitude > 10000 {
             when horDist < horStopDist then {
                 if kuniverse:timewarp:warp > 0 {
                     set kuniverse:timewarp:warp to 0.
@@ -5240,8 +5254,8 @@ function LandwithoutAtmoSteering {
     //set LdgVectorDraw to vecdraw(v(0, 0, 0), 5 * result:normalized, green, "Landing Vector", 20, true, 0.005, true, true).
     //set LdgFcgVectorDraw to vecdraw(v(0, 0, 0), LandingFacingVector, blue, "Landing Vector", 20, true, 0.005, true, true).
 
-    if CancelVelocityHasStarted or RadarAlt < SafeAltOverLZ - 100 {
-        if RadarAlt > SafeAltOverLZ - 100 {
+    if CancelVelocityHasStarted {
+        if RadarAlt > SafeAltOverLZ {
             set message1:text to "<b>Remaining Flight Time:</b>  " + timeSpanCalculator(ADDONS:TR:TIMETILLIMPACT).
         }
         else {
@@ -5275,6 +5289,9 @@ function LandwithoutAtmoSteering {
         }
 
         if (horDist - horStopDist) / groundspeed < 60 and kuniverse:timewarp:warp > 0 {
+            set kuniverse:timewarp:warp to 0.
+        }
+        if vang(facing:forevector, -velocity:surface) > 60 and kuniverse:timewarp:warp > 0 {
             set kuniverse:timewarp:warp to 0.
         }
     }
@@ -5440,6 +5457,14 @@ if addons:tr:available and not startup {
                 set cargo1text:text to "Closed".
                 set cargo1text:style:textcolor to green.
             }
+            set Watchdog to SHIP:PARTSNAMED("SEP.S20.CARGO").
+            if Watchdog:length = 0 {
+                set Watchdog to SHIP:PARTSNAMED(("SEP.S20.CARGO (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
+            }
+            else {
+                set Watchdog to Watchdog[0]:getmodule("kOSProcessor").
+            }
+            Watchdog:activate().
         }
         if ShipType = "Crew" {
             cargobutton:show().
@@ -5453,9 +5478,25 @@ if addons:tr:available and not startup {
                 set cargo1text:text to "Closed".
                 set cargo1text:style:textcolor to green.
             }
+            set Watchdog to SHIP:PARTSNAMED("SEP.S20.CREW").
+            if Watchdog:length = 0 {
+                set Watchdog to SHIP:PARTSNAMED(("SEP.S20.CREW (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
+            }
+            else {
+                set Watchdog to Watchdog[0]:getmodule("kOSProcessor").
+            }
+            Watchdog:activate().
         }
         if ShipType = "Tanker" {
             set cargo1text:text to "Closed".
+            set Watchdog to SHIP:PARTSNAMED("SEP.S20.TANKER").
+            if Watchdog:length = 0 {
+                set Watchdog to SHIP:PARTSNAMED(("SEP.S20.TANKER (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
+            }
+            else {
+                set Watchdog to Watchdog[0]:getmodule("kOSProcessor").
+            }
+            Watchdog:activate().
         }
     }
     else {
@@ -5481,9 +5522,12 @@ if addons:tr:available and not startup {
         set message22:style:textcolor to white.
         set message22:style:bg to "starship_img/starship_chip".
     }
-    set startup to true.
     updatestatusbar.
     updateCargoPage.
+    if ship:status = "FLYING" or ship:status = "SUBORBITAL" {
+        Launch().
+    }
+    set startup to true.
 }
 else if not startup {
     set message1:text to "<b>Trajectories mod not found..</b>".
@@ -5522,6 +5566,8 @@ function Launch {
         set message1:style:textcolor to white.
         set message2:style:textcolor to white.
         set message3:style:textcolor to white.
+        set landlabel:style:textcolor to grey.
+        set textbox:style:bg to "starship_img/starship_main_square_bg".
         HideEngineToggles(1).
         SetRadarAltitude().
         set BurnDuration to 0.
@@ -5547,7 +5593,7 @@ function Launch {
         wait 0.001.
 
         set targetap to 75000.
-        set OrbitBurnPitchCorrectionPID to PIDLOOP(0.05, 0, 0, -30, 0). //was 0.075
+        set OrbitBurnPitchCorrectionPID to PIDLOOP(0.05, 0, 0, -30, 0).
         set OrbitBurnPitchCorrectionPID:setpoint to targetap.
 
         if OnOrbitalMount {
@@ -5637,6 +5683,7 @@ function Launch {
                 wait 0.001.
                 lock throttle to 0.
                 set CargoBeforeSeparation to CargoMass.
+                BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
                 wait 1.
                 if not cancelconfirmed {
                     if quicksetting2:pressed {
@@ -5683,6 +5730,9 @@ function Launch {
                 set quickengine2:pressed to true.
             }
             set quickengine3:pressed to true.
+            if BoosterExists() {
+                set Booster to Vessel("Booster").
+            }
             lock throttle to 1.
             set cancel:text to "<b>CANCEL</b>".
             InhibitButtons(1, 1, 1).
@@ -5690,7 +5740,6 @@ function Launch {
 
         when BurnComplete then {
             unlock steering.
-            HUDTEXT("Changing Focus to: Booster", 5, 2, 20, red, false).
             wait 0.001.
             set throttle to 0.
             if NrOfVacEngines = 3 {
@@ -5708,7 +5757,9 @@ function Launch {
             ShutDownAllEngines().
             set DistanceToTarget to ((landingzone:lng - ship:geoposition:lng) * Planet1Degree).
             LogToFile("Distance flown from Launch Site to Orbit Complete: " + round(DistanceToTarget, 3) + "km").
-            LogToFile("Circularization Burn Finished. Time since Lift-Off: " + timeSpanCalculator(time:seconds - LiftOffTime)).
+            if not (LiftOffTime = 0) {
+                LogToFile("Circularization Burn Finished. Time since Lift-Off: " + timeSpanCalculator(time:seconds - LiftOffTime)).
+            }
             sas on.
             set message1:text to "<b>Current Orbit:</b>                        " + round(APOAPSIS / 1000, 1) + "km x " + round(PERIAPSIS / 1000, 1) + "km".
             wait 0.001.
@@ -5718,6 +5769,7 @@ function Launch {
 
             rcs off.
             if defined Booster {
+                HUDTEXT("Changing Focus to: Booster", 5, 2, 20, green, false).
                 wait 1.5.
                 HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 10, 2, 20, green, false).
                 wait 0.001.
@@ -5839,6 +5891,9 @@ Function LaunchSteering {
             else if quickengine3:pressed {
                 set MaxAccel to 10.
             }
+            else if altitude > 30000 {
+                set quickengine3:pressed to true.
+            }
             if not hasnode and quickengine3:pressed {
                 set OrbitalVelocity to ship:body:radius * sqrt(9.81 / (ship:body:radius + APOAPSIS)).
                 set ApoapsisVelocity to sqrt(Kerbin:mu * ((2 / (ship:body:radius + APOAPSIS)) - (1 / ship:obt:semimajoraxis))).
@@ -5858,9 +5913,11 @@ Function LaunchSteering {
                     }
                 }
                 if quicksetting2:pressed {
+                    rcs on.
                     set result to ship:prograde * R(-OrbitBurnPitchCorrection, 0, 0).
                 }
                 else {
+                    rcs on.
                     set result to ship:prograde * R(-OrbitBurnPitchCorrection, 0, 180).
                 }
             }
@@ -6916,16 +6973,19 @@ function setflaps {
 }
     
     
-function sendMessage{
+function sendMessage {
     parameter v, msg.
     set cnx to v:connection.
     if cnx:isconnected {
         if cnx:sendmessage(msg) {
-            print "message sent: (" + msg + ")".
-            if defined message32 {
-                set message32:style:bg to "starship_img/starship_signal_green".
+            if msg = "ping" {}
+            else {
+                print "message sent: (" + msg + ")".
+                if defined message32 {
+                    set message32:style:bg to "starship_img/starship_signal_green".
+                }
+                set LastMessageSentTime to time:seconds.
             }
-            set LastMessageSentTime to time:seconds.
         }
         else {
             print "message could not be sent!! (" + msg + ")".
@@ -7433,6 +7493,15 @@ function updatestatusbar {
         }
         else {
             cargobutton:show().
+        }
+        if Watchdog:Mode = "READY" and avionics = 3 {
+            set message22:style:bg to "starship_img/starship_chip".
+        }
+        else if avionics = 3 {
+            set message22:style:bg to "starship_img/starship_chip_grey".
+        }
+        else {
+            set message22:style:bg to "starship_img/starship_chip_yellow".
         }
         set StatusBarIsRunning to false.
     }
@@ -8575,6 +8644,7 @@ function BackGroundUpdate {
         if towerbutton:pressed {updateTower().}
         if maneuverbutton:pressed {updateManeuver().}
         SetPlanetData().
+        sendMessage(Processor(volume("watchdog")), "ping").
         set BGUisRunning to false.
     }
 }
@@ -9448,15 +9518,33 @@ function PerformBurn {
 
 function SetInterfaceLocation {
     if KUniverse:activevessel = vessel(ship:name) {
-        if ShipIsDocked and ShipType = "Tanker" {
+        if ShipIsDocked and ShipType = "Tanker" and not (LaunchButtonIsRunning) {
             set g:y to 150 + 250.
         }
         else {
             set g:y to 150.
         }
     }
+    else if LaunchButtonIsRunning {
+        set g:y to 150.
+    }
     else {
         set g:y to 150 + 250.
     }
 }
 
+
+function BoosterExists {
+    list targets in shiplist.
+    set ShipsInOrbitList to list().
+    if shiplist:length > 0 {
+        for x in shiplist {
+            if x:status = "SUBORBITAL" {
+                if x:name:contains("Booster") {
+                    return true.
+                }
+            }
+        }
+    }
+    return false.
+}

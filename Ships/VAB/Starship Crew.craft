@@ -1,5 +1,5 @@
 ship = Starship Crew
-version = 1.12.3
+version = 1.12.4
 description = This is the Crewed version of Starship!
 type = VAB
 size = 36.9239693,86.3706207,15.218523
@@ -587,7 +587,7 @@ PART
 	part = SEP.S20.AFT.LEFT_4294042912
 	partName = Part
 	persistentId = 3421137055
-	pos = 0.176865771,62.9927101,3.68491268
+	pos = 0.176865771,62.9927101,3.68491364
 	attPos = 0,0,0
 	attPos0 = -3.2848568,-5.02600288,-0.0231346339
 	rot = -0.463903815,0.463903815,-0.533660352,0.533660352
@@ -781,7 +781,7 @@ PART
 	part = SEP.S20.AFT.RIGHT_4294042270
 	partName = Part
 	persistentId = 3485392219
-	pos = 0.176863626,62.9927101,-2.88491249
+	pos = 0.176863626,62.9927101,-2.88491344
 	attPos = 0,0,0
 	attPos0 = 3.28485632,-5.02600288,-0.023135826
 	rot = 0.533660412,0.533660412,0.463903725,0.463903725
@@ -975,7 +975,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293986328
 	partName = Part
 	persistentId = 1568815145
-	pos = 1.87336576,60.2887611,-0.566122055
+	pos = 1.87336624,60.2887611,-0.566122293
 	attPos = 0,0,0
 	attPos0 = 0.966107607,-7.72994995,1.67333782
 	rot = 0,0,0,1.00000012
@@ -1220,7 +1220,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293931996
 	partName = Part
 	persistentId = 3913266863
-	pos = -1.47337246,60.2887611,-0.566125393
+	pos = -1.47337306,60.2887611,-0.566125751
 	attPos = 0,0,0
 	attPos0 = 0.966105402,-7.72994995,-1.67333853
 	rot = 0,0.866025448,0,0.49999997
@@ -1457,7 +1457,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293931510
 	partName = Part
 	persistentId = 3674019608
-	pos = 0.20000203,60.2887611,2.3322351
+	pos = 0.20000203,60.2887611,2.33223557
 	attPos = 0,0,0
 	attPos0 = -1.93220675,-7.72994995,1.78813855E-06
 	rot = 0,0.866025388,0,-0.50000006
@@ -1694,7 +1694,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293930182
 	partName = Part
 	persistentId = 1736163702
-	pos = 0.199998572,60.2887611,-1.53223515
+	pos = 0.199998572,60.2887611,-1.53223562
 	attPos = 0,0,0
 	attPos0 = 1.93220687,-7.72994995,-1.19209244E-06
 	rot = 0,0,0,1.00000012
@@ -1931,7 +1931,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293928524
 	partName = Part
 	persistentId = 250555928
-	pos = -1.47336447,60.2887611,1.36612248
+	pos = -1.47336495,60.2887611,1.36612272
 	attPos = 0,0,0
 	attPos0 = -0.966108024,-7.72994995,-1.67333663
 	rot = 0,0.866025448,0,0.49999997
@@ -2168,7 +2168,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293928038
 	partName = Part
 	persistentId = 3172427938
-	pos = 1.87337399,60.2887611,1.36612535
+	pos = 1.87337458,60.2887611,1.3661257
 	attPos = 0,0,0
 	attPos0 = -0.96610564,-7.72994995,1.6733402
 	rot = 0,0.866025388,0,-0.50000006
@@ -2405,7 +2405,7 @@ PART
 	part = SEP.RAPTOR.SL_4293925840
 	partName = Part
 	persistentId = 3624222681
-	pos = -0.310724914,59.4099998,0.400000721
+	pos = -0.310725033,59.4099998,0.400000721
 	attPos = 0,0,0
 	attPos0 = -6.55650922E-07,-8.60871124,-0.510717869
 	rot = 0,0,0,1.00000012
@@ -2626,6 +2626,7 @@ PART
 	{
 		name = ModuleSEPRaptor
 		isEnabled = True
+		IsActuated = False
 		stagingEnabled = True
 		EVENTS
 		{
@@ -2747,7 +2748,7 @@ PART
 	part = SEP.RAPTOR.SL_4293922032
 	partName = Part
 	persistentId = 3933076994
-	pos = 0.455364227,59.4099998,0.842302084
+	pos = 0.455364287,59.4099998,0.842302203
 	attPos = 0,0,0
 	attPos0 = -0.442294866,-8.60871124,0.255360544
 	rot = 0,0.866025448,0,0.49999997
@@ -2960,6 +2961,7 @@ PART
 	{
 		name = ModuleSEPRaptor
 		isEnabled = True
+		IsActuated = False
 		stagingEnabled = True
 		EVENTS
 		{
@@ -3081,7 +3083,7 @@ PART
 	part = SEP.RAPTOR.SL_4293921454
 	partName = Part
 	persistentId = 3748305714
-	pos = 0.455362678,59.4099998,-0.0423023403
+	pos = 0.455362737,59.4099998,-0.0423024595
 	attPos = 0,0,0
 	attPos0 = 0.442295283,-8.60871124,0.255359143
 	rot = 0,0.866025388,0,-0.50000006
@@ -3294,6 +3296,7 @@ PART
 	{
 		name = ModuleSEPRaptor
 		isEnabled = True
+		IsActuated = False
 		stagingEnabled = True
 		EVENTS
 		{
@@ -3834,6 +3837,64 @@ PART
 	}
 	MODULE
 	{
+		name = kOSProcessor
+		isEnabled = True
+		bootFile = /boot/watchdog.ks
+		diskSpace = 255000
+		baseDiskSpace = 255000
+		baseModuleMass = 0
+		additionalCost = 0
+		MaxPartId = 100
+		RequiredPower = 0.100000001
+		stagingEnabled = True
+		activated = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+			Activate
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Deactivate
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Toggle
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			TogglePower
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			StartSuppressAutopilot
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			StopSuppressAutopilot
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ToggleSuppressAutopilot
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = ModuleB9PartSwitch
 		isEnabled = True
 		stagingEnabled = True
@@ -3962,7 +4023,7 @@ PART
 	part = SEP.S20.FWD.LEFT_4294040836
 	partName = Part
 	persistentId = 193782600
-	pos = 0.200163081,84.2840881,3.21043611
+	pos = 0.200163081,84.2840881,3.21043658
 	attPos = 0,0,0
 	attPos0 = -2.81042528,0.717590332,0.000164628029
 	rot = 0.549525201,-0.444996834,0.549525201,-0.444996834
@@ -4156,7 +4217,7 @@ PART
 	part = SEP.S20.FWD.RIGHT_4294041450
 	partName = Part
 	persistentId = 1960899320
-	pos = 0.200161651,84.2840881,-2.41043448
+	pos = 0.200161651,84.2840881,-2.41043496
 	attPos = 0,0,0
 	attPos0 = 2.81042385,0.717590332,0.000163674355
 	rot = 0.549525321,0.444997013,0.549525082,0.444996655
@@ -4916,7 +4977,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294131004
 	partName = Part
 	persistentId = 2096481950
-	pos = 2.10543942,58.3354568,-2.90061688
+	pos = 2.1054399,58.3354568,-2.90061784
 	attPos = 0,0,0
 	attPos0 = 3.30055976,0.589805603,1.90540981
 	rot = -0.500000238,0,-0.866025448,0
@@ -5104,7 +5165,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294129548
 	partName = Part
 	persistentId = 144239615
-	pos = -1.70557594,58.3354568,-2.90055442
+	pos = -1.70557666,58.3354568,-2.90055561
 	attPos = 0,0,0
 	attPos0 = 3.30048656,0.589805603,-1.90553701
 	rot = -0.866025567,0,-0.499999881,0
@@ -5284,7 +5345,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294128866
 	partName = Part
 	persistentId = 4169471528
-	pos = -1.70543754,58.3354568,3.70061803
+	pos = -1.70543802,58.3354568,3.70061898
 	attPos = 0,0,0
 	attPos0 = -3.30056119,0.589805603,-1.90541053
 	rot = -0.866025448,0,0.500000238,0
@@ -5464,7 +5525,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294128194
 	partName = Part
 	persistentId = 1410723546
-	pos = 2.10557079,58.3354568,3.70054555
+	pos = 2.10557151,58.3354568,3.70054674
 	attPos = 0,0,0
 	attPos0 = -3.300488,0.589805603,1.90553868
 	rot = -0.499999881,0,0.866025567,0
@@ -5975,6 +6036,11 @@ PART
 				wasActiveBeforePartWasAdjusted = False
 			}
 			ToggleEngineModeAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ToggleIndependentThrottleAction
 			{
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
@@ -6852,7 +6918,7 @@ PART
 	part = SLE.SS.OLIT.Base_4293118876
 	partName = Part
 	persistentId = 300331249
-	pos = -20.6448269,3.87063599,-0.659083962
+	pos = -20.6448345,3.87063599,-0.659083962
 	attPos = 3.81469727E-05,-0.150917053,0
 	attPos0 = 20.8443985,-1.93387127,1.05908227
 	rot = 0,-1.00000012,0,0
@@ -7104,7 +7170,7 @@ PART
 	part = SLE.SS.OLIT.Core_4293118754
 	partName = Part
 	persistentId = 439700507
-	pos = -20.6448345,7.38957214,-0.659083962
+	pos = -20.6448421,7.38957214,-0.659083962
 	attPos = 0,0,0
 	attPos0 = 7.62939453E-06,3.51894379,0
 	rot = 0,1.00000012,0,0
@@ -7266,7 +7332,7 @@ PART
 	part = SLE.SS.OLIT.MZ_4293118266
 	partName = Part
 	persistentId = 195680203
-	pos = -15.2832012,79.2034149,0.0956129134
+	pos = -15.2832088,79.2034149,0.0956129134
 	attPos = 0,0,0
 	attPos0 = -5.36181641,71.8138199,-0.75470078
 	rot = 0,1.00000012,0,0
@@ -7861,7 +7927,7 @@ PART
 	part = SLE.SS.OLIT.Top_4293117760
 	partName = Part
 	persistentId = 2946990986
-	pos = -20.6448421,80.8684845,-0.65908587
+	pos = -20.6448498,80.8684845,-0.65908587
 	attPos = 0,0,0
 	attPos0 = 7.62939453E-06,73.4788971,1.90734863E-06
 	rot = 0,1.00000012,0,0
