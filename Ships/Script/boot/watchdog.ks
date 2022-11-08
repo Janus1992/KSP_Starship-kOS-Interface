@@ -1,6 +1,13 @@
 set MainCPU to SHIP:PARTSNAMED("SEP.S20.BODY").
 if MainCPU:length = 0 {
-    set MainCPU to SHIP:PARTSNAMED(("SEP.S20.BODY (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
+    if ship:name:contains(" (S") {
+        set shipindex to ship:name:find(" (S").
+        set shipnameonly to ship:name:substring(0, shipindex).
+        set MainCPU to SHIP:PARTSNAMED(("SEP.S20.BODY (" + shipnameonly + ")"))[0]:getmodule("kOSProcessor").
+    }
+    else {
+        set MainCPU to SHIP:PARTSNAMED(("SEP.S20.BODY (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
+    }
 }
 else {
     set MainCPU to MainCPU[0]:getmodule("kOSProcessor").

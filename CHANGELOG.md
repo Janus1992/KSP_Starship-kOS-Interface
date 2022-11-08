@@ -1,3 +1,6 @@
+# V1.0.5b (2022-11-08)
+- Fixed a watchdog issue on "revert to launch".
+
 # V1.0.5a (2022-11-07)
 - Cancel button becomes the "Undock" button when docked.
 - Fixed ship renaming when more than two ships of one variant exist simultaneously.

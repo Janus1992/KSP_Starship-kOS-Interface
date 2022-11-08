@@ -69,7 +69,7 @@
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": 86.420529106399044,
+            "value": 86.420605243765749,
             "$type": "kOS.Safe.Encapsulation.ScalarDoubleValue"
         },
         {
@@ -133,7 +133,7 @@
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": 1656513114.5781379,
+            "value": 1667923931.2445619,
             "$type": "kOS.Safe.Encapsulation.ScalarDoubleValue"
         }
     ],
