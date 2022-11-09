@@ -1,3 +1,6 @@
+# V1.0.5c (2022-11-09)
+- Removed AtmosphereAutopilot from mods that don't work with the Interface.
+
 # V1.0.5b (2022-11-08)
 - Fixed a watchdog issue on "revert to launch".
 

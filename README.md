@@ -1,7 +1,7 @@
 # KSP_Starship-kOS-Interface
 An Interface for automating the 'Starship Expansion Project' and 'Starship Launch Expansion' mods within Kerbal Space Program.
 
-![Alt text](/Infographic.jpg)
+![Alt text](/Infographic.png)
 
 # TO INSTALL:
 - Download the zip file.
@@ -10,7 +10,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 
 # IMPORTANT!:
-- Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker").
+- Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker"). These can be found if you enable stock vehicles in your savegame, or you copy them manually to your savegame.
 - If the Interface doesn't show up, check again that you don't have any of the mods installed that the Interface doesn't work with (listed below).
 
 # REQUIRES:
@@ -26,13 +26,12 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
     https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229
 
 # OPTIONAL:
-- Community Resource Pack (for using "liquid methane" instead of ksp's standard "liquid fuel")
+- Community Resource Pack (for using "liquid methane" instead of ksp's standard "liquid fuel", however slightly less delta-v will be available)
     https://forum.kerbalspaceprogram.com/index.php?/topic/83007-1x-community-resource-pack/
 
 # USERS REPORT IT DOES NOT WORK WITH:
 - RSS
 - Realism Overhaul
-- AtmosphereAutopilot
 - AnimatedAttachment
 - ConfigurableContainers
 
@@ -46,12 +45,16 @@ To Load Cargo in the Cargo Ship:
 # Notes:
 - Automatic re-stacking/refueling is currently impossible because the SEP & SLE mods lack the ability to dock together.
 - When using multiple ships of the same name, they might get renamed by my scripts to avoid Interface crashes.
-- Seldom Interface crashes may occur (it makes a little crashing noise). Toggling power on the kOS segment of the Ships Tank Section will restart the Interface.
-- If the Interface crashes in a repeatable way, maybe make a screenshot of the cpu (righthand kOS window in game, the cpu will show some error message), and report it as a bug so I can work on it.
-- Existing Ships after v1.01 will automatically update the Interface after installing the latest version from here.
-- The KSP delta-V calculations are not correct anymore when using liquid methane (CRP), trust the Interface instead! :)
+- Seldom Interface crashes may occur (it makes a little crashing noise). A watchdog computer should try to restart the Interface after 5 seconds.
+- Existing Ships will automatically try to update the Interface after installing the latest version from here.
+- The KSP delta-V calculations are not correct, so trust the Interface instead! :)
 
+
+# Known Issues:
+- Settings page: Sometimes the landing coördinates cannot be confirmed with "enter" or by pressing away from the text field. Closing the Settings page will however confirm the coördinates.
+- Enabling logging of data can seldomly cause a crash when it attempts to write and it loses the connection before/during the writing. Logging is therefore disabled by default.
+- Sometimes I've noticed that running some parts of the script generates tiny amounts of liquid fuel? It uses electricity, but generates LF. Very strange, but not really intrusive.
 
 
 # By the author:
-This has been a pet project of mine since 2021, and I had a lot of fun making this Interface. I hope you do too!
+This has been a pet project of mine since 2021, and I had a lot of fun making and using this Interface. I hope you will too! Let me know what you think!
