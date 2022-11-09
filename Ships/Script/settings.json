@@ -17,14 +17,6 @@
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": "Roll",
-            "$type": "kOS.Safe.Encapsulation.StringValue"
-        },
-        {
-            "value": "0",
-            "$type": "kOS.Safe.Encapsulation.StringValue"
-        },
-        {
             "value": "Ship Name",
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },

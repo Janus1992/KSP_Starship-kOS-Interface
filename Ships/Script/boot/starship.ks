@@ -1,62 +1,58 @@
 //
 // SEP Starship kOS Script
 //
-//
-// Manual Install:
-// - Place this script in Kerbal Space Program/Ships/Script/boot/.
-// - Check the bootfile has been selected in the ships kOS unit.
-// - Fly, and the GUI should show up!
-//
-//
-// Required Mods:
-// - SEP
-// - Trajectories
-// - kOS
-//
-// Have Fun!
-//
-//
-//
-// Version 1.0 - GNUGPL3
+// Version 1.05 - GNUGPL3
 // Janus92
 //
 //
-//
-
-
-//--------------Self-Update-------------//
-
 
 wait until ship:unpacked.
 unlock steering.
 clearguis().
 clearscreen.
 
+
+//--------------Self-Update-------------//
+
+
 if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
-    wait 1.
     if homeconnection:isconnected {
-        if exists("0:/settings.json") {
-            set L to readjson("0:/settings.json").
-            if L:haskey("Last Update Time") {
-                set LastUpdateTime to L["Last Update Time"].
+        switch to 0.
+        if exists("1:starship.ksm") {
+            if homeconnection:isconnected {
+                HUDTEXT("Starting Interface..", 5, 2, 20, green, false).
+                if open("0:starship.ks"):readall:string = open("1:/boot/starship.ks"):readall:string {}
+                else {
+                    HUDTEXT("Performing Update..", 5, 2, 20, yellow, false).
+                    compile starship.
+                    if homeconnection:isconnected {
+                        copypath("0:starship.ks", "1:/boot/").
+                        copypath("starship.ksm", "1:").
+                        set core:BOOTFILENAME to "starship.ksm".
+                        reboot.
+                    }
+                    else {
+                        HUDTEXT("Connection lost during Update! Can't update Interface..", 10, 2, 20, red, false).
+                    }
+                }
+            }
+            else {
+                HUDTEXT("Connection lost during Update! Can't update Interface..", 10, 2, 20, red, false).
             }
         }
-        //print "Time Difference: " + round(kuniverse:realtime - LastUpdateTime, 2).
-        if LastUpdateTime + 15 < kuniverse:realtime {
-            switch to 0.
-            HUDTEXT("Starting Interface..", 10, 2, 20, green, false).
-            print "Starting background update..".
+        else {
+            HUDTEXT("First Time Boot detected! Initializing Ship Interface..", 10, 2, 20, green, false).
+            print "starship.ksm doesn't yet exist in boot.. creating..".
             compile starship.
+            switch to 0.
             copypath("starship.ksm", "1:").
             set core:BOOTFILENAME to "starship.ksm".
-            print "Starship Interface background update completed! Rebooting now..".
-            set LastUpdateTime to kuniverse:realtime.
-            SaveToSettings("Last Update Time", LastUpdateTime).
             reboot.
         }
     }
     else {
-        HUDTEXT("No connection available! Can't check for Interface Updates..", 10, 2, 20, red, false).
+        HUDTEXT("No connection available! Can't update Interface..", 10, 2, 20, red, false).
+        HUDTEXT("Starting Interface..", 5, 2, 20, green, false).
     }
 }
 
@@ -176,6 +172,7 @@ set LastMessageSentTime to time:seconds.
 set CancelVelocityHasStarted to false.
 set LandingFacingVector to v(0, 0, 0).
 set MaxAccel to 10.
+set Launch180 to false.
 
 
 
@@ -1061,7 +1058,7 @@ local quicksetting1 is settingscheckboxes:addcheckbox("<b>Auto-Warp</b>").
     set quicksetting1:style:overflow:top to -4.
     set quicksetting1:style:overflow:bottom to -9.
     set quicksetting1:tooltip to "Auto warps the ship through Launch, Maneuvers and Re-Entries".
-local quicksetting2 is settingscheckboxes:addcheckbox("<b>  0° Launch</b>").
+local quicksetting2 is settingscheckboxes:addcheckbox("<b>  Normal CPU</b>").
     set quicksetting2:style:fontsize to 18.
     set quicksetting2:style:margin:left to 10.
     set quicksetting2:style:bg to "starship_img/starship_toggle_off".
@@ -1076,7 +1073,7 @@ local quicksetting2 is settingscheckboxes:addcheckbox("<b>  0° Launch</b>").
     set quicksetting2:style:overflow:left to -3.
     set quicksetting2:style:overflow:top to -4.
     set quicksetting2:style:overflow:bottom to -9.
-    set quicksetting2:tooltip to "Ship Attitude during Launch: 0° = cockpit up. 180° = cockpit down".
+    set quicksetting2:tooltip to "kOS CPU speed. Fast = heavier performance impact on KSP".
 local quicksetting3 is settingscheckboxes:addcheckbox("<b>Log Data</b>").
     set quicksetting3:toggle to true.
     set quicksetting3:style:fontsize to 18.
@@ -1251,12 +1248,16 @@ set quicksetting1:ontoggle to {
 set quicksetting2:ontoggle to {
     parameter pressed.
     if pressed {
-        SaveToSettings("Roll", "0").
-        set quicksetting2:text to "<b>  0° Launch</b>".
+        SaveToSettings("CPU_SPD", "500").
+        set quicksetting2:text to "<b>  Normal CPU</b>".
+        set CPUSPEED to 500.
+        set config:ipu to CPUSPEED.
     }
     if not pressed {
-        SaveToSettings("Roll", "180").
-        set quicksetting2:text to "<b>  180° Launch</b>".
+        SaveToSettings("CPU_SPD", "2000").
+        set quicksetting2:text to "<b>  Fast CPU</b>".
+        set CPUSPEED to 2000.
+        set config:ipu to CPUSPEED.
     }
 }.
 
@@ -4029,25 +4030,20 @@ set launchbutton:ontoggle to {
             if ship:body = BODY("Kerbin") and Boosterconnected {
                 set runningprogram to "Input".
                 if alt:radar < 100 {
-                    if quicksetting2:pressed {
-                        set rolldir to heading(270,0).
+                    if vang(ship:facing:topvector, heading(90,0):vector) < 30 {
+                        set Launch180 to true.
                     }
                     else {
-                        set rolldir to heading(90,0).
+                        set Launch180 to false.
                     }
-                    if vang(ship:facing:topvector, rolldir:vector) < 30 and CargoMass < MaxCargoToOrbit + 1 and cargo1text:text = "Closed" {
+                    if CargoMass < MaxCargoToOrbit + 1 and cargo1text:text = "Closed" {
                         GoHome().
                         InhibitButtons(0, 0, 0).
                         if ShipsInOrbit():length > 0 {
                             set TargetShip to false.
                             until false {
                                 for ship in ShipsInOrbit {
-                                    if quicksetting2:pressed {
-                                        set message1:text to "<b>Launch to Target</b>  (within ± 15km)".
-                                    }
-                                    else {
-                                        set message1:text to "<b>Launch to Target</b>  (within ± 15km, 180° Roll)".
-                                    }
+                                    set message1:text to "<b>Launch to Target</b>  (within ± 15km)".
                                     set message2:text to "<b>Rendezvous Target:  <color=green>" + ship:name + "</color></b>".
                                     set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
                                     set message3:style:textcolor to cyan.
@@ -4062,12 +4058,7 @@ set launchbutton:ontoggle to {
                             set execute:text to "<b>LAUNCH</b>".
                         }
                         if TargetShip = 0 {
-                            if quicksetting2:pressed {
-                                set message1:text to "<b>Launch to Parking Orbit</b>  (± 75km)".
-                            }
-                            else {
-                                set message1:text to "<b>Launch to Parking Orbit</b>  (± 75km, 180° Roll)".
-                            }
+                            set message1:text to "<b>Launch to Parking Orbit</b>  (± 75km)".
                         }
                         else {
                             set message1:text to "<b>Launch to Ship:  <color=green>" + TargetShip:name + "</color></b>".
@@ -4164,16 +4155,6 @@ set launchbutton:ontoggle to {
                             set message1:text to "<b>Error: Cargo Door still open!</b>".
                             set message2:text to "<b>Please close the Cargo Door and try again.</b>".
                             set message3:text to "<b></b>".
-                        }
-                        else {
-                            if quicksetting2:pressed {
-                                set message1:text to "<b>Error: Ship not rotated for 0° Roll..</b>".
-                            }
-                            else {
-                                set message1:text to "<b>Error: Ship not rotated for 180° Roll..</b>".
-                            }
-                            LogToFile("Launch cancelled due to wrong roll orientation").
-                            set message2:text to "<b>Check the Settings Page.</b>".
                         }
                         set message3:text to "<b>Launch cancelled.</b>".
                         set message1:style:textcolor to yellow.
@@ -5372,8 +5353,8 @@ if addons:tr:available and not startup {
                     set LandingCoords to "-0.0972,-74.5577".
                     set setting3:text to LandingCoords.
                 }
-                if L:haskey("Roll") {
-                    if L["Roll"] = "0" {
+                if L:haskey("CPU_SPD") {
+                    if L["CPU_SPD"] = "500" {
                         set quicksetting2:pressed to true.
                     }
                     else {
@@ -5690,7 +5671,7 @@ function Launch {
                 BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
                 wait 1.
                 if not cancelconfirmed {
-                    if quicksetting2:pressed {
+                    if not (Launch180) {
                         sendMessage(Processor(volume("Booster")), "Boostback, 0 Roll").
                     }
                     else {
@@ -5876,7 +5857,7 @@ Function LaunchSteering {
             if apoapsis > 54000 {
                 set throttle to 0.5 + (1 - ((apoapsis - 54000) / 1000)).
             }
-            if quicksetting2:pressed {
+            if not (Launch180) {
                 set result to heading(90, targetpitch).
             }
             else {
@@ -5916,7 +5897,7 @@ Function LaunchSteering {
                         set OrbitBurnPitchCorrection to 0.
                     }
                 }
-                if quicksetting2:pressed {
+                if not (Launch180) {
                     rcs on.
                     set result to ship:prograde * R(-OrbitBurnPitchCorrection, 0, 0).
                 }
@@ -5937,7 +5918,7 @@ Function LaunchSteering {
                 }
                 else if apoapsis > 70000 {
                     if vdot(CircularizationStart, CircularizationNode:deltav) > 5000 {
-                        if quicksetting2:pressed {
+                        if not (Launch180) {
                             set result to lookdirup(CircularizationNode:burnvector, ship:facing:topvector).
                         }
                         else {

@@ -1,5 +1,9 @@
 # V1.0.5c (2022-11-09)
-- Removed AtmosphereAutopilot from mods that don't work with the Interface.
+- Removed "AtmosphereAutopilot" from mods that don't work with the Interface.
+- Removed "launch with 0/180 degrees" (upside down) toggle on the settings page as the Interface can detect it automatically now.
+- Added CPU Speed toggle in the settings.
+- Faster Interface Start-Up, better update mechanism.
+- Fixed error where the boostback was being called twice causing a forced loading of the starship that's in orbit.
 
 # V1.0.5b (2022-11-08)
 - Fixed a watchdog issue on "revert to launch".

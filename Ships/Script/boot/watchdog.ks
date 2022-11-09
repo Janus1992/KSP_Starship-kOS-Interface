@@ -24,7 +24,7 @@ until false {
             else {
                 sas on.
                 print "Status: Rebooting Main CPU..".
-                HUDTEXT("Rebooting due to Interface Time-Out..", 10, 2, 20, yellow, false).
+                HUDTEXT("Rebooting due to Interface Time-Out..", 5, 2, 20, yellow, false).
                 MainCPU:deactivate().
                 SaveToSettings("Last Update Time", KUniverse:realtime).
                 wait 1.

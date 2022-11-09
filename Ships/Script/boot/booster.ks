@@ -23,6 +23,7 @@ set stopDist3 to 0.
 set landingRatio to 0.
 set maxstabengage to 50.
 set GSWest to 0.
+set BoostBackComplete to false.
 lock RadarAlt to alt:radar - BoosterHeight.
 if stage:number > 2 {
     if exists("0:/BoosterFlightData.csv") {
@@ -31,7 +32,6 @@ if stage:number > 2 {
 }
 unlock throttle.
 set throttle to 0.
-set DragCurve to getDragCurve().
 
 clearscreen.
 print "Booster Nominal Operation, awaiting command..".
@@ -43,7 +43,7 @@ until False {
             set ShipConnectedToBooster to true.
         }
     }
-    if not (ShipConnectedToBooster) {
+    if not (ShipConnectedToBooster) and not (BoostBackComplete) {
         Boostback(0).
     }
     WAIT UNTIL NOT CORE:MESSAGES:EMPTY.
@@ -88,9 +88,16 @@ function Boostback {
         }
         when vang(facing:forevector, -vxcl(up:vector, ErrorVector)) < 90 then {
             for fin in GridFins {
-                fin:getmodule("ModuleControlSurface"):DoAction("activate pitch controls", true).
-                fin:getmodule("ModuleControlSurface"):DoAction("activate yaw control", true).
-                fin:getmodule("ModuleControlSurface"):DoAction("activate roll control", true).
+                if fin:hasmodule("ModuleControlSurface") {
+                    fin:getmodule("ModuleControlSurface"):DoAction("activate pitch controls", true).
+                    fin:getmodule("ModuleControlSurface"):DoAction("activate yaw control", true).
+                    fin:getmodule("ModuleControlSurface"):DoAction("activate roll control", true).
+                }
+                if fin:hasmodule("SyncModuleControlSurface") {
+                    fin:getmodule("SyncModuleControlSurface"):DoAction("activate pitch controls", true).
+                    fin:getmodule("SyncModuleControlSurface"):DoAction("activate yaw control", true).
+                    fin:getmodule("SyncModuleControlSurface"):DoAction("activate roll control", true).
+                }
             }
             set ship:control:neutralize to true.
         }
@@ -140,19 +147,22 @@ function Boostback {
     }
     unlock throttle.
     set throttle to 0.
-    HUDTEXT("Starship continues its orbit insertion..", 30, 2, 20, green, false).
-    lock steering to lookdirup(up:vector, ApproachVector - up:vector).
+    lock steering to lookdirup(up:vector:normalized + ApproachVector:normalized, ApproachVector - up:vector).
     lock throttle to 0.
+    set BoostBackComplete to true.
     wait 1.
+    HUDTEXT("Starship continues its orbit insertion..", 30, 2, 20, green, false).
+
+    lock steering to lookdirup(up:vector, ApproachVector - up:vector).
 
     until verticalspeed < -100 {
-        SteeringCorrections().
         SetStarshipActive().
     }
     lock steering to lookdirup(-1 * VELOCITY:SURFACE * R(-LatCtrl, LngCtrl, -LatCtrl), ApproachVector - up:vector).
 
-    lock SteeringVectorDraw to vecdraw(v(0,0,0), 20 * lookdirup(-1 * VELOCITY:SURFACE * R(LatCtrl, LngCtrl, LatCtrl), vxcl(ApproachUPVector, landingzone:position - ship:position) + ApproachVector - up:vector):vector, blue, "Steering Vector", 20, true, 0.005, true, true).
+    wait 3.
 
+    lock SteeringVectorDraw to vecdraw(v(0,0,0), 20 * lookdirup(-1 * VELOCITY:SURFACE * R(LatCtrl, LngCtrl, LatCtrl), vxcl(ApproachUPVector, landingzone:position - ship:position) + ApproachVector - up:vector):vector, blue, "Steering Vector", 20, true, 0.005, true, true).
 
     until altitude < 30000 {
         SetStarshipActive().
@@ -207,16 +217,13 @@ function Boostback {
         if abs(LngError) > 200 or abs(LatError) > 50 {
             lock RadarAlt to alt:radar - BoosterHeight.
             set LandSomewhereElse to true.
+            HUDTEXT("Mechazilla out of range..", 5, 2, 20, red, false).
+            HUDTEXT("Landing somewhere else..", 5, 2, 20, red, false).
             lock steering to lookdirup(-1 * velocity:surface, ApproachVector - up:vector).
         }
     }
 
-    until altitude < 1250 {
-        SteeringCorrections().
-        if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
-        rcs on.
-        SetBoosterActive().
-    }
+    until altitude < 1250 {}
     lock steering to lookdirup(up:vector - 0.03 * velocity:surface - 0.02 * ErrorVector, ApproachVector - up:vector).
 
     when verticalspeed > -25 then {
@@ -230,6 +237,8 @@ function Boostback {
     until verticalspeed > -0.01 and RadarAlt < 5 and ship:status = "LANDED" or verticalspeed > 0.5 {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
+        rcs on.
+        SetBoosterActive().
         //set LdgVectorDraw to vecdraw(v(0, 0, 0), up:vector - 0.03 * velocity:surface - 0.0125 * ErrorVector, green, "Landing Vector", 20, true, 0.005, true, true).
     }
 
@@ -466,75 +475,6 @@ function OLMexists {
     else {
         return false.
     }
-}
-
-
-function InterpolateDragLinear {
-    parameter altitude.
-    set index to 0.
-    for key in DragCurve {
-        if altitude >= key[0] {
-            set keys to list(DragCurve[index-1], DragCurve[index]).
-            break.
-        }
-        set index to index + 1.
-    }
-    return ((altitude - keys[1][0]) / (keys[0][0] - keys[1][0]) * (abs(keys[0][1] - keys[1][1]))) + min(keys[0][1], keys[1][1]).
-}
-function getDragCurve {
-    //                   ALT(m)  Drag(kN)
-    local key0 is list  (55000  ,0).
-    local key1 is list  (50000  ,3).
-    local key2 is list  (40000  ,36).
-    local key3 is list  (35037  ,81).
-    local key4 is list  (32532  ,137).
-    local key5 is list  (30515  ,210).
-    local key6 is list  (30022  ,234).
-    local key7 is list  (29021  ,291).
-    local key8 is list  (28002  ,364).
-    local key9 is list  (27017  ,451).
-
-    local key10 is list (26018  ,560).
-    local key11 is list (25005  ,690).
-    local key12 is list (24035  ,841).
-    local key13 is list (22893  ,1061).
-    local key14 is list (22016  ,1264).
-    local key15 is list (21027  ,1533).
-    local key16 is list (19982  ,1863).
-    local key17 is list (18996  ,2226).
-    local key18 is list (17964  ,2662).
-    local key19 is list (16841  ,3193).
-
-    local key20 is list (15951  ,3640).
-    local key21 is list (14982  ,4113).
-    local key22 is list (14001  ,4567).
-    local key23 is list (13018  ,4952).
-    local key24 is list (12008  ,5364).
-    local key25 is list (10996  ,6040).
-    local key26 is list (10551  ,6363).
-    local key27 is list (10023  ,6554).
-    local key28 is list (9511   ,6453).
-    local key29 is list (8999   ,5942).
-
-    local key30 is list (8509   ,4775).
-    local key31 is list (7993   ,2641).
-    local key32 is list (7477   ,1952).
-    local key33 is list (7013   ,1728).
-    local key34 is list (6006   ,1587).
-    local key35 is list (5002   ,1606).
-    local key36 is list (4002   ,1710).
-    local key37 is list (3015   ,1847).
-    local key38 is list (1991   ,1960).
-    local key39 is list (1005   ,2030).
-
-    local key40 is list (0      ,2080).
-
-    return list(
-        key0,key1,key2,key3,key4,key5,key6,key7,key8,key9,
-        key10,key11,key12,key13,key14,key15,key16,key17,key18,key19,
-        key20,key21,key22,key23,key24,key25,key26,key27,key28,key29,
-        key30,key31,key32,key33,key34,key35,key36,key37,key38,key39,
-        key40).
 }
 
 
