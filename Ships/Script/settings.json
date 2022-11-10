@@ -21,7 +21,7 @@
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": "Starship Tanker",
+            "value": "Starship Crew",
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
@@ -33,35 +33,11 @@
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": "Setting2",
-            "$type": "kOS.Safe.Encapsulation.StringValue"
-        },
-        {
-            "value": "true",
-            "$type": "kOS.Safe.Encapsulation.StringValue"
-        },
-        {
-            "value": "Setting4",
-            "$type": "kOS.Safe.Encapsulation.StringValue"
-        },
-        {
-            "value": "true",
-            "$type": "kOS.Safe.Encapsulation.StringValue"
-        },
-        {
-            "value": "Setting5",
-            "$type": "kOS.Safe.Encapsulation.StringValue"
-        },
-        {
-            "value": "true",
-            "$type": "kOS.Safe.Encapsulation.StringValue"
-        },
-        {
             "value": "ArmsHeight",
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": 86.420605243765749,
+            "value": 86.420219925348647,
             "$type": "kOS.Safe.Encapsulation.ScalarDoubleValue"
         },
         {
@@ -70,14 +46,6 @@
         },
         {
             "value": "-0.0972,-74.5577",
-            "$type": "kOS.Safe.Encapsulation.StringValue"
-        },
-        {
-            "value": "Setting1",
-            "$type": "kOS.Safe.Encapsulation.StringValue"
-        },
-        {
-            "value": "false",
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
@@ -109,15 +77,15 @@
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": 3,
-            "$type": "kOS.Safe.Encapsulation.ScalarIntValue"
+            "value": 6.5,
+            "$type": "kOS.Safe.Encapsulation.ScalarDoubleValue"
         },
         {
             "value": "Tower:stabilizers:extension",
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": 0,
+            "value": 50,
             "$type": "kOS.Safe.Encapsulation.ScalarIntValue"
         },
         {
@@ -125,8 +93,32 @@
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": 1667923931.2445619,
+            "value": 1668078448.5596728,
             "$type": "kOS.Safe.Encapsulation.ScalarDoubleValue"
+        },
+        {
+            "value": "CPU_SPD",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "500",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "Launch Inclination",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": 0.1,
+            "$type": "kOS.Safe.Encapsulation.ScalarDoubleValue"
+        },
+        {
+            "value": "Tooltips",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "false",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
         }
     ],
     "$type": "kOS.Safe.Encapsulation.Lexicon"

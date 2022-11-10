@@ -26,11 +26,10 @@ until false {
                 print "Status: Rebooting Main CPU..".
                 HUDTEXT("Rebooting due to Interface Time-Out..", 5, 2, 20, yellow, false).
                 MainCPU:deactivate().
-                SaveToSettings("Last Update Time", KUniverse:realtime).
-                wait 1.
+                wait 0.001.
                 MainCPU:activate().
                 set LastPingReceived to 0.
-                wait 4.
+                wait 5.
             }
         }
         print "WATCHDOG is guarding Main CPU..".

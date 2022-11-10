@@ -1,3 +1,7 @@
+# V1.0.5d (2022-11-10)
+- Added "Launch to Inclination" feature.
+- Hopefully fixed the slowmotion bug which sometimes occurred when the scene was reloaded during launch (only happens sometimes).
+
 # V1.0.5c (2022-11-09)
 - Removed "AtmosphereAutopilot" from mods that don't work with the Interface.
 - Removed "launch with 0/180 degrees" (upside down) toggle on the settings page as the Interface can detect it automatically now.

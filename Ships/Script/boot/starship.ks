@@ -45,6 +45,7 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
             print "starship.ksm doesn't yet exist in boot.. creating..".
             compile starship.
             switch to 0.
+            copypath("0:starship.ks", "1:/boot/").
             copypath("starship.ksm", "1:").
             set core:BOOTFILENAME to "starship.ksm".
             reboot.
@@ -942,38 +943,20 @@ local settingsstackvlayout2 is settingsstackhlayout:addvlayout().
     set settingsstackvlayout2:style:hstretch to 1.
 local settingsstackvlayout3 is settingsstackhlayout:addvlayout().
 
-local setting3label is settingsstackvlayout1:addlabel("<b>Target Landing Zone:</b>").
-    set setting3label:style:margin:top to 7.
-    set setting3label:style:margin:left to 10.
-    set setting3label:style:fontsize to 19.
-    set setting3label:style:wordwrap to false.
-    set setting3label:style:width to 225.
-    set setting3label:style:margin:top to 10.
-    set setting3label:tooltip to "Ship Landing Target coördinates (e.g. -0.0972,-74.5577). Default = Launchpad".
-local setting3 is settingsstackvlayout2:addtextfield("-0.0972,-74.5577").
-    set setting3:style:width to 175.
-    set setting3:style:margin:top to 10.
-
-local setting1 is settingsstackvlayout1:addcheckbox("<b>  Show Tooltips</b>").
-    set setting1:style:margin:left to 10.
-    set setting1:style:margin:top to 7.
-    set setting1:style:fontsize to 18.
-    set setting1:style:bg to "starship_img/starship_toggle_off".
-    set setting1:style:on:bg to "starship_img/starship_toggle_on".
-    set setting1:style:hover:bg to "starship_img/starship_toggle_hover".
-    set setting1:style:hover_on:bg to "starship_img/starship_toggle_hover".
-    set setting1:style:active:bg to "starship_img/starship_toggle_off".
-    set setting1:style:active_on:bg to "starship_img/starship_toggle_on".
-    set setting1:style:width to 225.
-    set setting1:style:height to 29.
-    set setting1:style:overflow:right to -197.
-    set setting1:style:overflow:left to -3.
-    set setting1:style:overflow:top to -4.
-    set setting1:style:overflow:bottom to -9.
-    set setting1:tooltip to "Show tooltips like this one".
-local setting2 is settingsstackvlayout1:addcheckbox("<b>  </b>").
+local setting1label is settingsstackvlayout1:addlabel("<b>Target Landing Zone:</b>").
+    set setting1label:style:margin:left to 10.
+    set setting1label:style:margin:top to 10.
+    set setting1label:style:fontsize to 19.
+    set setting1label:style:wordwrap to false.
+    set setting1label:style:width to 225.
+    set setting1label:tooltip to "Ship Landing Target coördinates (e.g. -0.0972,-74.5577). Default = Launchpad".
+local setting1 is settingsstackvlayout2:addtextfield("-0.0972,-74.5577").
+    set setting1:style:width to 175.
+    set setting1:style:margin:top to 10.
+local setting2 is settingsstackvlayout1:addcheckbox("<b>  Show Tooltips</b>").
     set setting2:style:margin:left to 10.
     set setting2:style:margin:top to 7.
+    set setting2:style:fontsize to 18.
     set setting2:style:bg to "starship_img/starship_toggle_off".
     set setting2:style:on:bg to "starship_img/starship_toggle_on".
     set setting2:style:hover:bg to "starship_img/starship_toggle_hover".
@@ -986,27 +969,7 @@ local setting2 is settingsstackvlayout1:addcheckbox("<b>  </b>").
     set setting2:style:overflow:left to -3.
     set setting2:style:overflow:top to -4.
     set setting2:style:overflow:bottom to -9.
-    set setting2:tooltip to "not yet implemented".
-    setting2:hide().
-
-local setting4 is settingsstackvlayout2:addcheckbox("<b>  </b>").
-    set setting4:style:margin:left to 10.
-    set setting4:style:margin:top to 7.
-    set setting4:style:bg to "starship_img/starship_toggle_off".
-    set setting4:style:on:bg to "starship_img/starship_toggle_on".
-    set setting4:style:hover:bg to "starship_img/starship_toggle_hover".
-    set setting4:style:hover_on:bg to "starship_img/starship_toggle_hover".
-    set setting4:style:active:bg to "starship_img/starship_toggle_off".
-    set setting4:style:active_on:bg to "starship_img/starship_toggle_on".
-    set setting4:style:width to 175.
-    set setting4:style:height to 29.
-    set setting4:style:overflow:right to -147.
-    set setting4:style:overflow:left to -3.
-    set setting4:style:overflow:top to -4.
-    set setting4:style:overflow:bottom to -9.
-    set setting4:tooltip to "not yet implemented".
-    setting4:hide().
-
+    set setting2:tooltip to "Show tooltips like this one".
 local TargetLZPicker is settingsstackvlayout2:addpopupmenu().
     set TargetLZPicker:style:textcolor to white.
     set TargetLZPicker:style:fontsize to 16.
@@ -1024,24 +987,14 @@ local TargetLZPicker is settingsstackvlayout2:addpopupmenu().
     set TargetLZPicker:style:focused_on:bg to "starship_img/starship_background_light".
     set TargetLZPicker:options to list("<color=grey><b>Select existing LZ</b></color>", "<b><color=white>KSC Pad</color></b>", "<b><color=white>Desert Pad</color></b>", "<b><color=white>Woomerang Pad</color></b>", "<b><color=white>Current Impact</color></b>").
     set TargetLZPicker:tooltip to "Select a predefined Landing Zone here:  e.g.  KSC, Desert, Woomerang".
-
-local setting5 is settingsstackvlayout2:addcheckbox("<b>  </b>").
-    set setting5:style:margin:left to 10.
-    set setting5:style:margin:top to 7.
-    set setting5:style:bg to "starship_img/starship_toggle_off".
-    set setting5:style:on:bg to "starship_img/starship_toggle_on".
-    set setting5:style:hover:bg to "starship_img/starship_toggle_hover".
-    set setting5:style:hover_on:bg to "starship_img/starship_toggle_hover".
-    set setting5:style:active:bg to "starship_img/starship_toggle_off".
-    set setting5:style:active_on:bg to "starship_img/starship_toggle_on".
-    set setting5:style:width to 175.
-    set setting5:style:height to 29.
-    set setting5:style:overflow:right to -147.
-    set setting5:style:overflow:left to -3.
-    set setting5:style:overflow:top to -4.
-    set setting5:style:overflow:bottom to -9.
-    set setting5:tooltip to "not yet implemented".
-    setting5:hide().
+local setting3label is settingsstackvlayout1:addlabel("<b>Launch Inclination (°)</b>").
+    set setting3label:style:margin:left to 10.
+    set setting3label:style:fontsize to 19.
+    set setting3label:style:wordwrap to false.
+    set setting3label:style:width to 225.
+    set setting3label:tooltip to "Set Launch Inclination here".
+local setting3 is settingsstackvlayout2:addtextfield("0°").
+    set setting3:style:width to 175.
 
 local settingscheckboxes is settingsstackvlayout3:addvbox().
     set settingscheckboxes:style:vstretch to 1.
@@ -1087,32 +1040,7 @@ local quicksetting3 is settingscheckboxes:addcheckbox("<b>Log Data</b>").
     set quicksetting3:tooltip to "Flight Data Recorder. Saves data in 'KSP folder'/Ships/Script".
 
 
-set setting1:ontoggle to {
-    parameter pressed.
-    if pressed {
-        SaveToSettings("Setting1", "true").
-        set setting1:text to "<b>  Don't show Tooltips</b>".
-    }
-    if not pressed {
-        SaveToSettings("Setting1", "false").
-        set setting1:text to "<b>  Show Tooltips</b>".
-    }
-}.
-
-
-set setting2:ontoggle to {
-    parameter pressed.
-    if pressed {
-        SaveToSettings("Setting2", "true").
-        set setting2:text to "<b>  </b>".
-    }
-    if not pressed {
-        SaveToSettings("Setting2", "false").
-        set setting2:text to "<b>  </b>".
-    }
-}.
-
-set setting3:onconfirm to {
+set setting1:onconfirm to {
     parameter value.
     if not SettingCoordinatesInProgress {
         set SettingCoordinatesInProgress to true.
@@ -1132,7 +1060,7 @@ set setting3:onconfirm to {
                 set landingzone to latlng(-0.0972,-74.5577).
                 print "Default KSC Pad Coordinates set instead".
             }
-            set setting3:text to value.
+            set setting1:text to value.
             SaveToSettings("Landing Coordinates", value).
         }
         else {
@@ -1140,7 +1068,7 @@ set setting3:onconfirm to {
             if value[0]:toscalar(-9999) = -9999 or value[1]:toscalar(-9999) = -9999 {
                 set value to "-0.0972,-74.5577".
                 set landingzone to latlng(-0.0972,-74.5577).
-                set setting3:text to value.
+                set setting1:text to value.
                 SaveToSettings("Landing Coordinates", value).
                 print "Default KSC Pad Coordinates set due to input error".
             }
@@ -1158,10 +1086,23 @@ set setting3:onconfirm to {
 }.
 
 
+set setting2:ontoggle to {
+    parameter pressed.
+    if pressed {
+        SaveToSettings("Tooltips", "true").
+        set setting2:text to "<b>  Don't show Tooltips</b>".
+    }
+    if not pressed {
+        SaveToSettings("Tooltips", "false").
+        set setting2:text to "<b>  Show Tooltips</b>".
+    }
+}.
+
+
 set TargetLZPicker:onchange to {
     parameter choice.
     if choice = "<b><color=white>KSC Pad</color></b>" {
-        set setting3:text to "-0.0972,-74.5577".
+        set setting1:text to "-0.0972,-74.5577".
         set landingzone to latlng(-0.0972,-74.5577).
         if homeconnection:isconnected {
             SaveToSettings("Landing Coordinates", "-0.0972,-74.5577").
@@ -1171,7 +1112,7 @@ set TargetLZPicker:onchange to {
         }
     }
     if choice = "<b><color=white>Desert Pad</color></b>" {
-        set setting3:text to "-6.5604,-143.95".
+        set setting1:text to "-6.5604,-143.95".
         set landingzone to latlng(-6.5604,-143.95).
         if homeconnection:isconnected {
             SaveToSettings("Landing Coordinates", "-6.5604,-143.95").
@@ -1181,7 +1122,7 @@ set TargetLZPicker:onchange to {
         }
     }
     if choice = "<b><color=white>Woomerang Pad</color></b>" {
-        set setting3:text to "45.2896,136.11".
+        set setting1:text to "45.2896,136.11".
         set landingzone to latlng(45.2896,136.11).
         if homeconnection:isconnected {
             SaveToSettings("Landing Coordinates", "45.2896,136.11").
@@ -1196,7 +1137,7 @@ set TargetLZPicker:onchange to {
             set impactpos to latlng(round(impactpos:lat, 4), round(impactpos:lng, 4)).
             set landingzone to impactpos.
             set impactpos to impactpos:lat + "," + impactpos:lng.
-            set setting3:text to impactpos.
+            set setting1:text to impactpos.
             if homeconnection:isconnected {
                 SaveToSettings("Landing Coordinates", impactpos).
             }
@@ -1208,31 +1149,37 @@ set TargetLZPicker:onchange to {
 }.
 
 
-set setting4:ontoggle to {
-    parameter pressed.
-    if pressed {
-        SaveToSettings("Setting4", "true").
-        set setting4:text to "<b>  </b>".
+set setting3:onconfirm to {
+    parameter value.
+    if value:contains("°") {
+        set value to value:split("°")[0]:toscalar(0).
+        if value > 180 {
+            set value to 180.
+        }
+        if value < -180 {
+            set value to -180.
+        }
+        print value.
+        SaveToSettings("Launch Inclination", value).
+        set setting3:text to (value + "°").
     }
-    if not pressed {
-        SaveToSettings("Setting4", "false").
-        set setting4:text to "<b>  </b>".
+    else if value:toscalar(9999) = 9999 {
+        set value to 0.
+        SaveToSettings("Launch Inclination", value).
+        set setting3:text to (value + "°").
+    }
+    else {
+        set value to value:toscalar(0).
+        if value > 180 {
+            set value to 180.
+        }
+        if value < -180 {
+            set value to -180.
+        }
+        SaveToSettings("Launch Inclination", value).
+        set setting3:text to (value + "°").
     }
 }.
-
-
-set setting5:ontoggle to {
-    parameter pressed.
-    if pressed {
-        SaveToSettings("Setting5", "true").
-        set setting5:text to "<b>  </b>".
-    }
-    if not pressed {
-        SaveToSettings("Setting5", "false").
-        set setting5:text to "<b>  </b>".
-    }
-}.
-
 
 set quicksetting1:ontoggle to {
     parameter pressed.
@@ -4058,7 +4005,7 @@ set launchbutton:ontoggle to {
                             set execute:text to "<b>LAUNCH</b>".
                         }
                         if TargetShip = 0 {
-                            set message1:text to "<b>Launch to Parking Orbit</b>  (± 75km)".
+                            set message1:text to "<b>Launch to Parking Orbit</b>  (± 75km, " + round(setting3:text:split("°")[0]:toscalar(0), 1) + "°)".
                         }
                         else {
                             set message1:text to "<b>Launch to Ship:  <color=green>" + TargetShip:name + "</color></b>".
@@ -5303,37 +5250,19 @@ if addons:tr:available and not startup {
         if homeconnection:isconnected {
             if exists("0:/settings.json") {
                 set L to readjson("0:/settings.json").
-                if L:haskey("Switch Back To Ship") {
-                    if L["Switch Back To Ship"] = "true" {
-                        set setting1:pressed to true.
-                    }
-                    else {
-                        set setting1:pressed to false.
-                    }
-                }
-                if L:haskey("setting2") {
-                    if L["setting2"] = "true" {
+                if L:haskey("Tooltips") {
+                    if L["Tooltips"] = "true" {
                         set setting2:pressed to true.
                     }
                     else {
                         set setting2:pressed to false.
                     }
                 }
-                if L:haskey("setting4") {
-                    if L["setting4"] = "true" {
-                        set setting4:pressed to true.
-                    }
-                    else {
-                        set setting4:pressed to false.
-                    }
+                if L:haskey("Launch Inclination") {
+                    set setting3:text to (L["Launch Inclination"] + "°").
                 }
-                if L:haskey("setting5") {
-                    if L["setting5"] = "true" {
-                        set setting5:pressed to true.
-                    }
-                    else {
-                        set setting5:pressed to false.
-                    }
+                else {
+                    set setting3:text to ("0°").
                 }
                 if L:haskey("Log Data") {
                     if L["Log Data"] = "true" {
@@ -5347,11 +5276,11 @@ if addons:tr:available and not startup {
                 }
                 if L:haskey("Landing Coordinates") {
                     set LandingCoords to L["Landing Coordinates"].
-                    set setting3:text to LandingCoords.
+                    set setting1:text to LandingCoords.
                 }
                 else {
                     set LandingCoords to "-0.0972,-74.5577".
-                    set setting3:text to LandingCoords.
+                    set setting1:text to LandingCoords.
                 }
                 if L:haskey("CPU_SPD") {
                     if L["CPU_SPD"] = "500" {
@@ -5375,23 +5304,23 @@ if addons:tr:available and not startup {
                 set L to lexicon().
                 set L["Landing Coordinates"] to "-0.0972,-74.5577".
                 set LandingCoords to "-0.0972,-74.5577".
-                set setting3:text to LandingCoords.
+                set setting1:text to LandingCoords.
                 writejson(L, "0:/settings.json").
             }
         }
         else {
             set LandingCoords to "-0.0972,-74.5577".
-            set setting3:text to LandingCoords.
+            set setting1:text to LandingCoords.
         }
         set LandingCoords to LandingCoords:split(",").
         set landingzone to latlng(LandingCoords[0]:toscalar, LandingCoords[1]:toscalar).
-        if setting3:text = "-0.0972,-74.5577" {
+        if setting1:text = "-0.0972,-74.5577" {
             set TargetLZPicker:index to 1.
         }
-        else if setting3:text = "-6.5604,-143.95" {
+        else if setting1:text = "-6.5604,-143.95" {
             set TargetLZPicker:index to 2.
         }
-        else if setting3:text = "45.2896,136.11" {
+        else if setting1:text = "45.2896,136.11" {
             set TargetLZPicker:index to 3.
         }
         else {
@@ -5509,7 +5438,7 @@ if addons:tr:available and not startup {
     }
     updatestatusbar.
     updateCargoPage.
-    if ship:status = "FLYING" or ship:status = "SUB_ORBITAL" {
+    if ship:status = "FLYING" and eta:apoapsis < eta:periapsis or ship:status = "SUB_ORBITAL" and eta:apoapsis < eta:periapsis {
         Launch().
     }
     set startup to true.
@@ -5529,7 +5458,7 @@ WHEN runningprogram = "None" THEN {
 }
 
 wait until exit.
-LogToFile("Exit is now true, closing GUI").
+LogToFile("Closing GUI").
 g:dispose().
 shutdown.
 
@@ -5578,6 +5507,8 @@ function Launch {
         wait 0.001.
 
         set targetap to 75000.
+        set targetincl to setting3:text:split("°")[0]:toscalar(0).
+        set LaunchData to LAZcalc_init(targetap, targetincl).
         set OrbitBurnPitchCorrectionPID to PIDLOOP(0.05, 0, 0, -30, 0).
         set OrbitBurnPitchCorrectionPID:setpoint to targetap.
 
@@ -5627,12 +5558,12 @@ function Launch {
             if round(ship:geoposition:lat, 2) = round(landingzone:lat, 2) and round(ship:geoposition:lng, 2) = round(landingzone:lng, 2) {}
             else if round(ship:geoposition:lat, 2) = -0.10 and round(ship:geoposition:lng, 2) = -74.56 {
                 set landingzone to latlng(-0.0972,-74.5577).
-                set setting3:text to "-0.0972,-74.5577".
+                set setting1:text to "-0.0972,-74.5577".
                 SaveToSettings("Landing Coordinates", "-0.0972,-74.5577").
             }
             else {
                 set landingzone to latlng(round(ship:geoposition:lat, 4), round(ship:geoposition:lng, 4)).
-                set setting3:text to (landingzone:lat + "," + landingzone:lng).
+                set setting1:text to (landingzone:lat + "," + landingzone:lng).
                 SaveToSettings("Landing Coordinates", (landingzone:lat + "," + landingzone:lng)).
             }
             SaveToSettings("Launch Coordinates", (landingzone:lat + "," + landingzone:lng)).
@@ -5661,7 +5592,7 @@ function Launch {
                 unlock steering.
                 LogToFile("Starting stage-separation").
                 if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
-                set message1:text to "<b>Booster Separation in progress..</b>".
+                set message1:text to "<b>Booster Separation..</b>".
                 set message2:text to "".
                 set message3:text to "".
                 GoHome().
@@ -5820,13 +5751,14 @@ Function LaunchSteering {
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
     }
     set DownRange to ((latlng(-0.0972,-74.5577):lng - ship:geoposition:lng) * -Planet1Degree).
+    set myAzimuth to LAZcalc(LaunchData).
     if altitude < 500 {
         if not ClosingIsRunning {
             set message1:text to "<b>Actual/Target Apoapsis:</b>   " + round(apoapsis/1000,1) + "/" + (targetap / 1000) + "km".
-            set message2:text to "<b>Guidance Target:</b>                 " + 90 + "° Pitch".
+            set message2:text to "<b>Guidance (Pitch/Az.):</b>         90°/" + round(myAzimuth, 1) + "°".
             set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
         }
-        set result to lookdirup(ship:up:vector, ship:facing:topvector).
+        set result to heading(myAzimuth, 90).
     }
     else {
         if not ClosingIsRunning {
@@ -5851,17 +5783,17 @@ Function LaunchSteering {
         if Boosterconnected {
             set targetpitch to 90 - (10 * SQRT(max((altitude - 500), 0)/1000)).
             if not ClosingIsRunning {
-                set message2:text to "<b>Guidance Target:</b>                 " + round(targetpitch, 1) + "° Pitch".
+                set message2:text to "<b>Guidance (Pitch/Az.):</b>         " + round(targetpitch, 1) + "°/" + round(myAzimuth, 1) + "°".
                 set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
             }
             if apoapsis > 54000 {
                 set throttle to 0.5 + (1 - ((apoapsis - 54000) / 1000)).
             }
             if not (Launch180) {
-                set result to heading(90, targetpitch).
+                set result to heading(myAzimuth, targetpitch).
             }
             else {
-                set result to heading(90, targetpitch) * R(0, 0, 180).
+                set result to heading(myAzimuth, targetpitch) * R(0, 0, 180).
             }
         }
         else {
@@ -5886,7 +5818,7 @@ Function LaunchSteering {
                 set BurnDuration to deltaV/MaxAccel.
             }
             set OrbitBurnPitchCorrection to OrbitBurnPitchCorrectionPID:UPDATE(TIME:SECONDS, apoapsis).
-
+            set ProgradeAngle to 90 - vang(velocity:surface, up:vector).
             if ETA:APOAPSIS > 0.5 * BurnDuration and not hasnode {
                 if quickengine3:pressed {
                     if periapsis < 0 {
@@ -5899,18 +5831,19 @@ Function LaunchSteering {
                 }
                 if not (Launch180) {
                     rcs on.
-                    set result to ship:prograde * R(-OrbitBurnPitchCorrection, 0, 0).
+
+                    set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, up:vector).
                 }
                 else {
                     rcs on.
-                    set result to ship:prograde * R(-OrbitBurnPitchCorrection, 0, 180).
+                    set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, -up:vector).
                 }
             }
             else {
                 if not hasnode and apoapsis > 70000 {
-                    if not (KUniverse:activevessel = vessel(ship:name)) {
-                        set KUniverse:activevessel to vessel(ship:name).
-                    }
+                    //if not (KUniverse:activevessel = vessel(ship:name)) {
+                    //    set KUniverse:activevessel to vessel(ship:name).
+                    //}
                     set CircularizationNode to Node(timespan(ETA:APOAPSIS), 0, 0, deltaV).
                     add CircularizationNode.
                     set CircularizationStart to CircularizationNode:deltav.
@@ -5938,7 +5871,7 @@ Function LaunchSteering {
             }
             if not ClosingIsRunning {
                 if not hasnode {
-                    set message2:text to "<b>Guidance Target:</b>                 Prograde (" + round(OrbitBurnPitchCorrection, 1) + "°)".
+                    set message2:text to "<b>Guidance (Pitch/Az.):</b>         " + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/" + round(myAzimuth, 1) + "°".
                 }
                 else {
                     set message2:text to "<b>Guidance Target:</b>                 Finalizing Vector".
@@ -5964,6 +5897,106 @@ Function LaunchSteering {
     BackGroundUpdate().
     return result.
 }
+
+
+
+
+FUNCTION LAZcalc_init {
+    PARAMETER
+        desiredAlt, //Altitude of desired target orbit (in *meters*)
+        desiredInc. //Inclination of desired target orbit
+
+    PARAMETER autoNodeEpsilon IS 10. // How many m/s north or south
+        // will be needed to cause a north/south switch. Pass zero to disable
+        // the feature.
+    SET autoNodeEpsilon to ABS(autoNodeEpsilon).
+
+    //We'll pull the latitude now so we aren't sampling it multiple times
+    LOCAL launchLatitude IS SHIP:LATITUDE.
+
+    LOCAL data IS LIST().   // A list is used to store information used by LAZcalc
+
+    //Orbital altitude can't be less than sea level
+    IF desiredAlt <= 0 {
+        PRINT "Target altitude cannot be below sea level".
+        SET launchAzimuth TO 1/0.		//Throws error
+    }.
+
+    //Determines whether we're trying to launch from the ascending or descending node
+    LOCAL launchNode TO "Ascending".
+    IF desiredInc < 0 {
+        SET launchNode TO "Descending".
+
+        //We'll make it positive for now and convert to southerly heading later
+        SET desiredInc TO ABS(desiredInc).
+    }.
+
+    //Orbital inclination can't be less than launch latitude or greater than 180 - launch latitude
+    IF ABS(launchLatitude) > desiredInc {
+        SET desiredInc TO ABS(launchLatitude).
+        HUDTEXT("Inclination impossible from current latitude, setting for lowest possible inclination: " + round(desiredInc, 2) + "°", 10, 2, 20, RED, FALSE).
+        SaveToSettings("Launch Inclination", round(desiredInc, 2)).
+        set setting3:text to (round(desiredInc, 2) + "°").
+    }.
+
+    IF 180 - ABS(launchLatitude) < desiredInc {
+        SET desiredInc TO 180 - ABS(launchLatitude).
+        HUDTEXT("Inclination impossible from current latitude, setting for highest possible inclination: " + round(desiredInc, 2) + "°", 10, 2, 20, RED, FALSE).
+        SaveToSettings("Launch Inclination", round(desiredInc, 2)).
+        set setting3:text to (round(desiredInc, 2) + "°").
+    }.
+
+    //Does all the one time calculations and stores them in a list to help reduce the overhead or continuously updating
+    LOCAL equatorialVel IS (2 * CONSTANT():Pi * BODY:RADIUS) / BODY:ROTATIONPERIOD.
+    LOCAL targetOrbVel IS SQRT(BODY:MU/ (BODY:RADIUS + desiredAlt)).
+    data:ADD(desiredInc).       //[0]
+    data:ADD(launchLatitude).   //[1]
+    data:ADD(equatorialVel).    //[2]
+    data:ADD(targetOrbVel).     //[3]
+    data:ADD(launchNode).       //[4]
+    data:ADD(autoNodeEpsilon).  //[5]
+    RETURN data.
+}.
+
+FUNCTION LAZcalc {
+    PARAMETER
+        data. //pointer to the list created by LAZcalc_init
+    LOCAL inertialAzimuth IS ARCSIN(MAX(MIN(COS(data[0]) / COS(SHIP:LATITUDE), 1), -1)).
+    LOCAL VXRot IS data[3] * SIN(inertialAzimuth) - data[2] * COS(data[1]).
+    LOCAL VYRot IS data[3] * COS(inertialAzimuth).
+
+    // This clamps the result to values between 0 and 360.
+    LOCAL Azimuth IS MOD(ARCTAN2(VXRot, VYRot) + 360, 360).
+
+    IF data[5] {
+        LOCAL NorthComponent IS VDOT(SHIP:VELOCITY:ORBIT, SHIP:NORTH:VECTOR).
+        IF NorthComponent > data[5] {
+            SET data[4] TO "Ascending".
+        } ELSE IF NorthComponent < -data[5] {
+            SET data[4] to "Descending".
+        }.
+    }.
+
+    //Returns northerly azimuth if launching from the ascending node
+    IF data[4] = "Ascending" {
+        RETURN Azimuth.
+
+    //Returns southerly azimuth if launching from the descending node
+    } ELSE IF data[4] = "Descending" {
+        IF Azimuth <= 90 {
+            RETURN 180 - Azimuth.
+
+        } ELSE IF Azimuth >= 270 {
+            RETURN 540 - Azimuth.
+
+        }.
+    }.
+}.
+
+
+
+
+
 
 
 
@@ -7048,6 +7081,9 @@ function CalculateDeOrbitBurn {
     else if ship:body = BODY("Minmus") or ship:body = BODY("Gilly") or ship:body = BODY("Ike") {
         set DegreestoLDGzone to 60.
     }
+    if abs(ship:orbit:inclination) > 90 {
+        set DegreestoLDGzone to -DegreestoLDGzone.
+    }
     set x to 10.
     until lngPredict > correctedIdealLng - 2 and lngPredict < correctedIdealLng + 2 {
         set idealLng to landingzone:lng - DegreestoLDGzone + (x / (body:rotationperiod / 360)).
@@ -7394,7 +7430,7 @@ function updatestatusbar {
             set tooltip:style:margin:left to 0.
         }
         else {
-            if not setting1:pressed {
+            if not setting2:pressed {
                 status1:hide().
                 status2:hide().
                 status3:hide().
@@ -9217,7 +9253,7 @@ function RenameShip {
 
 function LandingZoneFinder {
     set config:ipu to 2000.
-    if setting3:text = "-0.0972,-74.5577" and ship:body = BODY("Kerbin") or setting3:text = "-6.5604,-143.95" and ship:body = BODY("Kerbin") {
+    if setting1:text = "-0.0972,-74.5577" and ship:body = BODY("Kerbin") or setting1:text = "-6.5604,-143.95" and ship:body = BODY("Kerbin") {
         set AvailableLandingSpots to list(true, landingzone, 0, 0).
     }
     else {
@@ -9248,7 +9284,7 @@ function LandingZoneFinder {
                 set landingzone to AvailableLandingSpots[1].
                 addons:tr:settarget(landingzone).
                 SaveToSettings("Landing Coordinates", (round(landingzone:lat, 4) + "," + round(landingzone:lng, 4)):tostring).
-                set setting3:text to (round(landingzone:lat, 4) + "," + round(landingzone:lng, 4)):tostring.
+                set setting1:text to (round(landingzone:lat, 4) + "," + round(landingzone:lng, 4)):tostring.
             }
             else {
                 LogToFile("Landing Zone Finder Function cancelled").
