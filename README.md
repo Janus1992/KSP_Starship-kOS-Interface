@@ -57,4 +57,4 @@ To Load Cargo in the Cargo Ship:
 
 
 # By the author:
-This has been a pet project of mine since 2021, and I had a lot of fun making and using this Interface. I hope you will too! Let me know what you think!
+This has been a pet project of mine since 2021, and I had a lot of fun making and using this Interface. I hope you will too! Let me know what you think! I thank the all the mod makers whose work I have been able to rely on, and without whom none of this would have been possible.

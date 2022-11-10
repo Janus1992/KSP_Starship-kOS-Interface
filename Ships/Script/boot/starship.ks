@@ -992,7 +992,7 @@ local setting3label is settingsstackvlayout1:addlabel("<b>Launch Inclination (°
     set setting3label:style:fontsize to 19.
     set setting3label:style:wordwrap to false.
     set setting3label:style:width to 225.
-    set setting3label:tooltip to "Set Launch Inclination here".
+    set setting3label:tooltip to "Set Launch Inclination here:    > 0 = North  /  < 0 = South".
 local setting3 is settingsstackvlayout2:addtextfield("0°").
     set setting3:style:width to 175.
 
@@ -1011,7 +1011,7 @@ local quicksetting1 is settingscheckboxes:addcheckbox("<b>Auto-Warp</b>").
     set quicksetting1:style:overflow:top to -4.
     set quicksetting1:style:overflow:bottom to -9.
     set quicksetting1:tooltip to "Auto warps the ship through Launch, Maneuvers and Re-Entries".
-local quicksetting2 is settingscheckboxes:addcheckbox("<b>  Normal CPU</b>").
+local quicksetting2 is settingscheckboxes:addcheckbox("<b>  KX500</b>").
     set quicksetting2:style:fontsize to 18.
     set quicksetting2:style:margin:left to 10.
     set quicksetting2:style:bg to "starship_img/starship_toggle_off".
@@ -1026,7 +1026,7 @@ local quicksetting2 is settingscheckboxes:addcheckbox("<b>  Normal CPU</b>").
     set quicksetting2:style:overflow:left to -3.
     set quicksetting2:style:overflow:top to -4.
     set quicksetting2:style:overflow:bottom to -9.
-    set quicksetting2:tooltip to "kOS CPU speed. Fast = heavier performance impact on KSP".
+    set quicksetting2:tooltip to "kOS CPU speed. KX2000 = 4x faster, but also 4x heavier on performance".
 local quicksetting3 is settingscheckboxes:addcheckbox("<b>Log Data</b>").
     set quicksetting3:toggle to true.
     set quicksetting3:style:fontsize to 18.
@@ -1196,13 +1196,13 @@ set quicksetting2:ontoggle to {
     parameter pressed.
     if pressed {
         SaveToSettings("CPU_SPD", "500").
-        set quicksetting2:text to "<b>  Normal CPU</b>".
+        set quicksetting2:text to "<b>  KX500</b>".
         set CPUSPEED to 500.
         set config:ipu to CPUSPEED.
     }
     if not pressed {
         SaveToSettings("CPU_SPD", "2000").
-        set quicksetting2:text to "<b>  Fast CPU</b>".
+        set quicksetting2:text to "<b>  KX2000</b>".
         set CPUSPEED to 2000.
         set config:ipu to CPUSPEED.
     }
@@ -4363,7 +4363,7 @@ set landbutton:ontoggle to {
                             LogToFile("Land Function cancelled due to ship:status").
                             ClearInterfaceAndSteering().
                         }
-                        else if apoapsis > 100000 and ship:body = BODY("Kerbin") or periapsis < 70000 and ship:body = BODY("Kerbin") or apoapsis > 75000 and ship:body = BODY("Duna") or periapsis < 50000 and ship:body = BODY("Duna") or max(ship:orbit:inclination, -ship:orbit:inclination) + 2.5 < max(setting3:text:split(",")[0]:toscalar(5), -setting3:text:split(",")[0]:toscalar(5)) {
+                        else if apoapsis > 100000 and ship:body = BODY("Kerbin") or periapsis < 70000 and ship:body = BODY("Kerbin") or apoapsis > 75000 and ship:body = BODY("Duna") or periapsis < 50000 and ship:body = BODY("Duna") or abs(ship:orbit:inclination) + 2.5 < abs(setting1:text:split(",")[0]:toscalar(0)) {
                             GoHome().
                             LogToFile("De-Orbit cancelled due to orbit requirements not fulfilled").
                             set message1:text to "<b>Automatic De-Orbit Requirements:</b>".
@@ -4828,7 +4828,7 @@ set landbutton:ontoggle to {
                             LogToFile("Land Function cancelled due to ship:status").
                             ClearInterfaceAndSteering().
                         }
-                        else if apoapsis < 0 or apoapsis > 200000 or max(ship:orbit:inclination, -ship:orbit:inclination) + 20 < max(setting3:text:split(",")[0]:toscalar(5), -setting3:text:split(",")[0]:toscalar(5)) {
+                        else if apoapsis < 0 or apoapsis > 200000 or abs(ship:orbit:inclination) + 20 < abs(setting1:text:split(",")[0]:toscalar(0)) {
                             GoHome().
                             LogToFile("De-Orbit cancelled due to orbit requirements not fulfilled").
                             set message1:text to "<b>Automatic De-Orbit Requirements:</b>".

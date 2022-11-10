@@ -5,7 +5,7 @@
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": "-0.0972,-74.5577",
+            "value": "0.0174,-74.3285",
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
@@ -37,7 +37,7 @@
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": 86.420219925348647,
+            "value": 86.420137039734982,
             "$type": "kOS.Safe.Encapsulation.ScalarDoubleValue"
         },
         {
@@ -77,8 +77,8 @@
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": 6.5,
-            "$type": "kOS.Safe.Encapsulation.ScalarDoubleValue"
+            "value": 3,
+            "$type": "kOS.Safe.Encapsulation.ScalarIntValue"
         },
         {
             "value": "Tower:stabilizers:extension",
@@ -93,7 +93,7 @@
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },
         {
-            "value": 1668078448.5596728,
+            "value": 1668085116.834291,
             "$type": "kOS.Safe.Encapsulation.ScalarDoubleValue"
         },
         {
