@@ -1159,7 +1159,6 @@ set setting3:onconfirm to {
         if value < -180 {
             set value to -180.
         }
-        print value.
         SaveToSettings("Launch Inclination", value).
         set setting3:text to (value + "°").
     }
@@ -3989,14 +3988,20 @@ set launchbutton:ontoggle to {
                         if ShipsInOrbit():length > 0 {
                             set TargetShip to false.
                             until false {
-                                for ship in ShipsInOrbit {
-                                    set message1:text to "<b>Launch to Target</b>  (within ± 15km)".
-                                    set message2:text to "<b>Rendezvous Target:  <color=green>" + ship:name + "</color></b>".
+                                for tship in ShipsInOrbit {
+                                    if abs(tship:orbit:inclination) > 0.5 {
+                                        set message1:text to "<b>Launch to Intercept Orbit</b>  (± 72km, " + round(tship:orbit:inclination, 2) + "°)".
+                                        set message2:text to "<b>Rendezvous Target:  <color=green>" + tship:name + "</color></b>".
+                                    }
+                                    else {
+                                        set message1:text to "<b>Launch to Target</b>  (within ± 15km)".
+                                        set message2:text to "<b>Rendezvous Target:  <color=green>" + tship:name + "</color></b>".
+                                    }
                                     set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
                                     set message3:style:textcolor to cyan.
                                     set execute:text to "<b>CONFIRM</b>".
                                     if confirm() {
-                                        set TargetShip to ship.
+                                        set TargetShip to tship.
                                         break.
                                     }
                                 }
@@ -4005,12 +4010,18 @@ set launchbutton:ontoggle to {
                             set execute:text to "<b>LAUNCH</b>".
                         }
                         if TargetShip = 0 {
-                            set message1:text to "<b>Launch to Parking Orbit</b>  (± 75km, " + round(setting3:text:split("°")[0]:toscalar(0), 1) + "°)".
+                            set message1:text to "<b>Launch to Parking Orbit</b>  (± 75km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
+                            set message2:text to "<b>Booster Return to Launch Site</b>".
+                        }
+                        else if abs(Targetship:orbit:inclination) > 0.5 {
+                            set message1:text to "<b>Launch to Intercept Orbit</b>  (± 72km, " + round(TargetShip:orbit:inclination, 2) + "°)".
+                            set message2:text to "<b>Target Ship:  <color=green>" + TargetShip:name + "</color></b>".
                         }
                         else {
-                            set message1:text to "<b>Launch to Ship:  <color=green>" + TargetShip:name + "</color></b>".
+                            set setting3:text to (round(TargetShip:orbit:inclination, 1) + "°").
+                            set message1:text to "<b>Launch to Rendezvous Orbit</b>  (± 75km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
+                            set message2:text to "<b>Target Ship:  <color=green>" + TargetShip:name + "</color></b>".
                         }
-                        set message2:text to "<b>Booster Return to Launch Site</b>".
                         if quicksetting1:pressed {
                             set message3:text to "<b>Launch <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
                         }
@@ -4026,7 +4037,7 @@ set launchbutton:ontoggle to {
                             set execute:text to "<b>EXECUTE</b>".
                             LogToFile("Starting Launch Function").
                             if TargetShip = 0 {}
-                            else {
+                            else if abs(Targetship:orbit:inclination) < 0.5 {
                                 if LiquidMethaneOnBoard {
                                     set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
                                     set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
@@ -4078,8 +4089,56 @@ set launchbutton:ontoggle to {
                                 }
                                 if cancelconfirmed {
                                     ClearInterfaceAndSteering().
-                                    //return.
+                                    return.
                                 }
+                            }
+                            else {
+                                set setting3:text to (round(TargetShip:orbit:inclination, 2) + "°").
+
+                                if LiquidMethaneOnBoard {
+                                    set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
+                                    set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
+                                }
+                                else {
+                                    set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
+                                    set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
+                                }
+                                if NrOfVacEngines = 3 {
+                                    set LaunchTimeSpanInSeconds to LaunchTimeSpanInSeconds + 3.
+                                }
+
+                                set LaunchTime to launchWindow(Targetship) - 0.5 * LaunchTimeSpanInSeconds - 16.
+
+                                InhibitButtons(1, 1, 0).
+                                set cancel:text to "<b>ABORT</b>".
+                                set cancel:style:textcolor to red.
+                                set message3:style:textcolor to white.
+                                set runningprogram to "Countdown".
+                                until time:seconds > LaunchTime and time:seconds < LaunchTime + 2 or cancelconfirmed {
+                                    if kuniverse:timewarp:warp > 5 {
+                                        set kuniverse:timewarp:warp to 5.
+                                    }
+                                    if LaunchTime - time:seconds < 900 and kuniverse:timewarp:warp > 4 {
+                                        set kuniverse:timewarp:warp to 4.
+                                    }
+                                    if LaunchTime - time:seconds < 60 and kuniverse:timewarp:warp > 0 {
+                                        set kuniverse:timewarp:warp to 0.
+                                    }
+                                    set message1:text to "<b>All Systems:              <color=green>GO</color></b>".
+                                    set message2:text to "<b>Launch to:                 <color=green>" + TargetShip:name + "</color></b>".
+                                    set message3:text to "<b>Launch Countdown:</b>  " + timeSpanCalculator(LaunchTime - time:seconds + 16).
+                                    if not BGUisRunning {
+                                        BackGroundUpdate().
+                                    }
+                                }
+                                if cancelconfirmed {
+                                    ClearInterfaceAndSteering().
+                                    return.
+                                }
+                            }
+                            if cancelconfirmed {
+                                ClearInterfaceAndSteering().
+                                return.
                             }
                             Launch().
                         }
@@ -5506,7 +5565,16 @@ function Launch {
         SET KUNIVERSE:DEFAULTLOADDISTANCE:SUBORBITAL:UNPACK TO 590000.
         wait 0.001.
 
-        set targetap to 75000.
+        if TargetShip = 0 {
+            set targetap to 75000.
+        }
+        else if abs(TargetShip:orbit:inclination) > 0.5 {
+            set targetap to 72000.
+        }
+        else {
+            set targetap to 75000.
+        }
+
         set targetincl to setting3:text:split("°")[0]:toscalar(0).
         set LaunchData to LAZcalc_init(targetap, targetincl).
         set OrbitBurnPitchCorrectionPID to PIDLOOP(0.05, 0, 0, -30, 0).
@@ -5624,9 +5692,7 @@ function Launch {
                 HideEngineToggles(1).
                 if not cancelconfirmed {
                     until time:seconds > StageSeparationTime + 5 {
-                        if not BGUisRunning {
-                            BackGroundUpdate().
-                        }
+                        BackGroundUpdate().
                     }
                 }
                 if NrOfVacEngines = 3 {
@@ -5685,11 +5751,18 @@ function Launch {
 
             rcs off.
             if defined Booster {
-                HUDTEXT("Changing Focus to: Booster", 5, 2, 20, green, false).
-                wait 1.5.
-                HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 10, 2, 20, green, false).
-                wait 0.001.
-                set kuniverse:activevessel to vessel("Booster").
+                if Booster:altitude < 30000 {
+                    HUDTEXT("Changing Focus to: Booster", 5, 2, 20, green, false).
+                    wait 1.5.
+                    HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 10, 2, 20, green, false).
+                    wait 0.001.
+                    set kuniverse:activevessel to vessel("Booster").
+                }
+                else {
+                    HUDTEXT("Changing Focus when Booster passes below 15km Altitude", 5, 2, 20, yellow, false).
+                    wait 1.5.
+                    HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 10, 2, 20, green, false).
+                }
             }
 
             until false or AbortInProgress {
@@ -5703,8 +5776,8 @@ function Launch {
                             BREAK.
                         }
                         else {
-                            set message2:text to "<b>Booster Trk/X-Trk:</b>          " + round((latlng(-0.0972,-74.5577):lng - Booster:geoposition:lng) * 10471.975) + "m " + round((latlng(-0.0972,-74.5577):lat - Booster:geoposition:lat) * 10471.975) + "m".
-                            set message3:text to "<b>Booster Alt / Spd:</b>            " + round(Booster:altitude - 116) + "m / " + round(Booster:airspeed) + "m/s".
+                            set message2:text to "<b>Booster Trk/X-Trk:</b>              " + round((latlng(-0.0972,-74.5577):lng - Booster:geoposition:lng) * 10471.975) + "m / " + round((latlng(-0.0972,-74.5577):lat - Booster:geoposition:lat) * 10471.975) + "m".
+                            set message3:text to "<b>Booster Alt / Spd:</b>                " + round(Booster:altitude - 116) + "m / " + round(Booster:airspeed) + "m/s".
                             BackGroundUpdate().
                         }
                     }
@@ -5912,7 +5985,12 @@ FUNCTION LAZcalc_init {
     SET autoNodeEpsilon to ABS(autoNodeEpsilon).
 
     //We'll pull the latitude now so we aren't sampling it multiple times
-    LOCAL launchLatitude IS SHIP:LATITUDE.
+    if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
+        set launchLatitude to SHIP:LATITUDE.
+    }
+    else {
+        set launchLatitude to 0.9.
+    }
 
     LOCAL data IS LIST().   // A list is used to store information used by LAZcalc
 
@@ -9226,7 +9304,7 @@ function ShipsInOrbit {
 
 
 function RenameShip {
-    for x in ShipsInOrbitList {
+    for x in shiplist {
         if x:name = ship:name {
             if x:name:contains(" (s") {
                 set shipindex to x:name:find(" (s").
@@ -9610,4 +9688,22 @@ function BoosterExists {
         }
     }
     return false.
+}
+
+
+FUNCTION launchWindow {
+    PARAMETER tgt.
+    LOCAL lat IS SHIP:LATITUDE.
+    LOCAL eclipticNormal IS VCRS(tgt:OBT:VELOCITY:ORBIT,tgt:BODY:POSITION-tgt:POSITION):NORMALIZED.
+    LOCAL planetNormal IS HEADING(0,lat):VECTOR.
+    LOCAL bodyInc IS VANG(planetNormal, eclipticNormal).
+    LOCAL beta IS ARCCOS(MAX(-1,MIN(1,COS(bodyInc) * SIN(lat) / SIN(bodyInc)))).
+    LOCAL intersectdir IS VCRS(planetNormal, eclipticNormal):NORMALIZED.
+    LOCAL intersectpos IS -VXCL(planetNormal, eclipticNormal):NORMALIZED.
+    LOCAL launchtimedir IS (intersectdir * SIN(beta) + intersectpos * COS(beta)) * COS(lat) + SIN(lat) * planetNormal.
+    LOCAL launchtime IS VANG(launchtimedir, SHIP:POSITION - BODY:POSITION) / 360 * BODY:ROTATIONPERIOD.
+    if VCRS(launchtimedir, SHIP:POSITION - BODY:POSITION)*planetNormal < 0 {
+        SET launchtime TO BODY:ROTATIONPERIOD - launchtime.
+    }
+    RETURN TIME:SECONDS+launchtime.
 }

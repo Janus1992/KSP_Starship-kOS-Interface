@@ -1,6 +1,8 @@
 # V1.0.5d (2022-11-10)
 - Added "Launch to Inclination" feature.
 - Hopefully fixed the slowmotion bug which sometimes occurred when the scene was reloaded during launch (only happens sometimes).
+- Added "Launch to Intercept Orbit" feature for launching to a target ships inclination.
+- Fixed a watchdog bug.
 
 # V1.0.5c (2022-11-09)
 - Removed "AtmosphereAutopilot" from mods that don't work with the Interface.
