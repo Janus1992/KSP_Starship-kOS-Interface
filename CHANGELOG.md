@@ -1,3 +1,9 @@
+# V1.0.5e (2022-11-11)
+- Watchdog is now self-updating when a connection exists.
+- "Launch to Intercept Orbit" gets the ships a bit closer now instead of just into the same orbit.
+- A simple "Align Planes" maneuver was added for aligning planes with ships in orbit.
+- fixed a watchdog bug during quick timewarp reductions.
+
 # V1.0.5d (2022-11-10)
 - Added "Launch to Inclination" feature.
 - Hopefully fixed the slowmotion bug which sometimes occurred when the scene was reloaded during launch (only happens sometimes).

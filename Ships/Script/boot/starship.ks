@@ -382,7 +382,7 @@ set g:skin:popupwindow:margin:v to 0.
 set g:skin:popupwindow:margin:h to 0.
 set g:skin:popupwindow:padding:v to 0.
 set g:skin:popupwindow:padding:h to 0.
-set g:skin:popupwindow:height to 125.
+set g:skin:popupwindow:height to 150.
 set g:skin:popupmenuitem:fontsize to 18.
 
 
@@ -3442,8 +3442,12 @@ local ManeuverPicker is maneuverstackvlayout2:addpopupmenu().
     set ManeuverPicker:style:active_on:bg to "starship_img/starship_background_light".
     set ManeuverPicker:style:focused:bg to "starship_img/starship_background_light".
     set ManeuverPicker:style:focused_on:bg to "starship_img/starship_background_light".
-        //set ManeuverPicker:options to list("<color=grey><b>Select Maneuver</b></color>", "<b><color=white>Auto-Dock</color></b>", "<b><color=white>Circularize at Pe</color></b>", "<b><color=white>Circularize at Ap</color></b>", "<b><color=white>Execute Burn</color></b>", "<b><color=white>Suicide Burn</color></b>").
-    set ManeuverPicker:options to list("<color=grey><b>Select Maneuver</b></color>", "<b><color=white>Auto-Dock</color></b>", "<b><color=white>Circularize at Pe</color></b>", "<b><color=white>Circularize at Ap</color></b>", "<b><color=white>Execute Burn</color></b>").
+    set ManeuverPicker:options to list("<color=grey><b>Select Maneuver</b></color>",
+    "<b><color=white>Auto-Dock</color></b>",
+    "<b><color=white>Circularize at Pe</color></b>",
+    "<b><color=white>Circularize at Ap</color></b>",
+    "<b><color=white>Execute Burn</color></b>",
+    "<b><color=white>Align Planes</color></b>").
     set ManeuverPicker:tooltip to "Select a Maneuver here:  e.g.  docking, circularizing, performing a burn".
 local maneuver3button is maneuverstackvlayout3:addbutton("<b>CREATE</b>").
     set maneuver3button:style:margin:top to 5.
@@ -3567,9 +3571,9 @@ set ManeuverPicker:onchange to {
         TargetPicker:hide().
         maneuver2label2:show().
     }
-    if choice = "<b><color=white>Suicide Burn</color></b>" {
+    if choice = "<b><color=white>Align Planes</color></b>" {
         set maneuver2label1:text to "<b></b>".
-        set maneuver3button:text to "<b>EXECUTE</b>".
+        set maneuver3button:text to "<b>CREATE</b>".
         set maneuver3button:enabled to true.
         maneuver2textfield2:hide().
         TargetPicker:hide().
@@ -3667,16 +3671,16 @@ set maneuver3button:onclick to {
                 if not (KUniverse:activevessel = vessel(ship:name)) {
                     set KUniverse:activevessel to vessel(ship:name).
                 }
-                PerformBurn(eta:periapsis, ProgradeVelocity, 0, 0).
+                PerformBurn(eta:periapsis, ProgradeVelocity, 0, 0, "Circ").
             }
             else {
                 GoHome().
                 set message1:text to "<b><color=yellow>Can't circularize when escaping..</color></b>".
                 set textbox:style:bg to "starship_img/starship_main_square_bg".
                 wait 3.
+                set message1:text to "".
             }
             set PerformingManeuver to false.
-            //ClearInterfaceAndSteering().
         }
         if ManeuverPicker:text = "<b><color=white>Circularize at Ap</color></b>" {
             set PerformingManeuver to true.
@@ -3692,16 +3696,16 @@ set maneuver3button:onclick to {
                 if not (KUniverse:activevessel = vessel(ship:name)) {
                     set KUniverse:activevessel to vessel(ship:name).
                 }
-                PerformBurn(eta:apoapsis, ProgradeVelocity, 0, 0).
+                PerformBurn(eta:apoapsis, ProgradeVelocity, 0, 0, "Circ").
             }
             else {
                 GoHome().
                 set message1:text to "<b><color=yellow>Can't circularize when escaping..</color></b>".
                 set textbox:style:bg to "starship_img/starship_main_square_bg".
                 wait 3.
+                set message1:text to "".
             }
             set PerformingManeuver to false.
-            //ClearInterfaceAndSteering().
         }
         if ManeuverPicker:text = "<b><color=white>Execute Burn</color></b>" {
             set PerformingManeuver to true.
@@ -3711,16 +3715,103 @@ set maneuver3button:onclick to {
                 if not (KUniverse:activevessel = vessel(ship:name)) {
                     set KUniverse:activevessel to vessel(ship:name).
                 }
-                PerformBurn(0, 0, 0, 1).
+                PerformBurn(0, 0, 0, 1, "Execute").
             }
             else {
                 GoHome().
                 set message1:text to "<b><color=yellow>No Maneuver Node found..</color></b>".
                 set textbox:style:bg to "starship_img/starship_main_square_bg".
                 wait 3.
+                set message1:text to "".
             }
             set PerformingManeuver to false.
-            //ClearInterfaceAndSteering().
+        }
+        if ManeuverPicker:text = "<b><color=white>Align Planes</color></b>" {
+            set PerformingManeuver to true.
+            set launchlabel:style:textcolor to grey.
+            set landlabel:style:textcolor to grey.
+
+            if hasnode {
+                remove nextnode.
+                wait 0.001.
+            }
+
+            if not (hastarget) {
+                GoHome().
+                set message1:text to "<b><color=yellow>Select a Target first..</color></b>".
+                set textbox:style:bg to "starship_img/starship_main_square_bg".
+                wait 3.
+                set message1:text to "".
+                return.
+            }
+
+            function normal {
+                parameter obt_in.
+                local lan is obt_in:lan.
+                local inc is obt_in:inclination.
+                local an_nrm is lookdirup(solarprimevector, V(0,1,0)) * R(0, -lan, -inc).
+                return an_nrm:topvector.
+            }
+
+            function relative_asc_node {
+                parameter ref_obt, test_obt.
+                return vcrs(normal(test_obt), normal(ref_obt)):normalized.
+            }
+
+            function relative_inc {
+                parameter ref_obt, test_obt.
+                return vang(normal(test_obt), normal(ref_obt)).
+            }
+
+            set AscNode to relative_asc_node(ship:orbit, target:orbit).
+            //set AscNodeDraw to vecdraw(AscNode, AscNode, green, "AN", 20, true, 0.005, true, true).
+
+            set DegreesToAN to vang(AscNode, body:position - ship:position).
+            if vdot(velocity:orbit, AscNode) > 0 {
+                set DegreesToAN to 360 - DegreesToAN.
+            }
+            set TimeToAN to DegreesToAN / 360 * ship:orbit:period.
+            if TimeToAN < 0.5 * ship:orbit:period {
+                set TimeToDN to TimeToAN + 0.5 * ship:orbit:period.
+            }
+            else {
+                set TimeToDN to TimeToAN - 0.5 * ship:orbit:period.
+            }
+
+            //print "Degrees to AN: " + DegreesToAN.
+            //print "Time to AN: " + TimeToAN.
+            //print "Time to DN: " + TimeToDN.
+
+            if TimeToDN < TimeToAN {
+                set TimeToNode to TimeToDN.
+                set WhichNode to -1.
+            }
+            else {
+                set TimeToNode to TimeToAN.
+                set WhichNode to 1.
+            }
+
+            set NormalVelocity to 0.
+            set RelInc to 90.
+            set LastRelInc to RelInc.
+            until RelInc > LastRelInc {
+                set LastRelInc to RelInc.
+                //print "last: " + LastRelInc.
+                set burn to node(time:seconds + TimeToNode, 0, NormalVelocity, 0).
+                add burn.
+                set RelInc to relative_inc(orbitat(ship, time:seconds + TimeToNode + 30), target:orbit).
+                //print "Relative Inclination: " + RelInc.
+                set NormalVelocity to NormalVelocity - WhichNode * 5 * RelInc.
+                remove burn.
+            }
+            //print "Normal Velocity: " + NormalVelocity.
+
+            if not (KUniverse:activevessel = vessel(ship:name)) {
+                set KUniverse:activevessel to vessel(ship:name).
+            }
+            PerformBurn(timestamp(time:seconds + TimeToNode), 0, NormalVelocity, 0, "Align").
+
+            set PerformingManeuver to false.
         }
     }
 }.
@@ -3990,7 +4081,7 @@ set launchbutton:ontoggle to {
                             until false {
                                 for tship in ShipsInOrbit {
                                     if abs(tship:orbit:inclination) > 0.5 {
-                                        set message1:text to "<b>Launch to Intercept Orbit</b>  (± 72km, " + round(tship:orbit:inclination, 2) + "°)".
+                                        set message1:text to "<b>Launch to Intercept Orbit</b>  (± 75km, " + round(tship:orbit:inclination, 2) + "°)".
                                         set message2:text to "<b>Rendezvous Target:  <color=green>" + tship:name + "</color></b>".
                                     }
                                     else {
@@ -4013,8 +4104,8 @@ set launchbutton:ontoggle to {
                             set message1:text to "<b>Launch to Parking Orbit</b>  (± 75km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
                             set message2:text to "<b>Booster Return to Launch Site</b>".
                         }
-                        else if abs(Targetship:orbit:inclination) > 0.5 {
-                            set message1:text to "<b>Launch to Intercept Orbit</b>  (± 72km, " + round(TargetShip:orbit:inclination, 2) + "°)".
+                        else if abs(TargetShip:orbit:inclination) > 0.5 {
+                            set message1:text to "<b>Launch to Intercept Orbit</b>  (± 75km, " + round(TargetShip:orbit:inclination, 2) + "°)".
                             set message2:text to "<b>Target Ship:  <color=green>" + TargetShip:name + "</color></b>".
                         }
                         else {
@@ -4037,7 +4128,7 @@ set launchbutton:ontoggle to {
                             set execute:text to "<b>EXECUTE</b>".
                             LogToFile("Starting Launch Function").
                             if TargetShip = 0 {}
-                            else if abs(Targetship:orbit:inclination) < 0.5 {
+                            else if abs(TargetShip:orbit:inclination) < 0.5 {
                                 if LiquidMethaneOnBoard {
                                     set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
                                     set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
@@ -4052,8 +4143,11 @@ set launchbutton:ontoggle to {
                                 set LongitudeToRendezvous to 360 * (LaunchTimeSpanInSeconds / TargetShip:orbit:period).
                                 set OrbitalCircumferenceDelta to (((LongitudeToRendezvous / 360) * 471239) / 4241150) * 360 * 0.5.
                                 set LongitudeToRendezvous to LongitudeToRendezvous - OrbitalCircumferenceDelta.
+
                                 //print "delta Longitude: " + LongitudeToRendezvous.
+
                                 set IdealLaunchTargetShipsLongitude to ship:geoposition:lng + (LaunchDistance / (1000 * Planet1Degree)) - LongitudeToRendezvous.
+
                                 //print "Launch when Target passes Longitude: " + IdealLaunchTargetShipsLongitude.
 
                                 set LaunchToRendezvousLng to mod(IdealLaunchTargetShipsLongitude - TargetShip:geoposition:lng, 360).
@@ -4061,7 +4155,7 @@ set launchbutton:ontoggle to {
                                     set LaunchToRendezvousLng to 360 + LaunchToRendezvousLng.
                                 }
                                 set LaunchToRendezvousTime to (LaunchToRendezvousLng / 360) * TargetShip:orbit:period.
-                                set LaunchToRendezvousTime to LaunchToRendezvousTime + ((((LaunchToRendezvousTime + LaunchTimeSpanInSeconds) / (6 * 3600)) * 360) / 360) * TargetShip:orbit:period.
+                                set LaunchToRendezvousTime to LaunchToRendezvousTime + (LaunchToRendezvousTime + LaunchTimeSpanInSeconds) / body:rotationperiod * TargetShip:orbit:period.
 
                                 set LaunchTime to time:seconds + LaunchToRendezvousTime - 16.
 
@@ -4070,7 +4164,7 @@ set launchbutton:ontoggle to {
                                 set cancel:style:textcolor to red.
                                 set message3:style:textcolor to white.
                                 set runningprogram to "Countdown".
-                                until time:seconds > LaunchTime and time:seconds < LaunchTime + 2 or cancelconfirmed {
+                                until time:seconds > LaunchTime or cancelconfirmed {
                                     if kuniverse:timewarp:warp > 5 {
                                         set kuniverse:timewarp:warp to 5.
                                     }
@@ -4083,18 +4177,14 @@ set launchbutton:ontoggle to {
                                     set message1:text to "<b>All Systems:              <color=green>GO</color></b>".
                                     set message2:text to "<b>Launch to:                 <color=green>" + TargetShip:name + "</color></b>".
                                     set message3:text to "<b>Launch Countdown:</b>  " + timeSpanCalculator(LaunchTime - time:seconds + 16).
-                                    if not BGUisRunning {
-                                        BackGroundUpdate().
-                                    }
+                                    BackGroundUpdate().
                                 }
-                                if cancelconfirmed {
+                                if cancelconfirmed or time:seconds > LaunchTime + 5 {
                                     ClearInterfaceAndSteering().
                                     return.
                                 }
                             }
                             else {
-                                set setting3:text to (round(TargetShip:orbit:inclination, 2) + "°").
-
                                 if LiquidMethaneOnBoard {
                                     set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
                                     set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
@@ -4107,14 +4197,37 @@ set launchbutton:ontoggle to {
                                     set LaunchTimeSpanInSeconds to LaunchTimeSpanInSeconds + 3.
                                 }
 
-                                set LaunchTime to launchWindow(Targetship) - 0.5 * LaunchTimeSpanInSeconds - 16.
+
+                                launchWindow(TargetShip, 0).
+                                if launchWindowList[0] = -1 {
+                                    GoHome().
+                                    set message1:text to "<b>No close encounters found (10 days)..</b>".
+                                    set message2:text to "<b>Try again later..</b>".
+                                    set message3:text to "".
+                                    set message1:style:textcolor to yellow.
+                                    set message2:style:textcolor to yellow.
+                                    set message3:style:textcolor to yellow.
+                                    set textbox:style:bg to "starship_img/starship_main_square_bg".
+                                    wait 3.
+                                    ClearInterfaceAndSteering().
+                                    return.
+                                }
+                                set LaunchToRendezvousTime to launchWindowList[0] - 16.
+                                set LaunchTime to launchWindowList[1] - 16.
+                                set targetincl to launchWindowList[2].
+                                set setting3:text to (round(targetincl, 2) + "°").
+
+                                print "Launch To Rendezvous time: " + LaunchToRendezvousTime.
+                                print "Launch on Node: " + LaunchTime.
+
+                                set LaunchTime to time:seconds + LaunchToRendezvousTime.
 
                                 InhibitButtons(1, 1, 0).
                                 set cancel:text to "<b>ABORT</b>".
                                 set cancel:style:textcolor to red.
                                 set message3:style:textcolor to white.
                                 set runningprogram to "Countdown".
-                                until time:seconds > LaunchTime and time:seconds < LaunchTime + 2 or cancelconfirmed {
+                                until time:seconds > LaunchTime or cancelconfirmed {
                                     if kuniverse:timewarp:warp > 5 {
                                         set kuniverse:timewarp:warp to 5.
                                     }
@@ -4127,11 +4240,9 @@ set launchbutton:ontoggle to {
                                     set message1:text to "<b>All Systems:              <color=green>GO</color></b>".
                                     set message2:text to "<b>Launch to:                 <color=green>" + TargetShip:name + "</color></b>".
                                     set message3:text to "<b>Launch Countdown:</b>  " + timeSpanCalculator(LaunchTime - time:seconds + 16).
-                                    if not BGUisRunning {
-                                        BackGroundUpdate().
-                                    }
+                                    BackGroundUpdate().
                                 }
-                                if cancelconfirmed {
+                                if cancelconfirmed or time:seconds > LaunchTime + 5 {
                                     ClearInterfaceAndSteering().
                                     return.
                                 }
@@ -4959,7 +5070,7 @@ set landbutton:ontoggle to {
                                 set orbitbutton:pressed to false.
                                 set attitudebutton:pressed to false.
                                 set enginebutton:pressed to false.
-                                PerformBurn(deorbitburnstarttime, ProgradeVelocity, NormalVelocity, 0).
+                                PerformBurn(deorbitburnstarttime, ProgradeVelocity, NormalVelocity, 0, "DeOrbit").
                                 LandwithoutAtmo().
                             }
                         }
@@ -5565,16 +5676,7 @@ function Launch {
         SET KUNIVERSE:DEFAULTLOADDISTANCE:SUBORBITAL:UNPACK TO 590000.
         wait 0.001.
 
-        if TargetShip = 0 {
-            set targetap to 75000.
-        }
-        else if abs(TargetShip:orbit:inclination) > 0.5 {
-            set targetap to 72000.
-        }
-        else {
-            set targetap to 75000.
-        }
-
+        set targetap to 75000.
         set targetincl to setting3:text:split("°")[0]:toscalar(0).
         set LaunchData to LAZcalc_init(targetap, targetincl).
         set OrbitBurnPitchCorrectionPID to PIDLOOP(0.05, 0, 0, -30, 0).
@@ -5827,7 +5929,7 @@ Function LaunchSteering {
     set myAzimuth to LAZcalc(LaunchData).
     if altitude < 500 {
         if not ClosingIsRunning {
-            set message1:text to "<b>Actual/Target Apoapsis:</b>   " + round(apoapsis/1000,1) + "/" + (targetap / 1000) + "km".
+            set message1:text to "<b>Actual/Target Apoapsis:</b>   " + round(apoapsis/1000,1) + "/" + round(targetap / 1000, 1) + "km".
             set message2:text to "<b>Guidance (Pitch/Az.):</b>         90°/" + round(myAzimuth, 1) + "°".
             set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
         }
@@ -5835,7 +5937,7 @@ Function LaunchSteering {
     }
     else {
         if not ClosingIsRunning {
-            set message1:text to "<b>Actual/Target Apoapsis:</b>   " + round(apoapsis/1000,1) + "/" + (targetap / 1000) + "km".
+            set message1:text to "<b>Actual/Target Apoapsis:</b>   " + round(apoapsis/1000,1) + "/" + round(targetap / 1000, 1) + "km".
         }
         else {
             if defined Booster and not ClosingIsRunning {
@@ -9458,7 +9560,7 @@ function updateManeuver {
 
 
 function PerformBurn {
-    parameter Burntime, ProgradeVelocity, NormalVelocity, AlreadyHasNode.
+    parameter Burntime, ProgradeVelocity, NormalVelocity, AlreadyHasNode, BurnType.
     set config:ipu to CPUSPEED.
     set textbox:style:bg to "starship_img/starship_main_square_bg".
     if AlreadyHasNode {
@@ -9492,20 +9594,24 @@ function PerformBurn {
     lock BurnDuration to deltaV / BurnAccel.
     GoHome().
     set runningprogram to "Input".
-    if AlreadyHasNode {
+    if BurnType = "Execute" {
         set message1:text to "<b>Execute Custom Burn:</b>".
         set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s".
     }
-    else if defined AltitudeOverLZ {
+    else if defined AltitudeOverLZ and BurnType = "DeOrbit" {
         set message1:text to "<size=19><b>Suggested De-Orbit Burn to Point OVHD LZ:</b></size>".
         set message2:text to "<size=19><b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s   <b>Alt over LZ:</b>  " + round(AltitudeOverLZ/1000, 1) + "km</size>".
     }
-    else if addons:tr:hasimpact and periapsis > 0 {
+    else if addons:tr:hasimpact and BurnType = "DeOrbit" {
         set message1:text to "<b>Suggested De-Orbit Burn:</b>".
         set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s".
     }
-    else {
+    else if BurnType = "Circ"{
         set message1:text to "<b>Circularize at Altitude:</b>  <color=yellow>" + round(((positionat(ship, burnstarttime) - ship:body:position):mag - ship:body:radius) / 1000, 1) + "km</color>".
+        set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s".
+    }
+    else if BurnType = "Align"{
+        set message1:text to "<b>Align to Plane of:</b>  <color=yellow>" + target:name + "</color>".
         set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s".
     }
     set message3:style:textcolor to cyan.
@@ -9693,6 +9799,8 @@ function BoosterExists {
 
 FUNCTION launchWindow {
     PARAMETER tgt.
+    parameter NrOfBodyRotations.
+
     LOCAL lat IS SHIP:LATITUDE.
     LOCAL eclipticNormal IS VCRS(tgt:OBT:VELOCITY:ORBIT,tgt:BODY:POSITION-tgt:POSITION):NORMALIZED.
     LOCAL planetNormal IS HEADING(0,lat):VECTOR.
@@ -9701,9 +9809,62 @@ FUNCTION launchWindow {
     LOCAL intersectdir IS VCRS(planetNormal, eclipticNormal):NORMALIZED.
     LOCAL intersectpos IS -VXCL(planetNormal, eclipticNormal):NORMALIZED.
     LOCAL launchtimedir IS (intersectdir * SIN(beta) + intersectpos * COS(beta)) * COS(lat) + SIN(lat) * planetNormal.
-    LOCAL launchtime IS VANG(launchtimedir, SHIP:POSITION - BODY:POSITION) / 360 * BODY:ROTATIONPERIOD.
+    LOCAL launchANtime IS VANG(launchtimedir, SHIP:POSITION - BODY:POSITION) / 360 * BODY:ROTATIONPERIOD.
     if VCRS(launchtimedir, SHIP:POSITION - BODY:POSITION)*planetNormal < 0 {
-        SET launchtime TO BODY:ROTATIONPERIOD - launchtime.
+        SET launchANtime TO BODY:ROTATIONPERIOD - launchANtime.
     }
-    RETURN TIME:SECONDS+launchtime.
+    local launchDNtime is launchANtime - 0.5 * body:rotationperiod.
+    if launchDNtime < 0 {
+        set launchDNtime to launchANtime + 0.5 * body:rotationperiod.
+    }
+    set launchANtime to launchANtime + NrOfBodyRotations * body:rotationperiod - 0.6 * LaunchTimeSpanInSeconds - 16.
+    set launchDNtime to launchDNtime + NrOfBodyRotations * body:rotationperiod - 0.6 * LaunchTimeSpanInSeconds - 16.
+
+    set DegreesToRendezvous to 360 * (LaunchTimeSpanInSeconds / TargetShip:orbit:period).
+    set OrbitalCircumferenceDelta to (((DegreesToRendezvous / 360) * 471239) / 4241150) * 360 * 0.5.
+    set DegreesToRendezvous to DegreesToRendezvous - OrbitalCircumferenceDelta.
+    set IdealLaunchTargetShipsLongitude to ship:geoposition:lng + (cos(TargetShip:orbit:inclination) * ((LaunchDistance / (1000 * Planet1Degree)) - DegreesToRendezvous)).
+
+    //print "Ideal Degrees: " + DegreesToRendezvous.
+    //print "Launch when Target passes Longitude: " + IdealLaunchTargetShipsLongitude.
+
+    set ANangle to IdealLaunchTargetShipsLongitude - mod(body:geopositionof(positionat(TargetShip, time:seconds + launchANtime)):lng - CorrectBodyRotation(launchANtime), 360).
+    set LaunchToANRendezvousTime to launchANtime + ANangle / 360 * TargetShip:orbit:period.
+
+    set DNangle to IdealLaunchTargetShipsLongitude - mod(body:geopositionof(positionat(TargetShip, time:seconds + launchDNtime)):lng - CorrectBodyRotation(launchDNtime), 360).
+    set LaunchToDNRendezvousTime to launchDNtime + DNangle / 360 * TargetShip:orbit:period.
+
+
+    if NrOfBodyRotations > 10 {
+        print "fail".
+        set launchWindowList to list(-1,0,0).
+        return.
+    }
+
+    print "Iteration: " + NrOfBodyRotations.
+    print "Launch on AN: " + launchANtime.
+    //print "lng at AN: " + mod(body:geopositionof(positionat(TargetShip, time:seconds + launchANtime)):lng - CorrectBodyRotation(launchANtime), 360).
+    print "AN Angle: " + ANangle.
+    print "Launch on DN: " + launchDNtime.
+    //print "lng at DN: " + mod(body:geopositionof(positionat(TargetShip, time:seconds + launchDNtime)):lng - CorrectBodyRotation(launchDNtime), 360).
+    print "DN Angle: " + DNangle.
+
+    if abs(ANangle) < 15 and LaunchToANRendezvousTime > 20 {
+        local targetincl is tgt:orbit:inclination.
+        set launchWindowList to list(LaunchToANRendezvousTime, launchANtime, targetincl).
+    }
+    else if abs(DNangle) < 15 and LaunchToDNRendezvousTime > 20 {
+        local targetincl is -tgt:orbit:inclination.
+        set launchWindowList to list(LaunchToDNRendezvousTime, launchDNtime, targetincl).
+    }
+    else {
+        launchWindow(tgt, NrOfBodyRotations + 1).
+        return.
+    }
+}
+
+
+function CorrectBodyRotation {
+    parameter time.
+    return time * 360 / body:rotationperiod.
 }
