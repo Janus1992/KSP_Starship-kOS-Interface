@@ -2,7 +2,7 @@ ship = Starship Cargo
 version = 1.12.4
 description = This is the Cargo version of Starship!¨¨To load your cargo inside, drag the whole ship down (root: starship tank section), place your cargo inside, check the staging (!!), drag the whole ship up again so that the OLM is above the surface (or it will explode on booster return)
 type = VAB
-size = 36.9239693,86.3706207,15.218523
+size = 36.9239693,86.3706055,15.218523
 steamPublishedFileId = 0
 persistentId = 2780185006
 rot = 0,0,0,0
@@ -17,8 +17,8 @@ PART
 	part = SEP.S20.BODY_4294126630
 	partName = Part
 	persistentId = 3018060130
-	pos = 0.276157141,68.146286,-0.00312048197
-	attPos = 0,26.5266609,-0.288060725
+	pos = 0.276157141,68.3268204,-0.00312048197
+	attPos = 0,26.7071953,-0.288060725
 	attPos0 = 0.276157141,41.6196251,0.284940243
 	rot = 0,0.707106829,0,0.707106829
 	attRot = 0,0.707106769,0,0.707106769
@@ -587,7 +587,7 @@ PART
 	part = SEP.S20.CARGO_4294049892
 	partName = Part
 	persistentId = 1655324310
-	pos = 0.276155353,83.6940765,-0.00312048197
+	pos = 0.276155353,83.8746109,-0.00312048197
 	attPos = 0,0,0
 	attPos0 = -1.49011345E-08,15.5477905,-1.78813934E-06
 	rot = 0,0.707106829,0,0.707106829
@@ -1120,7 +1120,7 @@ PART
 	part = SEP.S20.AFT.LEFT_4294042912
 	partName = Part
 	persistentId = 2498180458
-	pos = 0.253022909,63.1202888,3.28178549
+	pos = 0.253022909,63.3008232,3.28178644
 	attPos = 0,0,0
 	attPos0 = -3.2848568,-5.02600288,-0.0231346339
 	rot = -0.463903815,0.463903815,-0.533660352,0.533660352
@@ -1314,7 +1314,7 @@ PART
 	part = SEP.S20.AFT.RIGHT_4294042270
 	partName = Part
 	persistentId = 3580416805
-	pos = 0.253020763,63.1202888,-3.28802633
+	pos = 0.253020763,63.3008232,-3.28802729
 	attPos = 0,0,0
 	attPos0 = 3.28485632,-5.02600288,-0.023135826
 	rot = 0.533660412,0.533660412,0.463903725,0.463903725
@@ -1508,7 +1508,7 @@ PART
 	part = SEP.S20.FWD.RIGHT_4294041450
 	partName = Part
 	persistentId = 1802781765
-	pos = 0.276318789,84.4116669,-2.8135705
+	pos = 0.276318789,84.5922012,-2.81357098
 	attPos = 0,0,0
 	attPos0 = 2.81042385,0.717590332,0.000163510442
 	rot = 0.549525321,0.444997013,0.549525082,0.444996655
@@ -1525,7 +1525,7 @@ PART
 	sqor = -1
 	sepI = 0
 	attm = 0
-	sameVesselCollision = False
+	sameVesselCollision = True
 	modCost = 0
 	modMass = 0
 	modSize = 0,0,0
@@ -1702,7 +1702,7 @@ PART
 	part = SEP.S20.FWD.LEFT_4294040836
 	partName = Part
 	persistentId = 1426318684
-	pos = 0.276320219,84.4116669,2.80733061
+	pos = 0.276320219,84.5922012,2.80733109
 	attPos = 0,0,0
 	attPos0 = -2.81042504,0.717590332,0.000164464116
 	rot = 0.549525201,-0.444996834,0.549525201,-0.444996834
@@ -1719,7 +1719,7 @@ PART
 	sqor = -1
 	sepI = 0
 	attm = 0
-	sameVesselCollision = False
+	sameVesselCollision = True
 	modCost = 0
 	modMass = 0
 	modSize = 0,0,0
@@ -1896,7 +1896,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293986328
 	partName = Part
 	persistentId = 3392705918
-	pos = 1.94951952,60.4163399,-0.969240844
+	pos = 1.94951999,60.5968742,-0.969241083
 	attPos = 0,0,0
 	attPos0 = 0.966107607,-7.72994995,1.67333782
 	rot = 0,0,0,1.00000012
@@ -2141,7 +2141,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293931996
 	partName = Part
 	persistentId = 279807195
-	pos = -1.39721119,60.4163399,-0.969243348
+	pos = -1.39721179,60.5968742,-0.969243705
 	attPos = 0,0,0
 	attPos0 = 0.966105402,-7.72994995,-1.67333853
 	rot = 0,0.866025448,0,0.49999997
@@ -2378,7 +2378,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293931510
 	partName = Part
 	persistentId = 3880924941
-	pos = 0.276159167,60.4163399,1.92911124
+	pos = 0.276159167,60.5968742,1.92911172
 	attPos = 0,0,0
 	attPos0 = -1.93220675,-7.72994995,1.78813855E-06
 	rot = 0,0.866025388,0,-0.50000006
@@ -2615,7 +2615,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293930182
 	partName = Part
 	persistentId = 3024003908
-	pos = 0.27615571,60.4163399,-1.93535233
+	pos = 0.27615571,60.5968742,-1.9353528
 	attPos = 0,0,0
 	attPos0 = 1.93220687,-7.72994995,-1.19209244E-06
 	rot = 0,0,0,1.00000012
@@ -2852,7 +2852,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293928524
 	partName = Part
 	persistentId = 667446888
-	pos = -1.39720404,60.4163399,0.963000357
+	pos = -1.39720452,60.5968742,0.963000596
 	attPos = 0,0,0
 	attPos0 = -0.966108024,-7.72994995,-1.67333663
 	rot = 0,0.866025448,0,0.49999997
@@ -3089,7 +3089,7 @@ PART
 	part = SEP.RAPTOR.VAC_4293928038
 	partName = Part
 	persistentId = 3675348796
-	pos = 1.94952691,60.4163399,0.963002384
+	pos = 1.9495275,60.5968742,0.963002741
 	attPos = 0,0,0
 	attPos0 = -0.96610564,-7.72994995,1.6733402
 	rot = 0,0.866025388,0,-0.50000006
@@ -3326,7 +3326,7 @@ PART
 	part = SEP.RAPTOR.SL_4293925840
 	partName = Part
 	persistentId = 457315140
-	pos = -0.234566927,59.5375786,-0.00311976671
+	pos = -0.234567046,59.7181129,-0.00311976671
 	attPos = 0,0,0
 	attPos0 = -6.55650922E-07,-8.60871124,-0.510717869
 	rot = 0,0,0,1.00000012
@@ -3669,7 +3669,7 @@ PART
 	part = SEP.RAPTOR.SL_4293922032
 	partName = Part
 	persistentId = 2967918994
-	pos = 0.531520903,59.5375786,0.439180672
+	pos = 0.531520963,59.7181129,0.439180821
 	attPos = 0,0,0
 	attPos0 = -0.442294866,-8.60871124,0.255360544
 	rot = 0,0.866025448,0,0.49999997
@@ -4004,7 +4004,7 @@ PART
 	part = SEP.RAPTOR.SL_4293921454
 	partName = Part
 	persistentId = 3747288177
-	pos = 0.531519413,59.5375786,-0.445421994
+	pos = 0.531519473,59.7181129,-0.445422113
 	attPos = 0,0,0
 	attPos0 = 0.442295283,-8.60871124,0.255359143
 	rot = 0,0.866025388,0,-0.50000006
@@ -4339,7 +4339,7 @@ PART
 	part = SEP.B4.INTER_4294133184
 	partName = Part
 	persistentId = 169750356
-	pos = 0.276158482,57.87323,-0.00312048197
+	pos = 0.276158482,58.0537643,-0.00312048197
 	attPos = 0,-14.0196991,0
 	attPos0 = -1.13686811E-13,-10.273056,1.34110428E-06
 	rot = 0,0.707106829,0,0.707106829
@@ -4764,7 +4764,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294131004
 	partName = Part
 	persistentId = 2322192495
-	pos = 2.18159294,58.4630356,-3.30373001
+	pos = 2.18159342,58.6435699,-3.30373096
 	attPos = 0,0,0
 	attPos0 = 3.30055976,0.589805603,1.90540981
 	rot = -0.500000238,0,-0.866025448,0
@@ -4952,7 +4952,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294129548
 	partName = Part
 	persistentId = 1224105414
-	pos = -1.62941337,58.4630356,-3.30366611
+	pos = -1.62941408,58.6435699,-3.30366731
 	attPos = 0,0,0
 	attPos0 = 3.30048656,0.589805603,-1.90553701
 	rot = -0.866025567,0,-0.499999881,0
@@ -5132,7 +5132,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294128866
 	partName = Part
 	persistentId = 184453163
-	pos = -1.62927663,58.4630356,3.29749012
+	pos = -1.62927711,58.6435699,3.29749107
 	attPos = 0,0,0
 	attPos0 = -3.30056119,0.589805603,-1.90541053
 	rot = -0.866025448,0,0.500000238,0
@@ -5312,7 +5312,7 @@ PART
 	part = SEP.B4.GRIDFIN_4294128194
 	partName = Part
 	persistentId = 284303916
-	pos = 2.18172574,58.4630356,3.29741955
+	pos = 2.18172646,58.6435699,3.29742074
 	attPos = 0,0,0
 	attPos0 = -3.300488,0.589805603,1.90553868
 	rot = -0.499999881,0,0.866025567,0
@@ -5492,7 +5492,7 @@ PART
 	part = SEP.B4.CORE_4294135344
 	partName = Part
 	persistentId = 3885441094
-	pos = 0.276160747,36.1212807,-0.00312048197
+	pos = 0.276160747,36.301815,-0.00312048197
 	attPos = -3.63425207,-0.545879364,-3.71428347
 	attPos0 = 3.8114593,36.4077492,4.0513711
 	rot = 0,0.707106829,0,0.707106829
@@ -5737,7 +5737,7 @@ PART
 	part = SEP.S20.HEADER_4294205918
 	partName = Part
 	persistentId = 3946515266
-	pos = 0.276215792,89.0196228,-0.00312048197
+	pos = 0.276215792,89.2001572,-0.00312048197
 	attPos = 0,0,0
 	attPos0 = -7.50333129E-12,5.32554626,6.04391171E-05
 	rot = 0,0.707106829,0,0.707106829
@@ -5878,7 +5878,7 @@ PART
 	part = SEP.B4.33.CLUSTER_4294380072
 	partName = Part
 	persistentId = 2644464158
-	pos = 0.27616328,15.2655449,-0.00312076136
+	pos = 0.27616328,15.4460793,-0.00312076136
 	attPos = 0,0,0
 	attPos0 = 2.79396346E-07,-20.8557358,2.53319786E-06
 	rot = 0,0,0,1.00000012
@@ -6474,7 +6474,7 @@ PART
 	part = SLE.SS.OLP_4293815154
 	partName = Part
 	persistentId = 2027718034
-	pos = 0.27616334,5.93207932,-0.00312046334
+	pos = 0.27616334,6.11261368,-0.00312046334
 	attPos = 0,0,0
 	attPos0 = 5.96046945E-08,-9.33346558,2.98023366E-07
 	rot = 0,1.00000012,0,0
@@ -6846,7 +6846,7 @@ PART
 	part = SLE.SS.OLIT.Base_4293118876
 	partName = Part
 	persistentId = 2429050256
-	pos = -20.5686207,3.99821472,-1.06220436
+	pos = -20.5686283,4.17874908,-1.06220436
 	attPos = 3.81469727E-05,-0.150917053,0
 	attPos0 = 20.8443985,-1.93387127,1.05908227
 	rot = 0,-1.00000012,0,0
@@ -7098,7 +7098,7 @@ PART
 	part = SLE.SS.OLIT.Core_4293118754
 	partName = Part
 	persistentId = 2018723526
-	pos = -20.5686283,7.51715088,-1.06220436
+	pos = -20.5686359,7.69768524,-1.06220436
 	attPos = 0,0,0
 	attPos0 = 7.62939453E-06,3.51894379,0
 	rot = 0,1.00000012,0,0
@@ -7260,7 +7260,7 @@ PART
 	part = SLE.SS.OLIT.MZ_4293118266
 	partName = Part
 	persistentId = 2050233167
-	pos = -15.2069941,79.3309937,-0.307507575
+	pos = -15.2070017,79.5115204,-0.307507575
 	attPos = 0,0,0
 	attPos0 = -5.36181641,71.8138199,-0.75470078
 	rot = 0,1.00000012,0,0
@@ -7277,7 +7277,7 @@ PART
 	sqor = -1
 	sepI = 2
 	attm = 0
-	sameVesselCollision = False
+	sameVesselCollision = True
 	modCost = 0
 	modMass = 0
 	modSize = 0,0,0
@@ -7474,9 +7474,9 @@ PART
 	{
 		name = ModuleSLEAnimate
 		isEnabled = True
-		AnimatePosition = 0.0021783642
+		AnimatePosition = 4.72000027
 		AnimationLength = 10
-		ExtensionLimit = 0
+		ExtensionLimit = 5.9000001
 		ExtensionSpeed = 0.200000003
 		stagingEnabled = True
 		EVENTS
@@ -7523,9 +7523,9 @@ PART
 	{
 		name = ModuleSLEAnimate
 		isEnabled = True
-		AnimatePosition = 0.0021783642
+		AnimatePosition = 4.72000027
 		AnimationLength = 10
-		ExtensionLimit = 0
+		ExtensionLimit = 5.9000001
 		ExtensionSpeed = 0.200000003
 		stagingEnabled = True
 		EVENTS
@@ -7639,7 +7639,7 @@ PART
 		name = ModuleSLEController
 		isEnabled = True
 		CurrentOpenCloseLimit = 0.699999988
-		OpenClose = True
+		OpenClose = False
 		ExtensionLimit = 0
 		ExtensionSpeed = 0.200000003
 		OpenCloseLimit = 0.699999988
@@ -7855,7 +7855,7 @@ PART
 	part = SLE.SS.OLIT.Top_4293117760
 	partName = Part
 	persistentId = 220661614
-	pos = -20.5686359,80.9960632,-1.06220818
+	pos = -20.5686436,81.17659,-1.06220818
 	attPos = 0,0,0
 	attPos0 = 7.62939453E-06,73.4788971,1.90734863E-06
 	rot = 0,1.00000012,0,0

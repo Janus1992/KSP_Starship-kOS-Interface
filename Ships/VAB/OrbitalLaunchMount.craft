@@ -1,5 +1,5 @@
 ship = OrbitalLaunchMount
-version = 1.12.3
+version = 1.12.4
 description = This is an empty Orbital Launch Mount!¨¨Its purpose is to catch ships that are already in orbit, but where you already recovered the OLM.
 type = VAB
 size = 36.9239693,86.3706131,15.218523
@@ -299,7 +299,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 0
 		MaxPartId = 100
-		RequiredPower = 0.400000006
+		RequiredPower = 0.100000001
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -820,7 +820,7 @@ PART
 	sqor = -1
 	sepI = 0
 	attm = 0
-	sameVesselCollision = False
+	sameVesselCollision = True
 	modCost = 0
 	modMass = 0
 	modSize = 0,0,0
@@ -1017,9 +1017,9 @@ PART
 	{
 		name = ModuleSLEAnimate
 		isEnabled = True
-		AnimatePosition = 4.72000027
+		AnimatePosition = 3.61114097
 		AnimationLength = 10
-		ExtensionLimit = 5.9000001
+		ExtensionLimit = 0
 		ExtensionSpeed = 0.200000003
 		stagingEnabled = True
 		EVENTS
@@ -1066,9 +1066,9 @@ PART
 	{
 		name = ModuleSLEAnimate
 		isEnabled = True
-		AnimatePosition = 4.72000027
+		AnimatePosition = 3.61114097
 		AnimationLength = 10
-		ExtensionLimit = 5.9000001
+		ExtensionLimit = 0
 		ExtensionSpeed = 0.200000003
 		stagingEnabled = True
 		EVENTS

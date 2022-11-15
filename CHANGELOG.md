@@ -1,3 +1,17 @@
+# V1.0.6 (2022-11-15)
+- Better use of the maneuver page:
+    - "Align Planes" now shows target, its orbit and the relative inclination.
+    - "Execute Burn" now shows Burn timestamp, delta-V required, burn time and type of thrust used (Vac engines or RCS thrusters).
+- Realigned crew images on the Crew Page.
+- Removed "Configurable Containers" and "AnimatedAttachment" from mods that don't work with the Interface (patch changed).
+- Made a dictionary of known launch sites, which can be used for selecting a landing zone instead of a big bunch of code.
+- Fixed all the booster landing issues that occured when not launching from the KSC (problems due to elevation, etc).
+- Multiple OLMs can now be used for launching from and landing onto:
+    - Many bugs in the re-entry and landing were fixed to allow landings everywhere.
+    - Because of changes, also fixes for Duna Landings and the Mun.
+    - The OLMs get assigned a name based on a dictionary with known launch sites. Only these bases allow a Mechazilla catch now.
+- The Re-Entry and Land Program gets automatically reloaded in case of a crash during Re-Entry, no action required.
+
 # V1.0.5e (2022-11-11)
 - Watchdog is now self-updating when a connection exists.
 - "Launch to Intercept Orbit" gets the ships a bit closer now instead of just into the same orbit.
@@ -11,7 +25,7 @@
 - Fixed a watchdog bug.
 
 # V1.0.5c (2022-11-09)
-- Removed "AtmosphereAutopilot" from mods that don't work with the Interface.
+- Removed "AtmosphereAutopilot" from mods that don't work with the Interface (patch changed).
 - Removed "launch with 0/180 degrees" (upside down) toggle on the settings page as the Interface can detect it automatically now.
 - Added CPU Speed toggle in the settings.
 - Faster Interface Start-Up, better update mechanism.

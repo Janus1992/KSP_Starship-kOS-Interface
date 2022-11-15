@@ -20,7 +20,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
     https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/
 - kOS
     https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/
-- TundraExploration
+- TundraExploration (only TundraExploration.dll)
     https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/
 - Starship Launch Expansion
     https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229
@@ -32,8 +32,6 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 # USERS REPORT IT DOES NOT WORK WITH:
 - RSS
 - Realism Overhaul
-- AnimatedAttachment
-- ConfigurableContainers
 
 # Tips & Tricks:
 To Load Cargo in the Cargo Ship:

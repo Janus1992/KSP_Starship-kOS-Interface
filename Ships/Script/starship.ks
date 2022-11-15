@@ -61,7 +61,6 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
 //------------Configurables-------------//
 
 
-set LandingOffset to 6.
 set MaxCargoToOrbit to 69420.
 set MaxReEntryCargoKerbin to 10000.
 set MaxReEntryCargoDuna to 30000.
@@ -75,7 +74,7 @@ set FWDFlapDefault to 55.
 set AFTFlapDefault to 50.
 set rcsRaptorBoundary to 100.  // Defines the custom burn boundary velocity where the ship will burn either RCS below it or Raptors above it.
 set SafeAltOverLZ to 1500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
-set ShipWasDocked to false.
+set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
 
 
 //---------Initial Program Variables-----------//
@@ -174,6 +173,8 @@ set CancelVelocityHasStarted to false.
 set LandingFacingVector to v(0, 0, 0).
 set MaxAccel to 10.
 set Launch180 to false.
+set ShipWasDocked to false.
+set FlipAltitude to 0.
 
 
 
@@ -219,10 +220,19 @@ function FindParts {
                 else if x:name:contains("SEP.S20.FWD.LEFT") {
                     set FLflap to x.
                 }
+                else if x:title = "Donnager MK-1 Front Left Flap" {
+                    set FLflap to x.
+                }
                 else if x:name:contains("SEP.S20.FWD.RIGHT") {
                     set FRflap to x.
                 }
+                else if x:title = "Donnager MK-1 Front Right Flap" {
+                    set FRflap to x.
+                }
                 else if x:name:contains("SEP.S20.HEADER") {
+                    set HeaderTank to x.
+                }
+                else if x:title = "Donnager MK-1 Header Tank" {
                     set HeaderTank to x.
                 }
                 else if x:name:contains("SEP.S20.FWD.RIGHT") {
@@ -291,14 +301,20 @@ function FindParts {
         set Boosterconnected to false.
     }
 
-    if SHIP:PARTSNAMED("SLE.SS.OLP"):length > 0 {
+    if ship:partstitled("Starship Orbital Launch Mount"):length > 0 {
         set OnOrbitalMount to True.
-        set SHIP:PARTSNAMED("SLE.SS.OLP")[0]:getmodule("kOSProcessor"):volume:name to "OrbitalLaunchMount".
-        set ArmsHeight to (ship:PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position - Body("Kerbin"):position):mag - SHIP:BODY:RADIUS - ship:geoposition:terrainheight + 7.5.
+        set OLM to ship:partstitled("Starship Orbital Launch Mount")[0].
+        set OLM:getmodule("kOSProcessor"):volume:name to "OrbitalLaunchMount".
+        set TowerBase to ship:partstitled("Starship Orbital Launch Integration Tower Base")[0].
+        set TowerCore to ship:partstitled("Starship Orbital Launch Integration Tower Core")[0].
+        Set TowerTop to ship:partstitled("Starship Orbital Launch Integration Tower Rooftop")[0].
+        Set Mechazilla to ship:partsnamed("SLE.SS.OLIT.MZ")[0].
+        set ArmsHeight to (Mechazilla:position - Body("Kerbin"):position):mag - SHIP:BODY:RADIUS - ship:geoposition:terrainheight + 7.5.
         SaveToSettings("ArmsHeight", ArmsHeight).
     }
     else {
         set OnOrbitalMount to False.
+        set OLM to false.
     }
 
     for res in Tank:resources {
@@ -622,6 +638,8 @@ set g_close:onclick to {
             sas on.
             set throttle to 0.
             unlock throttle.
+            Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+            Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
             LogToFile("Closing GUI confirmed").
             Watchdog:deactivate().
@@ -985,8 +1003,8 @@ local TargetLZPicker is settingsstackvlayout2:addpopupmenu().
     set TargetLZPicker:style:active_on:bg to "starship_img/starship_background_light".
     set TargetLZPicker:style:focused:bg to "starship_img/starship_background_light".
     set TargetLZPicker:style:focused_on:bg to "starship_img/starship_background_light".
-    set TargetLZPicker:options to list("<color=grey><b>Select existing LZ</b></color>", "<b><color=white>KSC Pad</color></b>", "<b><color=white>Desert Pad</color></b>", "<b><color=white>Woomerang Pad</color></b>", "<b><color=white>Current Impact</color></b>").
-    set TargetLZPicker:tooltip to "Select a predefined Landing Zone here:  e.g.  KSC, Desert, Woomerang".
+    set TargetLZPicker:options to list("<color=grey><b>Select existing LZ</b></color>", "<b><color=white>Current Impact</color></b>", "<b><color=white>KSC</color></b>", "<b><color=white>Dessert</color></b>", "<b><color=white>Woomerang</color></b>","<b><color=white>Baikerbanur</color></b>").
+    set TargetLZPicker:tooltip to "Select a predefined Landing Zone here:  e.g.  KSC, Dessert, Woomerang".
 local setting3label is settingsstackvlayout1:addlabel("<b>Launch Inclination (°)</b>").
     set setting3label:style:margin:left to 10.
     set setting3label:style:fontsize to 19.
@@ -1101,7 +1119,7 @@ set setting2:ontoggle to {
 
 set TargetLZPicker:onchange to {
     parameter choice.
-    if choice = "<b><color=white>KSC Pad</color></b>" {
+    if choice = "<b><color=white>KSC</color></b>" {
         set setting1:text to "-0.0972,-74.5577".
         set landingzone to latlng(-0.0972,-74.5577).
         if homeconnection:isconnected {
@@ -1111,7 +1129,7 @@ set TargetLZPicker:onchange to {
             ADDONS:TR:SETTARGET(landingzone).
         }
     }
-    if choice = "<b><color=white>Desert Pad</color></b>" {
+    if choice = "<b><color=white>Dessert</color></b>" {
         set setting1:text to "-6.5604,-143.95".
         set landingzone to latlng(-6.5604,-143.95).
         if homeconnection:isconnected {
@@ -1121,11 +1139,21 @@ set TargetLZPicker:onchange to {
             ADDONS:TR:SETTARGET(landingzone).
         }
     }
-    if choice = "<b><color=white>Woomerang Pad</color></b>" {
+    if choice = "<b><color=white>Woomerang</color></b>" {
         set setting1:text to "45.2896,136.11".
         set landingzone to latlng(45.2896,136.11).
         if homeconnection:isconnected {
             SaveToSettings("Landing Coordinates", "45.2896,136.11").
+        }
+        if KUniverse:activevessel = vessel(ship:name) {
+            ADDONS:TR:SETTARGET(landingzone).
+        }
+    }
+    if choice = "<b><color=white>Baikerbanur</color></b>" {
+        set setting1:text to "20.6635,-146.4210".
+        set landingzone to latlng(20.6635,-146.4210).
+        if homeconnection:isconnected {
+            SaveToSettings("Landing Coordinates", "20.6635,-146.4210").
         }
         if KUniverse:activevessel = vessel(ship:name) {
             ADDONS:TR:SETTARGET(landingzone).
@@ -1698,7 +1726,7 @@ set quickattitude2:onclick to {
 
 function AttitudeSteering {
     if quickattitude3:pressed {rcs on.} else {rcs off.}
-    if airspeed < 450 and kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
+    if airspeed < 450 and kuniverse:timewarp:warp > 1 {set kuniverse:timewarp:warp to 1.}
     set runningprogram to "Attitude (Landing Armed)".
     set status1:style:textcolor to green.
 
@@ -1716,8 +1744,6 @@ function AttitudeSteering {
             set attroll to attitude1text2:text:toscalar.
         }
     }
-    //set ManualAoA to attitude1text:text:toscalar(67).
-    //set addons:tr:descentangles to list(ManualAoA, ManualAoA, ManualAoA, ManualAoA).
 
     set result to srfprograde * R(- attpitch * cos(attroll), attpitch * sin(attroll), 0).
 
@@ -1764,7 +1790,7 @@ function AttitudeSteering {
         set attitude2label:style:bg to "".
         set attitude2label:style:align to "LEFT".
         if addons:tr:hasimpact {
-            set attitude2label:text to "<b><size=15><color=magenta>AoA: " + round(vang(ship:facing:forevector, velocity:surface), 1) + "°</color>  <color=cyan>Trk: " + round((LngLatErrorList[0] - LandingOffset)) + "m X-Trk: " + round(LngLatErrorList[1]) + "m</color></size></b>".
+            set attitude2label:text to "<b><size=15><color=magenta>AoA: " + round(vang(ship:facing:forevector, velocity:surface), 1) + "°</color>  <color=cyan>Trk: " + round(LngLatErrorList[0]) + "m X-Trk: " + round(LngLatErrorList[1]) + "m</color></size></b>".
         }
         else {
             set attitude2label:text to "<b><size=19><color=magenta>AoA: " + round(vang(ship:facing:forevector, velocity:surface), 1) + "°</color></size></b>".
@@ -2421,40 +2447,40 @@ local crew1label1 is crewstackvlayout1:addlabel().
     set crew1label1:style:margin:left to 20.
     set crew1label1:style:fontsize to 19.
     set crew1label1:style:width to 80.
+    set crew1label1:style:height to 25.
     set crew1label1:style:align to "LEFT".
-    set crew1label1:style:vstretch to true.
     set crew1label1:style:overflow:top to -10.
-    set crew1label1:style:overflow:bottom to 60.
+    set crew1label1:style:overflow:bottom to 70.
     set crew1label1:tooltip to "Experience Level".
 local crew1label2 is crewstackvlayout2:addlabel().
     set crew1label2:style:wordwrap to false.
     set crew1label2:style:margin:top to 0.
     set crew1label2:style:fontsize to 19.
     set crew1label2:style:width to 80.
+    set crew1label2:style:height to 25.
     set crew1label2:style:align to "LEFT".
-    set crew1label2:style:vstretch to true.
     set crew1label2:style:overflow:top to -10.
-    set crew1label2:style:overflow:bottom to 60.
+    set crew1label2:style:overflow:bottom to 70.
     set crew1label2:tooltip to "Experience Level".
 local crew1label3 is crewstackvlayout3:addlabel().
     set crew1label3:style:wordwrap to false.
     set crew1label3:style:margin:top to 0.
     set crew1label3:style:fontsize to 19.
     set crew1label3:style:align to "LEFT".
-    set crew1label3:style:vstretch to true.
     set crew1label3:style:width to 80.
+    set crew1label3:style:height to 25.
     set crew1label3:style:overflow:top to -10.
-    set crew1label3:style:overflow:bottom to 60.
+    set crew1label3:style:overflow:bottom to 70.
     set crew1label3:tooltip to "Experience Level".
 local crew1label4 is crewstackvlayout4:addlabel().
     set crew1label4:style:wordwrap to false.
     set crew1label4:style:margin:top to 0.
     set crew1label4:style:fontsize to 19.
     set crew1label4:style:align to "LEFT".
-    set crew1label4:style:vstretch to true.
     set crew1label4:style:width to 80.
+    set crew1label4:style:height to 25.
     set crew1label4:style:overflow:top to -10.
-    set crew1label4:style:overflow:bottom to 60.
+    set crew1label4:style:overflow:bottom to 70.
     set crew1label4:tooltip to "Experience Level".
 local crew1label5 is crewstackvlayout5:addlabel().
     set crew1label5:style:wordwrap to false.
@@ -2480,54 +2506,53 @@ local crew1label6 is crewstackvlayout6:addlabel().
 local crew2label1 is crewstackvlayout1:addlabel().
     set crew2label1:style:wordwrap to false.
     set crew2label1:style:margin:left to 20.
-    set crew2label1:style:vstretch to true.
     set crew2label1:style:fontsize to 22.
     set crew2label1:style:align to "CENTER".
     set crew2label1:style:textcolor to grey.
     set crew2label1:style:width to 80.
-    set crew2label1:style:overflow:top to 34.
-    set crew2label1:style:overflow:bottom to -52.
+    set crew2label1:style:height to 49.
+    set crew2label1:style:overflow:top to 25.
+    set crew2label1:style:overflow:bottom to -54.
     set crew2label1:style:overflow:left to -10.
     set crew2label1:style:overflow:right to -10.
     set crew2label1:tooltip to "Crew Member 1".
 local crew2label2 is crewstackvlayout2:addlabel().
-    set crew2label2:style:vstretch to true.
     set crew2label2:style:wordwrap to false.
     set crew2label2:style:fontsize to 22.
     set crew2label2:style:align to "CENTER".
     set crew2label2:style:textcolor to grey.
     set crew2label2:style:width to 80.
-    set crew2label2:style:overflow:top to 34.
-    set crew2label2:style:overflow:bottom to -52.
+    set crew2label2:style:height to 49.
+    set crew2label2:style:overflow:top to 25.
+    set crew2label2:style:overflow:bottom to -54.
     set crew2label2:style:overflow:left to -10.
     set crew2label2:style:overflow:right to -10.
     set crew2label2:tooltip to "Crew Member 2".
 local crew2label3 is crewstackvlayout3:addlabel().
-    set crew2label3:style:vstretch to true.
     set crew2label3:style:wordwrap to false.
     set crew2label3:style:fontsize to 22.
     set crew2label3:style:align to "CENTER".
     set crew2label3:style:textcolor to grey.
     set crew2label3:style:width to 80.
-    set crew2label3:style:overflow:top to 34.
-    set crew2label3:style:overflow:bottom to -52.
+    set crew2label3:style:height to 49.
+    set crew2label3:style:overflow:top to 25.
+    set crew2label3:style:overflow:bottom to -54.
     set crew2label3:style:overflow:left to -10.
     set crew2label3:style:overflow:right to -10.
     set crew2label3:tooltip to "Crew Member 3".
 local crew2label4 is crewstackvlayout4:addlabel().
-    set crew2label4:style:vstretch to true.
     set crew2label4:style:wordwrap to false.
     set crew2label4:style:fontsize to 22.
     set crew2label4:style:align to "CENTER".
     set crew2label4:style:textcolor to grey.
     set crew2label4:style:width to 80.
-    set crew2label4:style:overflow:top to 34.
-    set crew2label4:style:overflow:bottom to -52.
+    set crew2label4:style:height to 49.
+    set crew2label4:style:overflow:top to 25.
+    set crew2label4:style:overflow:bottom to -54.
     set crew2label4:style:overflow:left to -10.
     set crew2label4:style:overflow:right to -10.
     set crew2label4:tooltip to "Crew Member 4".
 local crew2label5 is crewstackvlayout5:addlabel().
-    set crew2label5:style:vstretch to true.
     set crew2label5:style:wordwrap to false.
     set crew2label5:style:fontsize to 22.
     set crew2label5:style:align to "CENTER".
@@ -2540,7 +2565,6 @@ local crew2label5 is crewstackvlayout5:addlabel().
     set crew2label5:style:overflow:right to -10.
     set crew2label5:tooltip to "Crew Member 5".
 local crew2label6 is crewstackvlayout6:addlabel().
-    set crew2label6:style:vstretch to true.
     set crew2label6:style:wordwrap to false.
     set crew2label6:style:fontsize to 22.
     set crew2label6:style:align to "CENTER".
@@ -2557,10 +2581,10 @@ local crew3label1 is crewstackvlayout1:addlabel().
     set crew3label1:style:margin:top to 5.
     set crew3label1:style:margin:left to 20.
     set crew3label1:style:wordwrap to false.
-    set crew3label1:style:vstretch to true.
     set crew3label1:style:fontsize to 18.
     set crew3label1:style:align to "CENTER".
     set crew3label1:style:width to 80.
+    set crew3label1:style:height to 30.
     set crew3label1:style:overflow:top to 20.
     set crew3label1:style:overflow:bottom to -20.
     set crew3label1:style:overflow:left to 15.
@@ -2569,10 +2593,10 @@ local crew3label1 is crewstackvlayout1:addlabel().
 local crew3label2 is crewstackvlayout2:addlabel().
     set crew3label2:style:margin:top to 5.
     set crew3label2:style:wordwrap to false.
-    set crew3label2:style:vstretch to true.
     set crew3label2:style:fontsize to 18.
     set crew3label2:style:align to "CENTER".
     set crew3label2:style:width to 80.
+    set crew3label2:style:height to 30.
     set crew3label2:style:overflow:top to 20.
     set crew3label2:style:overflow:bottom to -20.
     set crew3label2:style:overflow:left to 15.
@@ -2581,10 +2605,10 @@ local crew3label2 is crewstackvlayout2:addlabel().
 local crew3label3 is crewstackvlayout3:addlabel().
     set crew3label3:style:margin:top to 5.
     set crew3label3:style:wordwrap to false.
-    set crew3label3:style:vstretch to true.
     set crew3label3:style:fontsize to 18.
     set crew3label3:style:align to "CENTER".
     set crew3label3:style:width to 80.
+    set crew3label3:style:height to 30.
     set crew3label3:style:overflow:top to 20.
     set crew3label3:style:overflow:bottom to -20.
     set crew3label3:style:overflow:left to 15.
@@ -2593,10 +2617,10 @@ local crew3label3 is crewstackvlayout3:addlabel().
 local crew3label4 is crewstackvlayout4:addlabel().
     set crew3label4:style:margin:top to 5.
     set crew3label4:style:wordwrap to false.
-    set crew3label4:style:vstretch to true.
     set crew3label4:style:fontsize to 18.
     set crew3label4:style:align to "CENTER".
     set crew3label4:style:width to 80.
+    set crew3label4:style:height to 30.
     set crew3label4:style:overflow:top to 20.
     set crew3label4:style:overflow:bottom to -20.
     set crew3label4:style:overflow:left to 15.
@@ -2605,7 +2629,6 @@ local crew3label4 is crewstackvlayout4:addlabel().
 local crew3label5 is crewstackvlayout5:addlabel().
     set crew3label5:style:margin:top to 5.
     set crew3label5:style:wordwrap to false.
-    set crew3label5:style:vstretch to true.
     set crew3label5:style:fontsize to 18.
     set crew3label5:style:align to "CENTER".
     set crew3label5:style:width to 80.
@@ -2618,7 +2641,6 @@ local crew3label5 is crewstackvlayout5:addlabel().
 local crew3label6 is crewstackvlayout6:addlabel().
     set crew3label6:style:margin:top to 5.
     set crew3label6:style:wordwrap to false.
-    set crew3label6:style:vstretch to true.
     set crew3label6:style:fontsize to 18.
     set crew3label6:style:align to "CENTER".
     set crew3label6:style:width to 80.
@@ -2635,87 +2657,87 @@ local crew1label7 is crewstackvlayout1:addlabel().
     set crew1label7:style:margin:left to 20.
     set crew1label7:style:fontsize to 19.
     set crew1label7:style:width to 80.
+    set crew1label7:style:height to 25.
     set crew1label7:style:align to "LEFT".
-    set crew1label7:style:vstretch to true.
     set crew1label7:style:overflow:top to -10.
-    set crew1label7:style:overflow:bottom to 60.
+    set crew1label7:style:overflow:bottom to 70.
     set crew1label7:tooltip to "Experience Level".
 local crew1label8 is crewstackvlayout2:addlabel().
     set crew1label8:style:wordwrap to false.
     set crew1label8:style:margin:top to 0.
     set crew1label8:style:fontsize to 19.
     set crew1label8:style:width to 80.
+    set crew1label8:style:height to 25.
     set crew1label8:style:align to "LEFT".
-    set crew1label8:style:vstretch to true.
     set crew1label8:style:overflow:top to -10.
-    set crew1label8:style:overflow:bottom to 60.
+    set crew1label8:style:overflow:bottom to 70.
     set crew1label8:tooltip to "Experience Level".
 local crew1label9 is crewstackvlayout3:addlabel().
     set crew1label9:style:wordwrap to false.
     set crew1label9:style:margin:top to 0.
     set crew1label9:style:fontsize to 19.
     set crew1label9:style:width to 80.
+    set crew1label9:style:height to 25.
     set crew1label9:style:align to "LEFT".
-    set crew1label9:style:vstretch to true.
     set crew1label9:style:overflow:top to -10.
-    set crew1label9:style:overflow:bottom to 60.
+    set crew1label9:style:overflow:bottom to 70.
     set crew1label9:tooltip to "Experience Level".
 local crew1label10 is crewstackvlayout4:addlabel().
     set crew1label10:style:wordwrap to false.
     set crew1label10:style:margin:top to 0.
     set crew1label10:style:fontsize to 19.
     set crew1label10:style:width to 80.
+    set crew1label10:style:height to 25.
     set crew1label10:style:align to "LEFT".
-    set crew1label10:style:vstretch to true.
     set crew1label10:style:overflow:top to -10.
-    set crew1label10:style:overflow:bottom to 60.
+    set crew1label10:style:overflow:bottom to 70.
     set crew1label10:tooltip to "Experience Level".
 local crew2label7 is crewstackvlayout1:addlabel().
     set crew2label7:style:wordwrap to false.
     set crew2label7:style:margin:left to 20.
-    set crew2label7:style:vstretch to true.
     set crew2label7:style:fontsize to 22.
     set crew2label7:style:align to "CENTER".
     set crew2label7:style:textcolor to grey.
     set crew2label7:style:width to 80.
-    set crew2label7:style:overflow:top to 34.
-    set crew2label7:style:overflow:bottom to -52.
+    set crew2label7:style:height to 49.
+    set crew2label7:style:overflow:top to 25.
+    set crew2label7:style:overflow:bottom to -54.
     set crew2label7:style:overflow:left to -10.
     set crew2label7:style:overflow:right to -10.
     set crew2label7:tooltip to "Crew Member 7".
 local crew2label8 is crewstackvlayout2:addlabel().
     set crew2label8:style:wordwrap to false.
-    set crew2label8:style:vstretch to true.
     set crew2label8:style:fontsize to 22.
     set crew2label8:style:align to "CENTER".
     set crew2label8:style:textcolor to grey.
     set crew2label8:style:width to 80.
-    set crew2label8:style:overflow:top to 34.
-    set crew2label8:style:overflow:bottom to -52.
+    set crew2label8:style:height to 49.
+    set crew2label8:style:overflow:top to 25.
+    set crew2label8:style:overflow:bottom to -54.
     set crew2label8:style:overflow:left to -10.
     set crew2label8:style:overflow:right to -10.
     set crew2label8:tooltip to "Crew Member 8".
 local crew2label9 is crewstackvlayout3:addlabel().
     set crew2label9:style:wordwrap to false.
-    set crew2label9:style:vstretch to true.
     set crew2label9:style:fontsize to 22.
     set crew2label9:style:align to "CENTER".
     set crew2label9:style:textcolor to grey.
     set crew2label9:style:width to 80.
-    set crew2label9:style:overflow:top to 34.
-    set crew2label9:style:overflow:bottom to -52.
+    set crew2label9:style:height to 49.
+    set crew2label9:style:overflow:top to 25.
+    set crew2label9:style:overflow:bottom to -54.
     set crew2label9:style:overflow:left to -10.
     set crew2label9:style:overflow:right to -10.
     set crew2label9:tooltip to "Crew Member 9".
 local crew2label10 is crewstackvlayout4:addlabel().
     set crew2label10:style:wordwrap to false.
-    set crew2label10:style:vstretch to true.
     set crew2label10:style:fontsize to 22.
     set crew2label10:style:align to "CENTER".
     set crew2label10:style:textcolor to grey.
     set crew2label10:style:width to 80.
-    set crew2label10:style:overflow:top to 34.
-    set crew2label10:style:overflow:bottom to -52.
+    set crew2label10:style:height to 49.
+    set crew2label10:style:overflow:top to 25.
+    set crew2label10:style:overflow:bottom to -54.
     set crew2label10:style:overflow:left to -10.
     set crew2label10:style:overflow:right to -10.
     set crew2label10:tooltip to "Crew Member 10".
@@ -2723,10 +2745,10 @@ local crew3label7 is crewstackvlayout1:addlabel().
     set crew3label7:style:margin:top to 5.
     set crew3label7:style:margin:left to 20.
     set crew3label7:style:wordwrap to false.
-    set crew3label7:style:vstretch to true.
     set crew3label7:style:fontsize to 18.
     set crew3label7:style:align to "CENTER".
     set crew3label7:style:width to 80.
+    set crew3label7:style:height to 30.
     set crew3label7:style:overflow:top to 20.
     set crew3label7:style:overflow:bottom to -20.
     set crew3label7:style:overflow:left to 15.
@@ -2735,10 +2757,10 @@ local crew3label7 is crewstackvlayout1:addlabel().
 local crew3label8 is crewstackvlayout2:addlabel().
     set crew3label8:style:margin:top to 5.
     set crew3label8:style:wordwrap to false.
-    set crew3label8:style:vstretch to true.
     set crew3label8:style:fontsize to 18.
     set crew3label8:style:align to "CENTER".
     set crew3label8:style:width to 80.
+    set crew3label8:style:height to 30.
     set crew3label8:style:overflow:top to 20.
     set crew3label8:style:overflow:bottom to -20.
     set crew3label8:style:overflow:left to 15.
@@ -2747,10 +2769,10 @@ local crew3label8 is crewstackvlayout2:addlabel().
 local crew3label9 is crewstackvlayout3:addlabel().
     set crew3label9:style:margin:top to 5.
     set crew3label9:style:wordwrap to false.
-    set crew3label9:style:vstretch to true.
     set crew3label9:style:fontsize to 18.
     set crew3label9:style:align to "CENTER".
     set crew3label9:style:width to 80.
+    set crew3label9:style:height to 30.
     set crew3label9:style:overflow:top to 20.
     set crew3label9:style:overflow:bottom to -20.
     set crew3label9:style:overflow:left to 15.
@@ -2759,10 +2781,10 @@ local crew3label9 is crewstackvlayout3:addlabel().
 local crew3label10 is crewstackvlayout4:addlabel().
     set crew3label10:style:margin:top to 5.
     set crew3label10:style:wordwrap to false.
-    set crew3label10:style:vstretch to true.
     set crew3label10:style:fontsize to 18.
     set crew3label10:style:align to "CENTER".
     set crew3label10:style:width to 80.
+    set crew3label10:style:height to 30.
     set crew3label10:style:overflow:top to 20.
     set crew3label10:style:overflow:bottom to -20.
     set crew3label10:style:overflow:left to 15.
@@ -3095,10 +3117,10 @@ set tower2button2:onclick to {
         }
         else {
             if towerang = 0 {
-                sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",false")).
+                sendMessage(Vessel(TargetOLM), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",false")).
             }
             else {
-                sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
+                sendMessage(Vessel(TargetOLM), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
             }
         }
     }
@@ -3118,10 +3140,10 @@ set tower3button2:onclick to {
         }
         else {
             if towerang = 0 {
-                sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",false")).
+                sendMessage(Vessel(TargetOLM), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",false")).
             }
             else {
-                sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
+                sendMessage(Vessel(TargetOLM), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
             }
         }
     }
@@ -3141,10 +3163,10 @@ set tower5button2:onclick to {
         }
         else {
             if towerang = 0 {
-                sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",false")).
+                sendMessage(Vessel(TargetOLM), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",false")).
             }
             else {
-                sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
+                sendMessage(Vessel(TargetOLM), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
             }
         }
     }
@@ -3169,10 +3191,10 @@ set tower6button2:onclick to {
         }
         else {
             if towerang = 0 {
-                sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",false")).
+                sendMessage(Vessel(TargetOLM), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",false")).
             }
             else {
-                sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
+                sendMessage(Vessel(TargetOLM), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
             }
         }
     }
@@ -3186,7 +3208,7 @@ set tower2button3:onclick to {
             sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",false")).
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",false")).
+            sendMessage(Vessel(TargetOLM), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",false")).
         }
     }
     else if towerang = 0 {}
@@ -3196,7 +3218,7 @@ set tower2button3:onclick to {
             sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
+            sendMessage(Vessel(TargetOLM), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
         }
     }
 }.
@@ -3210,7 +3232,7 @@ set tower3button3:onclick to {
             sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
+            sendMessage(Vessel(TargetOLM), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
         }
     }
 }.
@@ -3226,7 +3248,7 @@ set tower5button3:onclick to {
             sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
+            sendMessage(Vessel(TargetOLM), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
         }
     }
 }.
@@ -3239,7 +3261,7 @@ set tower6button3:onclick to {
             sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
+            sendMessage(Vessel(TargetOLM), ("MechazillaArms," + towerrot:tostring + ",1.0," + towerang:tostring + ",true")).
         }
     }
 }.
@@ -3253,7 +3275,7 @@ set tower2button4:onclick to {
             sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (65 - towerhgt):tostring + ",0.5")).
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaHeight," + (65 - towerhgt):tostring + ",0.5")).
+            sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (65 - towerhgt):tostring + ",0.5")).
         }
     }
 }.
@@ -3266,7 +3288,7 @@ set tower3button4:onclick to {
             sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (65 - towerhgt):tostring + ",0.5")).
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaHeight," + (65 - towerhgt):tostring + ",0.5")).
+            sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (65 - towerhgt):tostring + ",0.5")).
         }
     }
 }.
@@ -3279,7 +3301,7 @@ set tower5button4:onclick to {
             sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (65 - towerhgt):tostring + ",0.5")).
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaHeight," + (65 - towerhgt):tostring + ",0.5")).
+            sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (65 - towerhgt):tostring + ",0.5")).
         }
     }
 }.
@@ -3292,7 +3314,7 @@ set tower6button4:onclick to {
             sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (65 - towerhgt):tostring + ",0.5")).
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaHeight," + (65 - towerhgt):tostring + ",0.5")).
+            sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (65 - towerhgt):tostring + ",0.5")).
         }
     }
 }.
@@ -3304,7 +3326,7 @@ set tower8button2:onclick to {
         sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
     }
     else {
-        sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
+        sendMessage(Vessel(TargetOLM), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
     }
 }.
 set tower9button2:onclick to {
@@ -3313,7 +3335,7 @@ set tower9button2:onclick to {
         sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
     }
     else {
-        sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
+        sendMessage(Vessel(TargetOLM), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
     }
 }.
 set tower10button2:onclick to {
@@ -3322,7 +3344,7 @@ set tower10button2:onclick to {
         sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
     }
     else {
-        sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
+        sendMessage(Vessel(TargetOLM), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
     }
 }.
 set tower11button2:onclick to {
@@ -3333,7 +3355,7 @@ set tower11button2:onclick to {
             sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
+            sendMessage(Vessel(TargetOLM), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
         }
     }
 }.
@@ -3345,7 +3367,7 @@ set tower13button2:onclick to {
             sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
+            sendMessage(Vessel(TargetOLM), ("MechazillaPushers," + towerpushfwd:tostring + ",0.2," + towerpush:tostring + ",true")).
         }
     }
 }.
@@ -3359,7 +3381,7 @@ set tower11button3:onclick to {
             sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaStabilizers,0").
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaStabilizers,0")).
+            sendMessage(Vessel(TargetOLM), ("MechazillaStabilizers,0")).
         }
     }
 }.
@@ -3372,7 +3394,7 @@ set tower13button3:onclick to {
             sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
         }
         else {
-            sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaStabilizers," + maxstabengage)).
+            sendMessage(Vessel(TargetOLM), ("MechazillaStabilizers," + maxstabengage)).
         }
     }
 }.
@@ -3404,7 +3426,7 @@ set tower13button4:onclick to {
         sendMessage(Processor(volume("OrbitalLaunchMount")), "EmergencyStop").
     }
     else {
-        sendMessage(Vessel("OrbitalLaunchMount"), "EmergencyStop").
+        sendMessage(Vessel(TargetOLM), "EmergencyStop").
     }
 }.
 
@@ -3533,6 +3555,9 @@ set ManeuverPicker:onchange to {
     parameter choice.
     if choice = "<color=grey><b>Select Maneuver</b></color>" {
         set maneuver2label1:text to "".
+        set maneuver3label1:text to "".
+        set maneuver3label2:text to "".
+        set maneuver3label3:text to "".
         set maneuver3button:text to "<b>CREATE</b>".
         set maneuver3button:enabled to false.
         maneuver2textfield2:hide().
@@ -3540,6 +3565,9 @@ set ManeuverPicker:onchange to {
         maneuver2label2:show().
     }
     if choice = "<b><color=white>Auto-Dock</color></b>" {
+        set maneuver3label1:text to "".
+        set maneuver3label2:text to "".
+        set maneuver3label3:text to "".
         set maneuver2label1:text to "<b>Select Target (<10km):</b>".
         set maneuver3button:text to "<b>START</b>".
         set maneuver3button:enabled to true.
@@ -3548,7 +3576,10 @@ set ManeuverPicker:onchange to {
         TargetPicker:show().
     }
     if choice = "<b><color=white>Circularize at Pe</color></b>" {
-        set maneuver2label1:text to "<b></b>".
+        set maneuver2label1:text to "".
+        set maneuver3label1:text to "".
+        set maneuver3label2:text to "".
+        set maneuver3label3:text to "".
         set maneuver3button:text to "<b>CREATE</b>".
         set maneuver3button:enabled to true.
         maneuver2textfield2:hide().
@@ -3556,7 +3587,10 @@ set ManeuverPicker:onchange to {
         maneuver2label2:show().
     }
     if choice = "<b><color=white>Circularize at Ap</color></b>" {
-        set maneuver2label1:text to "<b></b>".
+        set maneuver2label1:text to "".
+        set maneuver3label1:text to "".
+        set maneuver3label2:text to "".
+        set maneuver3label3:text to "".
         set maneuver3button:text to "<b>CREATE</b>".
         set maneuver3button:enabled to true.
         maneuver2textfield2:hide().
@@ -3564,7 +3598,27 @@ set ManeuverPicker:onchange to {
         maneuver2label2:show().
     }
     if choice = "<b><color=white>Execute Burn</color></b>" {
-        set maneuver2label1:text to "<b></b>".
+        if hasnode {
+            if nextnode:deltav:mag > rcsRaptorBoundary {
+                set maneuver2label1:text to "<b>Burn @:  </b><color=yellow>" + timestamp(nextnode:time):full + "</color>           <b>Thrust:  </b><color=magenta>VAC Engines</color>".
+                set MaxAccel to (VACEngines[0]:possiblethrust * NrOfVacEngines) / ship:mass.
+            }
+            else {
+                set maneuver2label1:text to "<b>Burn @:  </b><color=yellow>" + timestamp(nextnode:time):full + "</color>           <b>Thrust:  </b><color=magenta>RCS Thrusters</color>".
+                set MaxAccel to 40/ship:mass.
+            }
+            set BurnAccel to min(19.62, MaxAccel).
+            set BurnDuration to nextnode:deltav:mag / BurnAccel.
+            set maneuver3label1:text to "<b>ΔV:  </b><color=yellow>" + round(nextnode:deltav:mag, 1) + "m/s</color>           Burn Duration:  <color=yellow>" + timeSpanCalculator(BurnDuration) + "</color>".
+            set maneuver3label2:text to "".
+            set maneuver3label3:text to "".
+        }
+        else {
+            set maneuver2label1:text to "".
+            set maneuver3label1:text to "".
+            set maneuver3label2:text to "".
+            set maneuver3label3:text to "".
+        }
         set maneuver3button:text to "<b>EXECUTE</b>".
         set maneuver3button:enabled to true.
         maneuver2textfield2:hide().
@@ -3572,7 +3626,10 @@ set ManeuverPicker:onchange to {
         maneuver2label2:show().
     }
     if choice = "<b><color=white>Align Planes</color></b>" {
-        set maneuver2label1:text to "<b></b>".
+        set maneuver2label1:text to "".
+        set maneuver3label1:text to "".
+        set maneuver3label2:text to "".
+        set maneuver3label3:text to "".
         set maneuver3button:text to "<b>CREATE</b>".
         set maneuver3button:enabled to true.
         maneuver2textfield2:hide().
@@ -3743,24 +3800,6 @@ set maneuver3button:onclick to {
                 wait 3.
                 set message1:text to "".
                 return.
-            }
-
-            function normal {
-                parameter obt_in.
-                local lan is obt_in:lan.
-                local inc is obt_in:inclination.
-                local an_nrm is lookdirup(solarprimevector, V(0,1,0)) * R(0, -lan, -inc).
-                return an_nrm:topvector.
-            }
-
-            function relative_asc_node {
-                parameter ref_obt, test_obt.
-                return vcrs(normal(test_obt), normal(ref_obt)):normalized.
-            }
-
-            function relative_inc {
-                parameter ref_obt, test_obt.
-                return vang(normal(test_obt), normal(ref_obt)).
             }
 
             set AscNode to relative_asc_node(ship:orbit, target:orbit).
@@ -4085,7 +4124,7 @@ set launchbutton:ontoggle to {
                                         set message2:text to "<b>Rendezvous Target:  <color=green>" + tship:name + "</color></b>".
                                     }
                                     else {
-                                        set message1:text to "<b>Launch to Target</b>  (within ± 15km)".
+                                        set message1:text to "<b>Launch to Target</b>  (within ± 25km)".
                                         set message2:text to "<b>Rendezvous Target:  <color=green>" + tship:name + "</color></b>".
                                     }
                                     set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
@@ -4099,6 +4138,24 @@ set launchbutton:ontoggle to {
                                 break.
                             }
                             set execute:text to "<b>LAUNCH</b>".
+                        }
+                        set IntendedInc to setting3:text:split("°")[0]:toscalar(0).
+                        set data to LAZcalc_init(75000, setting3:text:split("°")[0]:toscalar(0)).
+                        if data[0] = IntendedInc {}
+                        else {
+                            set message1:text to "<b><color=yellow>Inclination impossible from current latitude..</color></b>".
+                            set message2:text to "<b>Setting Inclination to:  </b>" + round(data[0], 1) + "°".
+                            set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
+                            set message3:style:textcolor to cyan.
+                            set execute:text to "<b>CONFIRM</b>".
+                            if confirm {}
+                            else {
+                                set setting3:text to IntendedInc + "°".
+                                set execute:text to "<b>EXECUTE</b>".
+                                LogToFile("Launch Function cancelled").
+                                ClearInterfaceAndSteering().
+                                return.
+                            }
                         }
                         if TargetShip = 0 {
                             set message1:text to "<b>Launch to Parking Orbit</b>  (± 75km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
@@ -4442,7 +4499,7 @@ set landbutton:ontoggle to {
                         if abs(LngLatErrorList[0]) > LongitudinalAcceptanceLimit or abs(LngLatErrorList[1]) > LatitudinalAcceptanceLimit {
                             GoHome().
                             set message1:text to "<b>Landingzone out of Range..   Slope:  </b>" + round(AvailableLandingSpots[3], 1) + "°".
-                            set message2:text to "<b>Override Re-Entry?</b> (" + round((LngLatErrorList[0] - LandingOffset) / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km)".
+                            set message2:text to "<b>Override Re-Entry?</b> (" + round(LngLatErrorList[0] / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km)".
                             if quicksetting1:pressed {
                                 set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
                             }
@@ -4467,44 +4524,11 @@ set landbutton:ontoggle to {
                         else {
                             GoHome().
                             set message1:text to aoa + "° <b>AoA Re-Entry</b>".
-                            if homeconnection:isconnected and ship:body = BODY("Kerbin") {
-                                if exists("0:/settings.json") {
-                                    set L to readjson("0:/settings.json").
-                                    if L:haskey("Launch Coordinates") and L:haskey("Landing Coordinates") {
-                                        if L["Landing Coordinates"] = L["Launch Coordinates"] {
-                                            if OLMexists() {
-                                                if L["Landing Coordinates"] = "-0.0972,-74.5577" {
-                                                    set message2:text to "<b>Landing Zone:  <color=green>KSC Mechazilla</color></b>".
-                                                }
-                                                else {
-                                                    set message2:text to "<b>Landing Zone:  <color=green>Mechazilla</color></b>".
-                                                }
-                                            }
-                                            else {
-                                                if L["Landing Coordinates"] = "-0.0972,-74.5577" {
-                                                    set message2:text to "<b>Landing Zone:  <color=green>KSC Launchpad</color></b>".
-                                                }
-                                                else if L["Landing Coordinates"] = "-6.5604,-143.95" {
-                                                    set message2:text to "<b>Landing Zone:  <color=green>Desert Launchpad</color></b>".
-                                                }
-                                                else {
-                                                    set message2:text to "<b>Landing Zone:  <color=green>Launchpad</color></b>".
-                                                }
-                                            }
-                                        }
-                                        else if L["Landing Coordinates"] = "-6.5604,-143.95" {
-                                            set message2:text to "<b>Landing Zone:  <color=green>Desert Launchpad</color></b>".
-                                        }
-                                        else if L["Landing Coordinates"] = "-0.0972,-74.5577" {
-                                            set message2:text to "<b>Landing Zone:  <color=green>KSC Launchpad</color></b>".
-                                        }
-                                        else {
-                                            set message2:text to "<b>Landing Zone:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>   <b>Slope:</b> " + round(AvailableLandingSpots[3], 1) + "°".
-                                        }
-                                    }
+                            for var in LaunchSites:keys {
+                                if LaunchSites[var] = setting1:text and ship:body = BODY("Kerbin") {
+                                    set message2:text to "<b>Landing Zone:</b>  <color=yellow>" + var + "</color>".
+                                    break.
                                 }
-                            }
-                            else {
                                 set message2:text to "<b>Landing Zone:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>   <b>Slope:</b> " + round(AvailableLandingSpots[3], 1) + "°".
                             }
                             set message1:style:textcolor to white.
@@ -4551,38 +4575,11 @@ set landbutton:ontoggle to {
                         }
                         else {
                             set message1:text to "<b>Target Landing Zone:</b>".
-                            if homeconnection:isconnected and ship:body = BODY("Kerbin") {
-                                if exists("0:/settings.json") {
-                                    set L to readjson("0:/settings.json").
-                                    if L:haskey("Launch Coordinates") and L:haskey("Landing Coordinates") {
-                                        if L["Landing Coordinates"] = L["Launch Coordinates"] {
-                                            if OLMexists() {
-                                                if L["Landing Coordinates"] = "-0.0972,-74.5577" {
-                                                    set message2:text to "<b><color=yellow>KSC Mechazilla</color></b>".
-                                                }
-                                                else {
-                                                    set message2:text to "<b><color=yellow>Mechazilla</color></b>".
-                                                }
-                                            }
-                                            else {
-                                                if L["Landing Coordinates"] = "-0.0972,-74.5577" {
-                                                    set message2:text to "<b><color=yellow>KSC Launch Pad</color></b>".
-                                                }
-                                                else if L["Landing Coordinates"] = "-6.5604,-143.9500" {
-                                                    set message2:text to "<b><color=yellow>Desert Launch Pad</color></b>".
-                                                }
-                                                else {
-                                                    set message2:text to "<b>Latitude/Longitude:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>".
-                                                }
-                                            }
-                                        }
-                                        else {
-                                            set message2:text to "<b>Latitude/Longitude:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>".
-                                        }
-                                    }
+                            for var in LaunchSites:keys {
+                                if LaunchSites[var] = setting1:text and ship:body = BODY("Kerbin") {
+                                    set message2:text to "<b><color=yellow>" + var + "</color></b>".
+                                    break.
                                 }
-                            }
-                            else {
                                 set message2:text to "<b>Latitude/Longitude:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>".
                             }
                             set message3:style:textcolor to cyan.
@@ -4688,7 +4685,12 @@ set landbutton:ontoggle to {
                                 set message3:text to "".
                                 set message1:style:textcolor to white.
                                 set message2:style:textcolor to white.
-                                set deorbitburnstarttime to timestamp(time:seconds + CalculateDeOrbitBurn()).
+                                set TimeToDeOrbitBurn to CalculateDeOrbitBurn().
+                                if TimeToDeOrbitBurn = 0 {
+                                    ClearInterfaceAndSteering().
+                                    return.
+                                }
+                                set deorbitburnstarttime to timestamp(time:seconds + TimeToDeOrbitBurn).
                                 set ProgradeVelocity to DeOrbitVelocity().
                                 if ProgradeVelocity = 0 {
                                     set message1:text to "<b>Error: Not passing overhead the LZ..</b>".
@@ -4701,7 +4703,7 @@ set landbutton:ontoggle to {
                                     ClearInterfaceAndSteering().
                                     return.
                                 }
-                                if ProgradeVelocity < CutOff + 1 and ProgradeVelocity > StartPoint {
+                                if ProgradeVelocity < CutOff + 1 and ProgradeVelocity > StartPoint - 5 {
                                     mainbox:showonly(flightstack).
                                     set settingsbutton:pressed to false.
                                     set cargobutton:pressed to false.
@@ -4723,39 +4725,12 @@ set landbutton:ontoggle to {
                                         return.
                                     }.
                                     set message1:text to "<b>Suggested De-Orbit Burn and Re-Entry:</b>".
-                                    if homeconnection:isconnected {
-                                        if exists("0:/settings.json") {
-                                            set L to readjson("0:/settings.json").
-                                            if L:haskey("Launch Coordinates") and L:haskey("Landing Coordinates") {
-                                                if L["Landing Coordinates"] = L["Launch Coordinates"] {
-                                                    if OLMexists() {
-                                                        if L["Landing Coordinates"] = "-0.0972,-74.5577" {
-                                                            set message2:text to "<b>@:</b> " + deorbitburnstarttime:hour + ":" + deorbitburnstarttime:minute + ":" + deorbitburnstarttime:second + "<b>UT</b>   <b>ΔV:</b> " + round(ProgradeVelocity, 1) + "m/s   <b>LZ: <color=green>KSC <size=15>Mechazilla</size></color></b>".
-                                                        }
-                                                        else {
-                                                            set message2:text to "<b>@:</b> " + deorbitburnstarttime:hour + ":" + deorbitburnstarttime:minute + ":" + deorbitburnstarttime:second + "<b>UT</b>   <b>ΔV:</b> " + round(ProgradeVelocity, 1) + "m/s   <b>LZ: <color=green>Mechazilla</color></b>".
-                                                        }
-                                                    }
-                                                    else {
-                                                        if L["Landing Coordinates"] = "-0.0972,-74.5577" {
-                                                            set message2:text to "<b>@:</b> " + deorbitburnstarttime:hour + ":" + deorbitburnstarttime:minute + ":" + deorbitburnstarttime:second + "<b>UT</b>   <b>ΔV:</b> " + round(ProgradeVelocity, 1) + "m/s   <b>LZ: <color=green><size=17>KSC Launchpad</size></color></b>".
-                                                        }
-                                                        else if L["Landing Coordinates"] = "-6.5604,-143.9500" {
-                                                            set message2:text to "<b>@:</b> " + deorbitburnstarttime:hour + ":" + deorbitburnstarttime:minute + ":" + deorbitburnstarttime:second + "<b>UT</b>   <b>ΔV:</b> " + round(ProgradeVelocity, 1) + "m/s   <b>LZ: <color=green><size=15>Desert Launchpad</size></color></b>".
-                                                        }
-                                                        else {
-                                                            set message2:text to "<b>@:</b> " + deorbitburnstarttime:hour + ":" + deorbitburnstarttime:minute + ":" + deorbitburnstarttime:second + "<b>UT</b>   <b>ΔV:</b> " + round(ProgradeVelocity, 1) + "m/s   <b>LZ: <color=green>Launch Pad</color></b>".
-                                                        }
-                                                    }
-                                                }
-                                                else {
-                                                    set message2:text to "<b>@:</b> " + deorbitburnstarttime:hour + ":" + deorbitburnstarttime:minute + ":" + deorbitburnstarttime:second + "<b>UT</b>   <b>ΔV:</b> " + round(ProgradeVelocity, 1) + "m/s   <b>LZ:</b> <size=17><color=yellow>" + landingzone:lat + "," + landingzone:lng + "</color></size>".
-                                                }
-                                            }
+                                    for var in LaunchSites:keys {
+                                        if LaunchSites[var] = setting1:text and ship:body = BODY("Kerbin") {
+                                            set message2:text to "<b>@:</b>  " + deorbitburnstarttime:hour + ":" + deorbitburnstarttime:minute + ":" + deorbitburnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(ProgradeVelocity, 1) + "m/s   <b>LZ: <color=green>" + var +  "</color></b>".
+                                            break.
                                         }
-                                    }
-                                    else {
-                                        set message2:text to "<b>@:</b> " + deorbitburnstarttime:hour + ":" + deorbitburnstarttime:minute + ":" + deorbitburnstarttime:second + "<b>UT</b>   <b>ΔV:</b> " + round(ProgradeVelocity, 1) + "m/s   <b>LZ:</b> <size=17><color=yellow>" + landingzone:lat + "," + landingzone:lng + "</color></size>".
+                                        set message2:text to "<b>@:</b>  " + deorbitburnstarttime:hour + ":" + deorbitburnstarttime:minute + ":" + deorbitburnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(ProgradeVelocity, 1) + "m/s   <b>LZ:</b>  <size=17><color=yellow>" + landingzone:lat + "," + landingzone:lng + "</color></size>".
                                     }
                                     if quicksetting1:pressed {
                                         set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
@@ -4946,7 +4921,7 @@ set landbutton:ontoggle to {
                         if abs(LngLatErrorList[0]) > LongitudinalAcceptanceLimit or abs(LngLatErrorList[1]) > LatitudinalAcceptanceLimit {
                             GoHome().
                             set message1:text to "<b>Landingzone out of Range..   Slope:  </b>" + round(AvailableLandingSpots[3], 1) + "°".
-                            set message2:text to "<b>Override Re-Entry?</b> (" + round((LngLatErrorList[0] - LandingOffset) / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km)".
+                            set message2:text to "<b>Override Re-Entry?</b> (" + round(LngLatErrorList[0] / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km)".
                             if quicksetting1:pressed {
                                 set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
                             }
@@ -5141,13 +5116,10 @@ function LandwithoutAtmo {
 
         if groundspeed > 50 or altitude > 10000 {
             when horDist < horStopDist then {
-                if kuniverse:timewarp:warp > 0 {
-                    set kuniverse:timewarp:warp to 0.
-                }
+                lock throttle to max(min(LngLatErrorList[0] / (CosAngle * 1000), min(29.43 / MaxAccel, CancelHorVelRatio * min(29.43, MaxAccel) / MaxAccel)), 0.2).
                 set runningprogram to "Landing".
                 set LandingFacingVector to vxcl(ApproachUPVector, ApproachVector).
                 set CancelVelocityHasStarted to true.
-                lock throttle to max(min(LngLatErrorList[0] / (CosAngle * 1000), min(29.43 / MaxAccel, CancelHorVelRatio * min(29.43, MaxAccel) / MaxAccel)), 0.2).
                 when abs(LngLatErrorList[0]) < 100 then {
                     set throttle to 0.
                     when landingRatio > 2 then {
@@ -5170,7 +5142,7 @@ function LandwithoutAtmo {
         }
         lock STEERING to LandwithoutAtmoSteering.
 
-        when RadarAlt < SafeAltOverLZ - 100 then {
+        when RadarAlt < SafeAltOverLZ - 500 then {
             if abs(LngLatErrorList[0]) > 1000 or abs(LngLatErrorList[1]) > 1000 {
                 CheckLZReachable().
                 set LandingFacingVector to vxcl(up:vector, landingzone:position - ship:position):normalized.
@@ -5375,10 +5347,10 @@ function LandwithoutAtmoSteering {
     }
     if addons:tr:hasimpact and not LandSomewhereElse {
         if abs(LngLatErrorList[0]) < 100 and abs(LngLatErrorList[1]) < 100 and RadarAlt < 5000 {
-            set message3:text to "<b>Track/X-Trk Error:</b>             " + round((LngLatErrorList[0] - LandingOffset)) + "m  " + round(LngLatErrorList[1]) + "m".
+            set message3:text to "<b>Track/X-Trk Error:</b>             " + round(LngLatErrorList[0]) + "m  " + round(LngLatErrorList[1]) + "m".
         }
         else {
-            set message3:text to "<b>Track/X-Trk Error:</b>             " + round((LngLatErrorList[0] - LandingOffset) / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km".
+            set message3:text to "<b>Track/X-Trk Error:</b>             " + round(LngLatErrorList[0] / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km".
         }
     }
     else {
@@ -5485,17 +5457,21 @@ if addons:tr:available and not startup {
         set LandingCoords to LandingCoords:split(",").
         set landingzone to latlng(LandingCoords[0]:toscalar, LandingCoords[1]:toscalar).
         if setting1:text = "-0.0972,-74.5577" {
-            set TargetLZPicker:index to 1.
-        }
-        else if setting1:text = "-6.5604,-143.95" {
             set TargetLZPicker:index to 2.
         }
-        else if setting1:text = "45.2896,136.11" {
+        else if setting1:text = "-6.5604,-143.95" {
             set TargetLZPicker:index to 3.
+        }
+        else if setting1:text = "45.2896,136.11" {
+            set TargetLZPicker:index to 4.
+        }
+        else if setting1:text = "20.6622,-146.4603" {
+            set TargetLZPicker:index to 5.
         }
         else {
             set TargetLZPicker:index to 0.
         }
+        LandAtOLM().
         if kuniverse:activevessel = ship {
             set addons:tr:descentmodes to list(true, true, true, true).
             set addons:tr:descentgrades to list(false, false, false, false).
@@ -5609,7 +5585,17 @@ if addons:tr:available and not startup {
     updatestatusbar.
     updateCargoPage.
     if ship:status = "FLYING" and eta:apoapsis < eta:periapsis or ship:status = "SUB_ORBITAL" and eta:apoapsis < eta:periapsis {
-        Launch().
+        if ship:body = BODY("Kerbin") or ship:body = BODY("Duna") {
+            Launch().
+        }
+    }
+    if ship:status = "FLYING" and eta:periapsis < eta:apoapsis or ship:status = "SUB_ORBITAL" and eta:periapsis < eta:apoapsis {
+        if ship:body = BODY("Kerbin") or ship:body = BODY("Duna") {
+            ReEntryAndLand().
+        }
+        else {
+            LandwithoutAtmo().
+        }
     }
     set startup to true.
 }
@@ -5661,6 +5647,7 @@ function Launch {
         sas off.
         rcs off.
         setflaps(0, 0, 0, 20).
+        set LaunchElev to altitude - 67.74.
 
         SET KUNIVERSE:DEFAULTLOADDISTANCE:FLYING:UNLOAD TO 600000.
         SET KUNIVERSE:DEFAULTLOADDISTANCE:FLYING:LOAD TO 595000.
@@ -5722,21 +5709,9 @@ function Launch {
             if OnOrbitalMount {
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "LiftOff").
             }
-            SHIP:PARTSNAMED("SLE.SS.OLP")[0]:getmodule("LaunchClamp"):DoAction("release clamp", true).
+            OLM:getmodule("LaunchClamp"):DoAction("release clamp", true).
             BoosterEngines[0]:getmodule("ModuleEnginesFX"):doaction("activate engine", true).
             set OnOrbitalMount to False.
-            if round(ship:geoposition:lat, 2) = round(landingzone:lat, 2) and round(ship:geoposition:lng, 2) = round(landingzone:lng, 2) {}
-            else if round(ship:geoposition:lat, 2) = -0.10 and round(ship:geoposition:lng, 2) = -74.56 {
-                set landingzone to latlng(-0.0972,-74.5577).
-                set setting1:text to "-0.0972,-74.5577".
-                SaveToSettings("Landing Coordinates", "-0.0972,-74.5577").
-            }
-            else {
-                set landingzone to latlng(round(ship:geoposition:lat, 4), round(ship:geoposition:lng, 4)).
-                set setting1:text to (landingzone:lat + "," + landingzone:lng).
-                SaveToSettings("Landing Coordinates", (landingzone:lat + "," + landingzone:lng)).
-            }
-            SaveToSettings("Launch Coordinates", (landingzone:lat + "," + landingzone:lng)).
             if defined LaunchTime {
                 LogToFile("Lift-Off! Time difference from Launch-to-Rendezvous-Time to Lift-off: " + timeSpanCalculator(time:seconds - LaunchTime - 16)).
             }
@@ -5744,6 +5719,20 @@ function Launch {
                 LogToFile("Lift-Off!").
             }
             set LiftOffTime to time:seconds.
+            wait 0.1.
+            if round(ship:geoposition:lat, 2) = round(landingzone:lat, 2) and round(ship:geoposition:lng, 2) = round(landingzone:lng, 2) {}
+            //else if round(ship:geoposition:lat, 2) = -0.10 and round(ship:geoposition:lng, 2) = -74.56 {
+            //    set landingzone to latlng(-0.0972,-74.5577).
+            //    set setting1:text to "-0.0972,-74.5577".
+            //    SaveToSettings("Landing Coordinates", "-0.0972,-74.5577").
+            //}
+            else {
+                set landingzone to latlng(round(ship:geoposition:lat, 4), round(ship:geoposition:lng, 4)).
+                set setting1:text to (landingzone:lat + "," + landingzone:lng).
+                SaveToSettings("Landing Coordinates", (landingzone:lat + "," + landingzone:lng)).
+            }
+            SaveToSettings("Launch Coordinates", (landingzone:lat + "," + landingzone:lng)).
+            ADDONS:TR:SETTARGET(landingzone).
         }
         else if apoapsis < targetap {
             lock throttle to 1.
@@ -5853,7 +5842,7 @@ function Launch {
 
             rcs off.
             if defined Booster {
-                if Booster:altitude < 30000 {
+                if Booster:altitude < 35000 {
                     HUDTEXT("Changing Focus to: Booster", 5, 2, 20, green, false).
                     wait 1.5.
                     HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 10, 2, 20, green, false).
@@ -5910,13 +5899,13 @@ function Launch {
 
 
 Function LaunchSteering {
-    if quicksetting1:pressed and altitude > 150 and altitude < 1000 {
+    if quicksetting1:pressed and altitude - LaunchElev > 150 and altitude - LaunchElev < 1000 {
         set kuniverse:timewarp:warp to 4.
     }
-    if quicksetting1:pressed and altitude > 500 and altitude < 2000 or kuniverse:timewarp:warp > 0 and altitude > 500 and altitude < 2000 {
+    if quicksetting1:pressed and altitude - LaunchElev > 500 and altitude - LaunchElev < 2000 or kuniverse:timewarp:warp > 0 and altitude - LaunchElev > 500 and altitude - LaunchElev < 2000 {
         set kuniverse:timewarp:warp to 1.
     }
-    if quicksetting1:pressed and altitude > 2000 and apoapsis < 50000 or altitude > 2000 and altitude < 2500 and kuniverse:timewarp:warp = 1 {
+    if quicksetting1:pressed and altitude - LaunchElev > 2000 and apoapsis < 50000 or altitude - LaunchElev > 2000 and altitude - LaunchElev < 2500 and kuniverse:timewarp:warp = 1 {
         set kuniverse:timewarp:warp to 4.
     }
     if periapsis > targetap {
@@ -5925,9 +5914,9 @@ Function LaunchSteering {
     else if apoapsis > 50000 {
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
     }
-    set DownRange to ((latlng(-0.0972,-74.5577):lng - ship:geoposition:lng) * -Planet1Degree).
+    set DownRange to landingzone:distance / 1000.
     set myAzimuth to LAZcalc(LaunchData).
-    if altitude < 500 {
+    if altitude - LaunchElev < 500 {
         if not ClosingIsRunning {
             set message1:text to "<b>Actual/Target Apoapsis:</b>   " + round(apoapsis/1000,1) + "/" + round(targetap / 1000, 1) + "km".
             set message2:text to "<b>Guidance (Pitch/Az.):</b>         90°/" + round(myAzimuth, 1) + "°".
@@ -5956,7 +5945,7 @@ Function LaunchSteering {
             }
         }
         if Boosterconnected {
-            set targetpitch to 90 - (10 * SQRT(max((altitude - 500), 0)/1000)).
+            set targetpitch to 90 - (10 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
             if not ClosingIsRunning {
                 set message2:text to "<b>Guidance (Pitch/Az.):</b>         " + round(targetpitch, 1) + "°/" + round(myAzimuth, 1) + "°".
                 set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
@@ -6091,7 +6080,7 @@ FUNCTION LAZcalc_init {
         set launchLatitude to SHIP:LATITUDE.
     }
     else {
-        set launchLatitude to 0.9.
+        set launchLatitude to -0.0972.
     }
 
     LOCAL data IS LIST().   // A list is used to store information used by LAZcalc
@@ -6114,14 +6103,14 @@ FUNCTION LAZcalc_init {
     //Orbital inclination can't be less than launch latitude or greater than 180 - launch latitude
     IF ABS(launchLatitude) > desiredInc {
         SET desiredInc TO ABS(launchLatitude).
-        HUDTEXT("Inclination impossible from current latitude, setting for lowest possible inclination: " + round(desiredInc, 2) + "°", 10, 2, 20, RED, FALSE).
+        //HUDTEXT("Inclination impossible from current latitude, setting inclination to: " + round(desiredInc, 2) + "°", 10, 2, 20, RED, FALSE).
         SaveToSettings("Launch Inclination", round(desiredInc, 2)).
         set setting3:text to (round(desiredInc, 2) + "°").
     }.
 
     IF 180 - ABS(launchLatitude) < desiredInc {
         SET desiredInc TO 180 - ABS(launchLatitude).
-        HUDTEXT("Inclination impossible from current latitude, setting for highest possible inclination: " + round(desiredInc, 2) + "°", 10, 2, 20, RED, FALSE).
+        //HUDTEXT("Inclination impossible from current latitude, setting inclination to: " + round(desiredInc, 2) + "°", 10, 2, 20, RED, FALSE).
         SaveToSettings("Launch Inclination", round(desiredInc, 2)).
         set setting3:text to (round(desiredInc, 2) + "°").
     }.
@@ -6394,6 +6383,7 @@ function ReEntryAndLand {
         set LandButtonIsRunning to true.
         set config:ipu to CPUSPEED.
         set LandSomewhereElse to false.
+        set MechaZillaShouldCatchShip to false.
         SetPlanetData().
         set FlipAltitude to 500.
         set addons:tr:descentmodes to list(true, true, true, true).
@@ -6420,6 +6410,7 @@ function ReEntryAndLand {
         HideEngineToggles(1).
         ShutDownAllEngines().
         set launchlabel:style:bg to "starship_img/starship_background".
+        set textbox:style:bg to "starship_img/starship_main_square_bg".
         ShowButtons(0).
         InhibitButtons(1, 1, 0).
         set RepositionOxidizer to TRANSFERALL("OXIDIZER", Tank, HeaderTank).
@@ -6428,9 +6419,6 @@ function ReEntryAndLand {
         sas off.
         rcs off.
         ActivateEngines(0).
-        set SteeringManager:ROLLCONTROLANGLERANGE to 20.
-        set STEERINGMANAGER:PITCHTS to 5.
-        set STEERINGMANAGER:YAWTS to 5.
         if LFShip > FuelVentCutOffValue {
             Nose:activate.
             Tank:activate.
@@ -6438,6 +6426,9 @@ function ReEntryAndLand {
                 ShutDownAllEngines()..
             }
         }
+
+        SteeringManager:RESETTODEFAULT().
+        set SteeringManager:ROLLCONTROLANGLERANGE to 20.
         set PitchPID to PIDLOOP(0.00025, 0, 0, -8, 7).
         set YawPID to PIDLOOP(0.025, 0, 0, -60, 60).
 
@@ -6459,11 +6450,9 @@ function ReEntryAndLand {
                         set PitchPID to PIDLOOP(0.075, 0.02, 0.05, -18, 7).
                     }
                     if ship:body = BODY("Duna") {
-                        set PitchPID to PIDLOOP(0.05, 0.02, 0.05, -25, 15).
+                        set PitchPID to PIDLOOP(0.05, 0.01, 0.025, -25, 15).
                     }
-                    set YawPID to PIDLOOP(0.25, 0, 0, -15, 15).
-                    set STEERINGMANAGER:PITCHTS to 2.5.
-                    set STEERINGMANAGER:YAWTS to 1.
+                    set YawPID to PIDLOOP(0.25, 0.01, 0.01, -15, 15).
                     if ship:body = BODY("Kerbin") {
                         set FlipAltitude to max((ship:mass / 50) * 500, 500).
                     }
@@ -6475,31 +6464,8 @@ function ReEntryAndLand {
                     when RadarAlt < 10000 then {
                         InhibitButtons(1, 1, 1).
                         CheckLZReachable().
-                    }
-                    if OLMexists() {
-                        if homeconnection:isconnected {
-                            if exists("0:/settings.json") {
-                                set L to readjson("0:/settings.json").
-                                if L:haskey("Launch Coordinates") and L:haskey("Landing Coordinates") {
-                                    if L["Landing Coordinates"] = L["Launch Coordinates"] {
-                                        set MechaZillaShouldCatchShip to true.
-                                        if L:haskey("ArmsHeight") {
-                                            set ArmsHeight to L["ArmsHeight"].
-                                        }
-                                        else {
-                                            set ArmsHeight to 86.42.
-                                        }
-                                        lock RadarAlt to altitude - ship:geoposition:terrainheight - ArmsHeight + (24.698 - ShipBottomRadarHeight).
-                                        when RadarAlt < 2000 then {
-                                            sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaHeight,0,2").
-                                            sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaArms,8,5,97,true").
-                                            sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,1,12,true").
-                                            sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaStabilizers,0").
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        wait 0.001.
+                        LandAtOLM().
                     }
                 }
             }
@@ -6514,6 +6480,9 @@ function ReEntryAndLand {
             LogToFile("Radar Altimeter < FlipAltitude, starting Landing Procedure").
         }
         if cancelconfirmed {
+            sas on.
+            Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+            Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             ClearInterfaceAndSteering().
         }
         
@@ -6549,23 +6518,17 @@ function ReEntrySteering {
         }
 
         if aoa:typename = "String" {set aoa to (aoa):toscalar.}
-        set pitch to -PitchPID:UPDATE(TIME:SECONDS, LngLatErrorList[0]).
-        if RadarAlt < 2500 or AbortInProgress {
-            set LateReentryVector to srfprograde.
-            set yaw to 0.
-            set DesiredAoA to aoa + pitch.
-            set result to LateReentryVector * R(-DesiredAoA * cos(yaw), DesiredAoA * sin(yaw), 0).
-        }
-        else {
-            set DesiredAoA to aoa + pitch + (10 * ship:control:pilotpitch).
-            set yaw to -YawPID:UPDATE(TIME:SECONDS, LngLatErrorList[1]).
-            set result to srfprograde * R(-DesiredAoA * cos(yaw), DesiredAoA * sin(yaw), 0).
-        }
+        set pitchctrl to -PitchPID:UPDATE(TIME:SECONDS, LngLatErrorList[0]).
+        set DesiredAoA to aoa + pitchctrl + (10 * ship:control:pilotpitch).
+        set yawctrl to -YawPID:UPDATE(TIME:SECONDS, LngLatErrorList[1]).
+        set result to srfprograde * R(-DesiredAoA * cos(yawctrl), DesiredAoA * sin(yawctrl), 0).
         if LandSomewhereElse {
             set result to srfprograde * R(-67, 0, 0).
         }
         set result to lookdirup(result:vector, vxcl(velocity:surface, result:vector)).
-        
+
+        //set ReEntryVector to vecdraw(v(0, 0, 0), result:vector, green, "Re-Entry Vector", 20, true, 0.005, true, true).
+
         if ship:control:pilotpitch <> 0 {
             set runningprogram to "Override".
             set status1:style:textcolor to cyan.
@@ -6648,10 +6611,10 @@ function ReEntrySteering {
                 set message2:text to "<b>Distance to Target:</b>           " + round(DistanceToTarget) + "km".
             }
             if abs(LngLatErrorList[0]) < 100 and abs(LngLatErrorList[1]) < 100 and RadarAlt < 5000 {
-                set message3:text to "<b>Track/X-Trk Error:</b>             " + round((LngLatErrorList[0] - LandingOffset)) + "m  " + round(LngLatErrorList[1]) + "m".
+                set message3:text to "<b>Track/X-Trk Error:</b>             " + round(LngLatErrorList[0]) + "m  " + round(LngLatErrorList[1]) + "m".
             }
             else {
-                set message3:text to "<b>Track/X-Trk Error:</b>             " + round((LngLatErrorList[0] - LandingOffset) / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km".
+                set message3:text to "<b>Track/X-Trk Error:</b>             " + round(LngLatErrorList[0] / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km".
             }
         }
 
@@ -6663,6 +6626,14 @@ function ReEntrySteering {
                 }
                 else {
                     set message3:style:textcolor to white.
+                }
+                if abs(LngLatErrorList[1]) > 2.5 {
+                    rcs on.
+                    set ship:control:translation to v(LngLatErrorList[1] / 100, 0, 0).
+                }
+                else {
+                    rcs off.
+                    set ship:control:translation to v(0,0,0).
                 }
             }
             if ship:body = BODY("Duna") {
@@ -6678,7 +6649,7 @@ function ReEntrySteering {
             set runningprogram to "Landing".
             Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
-            if abs(LngLatErrorList[0]) - LandingOffset > 50 and ship:body = BODY("Kerbin") or abs(LngLatErrorList[1]) > 50 or abs(LngLatErrorList[0]) - LandingOffset > 200 and ship:body = BODY("Duna") {
+            if abs(LngLatErrorList[0]) > 50 and ship:body = BODY("Kerbin") or abs(LngLatErrorList[1]) > 50 or abs(LngLatErrorList[0]) > 200 and ship:body = BODY("Duna") {
                 if not ClosingIsRunning {
                     set message3:style:textcolor to yellow.
                 }
@@ -6689,8 +6660,6 @@ function ReEntrySteering {
             
         BackGroundUpdate().
         LogToFile("Re-Entry Telemetry").
-
-        //set ReEntryVector to vecdraw(v(0, 0, 0), result:vector, red, "Re-Entry Vector", 20, true, 0.005, true, true).
 
         set SteeringIsRunning to false.
         return result.
@@ -6750,14 +6719,15 @@ function ReEntrySteering {
             LogToFile("Engines Activated").
 
             if ship:body = BODY("Kerbin") {
-                if abs(LngLatErrorList[0]) - LandingOffset > 50 or abs(LngLatErrorList[1]) > 15 {
+                if abs(LngLatErrorList[0]) > 50 or abs(LngLatErrorList[1]) > 15 {
                     set LandSomewhereElse to true.
                     SetRadarAltitude().
-                    LogToFile("Landing parameters out of bounds, Landing Off-Target").
+                    LogToFile("Landing parameters out of bounds (" + (LngLatErrorList[0] + 50) + "," + (LngLatErrorList[0] - 50) + "," + (LngLatErrorList[1] + 15) + "," + (LngLatErrorList[1] - 15) + "), Landing Off-Target").
+                    LogToFile("Lng Error: " + LngError + "    LatError: " + LatError).
                 }
             }
             if ship:body = BODY("Duna") {
-                if abs(LngLatErrorList[0]) - LandingOffset > 250 or abs(LngLatErrorList[1]) > 50 {
+                if abs(LngLatErrorList[0]) > 250 or abs(LngLatErrorList[1]) > 50 {
                     set LandSomewhereElse to true.
                     LogToFile("Landing parameters out of bounds, Landing Off-Target").
                 }
@@ -6782,15 +6752,16 @@ function ReEntrySteering {
                     lock stopDist to 0.5 * DesiredDecel * stopTime * stopTime.
                     lock landingRatio to stopDist / RadarAlt.
                     lock throttle to max(min(((DesiredDecel + Planet1G) / max(maxDecel, 0.000001)) * landingRatio, 2 * 9.81 / max(maxDecel, 0.000001)), ThrottleMin).
-                    if OLMexists() and MechaZillaShouldCatchShip {
+                    if MechaZillaShouldCatchShip and TargetOLM {
                         when RadarAlt < 2.5 * ShipHeight then {
-                            sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaArms,8,5,60,true").
-                            sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaStabilizers,0").
-                            when RadarAlt < (0.5 * DesiredDecel * 3 * 3) then {
-                                sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaArms,8," + 10 + ",60,false")).
+                            set config:ipu to 2000.
+                            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,60,true").
+                            sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
+                            when RadarAlt < (0.5 * DesiredDecel * 3 * 3) + 0.5 then {
+                                sendMessage(Vessel(TargetOLM), ("MechazillaArms,8," + 10 + ",60,false")).
+                                set config:ipu to CPUSPEED.
                             }
                         }
-
                     }
                 }
             }
@@ -6809,7 +6780,7 @@ function ReEntrySteering {
             }
 
             when verticalspeed > -10 then {
-                if OLMexists() and MechaZillaShouldCatchShip {
+                if MechaZillaShouldCatchShip and TargetOLM {
                     setflaps(0, 85, 1, 0).
                 }
                 else {
@@ -6818,7 +6789,7 @@ function ReEntrySteering {
             }
 
             until verticalspeed > -0.02 and RadarAlt < 5 and ship:status = "LANDED" or verticalspeed > 0.5 {}
-            if MechaZillaShouldCatchShip {
+            if MechaZillaShouldCatchShip and TargetOLM {
                 print "capture at: " + RadarAlt + "m RA".
             }
 
@@ -6920,7 +6891,7 @@ function LandingVector {
             }
             else {
                 if ship:body = BODY("Kerbin") {
-                    if OLMexists() and MechaZillaShouldCatchShip {
+                    if MechaZillaShouldCatchShip and TargetOLM {
                         set result to ship:up:vector - 0.03 * velocity:surface - 0.0125 * ErrorVector + 0.02 * facing:starvector.
                     }
                     else {
@@ -6953,7 +6924,7 @@ function LandingVector {
         
         BackGroundUpdate().
     }
-    if OLMexists() and MechaZillaShouldCatchShip and verticalspeed > -25 {
+    if MechaZillaShouldCatchShip and TargetOLM and verticalspeed > -25 {
         return lookDirUp(result, heading(270,0):vector).
     }
     else {
@@ -6986,6 +6957,8 @@ function LandingVector {
             set message3:style:textcolor to white.
             lock steering to lookdirup(ship:up:vector,ship:facing:topvector).
             lock throttle to 0.
+            set ship:control:translation to v(0,0,0).
+            SteeringManager:RESETTODEFAULT().
             Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             if ship:body = BODY("Kerbin") {
@@ -6993,17 +6966,17 @@ function LandingVector {
             }
             SLEngines[0]:shutdown. SLEngines[1]:shutdown. SLEngines[2]:shutdown.
 
-            if OLMexists() and MechaZillaShouldCatchShip {
-                sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,1,0.7,true").
-                sendMessage(Vessel("OrbitalLaunchMount"), ("MechazillaStabilizers," + maxstabengage)).
+            if MechaZillaShouldCatchShip and TargetOLM {
+                sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,0.7,true").
+                sendMessage(Vessel(TargetOLM), ("MechazillaStabilizers," + maxstabengage)).
                 when time:seconds > ShutdownProcedureStart + 3.25 then {
-                    sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,0.5,0.7,true").
+                    sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,0.5,0.7,true").
                 }
                 when time:seconds > ShutdownProcedureStart + 5.75 then {
-                    sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,0.2,0.7,true").
+                    sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,0.2,0.7,true").
                 }
                 when time:seconds > ShutdownProcedureStart + 8.25 then {
-                    sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,0.1,0.7,true").
+                    sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,0.1,0.7,true").
                 }
             }
 
@@ -7018,7 +6991,7 @@ function LandingVector {
             unlock throttle.
             set ship:control:neutralize to true.
             unlock steering.
-            if OLMexists() and MechaZillaShouldCatchShip {
+            if MechaZillaShouldCatchShip and TargetOLM {
                 setflaps(0, 0, 0, 0).
             }
             else {
@@ -7034,26 +7007,28 @@ function LandingVector {
             Nose:shutdown. Tank:shutdown.
             set message1:text to "<b><color=green>Vehicle Self-Check OK!</color></b>".
             set message1:style:textcolor to white.
-            //if OLMexists() and MechaZillaShouldCatchShip {
+
+            //if MechaZillaShouldCatchShip and TargetOLM {
             //    set message2:text to "<b><color=green>Ship has been secured by MechaZilla!</color></b>".
             //    set message3:text to "<b>Crane Operation in progress..</b>".
             //    set ShipDocked to false.
             //    when time:seconds > ShutdownProcedureStart + 20 then {
-            //        sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaHeight,12,0.5").
+            //        sendMessage(Vessel(TargetOLM), "MechazillaHeight,12,0.5").
             //    }
             //    when time:seconds > ShutdownProcedureStart + 44 then {
             //        set ShipDocked to true.
             //    }
             //    wait until ShipDocked.
-                //sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaArms,8,2.5,25,true").
+                //sendMessage(Vessel(TargetOLM), "MechazillaArms,8,2.5,25,true").
                 //wait 5.
-                //sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaHeight,6.5,2.5").
+                //sendMessage(Vessel(TargetOLM), "MechazillaHeight,6.5,2.5").
                 //wait 3.
-                //sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaArms,8,5,60,true").
-                //sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaPushers,0,0.2,3,true").
-                //sendMessage(Vessel("OrbitalLaunchMount"), "MechazillaStabilizers,50").
+                //sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,60,true").
+                //sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,0.2,3,true").
+                //sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,50").
                 //wait 3.
             //}
+
             set message2:text to "<b>Re-Entry & Land Program completed..</b>".
             set message3:text to "<b>Hatches may now be opened..</b>".
             set runningprogram to "None".
@@ -7095,7 +7070,7 @@ function LngLatError {
             if ship:body = BODY("Kerbin") or ship:body = BODY("Duna") {
                 if ApproachVector = v(0,0,0) or addons:tr:TIMETILLIMPACT < 150 {
                     set ApproachUPVector to (landingzone:position - body:position):normalized.
-                    set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, time:seconds + addons:tr:TIMETILLIMPACT - 120):surface):normalized.
+                    set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, time:seconds + addons:tr:TIMETILLIMPACT - 15):surface):normalized.
                 }
             }
             else {
@@ -7125,11 +7100,11 @@ function LngLatError {
             set latresult to vdot(AngleAxis(-90, ApproachUPVector) * ApproachVector, ErrorVector).
 
             if ship:body = BODY("Kerbin") {
-                if OLMexists() and MechaZillaShouldCatchShip {
-                    set LngLatOffset to ((60 / ship:mass) * 130) - 117.5.
+                if MechaZillaShouldCatchShip and TargetOLM {
+                    set LngLatOffset to ((51.8 / ship:mass) * 326) - 278.
                 }
                 else {
-                    set LngLatOffset to ((60 / ship:mass) * 130) - 97.5.
+                    set LngLatOffset to ((51.8 / ship:mass) * 205) - 140.
                 }
             }
             else if ship:body = BODY("Duna") {
@@ -7266,10 +7241,25 @@ function CalculateDeOrbitBurn {
     }
     set x to 10.
     until lngPredict > correctedIdealLng - 2 and lngPredict < correctedIdealLng + 2 {
+        SendPing().
         set idealLng to landingzone:lng - DegreestoLDGzone + (x / (body:rotationperiod / 360)).
-        if idealLng < -180 {set correctedIdealLng to idealLng + 360.} else {set correctedIdealLng to idealLng.}
+        if idealLng < -180 {
+            set correctedIdealLng to idealLng + 360.
+        }
+        else if idealLng > 180 {
+            set correctedIdealLng to idealLng - 360.
+        }
+        else {
+            set correctedIdealLng to idealLng.
+        }
         set lngPredict to body:geopositionof(positionat(ship, time:seconds + x)):lng.
         set x to x + 10.
+        if x > ship:orbit:period {
+            return 0.
+        }
+        if lngPredict > correctedIdealLng - 2 and lngPredict < correctedIdealLng + 2 {
+            break.
+        }
     }
     return x.
 }
@@ -7286,7 +7276,7 @@ function DeOrbitVelocity {
     }
     else if ship:body = BODY("Duna") {
         set ErrorTolerance to 20000.
-        set StartPoint to -50.
+        set StartPoint to -75.
         set CutOff to -10.
     }
     else {
@@ -7849,7 +7839,7 @@ function updateStatus {
         if LQFpct < 6 {set status2label5:style:textcolor to red.}
         if OXpct < 6 {set status3label5:style:textcolor to red.}
         if OnOrbitalMount {
-            set status1label5:text to "<b>MASS:</b>  " + round(ship:mass - SHIP:PARTSNAMED("SLE.SS.OLP")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.Base")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.Core")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.Top")[0]:mass - SHIP:PARTSNAMED("SLE.SS.OLIT.MZ")[0]:mass, 1) + "t".
+            set status1label5:text to "<b>MASS:</b>  " + round(ship:mass - OLM:mass - TowerBase:mass - TowerCore:mass - TowerTop:mass - Mechazilla:mass, 1) + "t".
         }
         set status1label5:text to "<b>MASS:</b>  " + round(ShipMass / 1000, 1) + "t".
         set status2label5:text to "<b>" + round(LQFpct) + "% CH4</b>".
@@ -8727,6 +8717,7 @@ function FindExperience {
 
 function ClearInterfaceAndSteering {
     GoHome().
+    wait 0.001.
     set throttle to 0.
     set ApproachVector to v(0,0,0).
     ShutDownAllEngines().
@@ -8825,8 +8816,8 @@ function BackGroundUpdate {
         set CalculationsPerSecond to 1 / max(time:seconds - prevCalcTime, 0.1).
         set prevCalcTime to time:seconds.
 
-        if OLMexists {
-            if Vessel("OrbitalLaunchMount"):distance < 500 and not LaunchButtonIsRunning and not LandButtonIsRunning {
+        if not (TargetOLM = false) and not (OnOrbitalMount) and MechaZillaShouldCatchShip {
+            if Vessel(TargetOLM):distance < 500 and not LaunchButtonIsRunning and not LandButtonIsRunning {
                 towerbutton:show().
             }
             else {
@@ -8933,7 +8924,7 @@ function LogToFile {
                         }
                         if altitude > 1500 {
                             if homeconnection:isconnected {
-                                LOG ("Time: " + timestamp():clock + "   Dist: " + round(DistanceToTarget, 3) + "km   Alt: " + round(altitude) + "m   Vert Speed: " + round(ship:verticalspeed,1) + "m/s   Airspeed: " + round(airspeed, 1) + "m/s   Trk/X-Trk Error: " + round((LngLatErrorList[0] - LandingOffset) / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km") to "0:/FlightData.txt".
+                                LOG ("Time: " + timestamp():clock + "   Dist: " + round(DistanceToTarget, 3) + "km   Alt: " + round(altitude) + "m   Vert Speed: " + round(ship:verticalspeed,1) + "m/s   Airspeed: " + round(airspeed, 1) + "m/s   Trk/X-Trk Error: " + round(LngLatErrorList[0] / 1000, 3) + "km  " + round((LngLatErrorList[1] / 1000), 3) + "km") to "0:/FlightData.txt".
                             }
                             if homeconnection:isconnected {
                                 LOG ("                 Actual AoA: " + round(vang(ship:facing:forevector, velocity:surface), 1) + "°   Throttle: " + (100 * throttle) + "%   Battery: " + round(100 * (ship:electriccharge / ELECcap), 2) + "%   Mass: " + round(ship:mass * 1000, 3) + "kg") to "0:/FlightData.txt".
@@ -8945,15 +8936,15 @@ function LogToFile {
                                 LOG "" to "0:/FlightData.txt".
                             }
                             if homeconnection:isconnected {
-                                LOG (timestamp():clock + "," + DistanceToTarget + "," + altitude + "," + ship:verticalspeed + "," + airspeed + "," + (LngLatErrorList[0] - LandingOffset) + "," + LngLatErrorList[1] + "," + vang(ship:facing:forevector, velocity:surface) + "," + (100 * throttle) + "," + (100 * (LFShip / LFShipCap)) + "," + (ship:mass * 1000) + "," + RadarAlt) to "0:/LandingData.csv".
+                                LOG (timestamp():clock + "," + DistanceToTarget + "," + altitude + "," + ship:verticalspeed + "," + airspeed + "," + LngLatErrorList[0] + "," + LngLatErrorList[1] + "," + vang(ship:facing:forevector, velocity:surface) + "," + (100 * throttle) + "," + (100 * (LFShip / LFShipCap)) + "," + (ship:mass * 1000) + "," + RadarAlt) to "0:/LandingData.csv".
                             }
                         }
                         else {
-                            LOG ("Time: " + timestamp():clock + "   Dist: " + round(DistanceToTarget, 3) + "km   Alt: " + round(altitude) + "m   Vert Speed: " + round(ship:verticalspeed,1) + "m/s   Airspeed: " + round(airspeed, 1) + "m/s   Trk/X-Trk Error: " + round((LngLatErrorList[0] - LandingOffset) / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km") to "0:/FlightData.txt".
+                            LOG ("Time: " + timestamp():clock + "   Dist: " + round(DistanceToTarget, 3) + "km   Alt: " + round(altitude) + "m   Vert Speed: " + round(ship:verticalspeed,1) + "m/s   Airspeed: " + round(airspeed, 1) + "m/s   Trk/X-Trk Error: " + round(LngLatErrorList[0] / 1000, 3) + "km  " + round((LngLatErrorList[1] / 1000), 3) + "km") to "0:/FlightData.txt".
                             LOG ("                 Actual AoA: " + round(vang(ship:facing:forevector, velocity:surface), 1) + "°   Throttle: " + (100 * throttle) + "%   Battery: " + round(100 * (ship:electriccharge / ELECcap), 2) + "%   Mass: " + round(ship:mass * 1000, 3) + "kg") to "0:/FlightData.txt".
                             LOG ("                 Radar Altitude: " + round(RadarAlt, 1) + "m") to "0:/FlightData.txt".
                             LOG "" to "0:/FlightData.txt".
-                            LOG (timestamp():clock + "," + DistanceToTarget + "," + altitude + "," + ship:verticalspeed + "," + airspeed + "," + (LngLatErrorList[0] - LandingOffset) + "," + LngLatErrorList[1] + "," + vang(ship:facing:forevector, velocity:surface) + "," + (100 * throttle) + "," + (100 * (ship:electriccharge / ELECcap)) + "," + (ship:mass * 1000) + "," + RadarAlt) to "0:/LandingData.csv".
+                            LOG (timestamp():clock + "," + DistanceToTarget + "," + altitude + "," + ship:verticalspeed + "," + airspeed + "," + LngLatErrorList[0] + "," + LngLatErrorList[1] + "," + vang(ship:facing:forevector, velocity:surface) + "," + (100 * throttle) + "," + (100 * (ship:electriccharge / ELECcap)) + "," + (ship:mass * 1000) + "," + RadarAlt) to "0:/LandingData.csv".
                         }
                         set PrevLogTimeLanding to timestamp(time:seconds).
                     }
@@ -9123,8 +9114,8 @@ function updateCargoPage {
 function updateTower {
     if not towerPageIsRunning {
         set towerPageIsRunning to true.
-        if OLMexists() or SHIP:PARTSNAMED("SLE.SS.OLP"):length > 0 {
-            if SHIP:PARTSNAMED("SLE.SS.OLP"):length > 0 {
+        if TargetOLM or not (OLM = false) and MechaZillaShouldCatchShip {
+            if not (OLM = false) {
                 if homeconnection:isconnected {
                     if exists("0:/settings.json") {
                         set L to readjson("0:/settings.json").
@@ -9143,7 +9134,7 @@ function updateTower {
                     }
                 }
             }
-            else if Vessel("OrbitalLaunchMount"):distance < 500 {
+            else if Vessel(TargetOLM):distance < 500 {
                 if homeconnection:isconnected {
                     if exists("0:/settings.json") {
                         set L to readjson("0:/settings.json").
@@ -9226,6 +9217,7 @@ function SetPlanetData {
 
 function CheckSlope {
     parameter NoTarget.
+    set config:ipu to 2000.
     set IsLandingZoneOkay to false.
     set SuggestedLZ to landingzone.
     set OffsetTargetLat to 0.
@@ -9239,9 +9231,12 @@ function CheckSlope {
     set IsOriginalTarget to false.
     set LowestSlopeDictionary to lexicon().
     set multiplier to 2.
-
+    if NoTarget {
+        set impactpos to addons:tr:impactpos.
+        set landingzone to latlng(impactpos:lat, impactpos:lng).
+    }
     until IsLandingZoneOkay or cancelconfirmed {
-        if ClosingIsRunning or cancelconfirmed or NoTarget and iteration > 5 {
+        if ClosingIsRunning or cancelconfirmed or NoTarget and iteration > 3 {
             break.
         }
         set heightWest to latlng(landingzone:lat + OffsetTargetLat, landingzone:lng + OffsetTargetLng - StepDistance):terrainheight.
@@ -9352,16 +9347,45 @@ function CheckSlope {
         set IsOriginalTarget to true.
     }
     set LZAlt to SuggestedLZ:terrainheight.
+    set config:ipu to CPUSPEED.
     //clearscreen.
     return list(IsOriginalTarget, SuggestedLZ, DistanceFromTargetLZ, Slope, LZAlt).
 }
 
 
-function OLMexists {
+function LandAtOLM {
     list targets in shiplist.
     if shiplist:length > 0 {
+        for var in LaunchSites:keys {
+            if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(landingzone:lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(landingzone:lng, 2) {
+                set TargetOLM to var + " OrbitalLaunchMount".
+                break.
+            }
+            set TargetOLM to false.
+        }
         for x in shiplist {
-            if x:name = "OrbitalLaunchMount" {
+            if x:name = TargetOLM and ship:status = "FLYING" and airspeed < 500 {
+                set MechaZillaShouldCatchShip to true.
+                if L:haskey("ArmsHeight") {
+                    set ArmsHeight to L["ArmsHeight"].
+                }
+                else {
+                    set ArmsHeight to 86.42.
+                }
+                lock RadarAlt to altitude - ship:geoposition:terrainheight - ArmsHeight + (24.698 - ShipBottomRadarHeight).
+                set FlipAltitude to FlipAltitude + ArmsHeight.
+                when RadarAlt < 2000 then {
+                    if not (TargetOLM = false) {
+                        sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
+                        sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,97,true").
+                        sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,true").
+                        sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
+                    }
+                    else {
+                        SetRadarAltitude().
+                        set FlipAltitude to max((ship:mass / 50) * 500, 500).
+                    }
+                }
                 return true.
                 break.
             }
@@ -9433,9 +9457,14 @@ function RenameShip {
 
 function LandingZoneFinder {
     set config:ipu to 2000.
-    if setting1:text = "-0.0972,-74.5577" and ship:body = BODY("Kerbin") or setting1:text = "-6.5604,-143.95" and ship:body = BODY("Kerbin") {
-        set AvailableLandingSpots to list(true, landingzone, 0, 0).
+
+    for var in LaunchSites:keys {
+        if LaunchSites[var] = setting1:text and ship:body = BODY("Kerbin") {
+            set AvailableLandingSpots to list(true, landingzone, 0, 0).
+            break.
+        }
     }
+    if AvailableLandingSpots[2] = 0 and AvailableLandingSpots[3] = 0 {}
     else {
         set message1:text to "<b>Error: Landing Zone Slope too steep!</b>".
         set message1:style:textcolor to yellow.
@@ -9481,44 +9510,42 @@ function LandingZoneFinder {
 function CheckLZReachable {
     set LngLatErrorList to LngLatError().
     if ship:body = BODY("Kerbin") {
-        if abs(LngLatErrorList[0]) - LandingOffset > 1000 or abs(LngLatErrorList[1]) > 500 {
-            set impactpos to addons:tr:impactpos.
-            set landingzone to latlng(impactpos:lat, impactpos:lng).
-            sas on.
+        if abs(LngLatErrorList[0]) > 1000 or abs(LngLatErrorList[1]) > 500 {
             set AvailableLandingSpots to CheckSlope(1).
+            wait 0.1.
             set FindNewTarget to true.
-            sas off.
+            print AvailableLandingSpots.
             set landingzone to AvailableLandingSpots[1].
+            wait 0.1.
             addons:tr:settarget(landingzone).
             HUDTEXT("New Landing Zone Found and activated!", 10, 2, 20, green, false).
+            SetRadarAltitude().
         }
         LogToFile("Kerbin Automated Landing Activated").
     }
     else if ship:body = BODY("Duna") {
-        if abs(LngLatErrorList[0]) - LandingOffset > 1000 or abs(LngLatErrorList[1]) > 500 {
-            set impactpos to addons:tr:impactpos.
-            set landingzone to latlng(impactpos:lat, impactpos:lng).
-            sas on.
+        if abs(LngLatErrorList[0]) > 1000 or abs(LngLatErrorList[1]) > 500 {
             set AvailableLandingSpots to CheckSlope(1).
+            wait 0.1.
             set FindNewTarget to true.
-            sas off.
             set landingzone to AvailableLandingSpots[1].
+            wait 0.1.
             addons:tr:settarget(landingzone).
             HUDTEXT("New Landing Zone Found and activated!", 10, 2, 20, green, false).
+            SetRadarAltitude().
         }
         LogToFile("Duna Automated Landing Activated").
     }
     else {
-        if abs(LngLatErrorList[0]) - LandingOffset > 1000 or abs(LngLatErrorList[1]) > 500 {
-            set impactpos to addons:tr:impactpos.
-            set landingzone to latlng(impactpos:lat, impactpos:lng).
-            sas on.
+        if abs(LngLatErrorList[0]) > 1000 or abs(LngLatErrorList[1]) > 500 {
             set AvailableLandingSpots to CheckSlope(1).
+            wait 0.1.
             set FindNewTarget to true.
-            sas off.
             set landingzone to AvailableLandingSpots[1].
+            wait 0.1.
             addons:tr:settarget(landingzone).
             HUDTEXT("New Landing Zone Found and activated!", 10, 2, 20, green, false).
+            SetRadarAltitude().
         }
         LogToFile("Automated Landing Activated").
     }
@@ -9544,15 +9571,21 @@ function updateManeuver {
         }
         if hastarget and TargetSelected and ManeuverPicker:text = "<b><color=white>Auto-Dock</color></b>" {
             if target:distance < 2000 {
-                set maneuver3label1:text to "<b>Distance:  </b>" + round((target:dockingports[0]:nodeposition - ship:dockingports[0]:nodeposition):mag, 2) + "m".
-                set maneuver3label2:text to "<b>Rel. Velocity:  </b>" + round((target:velocity:orbit - ship:velocity:orbit):mag, 2) + "m/s".
+                set maneuver3label1:text to "<b>Distance:  </b><color=yellow>" + round((target:dockingports[0]:nodeposition - ship:dockingports[0]:nodeposition):mag, 2) + "m</color>".
+                set maneuver3label2:text to "<b>Rel. Velocity:  </b><color=yellow>" + round((target:velocity:orbit - ship:velocity:orbit):mag, 2) + "m/s</color>".
                 set maneuver3label3:text to "".
             }
             else {
-                set maneuver3label1:text to "<b>Distance:  </b>" + round(target:distance, 2) + "m".
-                set maneuver3label2:text to "<b>Rel. Velocity:  </b>" + round((target:velocity:orbit - ship:velocity:orbit):mag, 2) + "m/s".
+                set maneuver3label1:text to "<b>Distance:  </b><color=yellow>" + round(target:distance, 2) + "m</color>".
+                set maneuver3label2:text to "<b>Rel. Velocity:  </b><color=yellow>" + round((target:velocity:orbit - ship:velocity:orbit):mag, 2) + "m/s</color>".
                 set maneuver3label3:text to "".
             }
+        }
+        else if hastarget and ManeuverPicker:text = "<b><color=white>Align Planes</color></b>" {
+            set maneuver2label1:text to "<b>Target:  </b><color=yellow>" + target:name + "</color>".
+            set maneuver3label1:text to "<b>Target Orbit:  </b>" + round(target:apoapsis / 1000, 1) + "km x " + round(target:periapsis / 1000, 1) + "km".
+            set maneuver3label2:text to "<b>                        Rel. Inclination:  </b><color=yellow>" + round(relative_inc(ship:orbit, target:orbit), 2) + "°</color>".
+            set maneuver3label3:text to "".
         }
         set ManeuverPageIsRunning to false.
     }
@@ -9868,3 +9901,25 @@ function CorrectBodyRotation {
     parameter time.
     return time * 360 / body:rotationperiod.
 }
+
+
+function normal {
+    parameter obt_in.
+    local lan is obt_in:lan.
+    local inc is obt_in:inclination.
+    local an_nrm is lookdirup(solarprimevector, V(0,1,0)) * R(0, -lan, -inc).
+    return an_nrm:topvector.
+}
+
+
+function relative_asc_node {
+    parameter ref_obt, test_obt.
+    return vcrs(normal(test_obt), normal(ref_obt)):normalized.
+}
+
+
+function relative_inc {
+    parameter ref_obt, test_obt.
+    return vang(normal(test_obt), normal(ref_obt)).
+}
+

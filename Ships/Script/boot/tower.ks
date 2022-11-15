@@ -1,19 +1,16 @@
+
+
 //------------Find Parts--------------//
 
 
-set OrbitalLaunchMount to SHIP:PARTSNAMED("SLE.SS.OLP").
-if OrbitalLaunchMount:length = 0 {
-    set OrbitalLaunchMount to SHIP:PARTSNAMED("SLE.SS.OLP (OrbitalLaunchMount)")[0].
-}
-else {
-    set OrbitalLaunchMount to OrbitalLaunchMount[0].
-}
-set TowerBase to SHIP:PARTSNAMED("SLE.SS.OLIT.Base")[0].
-set TowerCore to SHIP:PARTSNAMED("SLE.SS.OLIT.Core")[0].
-Set TowerTop to SHIP:PARTSNAMED("SLE.SS.OLIT.Top")[0].
-Set Mechazilla to SHIP:PARTSNAMED("SLE.SS.OLIT.MZ")[0].
+set OLM to ship:partstitled("Starship Orbital Launch Mount")[0].
+set TowerBase to ship:partstitled("Starship Orbital Launch Integration Tower Base")[0].
+set TowerCore to ship:partstitled("Starship Orbital Launch Integration Tower Core")[0].
+Set TowerTop to ship:partstitled("Starship Orbital Launch Integration Tower Rooftop")[0].
+Set Mechazilla to ship:partsnamed("SLE.SS.OLIT.MZ")[0].
 set config:ipu to 500.
 set PrevTime to time:seconds.
+set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
 clearscreen.
 
 
@@ -91,6 +88,15 @@ print "Stabilizers: " + NrforStabilizers.
 
 
 clearscreen.
+if ship:partstitled("Donnager MK-1 Main Body"):length = 0 {
+    print "No Ship Detected..".
+    for var in LaunchSites:keys {
+        if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(ship:geoposition:lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(ship:geoposition:lng, 2) {
+            set ship:name to var + " OrbitalLaunchMount".
+            break.
+        }
+    }
+}
 print "Tower Nominal Operation, awaiting command..".
 
 //print Mechazilla:getmodulebyindex(1).  // vertical movement
@@ -144,7 +150,7 @@ until False {
         else {
             set command to RECEIVED:CONTENT.
         }
-
+        print timestamp(time:seconds):full + "   " + received:content.
         if command = "MechazillaHeight" {
             MechazillaHeight(parameter1, parameter2).
         }
@@ -179,9 +185,15 @@ until False {
 
 
 function LiftOff {
-    //SHIP:PARTSNAMED("SLE.SS.OLP")[0]:getmodule("LaunchClamp"):DoAction("release clamp", true).
+    //OLM:getmodule("LaunchClamp"):DoAction("release clamp", true).
     wait 0.1.
-    set ship:name to "OrbitalLaunchMount".
+    for var in LaunchSites:keys {
+        if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(ship:geoposition:lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(ship:geoposition:lng, 2) {
+            set ship:name to var + " OrbitalLaunchMount".
+            break.
+        }
+        set ship:name to "OrbitalLaunchMount".
+    }
     wait 5.
     MechazillaPushers("0", "0.2", "12", "true").
     MechazillaHeight("6.5", "0.5").
@@ -266,15 +278,15 @@ function EmergencyStop {
 function ToggleReFueling {
     parameter ReFueling.
     if Refueling = "true" {
-        OrbitalLaunchMount:getmodulebyindex(3):DoAction("start fueling", true).
-        if OrbitalLaunchMount:getmodulebyindex(3):getfield("generator") = "Off" {
-            OrbitalLaunchMount:getmodulebyindex(3):DoAction("toggle generator", true).
+        OLM:getmodulebyindex(3):DoAction("start fueling", true).
+        if OLM:getmodulebyindex(3):getfield("generator") = "Off" {
+            OLM:getmodulebyindex(3):DoAction("toggle generator", true).
         }
     }
     else {
-        OrbitalLaunchMount:getmodulebyindex(3):DoAction("stop fueling", true).
-        if OrbitalLaunchMount:getmodulebyindex(3):getfield("generator") = "Nominal" {
-            OrbitalLaunchMount:getmodulebyindex(3):DoAction("toggle generator", true).
+        OLM:getmodulebyindex(3):DoAction("stop fueling", true).
+        if OLM:getmodulebyindex(3):getfield("generator") = "Nominal" {
+            OLM:getmodulebyindex(3):DoAction("toggle generator", true).
         }
     }
 }
