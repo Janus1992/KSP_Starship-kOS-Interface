@@ -38,9 +38,9 @@ set LastPingReceivedRealTime to 0.
 until false {
     until not core:messages:empty {
         clearscreen.
-        if min(time:seconds - LastPingReceived, kuniverse:realtime - LastPingReceivedRealTime) > 5 and not (LastPingReceived = 0) and kuniverse:timewarp:warp = 0 {
+        if min(time:seconds - LastPingReceived, kuniverse:realtime - LastPingReceivedRealTime) > 2.5 and not (LastPingReceived = 0) and kuniverse:timewarp:warp = 0 {
             wait 1.
-            if not (core:messages:empty) or min(time:seconds - LastPingReceived, kuniverse:realtime - LastPingReceivedRealTime) < 5 {}
+            if not (core:messages:empty) or min(time:seconds - LastPingReceived, kuniverse:realtime - LastPingReceivedRealTime) < 2.5 {}
             else {
                 sas on.
                 print "Status: Rebooting Main CPU..".

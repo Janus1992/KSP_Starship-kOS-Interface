@@ -1,3 +1,8 @@
+# V1.0.6a (2022-11-18)
+- Code cleanup (performburn function).
+- Small bugfixes in many items.
+- landing zone gets the slope checked again (turned that off by accident).
+
 # V1.0.6 (2022-11-15)
 - Better use of the maneuver page:
     - "Align Planes" now shows target, its orbit and the relative inclination.

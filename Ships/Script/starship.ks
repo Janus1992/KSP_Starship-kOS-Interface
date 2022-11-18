@@ -88,7 +88,7 @@ set AbortInProgress to false.
 set AbortComplete to false.
 set LaunchComplete to false.
 set LandSomewhereElse to false.
-set MechaZillaShouldCatchShip to false.
+set MechaZillaExists to false.
 set currentdeltav to 0.
 set ShipMass to 0.
 set FuelMass to 1.
@@ -104,7 +104,6 @@ set currVel to SHIP:VELOCITY:ORBIT.
 set currTime to time:seconds.
 set prevVel to SHIP:VELOCITY:ORBIT.
 set prevACCTime to time:seconds.
-set prevTime to time:seconds.
 set TimeSinceLastFullBGU to time:seconds.
 set prevFanTime to time:seconds.
 set prevTargetFindingTime to time:seconds - 4.
@@ -620,7 +619,7 @@ set g_close:onclick to {
         set ClosingIsRunning to true.
         set textbox:style:bg to "starship_img/starship_main_square_bg".
         Droppriority().
-        GoHome().
+        ShowHomePage().
         set message1:text to "<b><color=red>Are you sure you want to Quit?</color></b>".
         set message2:text to "<b><color=yellow>The Interface will shut down..</color></b>".
         set message3:text to "<b>Quit <color=white>or</color> Cancel?</b><color=white><size=14>  (Restart: Toggle kOS Power in Tank Section)</size></color>".
@@ -705,27 +704,19 @@ mainbox:showonly(flightstack).
 set settingsbutton:ontoggle to {
     parameter toggle.
     if toggle {
+        set cargobutton:pressed to false.
+        set attitudebutton:pressed to false.
+        set statusbutton:pressed to false.
+        set orbitbutton:pressed to false.
+        set enginebutton:pressed to false.
+        set crewbutton:pressed to false.
+        set towerbutton:pressed to false.
+        set maneuverbutton:pressed to false.
         if InhibitPages = false {
-            set cargobutton:pressed to false.
-            set attitudebutton:pressed to false.
-            set statusbutton:pressed to false.
-            set orbitbutton:pressed to false.
-            set enginebutton:pressed to false.
-            set crewbutton:pressed to false.
-            set towerbutton:pressed to false.
-            set maneuverbutton:pressed to false.
             mainbox:showonly(settingsstack).
         }
         else {
             set settingsbutton:pressed to false.
-            set cargobutton:pressed to false.
-            set attitudebutton:pressed to false.
-            set statusbutton:pressed to false.
-            set orbitbutton:pressed to false.
-            set enginebutton:pressed to false.
-            set crewbutton:pressed to false.
-            set towerbutton:pressed to false.
-            set maneuverbutton:pressed to false.
         }
     }
     else {mainbox:showonly(flightstack).}
@@ -734,27 +725,19 @@ set settingsbutton:ontoggle to {
 set cargobutton:ontoggle to {
     parameter toggle.
     if toggle {
+        set settingsbutton:pressed to false.
+        set attitudebutton:pressed to false.
+        set statusbutton:pressed to false.
+        set orbitbutton:pressed to false.
+        set enginebutton:pressed to false.
+        set crewbutton:pressed to false.
+        set towerbutton:pressed to false.
+        set maneuverbutton:pressed to false.
         if InhibitPages = false {
-            set settingsbutton:pressed to false.
-            set attitudebutton:pressed to false.
-            set statusbutton:pressed to false.
-            set orbitbutton:pressed to false.
-            set enginebutton:pressed to false.
-            set crewbutton:pressed to false.
-            set towerbutton:pressed to false.
-            set maneuverbutton:pressed to false.
             mainbox:showonly(cargostack).
         }
         else {
             set cargobutton:pressed to false.
-            set settingsbutton:pressed to false.
-            set attitudebutton:pressed to false.
-            set statusbutton:pressed to false.
-            set orbitbutton:pressed to false.
-            set enginebutton:pressed to false.
-            set crewbutton:pressed to false.
-            set towerbutton:pressed to false.
-            set maneuverbutton:pressed to false.
         }
     }
     else {mainbox:showonly(flightstack).}
@@ -763,27 +746,19 @@ set cargobutton:ontoggle to {
 set attitudebutton:ontoggle to {
     parameter toggle.
     if toggle {
+        set settingsbutton:pressed to false.
+        set cargobutton:pressed to false.
+        set statusbutton:pressed to false.
+        set orbitbutton:pressed to false.
+        set enginebutton:pressed to false.
+        set crewbutton:pressed to false.
+        set towerbutton:pressed to false.
+        set maneuverbutton:pressed to false.
         if InhibitPages = false {
-            set settingsbutton:pressed to false.
-            set cargobutton:pressed to false.
-            set statusbutton:pressed to false.
-            set orbitbutton:pressed to false.
-            set enginebutton:pressed to false.
-            set crewbutton:pressed to false.
-            set towerbutton:pressed to false.
-            set maneuverbutton:pressed to false.
             mainbox:showonly(attitudestack).
         }
         else {
             set attitudebutton:pressed to false.
-            set settingsbutton:pressed to false.
-            set cargobutton:pressed to false.
-            set statusbutton:pressed to false.
-            set orbitbutton:pressed to false.
-            set enginebutton:pressed to false.
-            set crewbutton:pressed to false.
-            set towerbutton:pressed to false.
-            set maneuverbutton:pressed to false.
         }
     }
     else {mainbox:showonly(flightstack).}
@@ -1696,11 +1671,11 @@ set quickattitude2:onclick to {
                     set flapcargomasscorr to 0.75 * flapcargomasscorr.
                 }
                 lock steering to AttitudeSteering().
-                wait until quickattitude1:pressed or RadarAlt < 10000.
+                until quickattitude1:pressed or RadarAlt < 10000 {}
                 if RadarAlt < 10000 {
                     unlock steering.
                     set quickattitude1:pressed to true.
-                    GoHome().
+                    ShowHomePage().
                     sas on.
                     ReEntryAndLand().
                 }
@@ -1805,9 +1780,7 @@ function AttitudeSteering {
             set message3:style:textcolor to white.
         }
     }
-    if not BGUisRunning {
-        BackGroundUpdate().
-    }
+    BackGroundUpdate().
     return lookdirup(result:vector, vxcl(velocity:surface, result:vector)).
 }
 
@@ -2053,8 +2026,7 @@ set quickstatus1:ontoggle to {
             }
         }
         else {
-            set CargoDuringReEntry to CargoMass.
-            set flapcargomasscorr to round(10 - ((CargoDuringReEntry / 10000) * 10)).
+            set flapcargomasscorr to round(10 - ((CargoMass / 10000) * 10)).
             if flapcargomasscorr < 0 {
                 set flapcargomasscorr to 0.
             }
@@ -3683,7 +3655,7 @@ set maneuver3button:onclick to {
                 set maneuver3button:enabled to false.
                 set ManeuverPicker:enabled to false.
                 set TargetPicker:enabled to false.
-                GoHome().
+                ShowHomePage().
                 sas off.
                 set Continue to false.
                 if KUniverse:activevessel = vessel(ship:name) {}
@@ -3731,7 +3703,7 @@ set maneuver3button:onclick to {
                 PerformBurn(eta:periapsis, ProgradeVelocity, 0, 0, "Circ").
             }
             else {
-                GoHome().
+                ShowHomePage().
                 set message1:text to "<b><color=yellow>Can't circularize when escaping..</color></b>".
                 set textbox:style:bg to "starship_img/starship_main_square_bg".
                 wait 3.
@@ -3756,7 +3728,7 @@ set maneuver3button:onclick to {
                 PerformBurn(eta:apoapsis, ProgradeVelocity, 0, 0, "Circ").
             }
             else {
-                GoHome().
+                ShowHomePage().
                 set message1:text to "<b><color=yellow>Can't circularize when escaping..</color></b>".
                 set textbox:style:bg to "starship_img/starship_main_square_bg".
                 wait 3.
@@ -3772,10 +3744,10 @@ set maneuver3button:onclick to {
                 if not (KUniverse:activevessel = vessel(ship:name)) {
                     set KUniverse:activevessel to vessel(ship:name).
                 }
-                PerformBurn(0, 0, 0, 1, "Execute").
+                PerformBurn(nextnode:eta, nextnode:prograde, nextnode:normal, nextnode:radialout, "Execute").
             }
             else {
-                GoHome().
+                ShowHomePage().
                 set message1:text to "<b><color=yellow>No Maneuver Node found..</color></b>".
                 set textbox:style:bg to "starship_img/starship_main_square_bg".
                 wait 3.
@@ -3794,7 +3766,7 @@ set maneuver3button:onclick to {
             }
 
             if not (hastarget) {
-                GoHome().
+                ShowHomePage().
                 set message1:text to "<b><color=yellow>Select a Target first..</color></b>".
                 set textbox:style:bg to "starship_img/starship_main_square_bg".
                 wait 3.
@@ -3914,9 +3886,7 @@ function AutoDockSteering {
     set RelativeVelocityZ to vdot(facing:topvector, RelativeVelocityVector).
 
     rcs on.
-    if not BGUisRunning {
-        BackGroundUpdate().
-    }
+    BackGroundUpdate().
 
     //clearscreen.
     //print "Rel Vel x: " + round(RelativeVelocityX,2).
@@ -4113,7 +4083,7 @@ set launchbutton:ontoggle to {
                         set Launch180 to false.
                     }
                     if CargoMass < MaxCargoToOrbit + 1 and cargo1text:text = "Closed" {
-                        GoHome().
+                        ShowHomePage().
                         InhibitButtons(0, 0, 0).
                         if ShipsInOrbit():length > 0 {
                             set TargetShip to false.
@@ -4257,7 +4227,7 @@ set launchbutton:ontoggle to {
 
                                 launchWindow(TargetShip, 0).
                                 if launchWindowList[0] = -1 {
-                                    GoHome().
+                                    ShowHomePage().
                                     set message1:text to "<b>No close encounters found (10 days)..</b>".
                                     set message2:text to "<b>Try again later..</b>".
                                     set message3:text to "".
@@ -4317,7 +4287,7 @@ set launchbutton:ontoggle to {
                         }
                     }
                     else {
-                        GoHome().
+                        ShowHomePage().
                         if CargoMass > MaxCargoToOrbit + 1 {
                             LogToFile("Launch cancelled due to too much Cargo").
                             set message1:text to "<b>Error: Over Max Payload.. </b>(" + round(CargoMass) + " kg)".
@@ -4344,7 +4314,7 @@ set launchbutton:ontoggle to {
                     Launch().
                 }
                 else {
-                    GoHome().
+                    ShowHomePage().
                     LogToFile("Launch cancelled due to conditions not fulfilled").
                     set message1:text to "<b>Error: Conditions not fulfilled..</b>".
                     set message2:text to "<b>Launch cancelled.</b>".
@@ -4361,7 +4331,7 @@ set launchbutton:ontoggle to {
                 Launch().
             }
             else {
-                GoHome().
+                ShowHomePage().
                 LogToFile("Launch cancelled due to conditions not fulfilled").
                 if Boosterconnected {
                     set message1:text to "<b>Error: You're not on Kerbin..</b>".
@@ -4392,7 +4362,7 @@ set landbutton:ontoggle to {
     if not LandButtonIsRunning {
         set config:ipu to 2000.
         if ShipIsDocked {
-            GoHome().
+            ShowHomePage().
             set textbox:style:bg to "starship_img/starship_main_square_bg".
             set message1:text to "<b><color=yellow>Ship is still docked!</color></b>".
             set message2:text to "".
@@ -4412,10 +4382,10 @@ set landbutton:ontoggle to {
         set textbox:style:bg to "starship_img/starship_main_square_bg".
         if click {
             if ship:body = BODY("Kerbin") or ship:body = BODY("Duna") {
-                GoHome().
+                ShowHomePage().
                 SetPlanetData().
                 if CargoMass > MaxReEntryCargoKerbin and CargoCG < 125 and ship:body = BODY("Kerbin") or CargoMass > MaxReEntryCargoDuna and ship:body = BODY("Duna") {
-                    GoHome().
+                    ShowHomePage().
                     set textbox:style:bg to "starship_img/starship_main_square_bg".
                     LogToFile("De-Orbit cancelled due to Cargo Overload").
                     set message1:text to "<b>Error: Too much Cargo onboard!</b>".
@@ -4431,7 +4401,7 @@ set landbutton:ontoggle to {
                     ClearInterfaceAndSteering().
                 }
                 else if CargoCG > 125 and CargoMass < MaxReEntryCargoKerbin and ship:body = BODY("Kerbin") {
-                    GoHome().
+                    ShowHomePage().
                     set textbox:style:bg to "starship_img/starship_main_square_bg".
                     LogToFile("De-Orbit cancelled due to Cargo Center of Gravity").
                     set message1:text to "<b>Error: Center of Gravity too far forward!</b>".
@@ -4442,7 +4412,7 @@ set landbutton:ontoggle to {
                     ClearInterfaceAndSteering().
                 }
                 else if CargoCG > 125 and CargoMass > MaxReEntryCargoKerbin and ship:body = BODY("Kerbin") {
-                    GoHome().
+                    ShowHomePage().
                     set textbox:style:bg to "starship_img/starship_main_square_bg".
                     LogToFile("De-Orbit cancelled due to Cargo Overload").
                     set message1:text to "<b>Error: Too much Cargo onboard!</b>".
@@ -4453,7 +4423,7 @@ set landbutton:ontoggle to {
                     ClearInterfaceAndSteering().
                 }
                 else if cargo1text:text = "Open" {
-                    GoHome().
+                    ShowHomePage().
                     set textbox:style:bg to "starship_img/starship_main_square_bg".
                     LogToFile("De-Orbit cancelled due to orbit requirements not fulfilled").
                     set message1:text to "<b>Error: Cargo Door still open!</b>".
@@ -4485,9 +4455,7 @@ set landbutton:ontoggle to {
                             ClearInterfaceAndSteering().
                             return.
                         }
-                        //set JustCheckingWhatTheErrorIs to true.
                         set LngLatErrorList to LngLatError().
-                        //set JustCheckingWhatTheErrorIs to false.
                         if ship:body = BODY("Kerbin") {
                             set LongitudinalAcceptanceLimit to 50000.
                             set LatitudinalAcceptanceLimit to 20000.
@@ -4497,7 +4465,7 @@ set landbutton:ontoggle to {
                             set LatitudinalAcceptanceLimit to 15000.
                         }
                         if abs(LngLatErrorList[0]) > LongitudinalAcceptanceLimit or abs(LngLatErrorList[1]) > LatitudinalAcceptanceLimit {
-                            GoHome().
+                            ShowHomePage().
                             set message1:text to "<b>Landingzone out of Range..   Slope:  </b>" + round(AvailableLandingSpots[3], 1) + "°".
                             set message2:text to "<b>Override Re-Entry?</b> (" + round(LngLatErrorList[0] / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km)".
                             if quicksetting1:pressed {
@@ -4522,14 +4490,14 @@ set landbutton:ontoggle to {
                             }
                         }
                         else {
-                            GoHome().
+                            ShowHomePage().
                             set message1:text to aoa + "° <b>AoA Re-Entry</b>".
                             for var in LaunchSites:keys {
                                 if LaunchSites[var] = setting1:text and ship:body = BODY("Kerbin") {
                                     set message2:text to "<b>Landing Zone:</b>  <color=yellow>" + var + "</color>".
                                     break.
                                 }
-                                set message2:text to "<b>Landing Zone:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>   <b>Slope:</b> " + round(AvailableLandingSpots[3], 1) + "°".
+                                set message2:text to "<b>Landing Zone:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>   <b>Slope:</b> <color=yellow>" + round(AvailableLandingSpots[3], 1) + "°</color>".
                             }
                             set message1:style:textcolor to white.
                             set message2:style:textcolor to white.
@@ -4557,15 +4525,15 @@ set landbutton:ontoggle to {
                             LogToFile("Land Function cancelled due to ship:status").
                             ClearInterfaceAndSteering().
                         }
-                        else if apoapsis > 100000 and ship:body = BODY("Kerbin") or periapsis < 70000 and ship:body = BODY("Kerbin") or apoapsis > 75000 and ship:body = BODY("Duna") or periapsis < 50000 and ship:body = BODY("Duna") or abs(ship:orbit:inclination) + 2.5 < abs(setting1:text:split(",")[0]:toscalar(0)) {
-                            GoHome().
+                        else if apoapsis > 300000 or periapsis < 70000 and ship:body = BODY("Kerbin") or periapsis < 50000 and ship:body = BODY("Duna") or abs(ship:orbit:inclination) + 2.5 < abs(setting1:text:split(",")[0]:toscalar(0)) {
+                            ShowHomePage().
                             LogToFile("De-Orbit cancelled due to orbit requirements not fulfilled").
                             set message1:text to "<b>Automatic De-Orbit Requirements:</b>".
                             if ship:body = BODY("Kerbin") {
-                                set message2:text to "<b>Ap/Pe 70-100km   LZ latitude < Inclination</b>".
+                                set message2:text to "<b>Ap/Pe 70-300km   LZ latitude < Inclination</b>".
                             }
                             if ship:body = BODY("Duna") {
-                                set message2:text to "<b>Ap/Pe 50-75km   LZ latitude < Inclination</b>".
+                                set message2:text to "<b>Ap/Pe 50-300km   LZ latitude < Inclination</b>".
                             }
                             set message3:text to "<b>Modify orbit or perform manual de-orbit..</b>".
                             set message2:style:textcolor to yellow.
@@ -4574,13 +4542,18 @@ set landbutton:ontoggle to {
                             ClearInterfaceAndSteering().
                         }
                         else {
-                            set message1:text to "<b>Target Landing Zone:</b>".
+                            LandingZoneFinder().
+                            if LZFinderCancelled {
+                                ClearInterfaceAndSteering().
+                                return.
+                            }
+                            set message1:text to "<b>Automatic De-Orbit & Land at:</b>".
                             for var in LaunchSites:keys {
                                 if LaunchSites[var] = setting1:text and ship:body = BODY("Kerbin") {
                                     set message2:text to "<b><color=yellow>" + var + "</color></b>".
                                     break.
                                 }
-                                set message2:text to "<b>Latitude/Longitude:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>".
+                                set message2:text to "<b>Landing Zone:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>   <b>Slope:</b> <color=yellow>" + round(AvailableLandingSpots[3], 1) + "°</color>".
                             }
                             set message3:style:textcolor to cyan.
                             set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
@@ -4596,7 +4569,7 @@ set landbutton:ontoggle to {
                             set execute:text to "<b>EXECUTE</b>".
                             set message3:text to "".
                             if LFShip > FuelVentCutOffValue {
-                                GoHome().
+                                ShowHomePage().
                                 set drainBegin to LFShip.
                                 set landlabel:style:textcolor to white.
                                 set message1:text to "<b>Required Fuel Venting:</b>  " + timeSpanCalculator((LFShip - FuelVentCutOffValue) / VentRate).
@@ -4652,7 +4625,6 @@ set landbutton:ontoggle to {
                                         ShutDownAllEngines().
                                         HideEngineToggles(0).
                                         LogToFile("Venting stopped by user").
-                                        set BGUisRunning to false.
                                         set runningprogram to "None".
                                         ClearInterfaceAndSteering().
                                     }
@@ -4671,7 +4643,7 @@ set landbutton:ontoggle to {
                                     set KUniverse:activevessel to vessel(ship:name).
                                     wait 3.
                                 }
-                                GoHome().
+                                ShowHomePage().
                                 LandingZoneFinder().
                                 if LZFinderCancelled {
                                     ClearInterfaceAndSteering().
@@ -4685,12 +4657,24 @@ set landbutton:ontoggle to {
                                 set message3:text to "".
                                 set message1:style:textcolor to white.
                                 set message2:style:textcolor to white.
-                                set TimeToDeOrbitBurn to CalculateDeOrbitBurn().
-                                if TimeToDeOrbitBurn = 0 {
+                                if ship:orbit:inclination > 60 and ship:orbit:inclination < 120 or ship:orbit:inclination < -60 and ship:orbit:inclination > -120 {
+                                    LogToFile("Automatic De-Orbit burn not possible, inclination too high. Please de-orbit manually..").
+                                    set message1:text to "<b>Error: Inclination too high.. (> ±60°)</b>".
+                                    set message1:style:textcolor to yellow.
+                                    set message2:text to "<b>Please De-orbit manually..</b>".
+                                    set message2:style:textcolor to yellow.
+                                    set message3:text to "".
+                                    set textbox:style:bg to "starship_img/starship_main_square_bg".
+                                    wait 3.
                                     ClearInterfaceAndSteering().
                                     return.
                                 }
-                                set deorbitburnstarttime to timestamp(time:seconds + TimeToDeOrbitBurn).
+                                set TimeToBurn to CalculateDeOrbitBurn(10).
+                                if TimeToBurn = 0 {
+                                    ClearInterfaceAndSteering().
+                                    return.
+                                }
+                                set deorbitburnstarttime to timestamp(time:seconds + TimeToBurn).
                                 set ProgradeVelocity to DeOrbitVelocity().
                                 if ProgradeVelocity = 0 {
                                     set message1:text to "<b>Error: Not passing overhead the LZ..</b>".
@@ -4703,174 +4687,21 @@ set landbutton:ontoggle to {
                                     ClearInterfaceAndSteering().
                                     return.
                                 }
-                                if ProgradeVelocity < CutOff + 1 and ProgradeVelocity > StartPoint - 5 {
-                                    mainbox:showonly(flightstack).
-                                    set settingsbutton:pressed to false.
-                                    set cargobutton:pressed to false.
-                                    set statusbutton:pressed to false.
-                                    set orbitbutton:pressed to false.
-                                    set attitudebutton:pressed to false.
-                                    set enginebutton:pressed to false.
-                                    if (landingzone:position - addons:tr:impactpos:position):mag > ErrorTolerance {
-                                        GoHome().
-                                        LogToFile("Automatic De-Orbit burn not possible, target too far away from estimated impact").
-                                        set message1:text to "<b>Error: Impact Position out of tolerances..</b>".
-                                        set message1:style:textcolor to yellow.
-                                        set message2:text to "<b>De-orbit manually or try again..</b>".
-                                        set message2:style:textcolor to yellow.
-                                        set message3:text to "".
-                                        set textbox:style:bg to "starship_img/starship_main_square_bg".
-                                        wait 3.
-                                        ClearInterfaceAndSteering().
-                                        return.
-                                    }.
-                                    set message1:text to "<b>Suggested De-Orbit Burn and Re-Entry:</b>".
-                                    for var in LaunchSites:keys {
-                                        if LaunchSites[var] = setting1:text and ship:body = BODY("Kerbin") {
-                                            set message2:text to "<b>@:</b>  " + deorbitburnstarttime:hour + ":" + deorbitburnstarttime:minute + ":" + deorbitburnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(ProgradeVelocity, 1) + "m/s   <b>LZ: <color=green>" + var +  "</color></b>".
-                                            break.
-                                        }
-                                        set message2:text to "<b>@:</b>  " + deorbitburnstarttime:hour + ":" + deorbitburnstarttime:minute + ":" + deorbitburnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(ProgradeVelocity, 1) + "m/s   <b>LZ:</b>  <size=17><color=yellow>" + landingzone:lat + "," + landingzone:lng + "</color></size>".
-                                    }
-                                    if quicksetting1:pressed {
-                                        set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
-                                    }
-                                    else {
-                                        set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
-                                    }
-                                    set message3:style:textcolor to cyan.
-                                    set deorbitburn to node(deorbitburnstarttime, 0, 0, ProgradeVelocity).
-                                    add deorbitburn.
-                                    set deorbitburnstart to deorbitburn:deltav.
-                                    InhibitButtons(0, 0, 0).
-                                    if confirm() {
-                                        set deorbitAccel to 40/ship:mass.
-                                        set BurnDuration to deorbitburn:deltav:mag/deorbitAccel.
-                                        if deorbitburn:eta < 0.5 * BurnDuration + 10 {
-                                            GoHome().
-                                            LogToFile("Stopping De-Orbit Burn due to wrong orientation").
-                                            set textbox:style:bg to "starship_img/starship_main_square_bg".
-                                            set message1:text to "<b>De-Orbit Burn Cancelled.</b>".
-                                            set message1:style:textcolor to yellow.
-                                            set message2:text to "<b>Planned Burn is too close to perform..</b>".
-                                            set message2:style:textcolor to yellow.
-                                            set message3:text to "".
-                                            wait 3.
-                                            ClearInterfaceAndSteering().
-                                            return.
-                                        }
-                                        LogToFile("Re-orienting for De-Orbit").
-                                        InhibitButtons(1, 1, 0).
-                                        ShutDownAllEngines().
-                                        if KUniverse:activevessel = vessel(ship:name) {}
-                                        else {
-                                            set KUniverse:activevessel to vessel(ship:name).
-                                        }
-                                        set landlabel:style:textcolor to green.
-                                        set message3:style:textcolor to white.
-                                        set runningprogram to "De-Orbit".
-                                        HideEngineToggles(1).
-                                        rcs on.
-                                        Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
-                                        Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
-                                        sas off.
-                                        rcs off.
-                                        lock steering to lookdirup(deorbitburn:burnvector, ship:facing:topvector).
-                                        if quicksetting1:pressed and deorbitburn:eta - 0.5 * BurnDuration > 60 {
-                                            set kuniverse:timewarp:warp to 4.
-                                        }
-                                        if quicksetting1:pressed and deorbitburn:eta - 0.5 * BurnDuration > 600 {
-                                            set kuniverse:timewarp:warp to 5.
-                                        }
-                                        until deorbitburn:eta < 0.5 * BurnDuration or cancelconfirmed and not ClosingIsRunning {
-                                                BackGroundUpdate().
-                                                if quicksetting1:pressed and kuniverse:timewarp:warp = 5 and deorbitburn:eta - 0.5 * BurnDuration < 900 or deorbitburn:eta - 0.5 * BurnDuration < 900 and kuniverse:timewarp:warp = 5 {
-                                                    set kuniverse:timewarp:warp to 4.
-                                                }
-                                                if deorbitburn:eta - 0.5 * BurnDuration < 75 {
-                                                    if kuniverse:timewarp:warp > 0 {
-                                                        set kuniverse:timewarp:warp to 0.
-                                                    }
-                                                    rcs on.
-                                                }
-                                                else {rcs off.}
-                                                set message1:text to "<b>Starting Burn in:</b>  " + timeSpanCalculator(deorbitburn:eta - 0.5 * BurnDuration).
-                                                set message2:text to "<b>Target Attitude:</b>    Burnvector".
-                                                set message3:text to "<b>Burn Duration:</b>      " + round(BurnDuration) + "s".
-                                        }
-                                        if KUniverse:activevessel = vessel(ship:name) {}
-                                        else {
-                                            set KUniverse:activevessel to vessel(ship:name).
-                                        }
-                                        if hasnode {
-                                            if vang(deorbitburn:burnvector, ship:facing:forevector) < 5 and cancelconfirmed = false {
-                                                LogToFile("Starting De-Orbit Burn").
-                                                until vdot(deorbitburnstart, deorbitburn:deltav) < 1 or cancelconfirmed = true and not ClosingIsRunning {
-                                                    BackGroundUpdate().
-                                                    rcs on.
-                                                    set ship:control:translation to v(0, 0, 1).
-                                                    set ship:control:rotation to v(0, 0, 0).
-                                                    if kuniverse:timewarp:warp > 0 {
-                                                        set kuniverse:timewarp:warp to 0.
-                                                    }
-                                                    set message1:text to "<b>Performing De-Orbit Burn..</b>".
-                                                    set BurnDuration to deorbitburn:deltav:mag/deorbitAccel.
-                                                    set message3:text to "<b>Burn Duration:</b>      " + round(BurnDuration) + "s".
-                                                }
-                                                remove deorbitburn.
-                                                unlock steering.
-                                                HideEngineToggles(0).
-                                                set ship:control:translation to v(0, 0, 0).
-                                                rcs off.
-                                                LogToFile("Stopping De-Orbit Burn").
-                                                if not cancelconfirmed {
-                                                    ReEntryAndLand().
-                                                }
-                                                else {
-                                                    ClearInterfaceAndSteering().
-                                                    return.
-                                                }
-                                            }
-                                            else if not cancelconfirmed {
-                                                remove deorbitburn.
-                                                unlock steering.
-                                                unlock throttle.
-                                                HideEngineToggles(0).
-                                                GoHome().
-                                                LogToFile("Stopping De-Orbit Burn due to wrong orientation").
-                                                set message1:text to "<b>De-Orbit Burn Cancelled.</b>".
-                                                set message1:style:textcolor to yellow.
-                                                set message2:text to "<b>Incorrect orientation or stopped..</b>".
-                                                set message2:style:textcolor to yellow.
-                                                set message3:text to "".
-                                                wait 3.
-                                                ClearInterfaceAndSteering().
-                                            }
-                                            else {
-                                                HideEngineToggles(0).
-                                                set ship:control:translation to v(0, 0, 0).
-                                                rcs off.
-                                                LogToFile("Stopping De-Orbit Burn due to user cancellation").
-                                                ClearInterfaceAndSteering().
-                                            }
-                                        }
-                                        else {
-                                            set ship:control:translation to v(0, 0, 0).
-                                            rcs off.
-                                            HideEngineToggles(0).
-                                            LogToFile("Stopping De-Orbit Burn due to loss of node").
-                                            ClearInterfaceAndSteering().
-                                        }
-                                    }
-                                    else {
-                                        LogToFile("Stopping De-Orbit Burn").
-                                        ClearInterfaceAndSteering().
-                                    }
-                                }
-                                else {
-                                    LogToFile("Land Function Stopped").
+                                ShowHomePage().
+                                if (landingzone:position - addons:tr:impactpos:position):mag > ErrorTolerance {
+                                    LogToFile("Automatic De-Orbit burn not possible, target too far away from estimated impact").
+                                    set message1:text to "<b>Error: Impact Position out of tolerances..</b>".
+                                    set message1:style:textcolor to yellow.
+                                    set message2:text to "<b>De-orbit manually or try again..</b>".
+                                    set message2:style:textcolor to yellow.
+                                    set message3:text to "".
+                                    set textbox:style:bg to "starship_img/starship_main_square_bg".
+                                    wait 3.
                                     ClearInterfaceAndSteering().
-                                }
+                                    return.
+                                }.
+                                PerformBurn(deorbitburnstarttime, ProgradeVelocity, 0, 0, "DeOrbit").
+                                ReEntryAndLand().
                             }
                         }
                     }
@@ -4881,10 +4712,10 @@ set landbutton:ontoggle to {
                 }
             }
             else if ship:body = BODY("Mun") or ship:body = BODY("Minmus") or ship:body = BODY("Ike") or ship:body = BODY("Gilly") {
-                GoHome().
+                ShowHomePage().
                 SetPlanetData().
                 if cargo1text:text = "Open" {
-                    GoHome().
+                    ShowHomePage().
                     LogToFile("De-Orbit cancelled due to orbit requirements not fulfilled").
                     set message1:text to "<b>Error: Cargo Door still open!</b>".
                     set message2:text to "<b>Please close the Cargo Door and try again.</b>".
@@ -4919,7 +4750,7 @@ set landbutton:ontoggle to {
                         set LongitudinalAcceptanceLimit to 50000.
                         set LatitudinalAcceptanceLimit to 50000.
                         if abs(LngLatErrorList[0]) > LongitudinalAcceptanceLimit or abs(LngLatErrorList[1]) > LatitudinalAcceptanceLimit {
-                            GoHome().
+                            ShowHomePage().
                             set message1:text to "<b>Landingzone out of Range..   Slope:  </b>" + round(AvailableLandingSpots[3], 1) + "°".
                             set message2:text to "<b>Override Re-Entry?</b> (" + round(LngLatErrorList[0] / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km)".
                             if quicksetting1:pressed {
@@ -4944,9 +4775,9 @@ set landbutton:ontoggle to {
                             }
                         }
                         else {
-                            GoHome().
+                            ShowHomePage().
                             set message1:text to "<b>Automatic De-Orbit and Landing:</b>".
-                            set message2:text to "<b>Landing Zone:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>   <b>Slope:</b> " + round(AvailableLandingSpots[3], 1) + "°".
+                            set message2:text to "<b>Landing Zone:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>   <b>Slope:</b> <color=yellow>" + round(AvailableLandingSpots[3], 1) + "°</color>".
                             set message1:style:textcolor to white.
                             set message2:style:textcolor to white.
                             set message3:style:textcolor to cyan.
@@ -4974,7 +4805,7 @@ set landbutton:ontoggle to {
                             ClearInterfaceAndSteering().
                         }
                         else if apoapsis < 0 or apoapsis > 200000 or abs(ship:orbit:inclination) + 20 < abs(setting1:text:split(",")[0]:toscalar(0)) {
-                            GoHome().
+                            ShowHomePage().
                             LogToFile("De-Orbit cancelled due to orbit requirements not fulfilled").
                             set message1:text to "<b>Automatic De-Orbit Requirements:</b>".
                             set message2:text to "<b>Max Ap 200km  &  LZ Lat. < Inclination + 20°</b>".
@@ -4985,8 +4816,13 @@ set landbutton:ontoggle to {
                             ClearInterfaceAndSteering().
                         }
                         else {
-                            set message1:text to "<b>Target Landing Zone:</b>".
-                            set message2:text to "<b>Latitude/Longitude:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>".
+                            LandingZoneFinder().
+                            if LZFinderCancelled {
+                                ClearInterfaceAndSteering().
+                                return.
+                            }
+                            set message1:text to "<b>Automatic De-Orbit & Land at:</b>".
+                            set message2:text to "<b>Landing Zone:</b>  <color=yellow>" + round(landingzone:lat, 4) + "," + round(landingzone:lng, 4) + "</color>   <b>Slope:</b> <color=yellow>" + round(AvailableLandingSpots[3], 1) + "°</color>".
                             set message3:style:textcolor to cyan.
                             set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
                             set execute:text to "<b>CONFIRM</b>".
@@ -5008,7 +4844,7 @@ set landbutton:ontoggle to {
                                 set KUniverse:activevessel to vessel(ship:name).
                                 wait 3.
                             }
-                            GoHome().
+                            ShowHomePage().
                             LandingZoneFinder().
                             if LZFinderCancelled {
                                 ClearInterfaceAndSteering().
@@ -5022,7 +4858,24 @@ set landbutton:ontoggle to {
                             set message3:text to "".
                             set message1:style:textcolor to white.
                             set message2:style:textcolor to white.
-                            set deorbitburnstarttime to timestamp(time:seconds + CalculateDeOrbitBurn()).
+                            if ship:orbit:inclination > 60 or ship:orbit:inclination < -60 {
+                                LogToFile("Automatic De-Orbit burn not possible, inclination too high. Please de-orbit manually..").
+                                set message1:text to "<b>Error: Inclination too high.. (> ±60°)</b>".
+                                set message1:style:textcolor to yellow.
+                                set message2:text to "<b>Please De-orbit manually..</b>".
+                                set message2:style:textcolor to yellow.
+                                set message3:text to "".
+                                set textbox:style:bg to "starship_img/starship_main_square_bg".
+                                wait 3.
+                                ClearInterfaceAndSteering().
+                                return.
+                            }
+                            set TimeToBurn to CalculateDeOrbitBurn(10).
+                                if TimeToBurn = 0 {
+                                    ClearInterfaceAndSteering().
+                                    return.
+                                }
+                            set deorbitburnstarttime to timestamp(time:seconds + TimeToBurn).
                             set Burnlist to DeOrbitVelocity().
                             set ProgradeVelocity to Burnlist[0].
                             set NormalVelocity to Burnlist[1].
@@ -5038,13 +4891,7 @@ set landbutton:ontoggle to {
                                 return.
                             }
                             else {
-                                mainbox:showonly(flightstack).
-                                set settingsbutton:pressed to false.
-                                set cargobutton:pressed to false.
-                                set statusbutton:pressed to false.
-                                set orbitbutton:pressed to false.
-                                set attitudebutton:pressed to false.
-                                set enginebutton:pressed to false.
+                                ShowHomePage().
                                 PerformBurn(deorbitburnstarttime, ProgradeVelocity, NormalVelocity, 0, "DeOrbit").
                                 LandwithoutAtmo().
                             }
@@ -5053,7 +4900,7 @@ set landbutton:ontoggle to {
                 }
             }
             else {
-                GoHome().
+                ShowHomePage().
                 LogToFile("Land Function Stopped").
                 set message1:text to "<b>De-Orbit & Landing Cancelled.</b>".
                 set message1:style:textcolor to yellow.
@@ -5190,7 +5037,7 @@ function LandwithoutAtmo {
             }
         }
         rcs off.
-        sas off.
+        //sas off.
         unlock throttle.
         set ship:control:neutralize to true.
         unlock steering.
@@ -5583,7 +5430,6 @@ if addons:tr:available and not startup {
         set message22:style:bg to "starship_img/starship_chip".
     }
     updatestatusbar.
-    updateCargoPage.
     if ship:status = "FLYING" and eta:apoapsis < eta:periapsis or ship:status = "SUB_ORBITAL" and eta:apoapsis < eta:periapsis {
         if ship:body = BODY("Kerbin") or ship:body = BODY("Duna") {
             Launch().
@@ -5754,7 +5600,7 @@ function Launch {
                 set message1:text to "<b>Booster Separation..</b>".
                 set message2:text to "".
                 set message3:text to "".
-                GoHome().
+                ShowHomePage().
                 wait 0.001.
                 lock throttle to 0.
                 set CargoBeforeSeparation to CargoMass.
@@ -6242,7 +6088,7 @@ Function Abort {
             ShutDownAllEngines()..
             until verticalspeed < 0 {}
             set message3:text to "".
-            GoHome().
+            ShowHomePage().
             InhibitButtons(0, 1, 1).
             set message1:text to "".
             set message1:style:textcolor to white.
@@ -6278,7 +6124,7 @@ Function Abort {
             ShutDownAllEngines()..
             until verticalspeed < 0 {}
             set message3:text to "".
-            GoHome().
+            ShowHomePage().
             InhibitButtons(0, 1, 1).
             set message1:text to "".
             set message1:style:textcolor to white.
@@ -6314,7 +6160,7 @@ Function Abort {
             ShutDownAllEngines()..
             until verticalspeed < 0 {}
             set message3:text to "".
-            GoHome().
+            ShowHomePage().
             InhibitButtons(0, 1, 1).
             set message1:text to "".
             set message1:style:textcolor to white.
@@ -6383,7 +6229,7 @@ function ReEntryAndLand {
         set LandButtonIsRunning to true.
         set config:ipu to CPUSPEED.
         set LandSomewhereElse to false.
-        set MechaZillaShouldCatchShip to false.
+        set MechaZillaExists to false.
         SetPlanetData().
         set FlipAltitude to 500.
         set addons:tr:descentmodes to list(true, true, true, true).
@@ -6494,6 +6340,7 @@ function ReEntryAndLand {
 function ReEntrySteering {
     if not SteeringIsRunning {
         set SteeringIsRunning to true.
+
         if RadarAlt > FlipAltitude + 100 {
             set throttle to 0.
         }
@@ -6752,7 +6599,7 @@ function ReEntrySteering {
                     lock stopDist to 0.5 * DesiredDecel * stopTime * stopTime.
                     lock landingRatio to stopDist / RadarAlt.
                     lock throttle to max(min(((DesiredDecel + Planet1G) / max(maxDecel, 0.000001)) * landingRatio, 2 * 9.81 / max(maxDecel, 0.000001)), ThrottleMin).
-                    if MechaZillaShouldCatchShip and TargetOLM {
+                    if MechaZillaExists and TargetOLM {
                         when RadarAlt < 2.5 * ShipHeight then {
                             set config:ipu to 2000.
                             sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,60,true").
@@ -6780,7 +6627,7 @@ function ReEntrySteering {
             }
 
             when verticalspeed > -10 then {
-                if MechaZillaShouldCatchShip and TargetOLM {
+                if MechaZillaExists and TargetOLM {
                     setflaps(0, 85, 1, 0).
                 }
                 else {
@@ -6789,7 +6636,7 @@ function ReEntrySteering {
             }
 
             until verticalspeed > -0.02 and RadarAlt < 5 and ship:status = "LANDED" or verticalspeed > 0.5 {}
-            if MechaZillaShouldCatchShip and TargetOLM {
+            if MechaZillaExists and TargetOLM {
                 print "capture at: " + RadarAlt + "m RA".
             }
 
@@ -6891,7 +6738,7 @@ function LandingVector {
             }
             else {
                 if ship:body = BODY("Kerbin") {
-                    if MechaZillaShouldCatchShip and TargetOLM {
+                    if MechaZillaExists and TargetOLM {
                         set result to ship:up:vector - 0.03 * velocity:surface - 0.0125 * ErrorVector + 0.02 * facing:starvector.
                     }
                     else {
@@ -6924,7 +6771,7 @@ function LandingVector {
         
         BackGroundUpdate().
     }
-    if MechaZillaShouldCatchShip and TargetOLM and verticalspeed > -25 {
+    if MechaZillaExists and TargetOLM and verticalspeed > -25 {
         return lookDirUp(result, heading(270,0):vector).
     }
     else {
@@ -6942,7 +6789,7 @@ function LandingVector {
             set ShutdownComplete to false.
             set ShutdownProcedureStart to time:seconds.
             LogToFile("Vehicle Touchdown, performing self-check").
-            if not LandSomewhereElse and not MechaZillaShouldCatchShip {
+            if not LandSomewhereElse and not MechaZillaExists {
                 set message1:text to "<b><color=green>Successful Landing Confirmed!</color></b> (" + round((SLEngines[0]:position - landingzone:position):mag - 0.5) + "m)".
             }
             else if LandSomewhereElse {
@@ -6966,7 +6813,7 @@ function LandingVector {
             }
             SLEngines[0]:shutdown. SLEngines[1]:shutdown. SLEngines[2]:shutdown.
 
-            if MechaZillaShouldCatchShip and TargetOLM {
+            if MechaZillaExists and TargetOLM {
                 sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,0.7,true").
                 sendMessage(Vessel(TargetOLM), ("MechazillaStabilizers," + maxstabengage)).
                 when time:seconds > ShutdownProcedureStart + 3.25 then {
@@ -6991,7 +6838,7 @@ function LandingVector {
             unlock throttle.
             set ship:control:neutralize to true.
             unlock steering.
-            if MechaZillaShouldCatchShip and TargetOLM {
+            if MechaZillaExists and TargetOLM {
                 setflaps(0, 0, 0, 0).
             }
             else {
@@ -7008,7 +6855,7 @@ function LandingVector {
             set message1:text to "<b><color=green>Vehicle Self-Check OK!</color></b>".
             set message1:style:textcolor to white.
 
-            //if MechaZillaShouldCatchShip and TargetOLM {
+            //if MechaZillaExists and TargetOLM {
             //    set message2:text to "<b><color=green>Ship has been secured by MechaZilla!</color></b>".
             //    set message3:text to "<b>Crane Operation in progress..</b>".
             //    set ShipDocked to false.
@@ -7042,15 +6889,6 @@ function LandingVector {
         }
     }
     else if altitude > ship:body:atm:height {
-        GoHome().
-        LogToFile("Re-Entry Cancelled, no impact position found").
-        set message1:text to "Error: Ship has no Impact Position..".
-        set message2:text to "Adjust your Orbit!".
-        set message3:text to "Ideal Accuracy: < 100km from target".
-        set message1:style:textcolor to yellow.
-        set message2:style:textcolor to yellow.
-        set message3:style:textcolor to yellow.
-        wait 3.
         ClearInterfaceAndSteering().
     }.
 }.
@@ -7100,7 +6938,7 @@ function LngLatError {
             set latresult to vdot(AngleAxis(-90, ApproachUPVector) * ApproachVector, ErrorVector).
 
             if ship:body = BODY("Kerbin") {
-                if MechaZillaShouldCatchShip and TargetOLM {
+                if MechaZillaExists and TargetOLM {
                     set LngLatOffset to ((51.8 / ship:mass) * 326) - 278.
                 }
                 else {
@@ -7224,6 +7062,7 @@ function confirm {
 
 
 function CalculateDeOrbitBurn {
+    parameter x.
     set config:ipu to 2000.
     set correctedIdealLng to 0.
     set lngPredict to 180.
@@ -7239,29 +7078,33 @@ function CalculateDeOrbitBurn {
     if abs(ship:orbit:inclination) > 90 {
         set DegreestoLDGzone to -DegreestoLDGzone.
     }
-    set x to 10.
+    set idealLng to landingzone:lng - DegreestoLDGzone.
+    if idealLng < -180 {
+        set correctedIdealLng to idealLng + 360.
+    }
+    else if idealLng > 180 {
+        set correctedIdealLng to idealLng - 360.
+    }
+    else {
+        set correctedIdealLng to idealLng.
+    }
     until lngPredict > correctedIdealLng - 2 and lngPredict < correctedIdealLng + 2 {
         SendPing().
-        set idealLng to landingzone:lng - DegreestoLDGzone + (x / (body:rotationperiod / 360)).
-        if idealLng < -180 {
-            set correctedIdealLng to idealLng + 360.
-        }
-        else if idealLng > 180 {
-            set correctedIdealLng to idealLng - 360.
-        }
-        else {
-            set correctedIdealLng to idealLng.
-        }
         set lngPredict to body:geopositionof(positionat(ship, time:seconds + x)):lng.
         set x to x + 10.
-        if x > ship:orbit:period {
+        if x > 2 * ship:orbit:period {
             return 0.
         }
         if lngPredict > correctedIdealLng - 2 and lngPredict < correctedIdealLng + 2 {
             break.
         }
     }
-    return x.
+    if x < 120 {
+        return CalculateDeOrbitBurn(300).
+    }
+    else {
+        return x.
+    }
 }
 
 
@@ -7271,13 +7114,11 @@ function DeOrbitVelocity {
     set message3:style:textcolor to white.
     if ship:body = BODY("Kerbin") {
         set ErrorTolerance to 40000.
-        set StartPoint to -100.
-        set CutOff to -26.
+        set StartPoint to -altitude / 1000.
     }
     else if ship:body = BODY("Duna") {
         set ErrorTolerance to 20000.
-        set StartPoint to -75.
-        set CutOff to -10.
+        set StartPoint to -altitude / 1000.
     }
     else {
         set StartPoint to 0.
@@ -7289,18 +7130,18 @@ function DeOrbitVelocity {
             SendPing().
             set burn to node(deorbitburnstarttime, 0, 0, ProgradeVelocity).
             add burn.
-            until addons:tr:hasimpact {}
+            set ExpiryTime to time:seconds + 0.1.
             wait 0.001.
-            if addons:tr:hasimpact {}
-            else {
-                if ship:body = BODY("Kerbin") or ship:body = BODY("Duna") {
+            until addons:tr:hasimpact {
+                if ExpiryTime < time:seconds {
                     set config:ipu to CPUSPEED.
                     return 0.
                 }
-                else {
-                    set config:ipu to CPUSPEED.
-                    return list(0,0).
-                }
+            }
+            wait 0.001.
+            if not (addons:tr:hasimpact) {
+                set config:ipu to CPUSPEED.
+                return 0.
             }
             set Error to (landingzone:position - addons:tr:impactpos:position):mag.
             set message2:text to "<b>Error: </b>" + round(Error / 1000) + "km".
@@ -7311,10 +7152,6 @@ function DeOrbitVelocity {
                 break.
             }
             remove burn.
-            if ProgradeVelocity > CutOff {
-                set config:ipu to CPUSPEED.
-                return 0.
-            }
         }
         set LngError to 9999.
         set ApproachUPVector to (landingzone:position - body:position):normalized.
@@ -7506,14 +7343,13 @@ function timeSpanCalculator {
 }
 
 function updatestatusbar {
-    if not StatusBarIsRunning {
+    if not (StatusBarIsRunning) {
         set StatusBarIsRunning to true.
         for res in ship:resources {
             if res:name = "ElectricCharge" {
                 set ELECcap to res:capacity.
             }
         }
-        local bat to round(100 * (ship:electriccharge / ELECcap), 2).
         set status1:text to "<b>Active: </b>" + runningprogram.
         if defined status1 {
             if runningprogram = "None" or runningprogram = "Checking System.." or runningprogram = "System OK" {
@@ -7577,22 +7413,20 @@ function updatestatusbar {
         else {
             set status2:text to "<b>ΔV: </b>" + currentdeltav + "m/s <b><size=12>@VAC</size></b>".
         }
-        if defined bat {
-            set bat to round(100 * (ship:electriccharge / ELECcap), 2).
-            if bat < 25 and bat > 15 {
-                set status3:style:textcolor to yellow.
-                set status3:style:bg to "starship_img/starship_battery".
-            }
-            if bat < 15 {
-                set status3:style:textcolor to red.
-                set status3:style:bg to "starship_img/starship_battery_red".
-            }
-            else {
-                set status3:style:textcolor to white.
-                set status3:style:bg to "starship_img/starship_battery".
-            }
-            set status3:text to (bat):tostring + "%      ".
+        set bat to round(100 * (ship:electriccharge / ELECcap), 2).
+        if bat < 25 and bat > 15 {
+            set status3:style:textcolor to yellow.
+            set status3:style:bg to "starship_img/starship_battery".
         }
+        if bat < 15 {
+            set status3:style:textcolor to red.
+            set status3:style:bg to "starship_img/starship_battery_red".
+        }
+        else {
+            set status3:style:textcolor to white.
+            set status3:style:bg to "starship_img/starship_battery".
+        }
+        set status3:text to (bat):tostring + "%      ".
         if tooltip:text = "" {
             status1:show().
             status2:show().
@@ -7614,72 +7448,62 @@ function updatestatusbar {
                 status3:show().
             }
         }
-        set shipconnection to homeconnection:isconnected.
-        set shipcrewnr to ship:crew:length.
-        if defined shipconnection {
-            if homeconnection:isconnected {
-                set message32:style:textcolor to white.
-                if time:seconds < LastMessageSentTime + 5 {}
-                else {
-                    set message32:style:bg to "starship_img/starship_signal_white".
-                }
-                if Logging {
-                    set message32:text to "          COM1/TLM".
-                }
-                else {
-                    set message32:text to "          COM1/DLK".
-                }
+        if homeconnection:isconnected {
+            set message32:style:textcolor to white.
+            if time:seconds < LastMessageSentTime + 5 {}
+            else {
+                set message32:style:bg to "starship_img/starship_signal_white".
+            }
+            if Logging {
+                set message32:text to "          COM1/TLM".
             }
             else {
-                set message32:style:textcolor to yellow.
-                if time:seconds < LastMessageSentTime + 5 {}
-                else {
-                    set message32:style:bg to "starship_img/starship_signal_grey".
-                }
-                set message32:text to "          NO COM/-".
+                set message32:text to "          COM1/DLK".
             }
         }
-        if defined shipcrewnr {
-            if time:seconds > prevTime + 0.1 {
-                set prevTime to time:seconds.
+        else {
+            set message32:style:textcolor to yellow.
+            if time:seconds < LastMessageSentTime + 5 {}
+            else {
+                set message32:style:bg to "starship_img/starship_signal_grey".
             }
-            if ShipType = "Crew" {
-                if CargoMass = 0 {
-                    set message12:text to "          " + ship:crew:length + " CREW".
-                    set message12:style:textcolor to white.
-                    set message12:style:bg to "starship_img/starship_crew_male_small".
-                    set message12:style:overflow:right to 0.
+            set message32:text to "          NO COM/-".
+        }
+        if ShipType = "Crew" {
+            if CargoMass = 0 {
+                set message12:text to "          " + ship:crew:length + " CREW".
+                set message12:style:textcolor to white.
+                set message12:style:bg to "starship_img/starship_crew_male_small".
+                set message12:style:overflow:right to 0.
+            }
+            else {
+                set message12:text to "          " + ship:crew:length + "           " + round(CargoMass/1000) + "T".
+                set message12:style:textcolor to white.
+                set message12:style:bg to "starship_img/starship_crew_and_cargo".
+                set message12:style:overflow:right to 65.
+            }
+        }
+        else {
+            set message12:style:overflow:right to 0.
+            if CargoMass = 0 {
+                set message12:text to "          0 kg".
+                set message12:style:textcolor to grey.
+                if ShipType = "Tanker" {
+                    set message12:style:bg to "starship_img/starship_fuel_grey".
                 }
                 else {
-                    set message12:text to "          " + ship:crew:length + "           " + round(CargoMass/1000) + "T".
-                    set message12:style:textcolor to white.
-                    set message12:style:bg to "starship_img/starship_crew_and_cargo".
-                    set message12:style:overflow:right to 65.
+                    set message12:style:bg to "starship_img/starship_cargo_box_grey".
                 }
             }
             else {
-                set message12:style:overflow:right to 0.
-                if CargoMass = 0 {
-                    set message12:text to "          0 kg".
-                    set message12:style:textcolor to grey.
-                    if ShipType = "Tanker" {
-                        set message12:style:bg to "starship_img/starship_fuel_grey".
-                    }
-                    else {
-                        set message12:style:bg to "starship_img/starship_cargo_box_grey".
-                    }
+                set message12:text to "          " + round(CargoMass) + " kg".
+                set message12:style:textcolor to white.
+                if ShipType = "Tanker" {
+                    set message12:style:bg to "starship_img/starship_fuel".
                 }
                 else {
-                    set message12:text to "          " + round(CargoMass) + " kg".
-                    set message12:style:textcolor to white.
-                    if ShipType = "Tanker" {
-                        set message12:style:bg to "starship_img/starship_fuel".
-                    }
-                    else {
-                        set message12:style:bg to "starship_img/starship_cargo_box".
-                    }
+                    set message12:style:bg to "starship_img/starship_cargo_box".
                 }
-
             }
         }
         if ShipType = "Tanker" {
@@ -8716,7 +8540,7 @@ function FindExperience {
 
 
 function ClearInterfaceAndSteering {
-    GoHome().
+    ShowHomePage().
     wait 0.001.
     set throttle to 0.
     set ApproachVector to v(0,0,0).
@@ -8736,7 +8560,10 @@ function ClearInterfaceAndSteering {
     set message1:style:textcolor to white.
     set message2:style:textcolor to white.
     set message3:style:textcolor to white.
-
+    set maneuver2label1:text to "".
+    set maneuver3label1:text to "".
+    set maneuver3label2:text to "".
+    set maneuver3label3:text to "".
     set executeconfirmed to false.
     set cancelconfirmed to false.
     set cancel:text to "<b>CANCEL</b>".
@@ -8780,73 +8607,76 @@ function ClearInterfaceAndSteering {
 function BackGroundUpdate {
     if not BGUisRunning {
         set BGUisRunning to true.
+        SendPing().
         updatestatusbar().
-        if not (KUniverse:activevessel = PrevActiveStatus) {
-            SetInterfaceLocation().
-        }
-        set PrevActiveStatus to KUniverse:activevessel.
-        if ship:crew:length <> 0 and not CrewOnboard {
-            set CrewOnboard to true.
-            crewbutton:show().
-        }
-        else if ship:crew:length = 0 {
-            set CrewOnboard to false.
-            crewbutton:hide().
-            set crewbutton:pressed to false.
-        }
 
-        FindParts().
-        if ShipIsDocked {
-            if Tank:getmodule("ModuleDockingNode"):hasevent("make primary docking node") {
+        if prevCalcTime + 0.1 < time:seconds {
+            FindParts().
+            SetPlanetData().
+            if ShipIsDocked {
+                if Tank:getmodule("ModuleDockingNode"):hasevent("undock") {
+                    InhibitButtons(0, 1, 0).
+                    set cancel:text to "<b>UNDOCK</b>".
+                }
+                else if not ClosingIsRunning {
+                    InhibitButtons(0, 1, 1).
+                    set cancel:text to "<b>CANCEL</b>".
+                }
+
+                set ShipWasDocked to true.
+            }
+            else if ShipWasDocked {
                 InhibitButtons(0, 1, 1).
                 set cancel:text to "<b>CANCEL</b>".
+                set ShipWasDocked to false.
             }
-            else {
-                InhibitButtons(0, 1, 0).
-                set cancel:text to "<b>UNDOCK</b>".
+            if not (KUniverse:activevessel = PrevActiveStatus) {
+                SetInterfaceLocation().
             }
-            set ShipWasDocked to true.
-        }
-        else if ShipWasDocked {
-            InhibitButtons(0, 1, 1).
-            set cancel:text to "<b>CANCEL</b>".
-            set ShipWasDocked to false.
-        }
-
-        set CalculationsPerSecond to 1 / max(time:seconds - prevCalcTime, 0.1).
-        set prevCalcTime to time:seconds.
-
-        if not (TargetOLM = false) and not (OnOrbitalMount) and MechaZillaShouldCatchShip {
-            if Vessel(TargetOLM):distance < 500 and not LaunchButtonIsRunning and not LandButtonIsRunning {
+            set PrevActiveStatus to KUniverse:activevessel.
+            if ship:crew:length <> 0 and not CrewOnboard {
+                set CrewOnboard to true.
+                crewbutton:show().
+            }
+            else if ship:crew:length = 0 {
+                set CrewOnboard to false.
+                crewbutton:hide().
+                set crewbutton:pressed to false.
+            }
+            if not (TargetOLM = "false") and not (OnOrbitalMount) and MechaZillaExists {
+                if Vessel(TargetOLM):distance < 500 and not LaunchButtonIsRunning and not LandButtonIsRunning {
+                    towerbutton:show().
+                }
+                else {
+                    towerbutton:hide().
+                }
+            }
+            else if OnOrbitalMount and not LaunchButtonIsRunning and not LandButtonIsRunning {
                 towerbutton:show().
             }
             else {
                 towerbutton:hide().
             }
-        }
-        else if OnOrbitalMount and not LaunchButtonIsRunning and not LandButtonIsRunning {
-            towerbutton:show().
-        }
-        else {
-            towerbutton:hide().
-        }
-        if LaunchButtonIsRunning or LandButtonIsRunning or AttitudeIsRunning {
-            maneuverbutton:hide().
-        }
-        else {
-            if ship:status = "ORBITING" or ship:status = "ESCAPING" or ship:status = "SUB_ORBITAL" and apoapsis > 10000 or ship:status = "FLYING" and apoapsis > 50000 {
-                maneuverbutton:show().
-            }
-            else {
+            if LaunchButtonIsRunning or LandButtonIsRunning or AttitudeIsRunning {
                 maneuverbutton:hide().
             }
+            else {
+                if ship:status = "ORBITING" or ship:status = "ESCAPING" or ship:status = "SUB_ORBITAL" and apoapsis > 10000 or ship:status = "FLYING" and apoapsis > 50000 {
+                    maneuverbutton:show().
+                }
+                else {
+                    maneuverbutton:hide().
+                }
+            }
+            if ship:body = BODY("Kerbin") or ship:body = BODY("Duna") or ship:body = BODY("Laythe") {
+                attitudebutton:show().
+            }
+            else {
+                attitudebutton:hide().
+            }
+            set prevCalcTime to time:seconds.
         }
-        if ship:body = BODY("Kerbin") or ship:body = BODY("Duna") or ship:body = BODY("Laythe") {
-            attitudebutton:show().
-        }
-        else {
-            attitudebutton:hide().
-        }
+
         if orbitbutton:pressed {updateOrbit().}
         if statusbutton:pressed {updateStatus().}
         if enginebutton:pressed {updateEnginePage().}
@@ -8854,8 +8684,7 @@ function BackGroundUpdate {
         if crewbutton:pressed {updateCrew().}
         if towerbutton:pressed {updateTower().}
         if maneuverbutton:pressed {updateManeuver().}
-        SetPlanetData().
-        SendPing().
+
         set BGUisRunning to false.
     }
 }
@@ -8885,7 +8714,7 @@ function ShowButtons {
 }
 
 
-function GoHome {
+function ShowHomePage {
     set settingsbutton:pressed to false.
     set cargobutton:pressed to false.
     set statusbutton:pressed to false.
@@ -9074,8 +8903,7 @@ function updateCargoPage {
     if not CargoPageIsRunning {
         set CargoPageIsRunning to true.
         if time:seconds > prevCargoPageTime + 0.1 {
-            local CargoList is List(CargoMass, NrofCargoItems, CargoCG).
-            if CargoList[1] = 0 {
+            if NrofCargoItems = 0 {
                 set cargo1label2:style:textcolor to grey.
                 set cargo2label2:style:textcolor to grey.
                 set cargo3label2:style:textcolor to grey.
@@ -9086,20 +8914,20 @@ function updateCargoPage {
                 set cargo1label2:style:textcolor to white.
                 set cargo2label2:style:textcolor to white.
                 set cargo3label2:style:textcolor to white.
-                set cargo2label2:text to round(CargoList[0]) + " kg".
-                if CargoList[1] = 1 {
-                    set cargo3label2:text to "1 Item<size=14> (" + round(CargoList[2]) + "i.u.)</size>".
+                set cargo2label2:text to round(CargoMass) + " kg".
+                if NrofCargoItems = 1 {
+                    set cargo3label2:text to "1 Item<size=14> (" + round(CargoCG) + "i.u.)</size>".
                 }
                 else {
                     if Boosterconnected {
-                        set cargo3label2:text to CargoList[1] + " Items".
+                        set cargo3label2:text to NrofCargoItems + " Items".
                     }
                     else {
-                        if CargoList[2] > 100 {
-                            set cargo3label2:text to CargoList[1] + " Items<size=12> (" + round(CargoList[2]) + "i.u.)</size>".
+                        if CargoCG > 100 {
+                            set cargo3label2:text to NrofCargoItems + " Items<size=12> (" + round(CargoCG) + "i.u.)</size>".
                         }
                         else {
-                            set cargo3label2:text to CargoList[1] + " Items<size=14> (" + round(CargoList[2]) + "i.u.)</size>".
+                            set cargo3label2:text to NrofCargoItems + " Items<size=14> (" + round(CargoCG) + "i.u.)</size>".
                         }
                     }
                 }
@@ -9114,8 +8942,8 @@ function updateCargoPage {
 function updateTower {
     if not towerPageIsRunning {
         set towerPageIsRunning to true.
-        if TargetOLM or not (OLM = false) and MechaZillaShouldCatchShip {
-            if not (OLM = false) {
+        if TargetOLM or OnOrbitalMount and MechaZillaExists {
+            if OnOrbitalMount {
                 if homeconnection:isconnected {
                     if exists("0:/settings.json") {
                         set L to readjson("0:/settings.json").
@@ -9216,7 +9044,7 @@ function SetPlanetData {
 
 
 function CheckSlope {
-    parameter NoTarget.
+    parameter SetNewLZNow.
     set config:ipu to 2000.
     set IsLandingZoneOkay to false.
     set SuggestedLZ to landingzone.
@@ -9231,14 +9059,15 @@ function CheckSlope {
     set IsOriginalTarget to false.
     set LowestSlopeDictionary to lexicon().
     set multiplier to 2.
-    if NoTarget {
+    if SetNewLZNow {
         set impactpos to addons:tr:impactpos.
         set landingzone to latlng(impactpos:lat, impactpos:lng).
     }
     until IsLandingZoneOkay or cancelconfirmed {
-        if ClosingIsRunning or cancelconfirmed or NoTarget and iteration > 3 {
+        if ClosingIsRunning or cancelconfirmed or SetNewLZNow and iteration > 3 {
             break.
         }
+        SendPing().
         set heightWest to latlng(landingzone:lat + OffsetTargetLat, landingzone:lng + OffsetTargetLng - StepDistance):terrainheight.
         set heightEast to latlng(landingzone:lat + OffsetTargetLat, landingzone:lng + OffsetTargetLng + StepDistance):terrainheight.
         set heightNorth to latlng(landingzone:lat + OffsetTargetLat + StepDistance, landingzone:lng + OffsetTargetLng):terrainheight.
@@ -9303,7 +9132,7 @@ function CheckSlope {
                         set NewOffsetTargetLat to OffsetTargetLat + multiplier * StepDistance.
                     }
                 }
-                if NoTarget {
+                if SetNewLZNow {
                     set Slope to max(max(max(max(SlopeWest, SlopeEast), SlopeNorth), SlopeSouth), -1 * min(min(min(SlopeWest, SlopeEast), SlopeNorth), SlopeSouth)).
                     LowestSlopeDictionary:add(((landingzone:lat + OffsetTargetLat) + "," + (landingzone:lng + OffsetTargetLng)), Slope).
                 }
@@ -9331,7 +9160,7 @@ function CheckSlope {
         }
         set message3:text to "<b>Distance:</b>  " + round(DistanceFromTargetLZ) + "m     <b>Slope:</b>  <color=red>" + round(Slope, 1) + "°</color>     <b>Az:</b>  " + round(SlopeAzimuth) + "°".
     }
-    if NoTarget and not IsLandingZoneOkay {
+    if SetNewLZNow and not IsLandingZoneOkay {
         set LowestSlopeFound to 90.
         for pos in LowestSlopeDictionary:keys {
             if LowestSlopeDictionary[pos] < LowestSlopeFound {
@@ -9348,7 +9177,6 @@ function CheckSlope {
     }
     set LZAlt to SuggestedLZ:terrainheight.
     set config:ipu to CPUSPEED.
-    //clearscreen.
     return list(IsOriginalTarget, SuggestedLZ, DistanceFromTargetLZ, Slope, LZAlt).
 }
 
@@ -9365,7 +9193,7 @@ function LandAtOLM {
         }
         for x in shiplist {
             if x:name = TargetOLM and ship:status = "FLYING" and airspeed < 500 {
-                set MechaZillaShouldCatchShip to true.
+                set MechaZillaExists to true.
                 if L:haskey("ArmsHeight") {
                     set ArmsHeight to L["ArmsHeight"].
                 }
@@ -9375,7 +9203,7 @@ function LandAtOLM {
                 lock RadarAlt to altitude - ship:geoposition:terrainheight - ArmsHeight + (24.698 - ShipBottomRadarHeight).
                 set FlipAltitude to FlipAltitude + ArmsHeight.
                 when RadarAlt < 2000 then {
-                    if not (TargetOLM = false) {
+                    if not (TargetOLM = "false") {
                         sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
                         sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,97,true").
                         sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,true").
@@ -9457,10 +9285,10 @@ function RenameShip {
 
 function LandingZoneFinder {
     set config:ipu to 2000.
-
+    set AvailableLandingSpots to list(true, landingzone, 1, 1, 0).
     for var in LaunchSites:keys {
         if LaunchSites[var] = setting1:text and ship:body = BODY("Kerbin") {
-            set AvailableLandingSpots to list(true, landingzone, 0, 0).
+            set AvailableLandingSpots to list(true, landingzone, 0, 0, 0).
             break.
         }
     }
@@ -9593,12 +9421,10 @@ function updateManeuver {
 
 
 function PerformBurn {
-    parameter Burntime, ProgradeVelocity, NormalVelocity, AlreadyHasNode, BurnType.
+    parameter Burntime, ProgradeVelocity, NormalVelocity, RadialVelocity, BurnType.
     set config:ipu to CPUSPEED.
     set textbox:style:bg to "starship_img/starship_main_square_bg".
-    if AlreadyHasNode {
-
-    }
+    if BurnType = "Execute" {}
     else if BurnTime:istype("TimeStamp") {
         set burn to node(BurnTime, 0, NormalVelocity, ProgradeVelocity).
         add burn.
@@ -9607,12 +9433,23 @@ function PerformBurn {
         set burn to node(timespan(BurnTime), 0, NormalVelocity, ProgradeVelocity).
         add burn.
     }
-    set burnstart to nextnode:deltav.
     if BurnTime:istype("TimeStamp") {
         set burnstarttime to BurnTime.
     }
     else {
         set burnstarttime to timestamp(time:seconds + BurnTime).
+    }
+    if burnstarttime - 60 < timestamp(time:seconds) {
+        ShowHomePage().
+        LogToFile("Stopping De-Orbit Burn due to wrong orientation").
+        set textbox:style:bg to "starship_img/starship_main_square_bg".
+        set message1:text to "<b>Burn Cancelled.</b>".
+        set message1:style:textcolor to yellow.
+        set message2:text to "<b>Planned Burn is too close to perform..</b>".
+        set message2:style:textcolor to yellow.
+        wait 3.
+        ClearInterfaceAndSteering().
+        return.
     }
     lock deltaV to nextnode:deltav:mag.
     if deltaV < rcsRaptorBoundary {
@@ -9625,27 +9462,38 @@ function PerformBurn {
     }
     lock BurnAccel to min(19.62, MaxAccel).
     lock BurnDuration to deltaV / BurnAccel.
-    GoHome().
+    ShowHomePage().
     set runningprogram to "Input".
     if BurnType = "Execute" {
         set message1:text to "<b>Execute Custom Burn:</b>".
-        set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s".
+        if UseRCSforBurn {
+            set message2:text to "<b>@:</b>  <color=yellow>" + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b></color>   <b>ΔV:</b>  <color=yellow>" + round(DeltaV, 1) + "m/s</color>   <b><color=magenta>(RCS Thrusters)</color></b>".
+        }
+        else {
+            set message2:text to "<b>@:</b>  <color=yellow>" + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b></color>   <b>ΔV:</b>  <color=yellow>" + round(DeltaV, 1) + "m/s</color>   <b><color=magenta>(VAC Engines)</color></b>".
+        }
     }
     else if defined AltitudeOverLZ and BurnType = "DeOrbit" {
         set message1:text to "<size=19><b>Suggested De-Orbit Burn to Point OVHD LZ:</b></size>".
-        set message2:text to "<size=19><b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s   <b>Alt over LZ:</b>  " + round(AltitudeOverLZ/1000, 1) + "km</size>".
+        set message2:text to "<size=19><b>@:</b>  <color=yellow>" + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b></color>   <b>ΔV:</b>  <color=yellow>" + round(DeltaV, 1) + "m/s</color>   <b>Alt over LZ:</b>  <color=yellow>" + round(AltitudeOverLZ/1000, 1) + "km</color></size>".
     }
-    else if addons:tr:hasimpact and BurnType = "DeOrbit" {
+    else if BurnType = "DeOrbit" {
         set message1:text to "<b>Suggested De-Orbit Burn:</b>".
-        set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s".
+        for var in LaunchSites:keys {
+            if LaunchSites[var] = setting1:text and ship:body = BODY("Kerbin") {
+                set message2:text to "<b>@:</b> <color=yellow>" + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b></color>   <b>ΔV:</b> <color=yellow>" + round(DeltaV, 1) + "m/s</color>   <b>LZ: <color=green>" + var +  "</color></b>".
+                break.
+            }
+            set message2:text to "<b>@:</b> <color=yellow>" + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b></color>   <b>ΔV:</b> <color=yellow>" + round(DeltaV, 1) + "m/s</color>   <b>LZ:</b> <size=17><color=yellow>" + landingzone:lat + "," + landingzone:lng + "</color></size>".
+        }
     }
     else if BurnType = "Circ"{
         set message1:text to "<b>Circularize at Altitude:</b>  <color=yellow>" + round(((positionat(ship, burnstarttime) - ship:body:position):mag - ship:body:radius) / 1000, 1) + "km</color>".
-        set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s".
+        set message2:text to "<b>@:</b>  <color=yellow>" + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b></color>   <b>ΔV:</b>  <color=yellow>" + round(DeltaV, 1) + "m/s</color>".
     }
     else if BurnType = "Align"{
         set message1:text to "<b>Align to Plane of:</b>  <color=yellow>" + target:name + "</color>".
-        set message2:text to "<b>@:</b>  " + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b>   <b>ΔV:</b>  " + round(DeltaV, 1) + "m/s".
+        set message2:text to "<b>@:</b>  <color=yellow>" + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b></color>   <b>ΔV:</b>  <color=yellow>" + round(DeltaV, 1) + "m/s</color>".
     }
     set message3:style:textcolor to cyan.
     if quicksetting1:pressed {
@@ -9656,17 +9504,33 @@ function PerformBurn {
     }
     InhibitButtons(0, 0, 0).
     if confirm() {
+        if not hasnode {
+            ShowHomePage().
+            LogToFile("Stopping De-Orbit Burn due to loss of node").
+            set textbox:style:bg to "starship_img/starship_main_square_bg".
+            set message1:text to "<b>Burn Cancelled.</b>".
+            set message1:style:textcolor to yellow.
+            set message2:text to "<b>Maneuver Node was lost..</b>".
+            set message2:style:textcolor to yellow.
+            set message3:text to "".
+            InhibitButtons(0,1,1).
+            wait 3.
+            ClearInterfaceAndSteering().
+            return.
+        }
         if nextnode:eta < 0.5 * BurnDuration + 10 {
-            GoHome().
+            ShowHomePage().
             LogToFile("Stopping De-Orbit Burn due to wrong orientation").
             set textbox:style:bg to "starship_img/starship_main_square_bg".
             set message1:text to "<b>Burn Cancelled.</b>".
             set message1:style:textcolor to yellow.
             set message2:text to "<b>Planned Burn is too close to perform..</b>".
             set message2:style:textcolor to yellow.
+            set message3:text to "".
+            InhibitButtons(0,1,1).
             wait 3.
             ClearInterfaceAndSteering().
-            //return.
+            return.
         }
         LogToFile("Re-orienting for Burn").
         InhibitButtons(1, 1, 0).
@@ -9752,7 +9616,6 @@ function PerformBurn {
                 rcs off.
                 LogToFile("Stopping Burn").
                 ClearInterfaceAndSteering().
-                //return.
             }
             else if not cancelconfirmed {
                 remove nextnode.
@@ -9761,13 +9624,14 @@ function PerformBurn {
                 unlock throttle.
                 sas on.
                 HideEngineToggles(0).
-                GoHome().
+                ShowHomePage().
                 LogToFile("Stopping Burn due to wrong orientation").
                 set message1:text to "<b>Burn Cancelled.</b>".
                 set message1:style:textcolor to yellow.
                 set message2:text to "<b>Incorrect orientation or stopped..</b>".
                 set message2:style:textcolor to yellow.
                 set message3:text to "".
+                InhibitButtons(0,1,1).
                 wait 3.
                 ClearInterfaceAndSteering().
             }
@@ -9790,7 +9654,7 @@ function PerformBurn {
         }
     }
     else {
-        LogToFile("Stopping Burn").
+        LogToFile("User cancelled Burn").
         ClearInterfaceAndSteering().
     }
 }

@@ -362,14 +362,14 @@ function Boostback {
                 }
             }
             if not RollAngleExceeded {
-                print "Booster has been recovered & Tower has been reset!".
+                print "Booster has been secured & Tower has been reset!".
+                HUDTEXT("Tower has been reset, Booster may now be recovered!", 10, 2, 20, green, false).
             }
             else {
                 sendMessage(Vessel(OLM), "EmergencyStop").
                 print "Emergency Stop Activated! Roll Angle exceeded: " + round(RollAngle, 1).
                 print "Continue manually with great care..".
             }
-            HUDTEXT("Tower has been reset, Booster may now be recovered!", 10, 2, 20, green, false).
         }
         else {
             print "Booster has been secured".
