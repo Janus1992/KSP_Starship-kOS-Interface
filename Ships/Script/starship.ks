@@ -6598,18 +6598,7 @@ function ReEntrySteering {
                     lock stopTime to verticalspeed / DesiredDecel.
                     lock stopDist to 0.5 * DesiredDecel * stopTime * stopTime.
                     lock landingRatio to stopDist / RadarAlt.
-                    lock throttle to max(min(((DesiredDecel + Planet1G) / max(maxDecel, 0.000001)) * landingRatio, 2 * 9.81 / max(maxDecel, 0.000001)), ThrottleMin).
-                    if MechaZillaExists and TargetOLM {
-                        when RadarAlt < 2.5 * ShipHeight then {
-                            set config:ipu to 2000.
-                            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,60,true").
-                            sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
-                            when RadarAlt < (0.5 * DesiredDecel * 3 * 3) + 0.5 then {
-                                sendMessage(Vessel(TargetOLM), ("MechazillaArms,8," + 10 + ",60,false")).
-                                set config:ipu to CPUSPEED.
-                            }
-                        }
-                    }
+                    lock throttle to max(min(((DesiredDecel + Planet1G) / max(maxDecel, 0.000001)) * abs(landingRatio), 2 * 9.81 / max(maxDecel, 0.000001)), ThrottleMin).
                 }
             }
 
@@ -6635,8 +6624,21 @@ function ReEntrySteering {
                 }
             }
 
-            until verticalspeed > -0.02 and RadarAlt < 5 and ship:status = "LANDED" or verticalspeed > 0.5 {}
-            if MechaZillaExists and TargetOLM {
+            until verticalspeed > -0.02 and RadarAlt < 5 and ship:status = "LANDED" or verticalspeed > 0.5 and RadarAlt < 5 {
+                if MechaZillaExists and TargetOLM {
+                    if RadarAlt < 4 * ShipHeight and RadarAlt > 3.5 * ShipHeight {
+                        sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,60,true").
+                        sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
+                    }
+                    else if RadarAlt < 2 * ShipHeight and RadarAlt > 1.5 * ShipHeight {
+                        sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,30,true").
+                    }
+                    else if RadarAlt < (0.5 * DesiredDecel * 1.5 * 1.5) + 1 and RadarAlt > (0.5 * DesiredDecel * 1.5 * 1.5) - 2.5 {
+                        sendMessage(Vessel(TargetOLM), ("MechazillaArms,8,10,30,false")).
+                    }
+                }
+            }
+            if (MechaZillaExists) and (TargetOLM) {
                 print "capture at: " + RadarAlt + "m RA".
             }
 
@@ -6650,7 +6652,7 @@ function LandingVector {
     if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
     if addons:tr:hasimpact {
         set LngLatErrorList to LngLatError().
-        
+
         if ship:body = BODY("Kerbin") {
             if ErrorVector:MAG > (RadarAlt + 15) and not LandSomewhereElse {
                 set LandSomewhereElse to true.
@@ -6666,10 +6668,10 @@ function LandingVector {
         }
 
         if LandingBurnStarted and verticalspeed > 0 {
-            set throttle to 0.
+            set throttle to ThrottleMin.
             set LandingBurnStarted to false.
             when landingRatio > 1 then {
-                lock throttle to max(min(((DesiredDecel + Planet1G) / max(maxDecel, 0.000001)) * landingRatio, 2 * 9.81 / max(maxDecel, 0.000001)), ThrottleMin).
+                lock throttle to max(min(((DesiredDecel + Planet1G) / max(maxDecel, 0.000001)) * abs(landingRatio), 2 * 9.81 / max(maxDecel, 0.000001)), ThrottleMin).
                 set LandingBurnStarted to true.
             }
         }
@@ -7130,14 +7132,8 @@ function DeOrbitVelocity {
             SendPing().
             set burn to node(deorbitburnstarttime, 0, 0, ProgradeVelocity).
             add burn.
-            set ExpiryTime to time:seconds + 0.1.
             wait 0.001.
-            until addons:tr:hasimpact {
-                if ExpiryTime < time:seconds {
-                    set config:ipu to CPUSPEED.
-                    return 0.
-                }
-            }
+            until addons:tr:hasimpact {}
             wait 0.001.
             if not (addons:tr:hasimpact) {
                 set config:ipu to CPUSPEED.
@@ -9194,13 +9190,21 @@ function LandAtOLM {
         for x in shiplist {
             if x:name = TargetOLM and ship:status = "FLYING" and airspeed < 500 {
                 set MechaZillaExists to true.
-                if L:haskey("ArmsHeight") {
-                    set ArmsHeight to L["ArmsHeight"].
+                if homeconnection:isconnected {
+                    if exists("0:/settings.json") {
+                        set L to readjson("0:/settings.json").
+                        if L:haskey("ArmsHeight") {
+                            set ArmsHeight to L["ArmsHeight"].
+                        }
+                        else {
+                            set ArmsHeight to 86.42.
+                        }
+                    }
                 }
                 else {
                     set ArmsHeight to 86.42.
                 }
-                lock RadarAlt to altitude - ship:geoposition:terrainheight - ArmsHeight + (24.698 - ShipBottomRadarHeight).
+                lock RadarAlt to altitude - ship:geoposition:terrainheight - ArmsHeight + (24.698 - ShipBottomRadarHeight) - 0.25.
                 set FlipAltitude to FlipAltitude + ArmsHeight.
                 when RadarAlt < 2000 then {
                     if not (TargetOLM = "false") {

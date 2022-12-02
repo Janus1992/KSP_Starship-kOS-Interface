@@ -1,3 +1,8 @@
+# V1.0.6b (2022-12-03)
+- Fixed an issue causing the deorbit-finder to stop early.
+- Fixed Mechazilla missing a command by brute forcing my way to success.
+- Made the Ship have a 25cm higher target Radar Altitude on Landing into the Mechazilla so the flaps stay healthy more often (read: don't get destroyed by the arms).
+
 # V1.0.6a (2022-11-18)
 - Code cleanup (performburn function).
 - Small bugfixes in many items.

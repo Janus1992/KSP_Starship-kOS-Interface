@@ -99,30 +99,7 @@ if ship:partstitled("Donnager MK-1 Main Body"):length = 0 {
 }
 print "Tower Nominal Operation, awaiting command..".
 
-//print Mechazilla:getmodulebyindex(1).  // vertical movement
-//print Mechazilla:getmodulebyindex(2).  // stop arm
-//print Mechazilla:getmodulebyindex(3).  // stop arm.
-//print Mechazilla:getmodulebyindex(4).  // stop pusher
-//print Mechazilla:getmodulebyindex(5).  // stop pusher.
-//print Mechazilla:getmodulebyindex(6).  // open/close arms
-//print Mechazilla:getmodulebyindex(7).  // open/close pushers
-//print Mechazilla:getmodulebyindex(8).  // open/close stabilizers
-
 until False {
-    if time:seconds > PrevTime + 0.1 {
-        SaveToSettings("Tower:arms:rotation", Mechazilla:getmodulebyindex(NrforOpenCloseArms):getfield("current angle")).
-        if Mechazilla:getmodulebyindex(NrforOpenCloseArms):hasevent("open arms") {
-            SaveToSettings("Tower:arms:angle", 0).
-        }
-        else {
-            SaveToSettings("Tower:arms:angle", Mechazilla:getmodulebyindex(NrforOpenCloseArms):getfield("arms open angle")).
-        }
-        SaveToSettings("Tower:pushers:extension", Mechazilla:getmodulebyindex(NrforOpenClosePushers):getfield("current extension")).
-        SaveToSettings("Tower:stabilizers:extension", Mechazilla:getmodulebyindex(NrforStabilizers):getfield("current extension")).
-        SaveToSettings("Tower:arms:height", Mechazilla:getmodulebyindex(NrforVertMoveMent):getfield("current extension")).
-        set PrevTime to time:seconds.
-    }
-
     if CORE:MESSAGES:length > 0 or SHIP:MESSAGES:length > 0 {
         if ship:messages:empty {
             SET RECEIVED TO CORE:MESSAGES:POP.
@@ -176,6 +153,19 @@ until False {
             PRINT "Unexpected message: " + RECEIVED:CONTENT.
         }
     }
+    if time:seconds > PrevTime + 0.25 {
+        SaveToSettings("Tower:arms:rotation", Mechazilla:getmodulebyindex(NrforOpenCloseArms):getfield("current angle")).
+        if Mechazilla:getmodulebyindex(NrforOpenCloseArms):hasevent("open arms") {
+            SaveToSettings("Tower:arms:angle", 0).
+        }
+        else {
+            SaveToSettings("Tower:arms:angle", Mechazilla:getmodulebyindex(NrforOpenCloseArms):getfield("arms open angle")).
+        }
+        SaveToSettings("Tower:pushers:extension", Mechazilla:getmodulebyindex(NrforOpenClosePushers):getfield("current extension")).
+        SaveToSettings("Tower:stabilizers:extension", Mechazilla:getmodulebyindex(NrforStabilizers):getfield("current extension")).
+        SaveToSettings("Tower:arms:height", Mechazilla:getmodulebyindex(NrforVertMoveMent):getfield("current extension")).
+        set PrevTime to time:seconds.
+    }
 }
 
 
@@ -215,6 +205,10 @@ function MechazillaArms {
     parameter targetspeed.
     parameter armsopenangle.
     parameter ArmsOpen.
+    //print targetangle.
+    //print targetspeed.
+    //print armsopenangle.
+    //print ArmsOpen.
     Mechazilla:getmodulebyindex(NrforOpenCloseArms):SetField("target angle", targetangle:toscalar).
     Mechazilla:getmodulebyindex(NrforOpenCloseArms):SetField("target speed", targetspeed:toscalar).
     Mechazilla:getmodulebyindex(NrforOpenCloseArms):SetField("arms open angle", armsopenangle:toscalar).
