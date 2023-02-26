@@ -27,7 +27,7 @@ if homeconnection:isconnected {
 }
 
 for x in ship:parts {
-    if x:name:contains("SEP.S20.BODY") {
+    if x:name:contains("SEP.22.SHIP.BODY.KOS") {
         set MainCPU to x:getmodule("kOSProcessor").
     }
 }

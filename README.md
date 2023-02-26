@@ -26,12 +26,11 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
     https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229
 
 # OPTIONAL:
-- Community Resource Pack (for using "liquid methane" instead of ksp's standard "liquid fuel", however slightly less delta-v will be available)
-    https://forum.kerbalspaceprogram.com/index.php?/topic/83007-1x-community-resource-pack/
+- Kerbal Joint Reinforcement Continued (Required for use with RSS, as the flaps will break off)
+    https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued
 
 # USERS REPORT IT DOES NOT WORK WITH:
-- RSS
-- Realism Overhaul
+- TweakableEverything
 
 # Tips & Tricks:
 To Load Cargo in the Cargo Ship:

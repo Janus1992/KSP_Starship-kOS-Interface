@@ -1,3 +1,11 @@
+if ship:body:radius > 600001 and ship:body:atm:sealevelpressure > 0.6 {
+    set RSS to true.
+    set LaunchSites to lexicon("KSC", "28.6084,-80.5998").
+}
+else {
+    set RSS to false.
+    set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
+}
 
 
 //------------Find Parts--------------//
@@ -7,10 +15,9 @@ set OLM to ship:partstitled("Starship Orbital Launch Mount")[0].
 set TowerBase to ship:partstitled("Starship Orbital Launch Integration Tower Base")[0].
 set TowerCore to ship:partstitled("Starship Orbital Launch Integration Tower Core")[0].
 Set TowerTop to ship:partstitled("Starship Orbital Launch Integration Tower Rooftop")[0].
-Set Mechazilla to ship:partsnamed("SLE.SS.OLIT.MZ")[0].
+Set Mechazilla to ship:partsnamed("SLE.SS.OLIT.MZ.KOS")[0].
 set config:ipu to 500.
 set PrevTime to time:seconds.
-set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
 clearscreen.
 
 
@@ -163,7 +170,12 @@ until False {
         }
         SaveToSettings("Tower:pushers:extension", Mechazilla:getmodulebyindex(NrforOpenClosePushers):getfield("current extension")).
         SaveToSettings("Tower:stabilizers:extension", Mechazilla:getmodulebyindex(NrforStabilizers):getfield("current extension")).
-        SaveToSettings("Tower:arms:height", Mechazilla:getmodulebyindex(NrforVertMoveMent):getfield("current extension")).
+        if RSS {
+            SaveToSettings("Tower:arms:height", Mechazilla:getmodulebyindex(NrforVertMoveMent):getfield("current extension")).
+        }
+        else {
+            SaveToSettings("Tower:arms:height", Mechazilla:getmodulebyindex(NrforVertMoveMent):getfield("current extension")).
+        }
         set PrevTime to time:seconds.
     }
 }
@@ -176,6 +188,7 @@ until False {
 
 function LiftOff {
     //OLM:getmodule("LaunchClamp"):DoAction("release clamp", true).
+    OLM:getmodule("ModuleAnimateGeneric"):doevent("close clamps + qd").
     wait 0.1.
     for var in LaunchSites:keys {
         if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(ship:geoposition:lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(ship:geoposition:lng, 2) {
@@ -234,21 +247,11 @@ function MechazillaPushers {
     if Mechazilla:getmodulebyindex(NrforOpenClosePushers):HasField("pushers open limit") {
         Mechazilla:getmodulebyindex(NrforOpenClosePushers):SetField("pushers open limit", pushersopenlimit:toscalar).
     }
-    if Mechazilla:getmodulebyindex(NrforOpenClosePushers):HasField("pushers open limit") {
-        if PushersOpen = "true" and Mechazilla:getmodulebyindex(NrforOpenClosePushers):hasevent("open pushers") {
-            Mechazilla:getmodulebyindex(NrforOpenClosePushers):DoAction("toggle pushers", true).
-        }
-        if PushersOpen = "false" and Mechazilla:getmodulebyindex(NrforOpenClosePushers):hasevent("close pushers") {
-            Mechazilla:getmodulebyindex(NrforOpenClosePushers):DoAction("toggle pushers", true).
-        }
+    if PushersOpen = "true" and Mechazilla:getmodulebyindex(NrforOpenClosePushers):hasevent("open pushers") {
+        Mechazilla:getmodulebyindex(NrforOpenClosePushers):DoEvent("open pushers").
     }
-    if Mechazilla:getmodulebyindex(NrforOpenClosePushers):HasField("pushers close limit") {
-        if PushersOpen = "false" and Mechazilla:getmodulebyindex(NrforOpenClosePushers):hasevent("open pushers") {
-            Mechazilla:getmodulebyindex(NrforOpenClosePushers):DoAction("toggle pushers", true).
-        }
-        if PushersOpen = "true" and Mechazilla:getmodulebyindex(NrforOpenClosePushers):hasevent("close pushers") {
-            Mechazilla:getmodulebyindex(NrforOpenClosePushers):DoAction("toggle pushers", true).
-        }
+    if PushersOpen = "false" and Mechazilla:getmodulebyindex(NrforOpenClosePushers):hasevent("close pushers") {
+        Mechazilla:getmodulebyindex(NrforOpenClosePushers):DoEvent("close pushers").
     }
 }
 

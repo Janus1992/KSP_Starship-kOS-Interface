@@ -1,3 +1,10 @@
+# V1.1.0 (2023-02-26)
+- Ready for SEPs 2.0 update.
+- Implemented a CoM balancing system through fuel transfer between the header tank and the main tanks. Solves a lot of ksps control problems.
+- Reworked the Auto-docking function.
+- Too many other bugfixes and changes to list.
+- Started work on RSS capability, but it's still buggy. (if you want to try: install RSS, but don't apply SEPs realism overhaul patch in the extras folder of SEP)
+
 # V1.0.6b (2022-12-03)
 - Fixed an issue causing the deorbit-finder to stop early.
 - Fixed Mechazilla missing a command by brute forcing my way to success.
