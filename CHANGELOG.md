@@ -1,4 +1,4 @@
-# V1.1.0 (2023-02-26)
+# V2.0.0 (2023-02-26)
 - Ready for SEPs 2.0 update.
 - Implemented a CoM balancing system through fuel transfer between the header tank and the main tanks. Solves a lot of ksps control problems.
 - Reworked the Auto-docking function.
