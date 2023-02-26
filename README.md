@@ -1,4 +1,4 @@
-# KSP_Starship-kOS-Interface
+# KSP_Starship-kOS-Interface V2.0.0
 An Interface for automating the 'Starship Expansion Project' and 'Starship Launch Expansion' mods within Kerbal Space Program. It's meant only for stock kerbin at the moment.
 
 Important!! To Users using versions OLDER than v2.0:
