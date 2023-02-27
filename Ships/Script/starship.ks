@@ -4305,14 +4305,8 @@ set launchbutton:ontoggle to {
                                 }
                             }
                             else {
-                                if LiquidMethaneOnBoard {
-                                    set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
-                                    set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
-                                }
-                                else {
-                                    set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
-                                    set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
-                                }
+                                set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
+                                set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
                                 if NrOfVacEngines = 3 {
                                     set LaunchTimeSpanInSeconds to LaunchTimeSpanInSeconds + 3.
                                 }

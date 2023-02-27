@@ -1,4 +1,4 @@
-# KSP_Starship-kOS-Interface V2.0.0
+# KSP_Starship-kOS-Interface V2
 An Interface for automating the 'Starship Expansion Project' and 'Starship Launch Expansion' mods within Kerbal Space Program. It's meant only for stock kerbin at the moment.
 
 # IMPORTANT CHANGE!! To Users using versions OLDER than v2.0:
@@ -27,6 +27,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
     https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/
 - Starship Launch Expansion
     https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229
+    Dev Version: https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev
 
 # OPTIONAL:
 - Kerbal Joint Reinforcement Continued (Required for use with RSS, as the flaps will break off)

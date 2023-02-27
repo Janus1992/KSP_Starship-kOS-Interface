@@ -1,10 +1,13 @@
 # V2.0.1 (2023-02-27)
 - Fixed a patching issue when Community Resource Pack was installed.
+- Fixed a general patching issue.
+- Fixed a launch to rendezvous error.
 
 # V2.0.0 (2023-02-26)
 - Ready for SEPs 2.0 update.
 - Implemented a CoM balancing system through fuel transfer between the header tank and the main tanks. Solves a lot of ksps control problems.
 - Reworked the Auto-docking function.
+- Removed support for liquid methane (too many headaches).
 - Too many other bugfixes and changes to list.
 - Started work on RSS capability, but it's still buggy. (if you want to try: install RSS, but don't apply SEPs realism overhaul patch in the extras folder of SEP)
 
