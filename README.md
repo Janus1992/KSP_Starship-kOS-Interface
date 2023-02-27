@@ -1,8 +1,8 @@
 # KSP_Starship-kOS-Interface V2.0.0
 An Interface for automating the 'Starship Expansion Project' and 'Starship Launch Expansion' mods within Kerbal Space Program. It's meant only for stock kerbin at the moment.
 
-`rgb(255, 0, 0)`Important!! To Users using versions OLDER than v2.0:
-`rgb(255, 0, 0)`- Please delete GameData/Janus92_kOS_Automation_patch.cfg from your current KSP install location.
+# IMPORTANT CHANGE!! To Users using versions OLDER than v2.0:
+- Please delete GameData/Janus92_kOS_Automation_patch.cfg from your current KSP install location.
 
 ![Alt text](/Infographic.png)
 
@@ -12,7 +12,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Copy the 'GameData' and 'Ships' folders into your /Kerbal Space Program folder.
 
 
-`rgb(255, 0, 0)`# IMPORTANT!:
+# IMPORTANT!:
 - Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker"). These can be found if you enable stock vehicles in your savegame, or you copy them manually to your savegame.
 - If the Interface doesn't show up, check again that you don't have any of the mods installed that the Interface doesn't work with (listed below).
 
