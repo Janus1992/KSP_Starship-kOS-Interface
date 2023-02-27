@@ -1,3 +1,6 @@
+# V2.0.1 (2023-02-27)
+- Fixed a patching issue when Community Resource Pack was installed.
+
 # V2.0.0 (2023-02-26)
 - Ready for SEPs 2.0 update.
 - Implemented a CoM balancing system through fuel transfer between the header tank and the main tanks. Solves a lot of ksps control problems.

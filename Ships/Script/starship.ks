@@ -6496,8 +6496,7 @@ function ReEntryAndLand {
 
         SteeringManager:RESETTODEFAULT().
         set PitchPID to PIDLOOP(0.00025, 0, 0, -30, 15).
-        set YawPID to PIDLOOP(0.025, 0, 0, -45, 45).
-        set YawRCSPID to PIDLOOP(0.0025, 0.001, 0.001, -1, 1).
+        set YawPID to PIDLOOP(0.025, 0, 0, -50, 50).
         set SteeringManager:PITCHTS to 5.
 
         lock STEERING to ReEntrySteering().
@@ -6592,11 +6591,6 @@ function ReEntrySteering {
         set pitchctrl to -PitchPID:UPDATE(TIME:SECONDS, LngLatErrorList[0]).
         set DesiredAoA to aoa + pitchctrl.
         set yawctrl to -YawPID:UPDATE(TIME:SECONDS, LngLatErrorList[1]).
-        //if RadarAlt > 15000 {}
-        //else {
-        //    set yawRCSctrl to -YawRCSPID:UPDATE(TIME:SECONDS, LngLatErrorList[1]).
-        //    set ship:control:translation to v(yawRCSctrl, 0, 0).
-        //}
         set result to srfprograde * R(-DesiredAoA * cos(yawctrl), DesiredAoA * sin(yawctrl), 0).
         set result to lookdirup(result:vector, -vxcl(result:vector, velocity:surface)).
         if LandSomewhereElse {

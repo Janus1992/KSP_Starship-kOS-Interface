@@ -1,8 +1,8 @@
 # KSP_Starship-kOS-Interface V2.0.0
 An Interface for automating the 'Starship Expansion Project' and 'Starship Launch Expansion' mods within Kerbal Space Program. It's meant only for stock kerbin at the moment.
 
-Important!! To Users using versions OLDER than v2.0:
-- Please delete GameData/Janus92_kOS_Automation_patch.cfg from your current KSP install location.
+`rgb(255, 0, 0)`Important!! To Users using versions OLDER than v2.0:
+`rgb(255, 0, 0)`- Please delete GameData/Janus92_kOS_Automation_patch.cfg from your current KSP install location.
 
 ![Alt text](/Infographic.png)
 
@@ -12,7 +12,7 @@ Important!! To Users using versions OLDER than v2.0:
 - Copy the 'GameData' and 'Ships' folders into your /Kerbal Space Program folder.
 
 
-# IMPORTANT!:
+`rgb(255, 0, 0)`# IMPORTANT!:
 - Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker"). These can be found if you enable stock vehicles in your savegame, or you copy them manually to your savegame.
 - If the Interface doesn't show up, check again that you don't have any of the mods installed that the Interface doesn't work with (listed below).
 
@@ -32,7 +32,7 @@ Important!! To Users using versions OLDER than v2.0:
 - Kerbal Joint Reinforcement Continued (Required for use with RSS, as the flaps will break off)
     https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued
 
-# USERS REPORT IT DOES NOT WORK WITH:
+# Incompatible Mods:
 - TweakableEverything
 
 # Tips & Tricks:
@@ -45,8 +45,8 @@ To Load Cargo in the Cargo Ship:
 # Notes:
 - Automatic re-stacking/refueling is currently impossible because the SEP & SLE mods lack the ability to dock together.
 - When using multiple ships of the same name, they might get renamed by my scripts to avoid Interface crashes.
-- Seldom Interface crashes may occur (it makes a little crashing noise). A watchdog computer should try to restart the Interface after 5 seconds.
-- Existing Ships will automatically try to update the Interface after installing the latest version from here.
+- Seldom Interface crashes may occur (it makes a little crashing noise). A watchdog computer should try to restart the Interface after 2.5 seconds.
+- Existing Ships will automatically try to update the Interface after installing the latest version from here, provided a connection is available.
 - The KSP delta-V calculations are not correct, so trust the Interface instead! :)
 
 
