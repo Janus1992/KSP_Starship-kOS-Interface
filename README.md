@@ -43,6 +43,7 @@ To Load Cargo in the Cargo Ship:
 
 
 # Notes:
+- My mod copies the original SEP parts and changes it's fuel and thrust (and more) values to portray a more playable behaviour on Kerbin. As SEP is optimized for 2.5/2.7x sized Kerbin, SEP default will result in more fuel in orbit than a real life Starship would have in lower Earth orbit. Although SEP's behaviour is realistic for a planet the size of Kerbin, I decided that simulating the tight margins to orbit makes SEP more playable and fun on stock Kerbin.
 - Automatic re-stacking/refueling is currently impossible because the SEP & SLE mods lack the ability to dock together.
 - When using multiple ships of the same name, they might get renamed by my scripts to avoid Interface crashes.
 - Seldom Interface crashes may occur (it makes a little crashing noise). A watchdog computer should try to restart the Interface after 2.5 seconds.
