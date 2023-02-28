@@ -9384,17 +9384,14 @@ function SetRadarAltitude {
     }
     if MechaZillaExists and TargetOLM {
         if RSS {
-            //lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ArmsHeight + (39.5167 - ShipBottomRadarHeight) + 7.05 - 0.25.
-            lock RadarAlt to alt:radar - ArmsHeight + (39.5167 - ShipBottomRadarHeight) - 0.25.
+            lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ArmsHeight + (39.5167 - ShipBottomRadarHeight) - 0.25.
         }
         else {
-            //lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ArmsHeight + (24.698 - ShipBottomRadarHeight) + 4.406 - 0.25.
-            lock RadarAlt to alt:radar - ArmsHeight + (24.698 - ShipBottomRadarHeight) - 0.25.
+            lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ArmsHeight + (24.698 - ShipBottomRadarHeight) - 0.25.
         }
     }
     else {
-        //lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ShipBottomRadarHeight - 0.25.
-        lock RadarAlt to alt:radar - ShipBottomRadarHeight - 0.25.
+        lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ShipBottomRadarHeight - 0.25.
     }
 }
 

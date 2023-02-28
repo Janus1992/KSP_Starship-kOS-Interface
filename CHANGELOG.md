@@ -3,6 +3,7 @@
 - Fixed nuisance logging spam in ksp.log
 - Fixed Booster swing direction after booster separation during crew launch.
 - Fixed wrong fuel dump when re-entering at Duna.
+- Fixed a radar altimeter problem at Duna.
 
 # V2.0.1 (2023-02-27)
 - Fixed a patching issue when Community Resource Pack was installed.
