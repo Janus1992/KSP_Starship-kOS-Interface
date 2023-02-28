@@ -57,6 +57,7 @@ To Load Cargo in the Cargo Ship:
 - Settings page: Sometimes the landing coördinates cannot be confirmed with "enter" or by pressing away from the text field. Closing the Settings page will however confirm the coördinates.
 - Enabling logging of data can seldomly cause a crash when it attempts to write and it loses the connection before/during the writing. Logging is therefore disabled by default.
 - Sometimes I've noticed that running some parts of the script generates tiny amounts of liquid fuel? It uses electricity, but generates LF. Very strange, but not really intrusive.
+- Being in IVA during Booster Separation can cause problems with returning back into the IVA later on, and break the camera. A reload after launch completion fixes everything.
 
 
 # By the author:

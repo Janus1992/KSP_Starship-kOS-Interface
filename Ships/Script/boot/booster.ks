@@ -154,7 +154,12 @@ function Boostback {
     }
 
     if verticalspeed > 0 {
-        lock steering to lookdirup(AngleAxis(-30, facing:starvector) * facing:forevector, up:vector).
+        if roll = 0 {
+            lock steering to lookdirup(AngleAxis(-30, facing:starvector) * facing:forevector, up:vector).
+        }
+        else {
+            lock steering to lookdirup(AngleAxis(30, facing:starvector) * facing:forevector, up:vector).
+        }
         when vang(facing:forevector, -vxcl(up:vector, ErrorVector)) < 90 then {
             for fin in GridFins {
                 if fin:hasmodule("ModuleControlSurface") {
