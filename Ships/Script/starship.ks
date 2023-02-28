@@ -6480,7 +6480,7 @@ function ReEntryAndLand {
 
         setflaps(FWDFlapDefault, AFTFlapDefault, 1, 30).
 
-        if LFShip > FuelVentCutOffValue {
+        if LFShip > FuelVentCutOffValue and ship:body:atm:sealevelpressure > 0.5 {
             Nose:activate.
             Tank:activate.
             when LFShip < FuelVentCutOffValue then {
