@@ -25,7 +25,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
     https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/
 - TundraExploration (only TundraExploration.dll)
     https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/
-- Starship Launch Expansion
+- Starship Launch Expansion - the DEV version(!!)
     https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229
     Dev Version: https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev
 
@@ -53,6 +53,7 @@ To Load Cargo in the Cargo Ship:
 
 
 # Known Issues:
+- Your KSP should be set to english for the scripts to work.
 - Settings page: Sometimes the landing coördinates cannot be confirmed with "enter" or by pressing away from the text field. Closing the Settings page will however confirm the coördinates.
 - Enabling logging of data can seldomly cause a crash when it attempts to write and it loses the connection before/during the writing. Logging is therefore disabled by default.
 - Sometimes I've noticed that running some parts of the script generates tiny amounts of liquid fuel? It uses electricity, but generates LF. Very strange, but not really intrusive.
