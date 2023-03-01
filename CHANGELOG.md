@@ -1,3 +1,6 @@
+# V2.0.3 (2023-03-01)
+- Hopefully a patching fix for the missing OLM.
+
 # V2.0.2 (2023-02-28)
 - Fixed booster drag after patching issue.
 - Fixed nuisance logging spam in ksp.log
