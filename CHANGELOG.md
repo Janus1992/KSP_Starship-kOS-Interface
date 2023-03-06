@@ -1,3 +1,6 @@
+# V2.0.4 (2023-03-06)
+- Catch an error on launch when the default docking system has been changed from what my .craft specifies.
+
 # V2.0.3 (2023-03-01)
 - Hopefully a patching fix for the missing OLM.
 

@@ -5771,6 +5771,9 @@ function Launch {
                 wait 0.001.
                 lock throttle to 0.
                 set CargoBeforeSeparation to CargoMass.
+                if Tank:getmodule("ModuleSepPartSwitchAction"):getfield("current docking system") = "QD" {
+                    Tank:getmodule("ModuleSepPartSwitchAction"):DoAction("next docking system", true).
+                }
                 BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
                 wait 1.
                 if not cancelconfirmed {
@@ -5781,6 +5784,7 @@ function Launch {
                         sendMessage(Processor(volume("Booster")), "Boostback, 180 Roll").
                     }
                 }
+
                 BoosterInterstage[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
                 Tank:getmodule("ModuleDockingNode"):doaction("undock node", true).
                 wait 0.1.
