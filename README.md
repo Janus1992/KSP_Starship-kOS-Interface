@@ -30,7 +30,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
     Dev Version: https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev
 
 # OPTIONAL:
-- Kerbal Joint Reinforcement Continued (Required for use with RSS, as the flaps will break off)
+- Kerbal Joint Reinforcement Continued
     https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued
 
 # Incompatible Mods:
