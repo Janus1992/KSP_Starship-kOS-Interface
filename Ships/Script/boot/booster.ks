@@ -192,7 +192,7 @@ function Boostback {
         lock steering to lookdirup(vxcl(up:vector, -ErrorVector), ApproachVector - 0.5 * up:vector).
     }
 
-    until ErrorVector:mag < 1250 and not (RSS) or ErrorVector:mag < 3000 and RSS or verticalspeed < 0 and not (RSS) {
+    until ErrorVector:mag < 1250 and not (RSS) or ErrorVector:mag < 2500 and RSS or verticalspeed < 0 and not (RSS) {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         SetBoosterActive().

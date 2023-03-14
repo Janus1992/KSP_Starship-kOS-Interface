@@ -1,3 +1,6 @@
+# V2.0.5a (2023-03-14)
+- More patch fixes, FAR added as incompatible. TweakableEverything is now fully blocked.
+
 # V2.0.5 (2023-03-13)
 - Hopefully another patch fix.
 

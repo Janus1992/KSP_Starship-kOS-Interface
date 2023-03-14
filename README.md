@@ -1,20 +1,20 @@
 # KSP_Starship-kOS-Interface V2
 An Interface for automating the 'Starship Expansion Project' and 'Starship Launch Expansion' mods within Kerbal Space Program. It's meant only for stock kerbin at the moment.
 
-# IMPORTANT CHANGE!! To Users using versions OLDER than v2.0:
-- Please delete GameData/Janus92_kOS_Automation_patch.cfg from your current KSP install location.
 
 ![Alt text](/Infographic.png)
 
-# TO INSTALL:
+
+# TO INSTALL (NO CKAN):
+- Download and install all requirements listed below (SLE needs the DEV version, not available on CKAN).
 - Download the zip file.
 - Extract the contents to a folder.
 - Copy the 'GameData' and 'Ships' folders into your /Kerbal Space Program folder.
 
-
 # IMPORTANT!:
 - Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker"). These can be found if you enable stock vehicles in your savegame, or you copy them manually to your savegame.
-- If the Interface doesn't show up, check again that you don't have any of the mods installed that the Interface doesn't work with (listed below).
+- If the Interface or ship doesn't show up, check again that you fulfill all the requirements listed below!
+- If the ship or booster lands inaccurately, this is probably caused by OTHER MODS. Please try again with a minimal set of mods. If the problem persists, you may have found a bug!
 
 # REQUIRES:
 - Starship Expansion Project
@@ -33,31 +33,47 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Kerbal Joint Reinforcement Continued
     https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued
 
-# Incompatible Mods:
+# INCOMPATIBLE(!!):
 - TweakableEverything
+- FerramAerospaceResearch (FAR)
+
+
+
+# Notes:
+- My mod copies the original SEP parts and changes it's fuel and thrust (and more) values to portray a more playable behaviour on Kerbin. As SEP is optimized for 2.5/2.7x sized Kerbin, SEP default will result in more fuel in orbit than a real life Starship would have in lower Earth orbit. Although SEP's behaviour is realistic for a planet the size of Kerbin, I decided that simulating the tight margins to orbit makes SEP more playable and fun on stock Kerbin.
+
+- Automatic re-stacking/refueling is currently impossible because the SEP & SLE mods lack the ability to dock together.
+
+- When using multiple ships of the same name, they might get renamed by my scripts to avoid Interface crashes.
+
+- Seldom Interface crashes may occur (it makes a little crashing noise). A watchdog computer should try to restart the Interface after 2.5 seconds.
+
+- Existing Ships will automatically try to update the Interface after installing the latest version from here, provided a connection is available.
+
+- The KSP delta-V calculations are not correct, so trust the Interface instead! :)
+
+
 
 # Tips & Tricks:
 To Load Cargo in the Cargo Ship:
+
 - Drag the whole ship down to access the cargo-bay (root: Ships tank section).
 - Connect your payload.
 - Drage the whole ship up so far that the Tower is completely above ground (or the OLM will explode on booster return).
 
 
-# Notes:
-- My mod copies the original SEP parts and changes it's fuel and thrust (and more) values to portray a more playable behaviour on Kerbin. As SEP is optimized for 2.5/2.7x sized Kerbin, SEP default will result in more fuel in orbit than a real life Starship would have in lower Earth orbit. Although SEP's behaviour is realistic for a planet the size of Kerbin, I decided that simulating the tight margins to orbit makes SEP more playable and fun on stock Kerbin.
-- Automatic re-stacking/refueling is currently impossible because the SEP & SLE mods lack the ability to dock together.
-- When using multiple ships of the same name, they might get renamed by my scripts to avoid Interface crashes.
-- Seldom Interface crashes may occur (it makes a little crashing noise). A watchdog computer should try to restart the Interface after 2.5 seconds.
-- Existing Ships will automatically try to update the Interface after installing the latest version from here, provided a connection is available.
-- The KSP delta-V calculations are not correct, so trust the Interface instead! :)
-
 
 # Known Issues:
 - Your KSP should be set to english for the scripts to work.
+
 - Settings page: Sometimes the landing coördinates cannot be confirmed with "enter" or by pressing away from the text field. Closing the Settings page will however confirm the coördinates.
+
 - Enabling logging of data can seldomly cause a crash when it attempts to write and it loses the connection before/during the writing. Logging is therefore disabled by default.
+
 - Sometimes I've noticed that running some parts of the script generates tiny amounts of liquid fuel? It uses electricity, but generates LF. Very strange, but not really intrusive.
+
 - Being in IVA during Booster Separation can cause problems with returning back into the IVA later on, and break the camera. A reload after launch completion fixes everything.
+
 
 
 # By the author:

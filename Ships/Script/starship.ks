@@ -285,6 +285,9 @@ function FindParts {
                     set ShipType to "Tanker".
                     set CargoMassStep to CargoMassStep + x:mass - x:drymass.
                     set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
+                    if RSS {
+                        set MaxCargoToOrbit to 125000.
+                    }
                 }
                 else {
                     set CargoMassStep to CargoMassStep + x:mass.
@@ -6521,6 +6524,7 @@ function ReEntryAndLand {
                 }
                 when airspeed < 1350 and ship:body:atm:sealevelpressure > 0.5 and not (RSS) or airspeed < 2500 and ship:body:atm:sealevelpressure > 0.5 and RSS or airspeed < 600 and ship:body:atm:sealevelpressure < 0.5 then {
                     set PitchPID to PIDLOOP(0.025, 0.01, 0.01, -30, 15).
+                    set YawPID to PIDLOOP(0.1, 0, 0, -50, 50).
                     when airspeed < 300 and ship:body:atm:sealevelpressure > 0.5 or airspeed < 450 and ship:body:atm:sealevelpressure < 0.5 then {
                         if ship:body:atm:sealevelpressure > 0.5 {
                             set PitchPID to PIDLOOP(0.075, 0.02, 0.05, -30, 15).
