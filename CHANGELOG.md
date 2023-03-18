@@ -1,3 +1,6 @@
+# V2.0.6 (2023-03-18)
+- Fix Booster crash when Breaking ground was not installed.
+
 # V2.0.5a (2023-03-14)
 - More patch fixes, FAR added as incompatible. TweakableEverything is now fully blocked.
 
