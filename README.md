@@ -17,7 +17,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Before filing a bug, read the "Bug support guide" at the bottom of this page.
 
 # REQUIRES:
-- Stock KSP (no RSS, KSRSS or other planet changing mods) set to "english" (important).
+- Stock KSP (no RSS, KSRSS or other planet changing mods) that has the language set to "english" (important).
 - Starship Expansion Project
     https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
 - Trajectories
@@ -49,7 +49,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 - Seldom Interface crashes may occur (it makes a little crashing noise). A watchdog computer should try to restart the Interface after 2.5 seconds.
 
-- Existing Ships will automatically try to update the Interface after installing the latest version from here, provided a connection is available.
+- Existing Ships will automatically try to update the Interface after installing the latest version from here, provided a connection to the KSC is available.
 
 - The KSP delta-V calculations are not correct, so trust the Interface instead! :)
 
@@ -71,14 +71,14 @@ To Load Cargo in the Cargo Ship:
 
 - Enabling logging of data can seldomly cause a crash when it attempts to write and it loses the connection before/during the writing. Logging is therefore disabled by default.
 
-- Sometimes I've noticed that running some parts of the script generates tiny amounts of liquid fuel? It uses electricity, but generates LF. I haven't gotten to the bottom of this issue. One user reports that the ship can't land since oxidizer gets created after the de-orbit burn. Investigation in progress.
+- Sometimes I've noticed that running some parts of the script generates tiny amounts of liquid fuel? It uses electricity, but generates LF. I haven't gotten to the bottom of this issue. One user reports that the ship can't land since oxidizer somehow gets created after the de-orbit burn. Investigation in progress..
 
 - Being in IVA during Booster Separation can cause problems with returning back into the IVA later on, and break the camera. A reload after launch completion fixes everything.
 
 
 
 # Bug support guide:
-- check first that you fulfill the requirements above and carefully read this page.
+- check first that you fulfill the requirements above (check Incompatible Mods!!) and carefully (!!) read this whole page.
 - If you have many mods installed, try moving unnecessary mods away from /gamedata temporarily. The less mods, the better (Only SEPs requirements and those of this mod).
 - If you still get script crashes that don't recover themselves: congratulations, you may have found a bug!
 - Keep the kOS CPUs open (right hand side) and screenshot any errors or problems.
@@ -92,4 +92,4 @@ To Load Cargo in the Cargo Ship:
 
 
 # By the author:
-This has been a pet project of mine since 2021, and I had a lot of fun making and using this Interface. I hope you will too! Let me know what you think! I thank all the mod makers whose work I have been able to rely on, and without whom none of this would have been possible.
+This has been a pet project of mine since around May 2021, and I had a lot of fun making and using this Interface. I hope you will too! Let me know what you think! I thank all the mod makers whose work I have been able to rely on, and without whom none of this would have been possible.
