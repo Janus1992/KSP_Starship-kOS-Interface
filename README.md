@@ -14,9 +14,10 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 # IMPORTANT!:
 - Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker"). These can be found if you enable stock vehicles in your savegame, or you copy them manually to your savegame.
 - If the Interface or ship doesn't show up, check again that you fulfill all the requirements listed below!
-- If the ship or booster lands inaccurately, this is probably caused by OTHER MODS. Please try again with a minimal set of mods. If the problem persists, you may have found a bug!
+- Before filing a bug, read the "Bug support guide" at the bottom of this page.
 
 # REQUIRES:
+- Stock KSP (no RSS, KSRSS or other planet changing mods) set to "english" (important).
 - Starship Expansion Project
     https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
 - Trajectories
@@ -70,9 +71,23 @@ To Load Cargo in the Cargo Ship:
 
 - Enabling logging of data can seldomly cause a crash when it attempts to write and it loses the connection before/during the writing. Logging is therefore disabled by default.
 
-- Sometimes I've noticed that running some parts of the script generates tiny amounts of liquid fuel? It uses electricity, but generates LF. Very strange, but not really intrusive.
+- Sometimes I've noticed that running some parts of the script generates tiny amounts of liquid fuel? It uses electricity, but generates LF. I haven't gotten to the bottom of this issue. One user reports that the ship can't land since oxidizer gets created after the de-orbit burn. Investigation in progress.
 
 - Being in IVA during Booster Separation can cause problems with returning back into the IVA later on, and break the camera. A reload after launch completion fixes everything.
+
+
+
+# Bug support guide:
+- check first that you fulfill the requirements above and carefully read this page.
+- If you have many mods installed, try moving unnecessary mods away from /gamedata temporarily. The less mods, the better (Only SEPs requirements and those of this mod).
+- If you still get script crashes that don't recover themselves: congratulations, you may have found a bug!
+- Keep the kOS CPUs open (right hand side) and screenshot any errors or problems.
+- Either:
+    - File an issue on github, or
+    - Write me on: KSP forum SEP thread, or
+    - Write me on: SEP Discord
+- Be sure to describe the problem as accurately as possible and add the screenshots.
+- Videos would be very helpful as well if ship or booster does not perform properly.
 
 
 
