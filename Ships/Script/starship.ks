@@ -3894,7 +3894,26 @@ set maneuver3button:onclick to {
 
 
 function AutoDocking {
+    set target:loaddistance:orbit:unload to 25000.
+    set target:loaddistance:orbit:load to 10050.
+    wait 0.001.
+
     if ShipIsDocked {
+        return.
+    }
+    else if target:dockingports[0]:haspartner {
+        set TargetPicker:index to 0.
+        set AutodockingIsRunning to false.
+        ShowHomePage().
+        set message1:text to "<b>Targets docking port is already occupied..</b>".
+        set message2:text to "<b>Try again later..</b>".
+        set message3:text to "".
+        set message1:style:textcolor to yellow.
+        set message2:style:textcolor to yellow.
+        set message3:style:textcolor to yellow.
+        set textbox:style:bg to "starship_img/starship_main_square_bg".
+        wait 3.
+        ClearInterfaceAndSteering().
         return.
     }
     InhibitButtons(1,1,0).

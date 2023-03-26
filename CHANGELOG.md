@@ -1,4 +1,5 @@
 # V2.0.7 (2023-03-26)
+- Auto-docking bug fixed (due to changes in vessel loading sequences).
 - Fix Ship crash on final re-entry when Breaking ground was not installed.
 
 # V2.0.6 (2023-03-18)
