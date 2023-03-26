@@ -1,3 +1,6 @@
+# V2.0.7 (2023-03-26)
+- Fix Ship crash on final re-entry when Breaking ground was not installed.
+
 # V2.0.6 (2023-03-18)
 - Fix Booster crash when Breaking ground was not installed.
 
