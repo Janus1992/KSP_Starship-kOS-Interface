@@ -3897,6 +3897,12 @@ function AutoDocking {
     set target:loaddistance:orbit:unload to 25000.
     set target:loaddistance:orbit:load to 10050.
     wait 0.001.
+    if not (target:loaded) {
+        wait 1.
+        if not (target:loaded) {
+            return.
+        }
+    }
 
     if ShipIsDocked {
         return.
@@ -3916,6 +3922,7 @@ function AutoDocking {
         ClearInterfaceAndSteering().
         return.
     }
+
     InhibitButtons(1,1,0).
     HideEngineToggles(1).
     ShowButtons(0).
@@ -4004,6 +4011,7 @@ function AutoDockSteering {
 
     if not hastarget or PortDistanceVector:mag > 10000 {
         set TargetPicker:index to 0.
+        print "Target too far away (>10km)".
         set cancelconfirmed to true.
         return lookdirup(facing:forevector, facing:topvector).
     }
@@ -4041,7 +4049,7 @@ function AutoDockSteering {
         set message2:text to "<b>Target:</b>  Intermediate Safe Point  (" + round(SafeVector:mag, 1) + "m)".
         set message3:text to "<b>Relative Velocity (m/s):   </b><size=14>X: " + round(RelVelX, 2) + "   Y: " + round(RelVelY,2) + "   Z: " + round(RelVelZ,2) + "</size>".
 
-        if vang(SafeVector, facing:forevector) < 5 and abs(RelVelY) < 0.1 and abs(RelVelZ) < 0.1 {
+        if vang(SafeVector, facing:forevector) < 5 and abs(RelVelY) < 0.25 and abs(RelVelZ) < 0.25 {
             set ship:control:translation to v(RelVelY/2, RelVelZ/2, (5 + SafeVector:mag / 400) + RelVelX).
         }
         else {
