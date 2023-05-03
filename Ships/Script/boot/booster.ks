@@ -297,7 +297,7 @@ function Boostback {
     lock stopDist9 to (abs(verticalspeed) / 2) * stopTime9.
 
     lock stopTime3 to min(100, abs(verticalspeed)) / min(maxDecel3, 5).
-    lock stopDist3 to (100 / 2) * stopTime3.
+    lock stopDist3 to (min(100, abs(verticalspeed)) / 2) * stopTime3.
 
     lock TotalstopTime to stopTime9 + stopTime3.
     lock TotalstopDist to stopDist9 + stopDist3.
