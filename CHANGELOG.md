@@ -1,3 +1,9 @@
+# 2.0.8 (2023-05-03)
+- Major rework of the booster and ship launch trajectory, booster landing and circularization burn for working with RSS. The new code could have bugs. Let me know if you find any.
+- Major rework of patches (for example drag cubes) for RSS and stock.
+- New .craft files. Don't use old ones.
+- Many more behind the scenes changes.
+
 # V2.0.7 (2023-03-26)
 - Auto-docking bug fixed (due to changes in vessel loading sequences).
 - Fix Ship crash on final re-entry when Breaking ground was not installed.

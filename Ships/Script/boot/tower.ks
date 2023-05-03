@@ -1,6 +1,7 @@
+set config:ipu to 500.
 if ship:body:radius > 600001 and ship:body:atm:sealevelpressure > 0.6 {
     set RSS to true.
-    set LaunchSites to lexicon("KSC", "28.6084,-80.5998").
+    set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
 }
 else {
     set RSS to false.
@@ -16,7 +17,6 @@ set TowerBase to ship:partstitled("Starship Orbital Launch Integration Tower Bas
 set TowerCore to ship:partstitled("Starship Orbital Launch Integration Tower Core")[0].
 Set TowerTop to ship:partstitled("Starship Orbital Launch Integration Tower Rooftop")[0].
 Set Mechazilla to ship:partsnamed("SLE.SS.OLIT.MZ.KOS")[0].
-set config:ipu to 500.
 set PrevTime to time:seconds.
 clearscreen.
 

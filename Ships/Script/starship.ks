@@ -70,7 +70,7 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
 
 if RSS {    // Set of variables when Real Solar System has been installed
     set aoa to 60.
-    set MaxCargoToOrbit to 100000.
+    set MaxCargoToOrbit to 150000.
     set MaxReEntryCargoThickAtmo to 30000.
     set MaxIU to 400.
     set MaxReEntryCargoThinAtmo to 50000.
@@ -79,12 +79,12 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set BoosterMinPusherDistance to 0.48.
     set ShipMinPusherDistance to 1.12.
     set towerhgt to 96.
-    set LaunchSites to lexicon("KSC", "28.6084,-80.5998").
+    set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
     set FuelVentCutOffValue to 1150.
 }
 else {  // Set of variables when Real Solar System has NOT been installed
     set aoa to 60.
-    set MaxCargoToOrbit to 70000.
+    set MaxCargoToOrbit to 75000.
     set MaxReEntryCargoThickAtmo to 15000.
     set MaxIU to 260.
     set MaxReEntryCargoThinAtmo to 40000.
@@ -210,6 +210,9 @@ set FLflap to false.
 set FRflap to false.
 set ALflap to false.
 set ARflap to false.
+set DesiredAccel to 0.
+set deltaV to 0.
+set MaintainVS to false.
 
 
 
@@ -286,7 +289,7 @@ function FindParts {
                     set CargoMassStep to CargoMassStep + x:mass - x:drymass.
                     set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
                     if RSS {
-                        set MaxCargoToOrbit to 125000.
+                        set MaxCargoToOrbit to 150000.
                     }
                 }
                 else {
@@ -1119,10 +1122,10 @@ set TargetLZPicker:onchange to {
     parameter choice.
     if choice = "<b><color=white>KSC</color></b>" {
         if RSS {
-            set setting1:text to "28.6084,-80.5998".
-            set landingzone to latlng(28.6084,-80.5998).
+            set setting1:text to "28.6084,-80.59975".
+            set landingzone to latlng(28.6084,-80.59975).
             if homeconnection:isconnected {
-                SaveToSettings("Landing Coordinates", "28.6084,-80.5998").
+                SaveToSettings("Landing Coordinates", "28.6084,-80.59975").
             }
         }
         else {
@@ -5418,7 +5421,7 @@ if addons:tr:available and not startup {
             if exists("0:/settings.json") {
                 set L to readjson("0:/settings.json").
                 if L:haskey("Tooltips") {
-                    if L["Tooltips"] = "true" {
+                    if L["Tooltips"] = true {
                         set setting2:pressed to true.
                     }
                     else {
@@ -5432,12 +5435,12 @@ if addons:tr:available and not startup {
                     set setting3:text to ("0°").
                 }
                 if L:haskey("Log Data") {
-                    if L["Log Data"] = "true" {
+                    if L["Log Data"] = true {
                         set quicksetting3:pressed to true.
                     }
                 }
                 if L:haskey("Auto-Warp") {
-                    if L["Auto-Warp"] = "true" {
+                    if L["Auto-Warp"] = true {
                         set quicksetting1:pressed to true.
                     }
                 }
@@ -5682,23 +5685,21 @@ function Launch {
         SaveToSettings("Ship Name", ship:name).
 
         if RSS {
-            set targetap to 150000.
+            set targetap to 250000.
             set LaunchElev to altitude - 108.384.
-            set BoosterAp to 60000.
+            set BoosterAp to 135000.
+            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.01, 0, 0, -30, 3.25 + 2.6 * CargoMass / MaxCargoToOrbit).
+            set TimeFromLaunchToOrbit to 560.
         }
         else {
             set targetap to 75000.
             set LaunchElev to altitude - 67.74.
-            set BoosterAp to 55000.
+            set BoosterAp to 60000.
+            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.05, 0, 0, -30, 0).
+            set TimeFromLaunchToOrbit to 260.
         }
         set targetincl to setting3:text:split("°")[0]:toscalar(0).
         set LaunchData to LAZcalc_init(targetap, targetincl).
-        if RSS {
-            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.01, 0, 0, -15, 22.5).
-        }
-        else {
-            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.05, 0, 0, -30, 0).
-        }
         set OrbitBurnPitchCorrectionPID:setpoint to targetap.
 
         if OnOrbitalMount {
@@ -5770,7 +5771,12 @@ function Launch {
             wait 0.1.
             if round(ship:geoposition:lat, 2) = round(landingzone:lat, 2) and round(ship:geoposition:lng, 2) = round(landingzone:lng, 2) {}
             else {
-                set landingzone to latlng(round(ship:geoposition:lat, 4), round(ship:geoposition:lng, 4)).
+                if not (RSS) {
+                    set landingzone to latlng(round(ship:geoposition:lat, 4), round(ship:geoposition:lng, 4)).
+                }
+                else {
+                    set landingzone to latlng(round(ship:geoposition:lat, 5), round(ship:geoposition:lng, 5)).
+                }
                 set setting1:text to (landingzone:lat + "," + landingzone:lng).
                 SaveToSettings("Landing Coordinates", (landingzone:lat + "," + landingzone:lng)).
             }
@@ -5829,11 +5835,14 @@ function Launch {
                 set kuniverse:activevessel to vessel(ship:name).
                 HideEngineToggles(1).
                 if not cancelconfirmed {
-                    until time:seconds > StageSeparationTime + 4 {
+                    until time:seconds > StageSeparationTime + 7 {
                         BackGroundUpdate().
                     }
                 }
                 set quickengine3:pressed to true.
+                if NrOfVacEngines = 3 {
+                    set quickengine2:pressed to true.
+                }
                 unlock throttle.
                 lock throttle to 1.
                 if Tank:getmodule("ModuleSepPartSwitchAction"):getfield("current docking system") = "BTB" {
@@ -5841,7 +5850,7 @@ function Launch {
                 }
                 set StageSepComplete to true.
                 if RSS {
-                    SetLoadDistances(1000000).
+                    SetLoadDistances(1500000).
                 }
                 else {
                     SetLoadDistances(300000).
@@ -5865,21 +5874,22 @@ function Launch {
         }
         when StageSepComplete then {
             if NrOfVacEngines = 3 {
-                set quickengine2:pressed to true.
                 if RSS {
-                    when apoapsis > targetap - 25000 and eta:apoapsis > 40 then {
+                    when DesiredAccel / max(MaxAccel, 0.000001) < 0.6 and altitude > 100000 then {
                         set quickengine2:pressed to false.
-                        set OrbitBurnPitchCorrectionPID to PIDLOOP(0.01, 0, 0, -15, 12.5).
-                        set OrbitBurnPitchCorrectionPID:setpoint to targetap.
-                        when altitude > targetap - 100 then {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.25, 0, 0, -15, 15).
-                            set OrbitBurnPitchCorrectionPID:setpoint to 0.
+                        when altitude > targetap - 1000 or eta:apoapsis > 0.5 * ship:orbit:period then {
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(1, 0.1, 0.1, -12.5, 12.5).
+                            set MaintainVS to true.
                         }
                     }
                 }
                 else {
                     when apoapsis > targetap - 10000 then {
                         set quickengine2:pressed to false.
+                        when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period then {
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(2, 0.1, 0.1, -10, 10).
+                            set MaintainVS to true.
+                        }
                     }
                     SLEngines[0]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
                     SLEngines[1]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
@@ -5893,6 +5903,7 @@ function Launch {
             wait 0.001.
             lock throttle to 0.
             unlock throttle.
+            set config:ipu to CPUSPEED.
             if NrOfVacEngines = 3 {
                 SLEngines[0]:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
                 SLEngines[1]:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
@@ -5918,17 +5929,17 @@ function Launch {
 
             rcs off.
             if defined Booster and not (RSS) {
-                if Booster:altitude < 35000 {
+                if Booster:altitude < 30000 {
                     HUDTEXT("Changing Focus to: Booster", 5, 2, 20, green, false).
                     wait 1.5.
-                    HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 10, 2, 20, green, false).
+                    HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 20, 2, 20, green, false).
                     wait 0.001.
                     set kuniverse:activevessel to vessel("Booster").
                 }
                 else {
-                    HUDTEXT("Changing Focus when Booster passes below 15km Altitude", 5, 2, 20, yellow, false).
+                    HUDTEXT("Changing Focus when Booster passes below 30km Altitude", 15, 2, 20, yellow, false).
                     wait 1.5.
-                    HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 10, 2, 20, green, false).
+                    HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 20, 2, 20, green, false).
                 }
             }
 
@@ -5975,6 +5986,8 @@ function Launch {
 
 
 Function LaunchSteering {
+    SendPing().
+    clearscreen.
     if quicksetting1:pressed and altitude - LaunchElev > 150 and altitude - LaunchElev < 1000 {
         set kuniverse:timewarp:warp to 4.
     }
@@ -6022,7 +6035,7 @@ Function LaunchSteering {
         }
         if Boosterconnected {
             if RSS {
-                set targetpitch to max(90 - (13.5 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)), 25).
+                set targetpitch to 90 - (7.85 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
             }
             else {
                 set targetpitch to 90 - (10 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
@@ -6031,14 +6044,28 @@ Function LaunchSteering {
                 set message2:text to "<b>Guidance (Pitch/Az.):</b>         " + round(targetpitch, 1) + "°/" + round(myAzimuth, 1) + "°".
                 set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
             }
-            if apoapsis > BoosterAp - 2000 {
-                lock throttle to 0.25 + (1 - ((apoapsis - BoosterAp + 2000) / 2000)).
-            }
-            if not (Launch180) {
-                set result to heading(myAzimuth, targetpitch).
+            if ship:q > 0.25 {
+                lock throttle to 1 - 3 * (ship:q - 0.25).
             }
             else {
-                set result to heading(myAzimuth, targetpitch) * R(0, 0, 180).
+                lock throttle to 1.
+            }
+            if apoapsis > BoosterAp - 1500 {
+                lock throttle to 0.25 + (1 - ((apoapsis - BoosterAp + 1500) / 1500)).
+                if not (Launch180) {
+                    set result to heading(myAzimuth, 85).
+                }
+                else {
+                    set result to heading(myAzimuth, 85) * R(0, 0, 180).
+                }
+            }
+            else {
+                if not (Launch180) {
+                    set result to heading(myAzimuth, targetpitch).
+                }
+                else {
+                    set result to heading(myAzimuth, targetpitch) * R(0, 0, 180).
+                }
             }
         }
         else {
@@ -6057,69 +6084,61 @@ Function LaunchSteering {
                 set quickengine3:pressed to true.
             }
             if not hasnode and quickengine3:pressed {
-                set OrbitalVelocity to ship:body:radius * sqrt(9.81 / (ship:body:radius + APOAPSIS)).
+                set OrbitalVelocity to ship:body:radius * sqrt(9.81 / (ship:body:radius + targetap)).
                 set ApoapsisVelocity to sqrt(ship:body:mu * ((2 / (ship:body:radius + APOAPSIS)) - (1 / ship:obt:semimajoraxis))).
                 set deltaV to (OrbitalVelocity - ApoapsisVelocity).
-                set BurnDuration to deltaV/MaxAccel.
+                set BurnDuration to deltaV / max(MaxAccel, 0.000001).
             }
-            if altitude > targetap - 100 and RSS {
+            set ProgradeAngle to 90 - vang(velocity:surface, up:vector).
+
+            set TimeToOrbitCompletion to TimeFromLaunchToOrbit - (time:seconds - LiftOffTime).
+            print "Time to Orbit: " + round(TimeToOrbitCompletion) + "s".
+            set DesiredAccel to deltaV / (TimeToOrbitCompletion).
+            print "Desired Accel: " + round(DesiredAccel / 9.81, 2) + "G".
+            if MaintainVS {
+                if deltaV > 750 {
+                    set OrbitBurnPitchCorrectionPID:setpoint to (targetap - altitude) / 100.
+                    print "Desired V/S: " + round((targetap - altitude) / 100, 2).
+                }
+                else {
+                    set OrbitBurnPitchCorrectionPID:setpoint to 0.
+                    print "Desired V/S: 0".
+                }
                 set OrbitBurnPitchCorrection to OrbitBurnPitchCorrectionPID:UPDATE(TIME:SECONDS, verticalspeed).
             }
             else {
                 set OrbitBurnPitchCorrection to OrbitBurnPitchCorrectionPID:UPDATE(TIME:SECONDS, apoapsis).
             }
-            set ProgradeAngle to 90 - vang(velocity:surface, up:vector).
-            if ETA:APOAPSIS > 0.5 * BurnDuration and not hasnode or apoapsis < targetap - 100 {
-                if quickengine3:pressed {
-                    if periapsis < 0 and not (RSS) {
-                        lock throttle to (0.925 * 9.81) / MaxAccel.
-                    }
-                    if periapsis < -2000000 and RSS {
-                        lock throttle to (3 * 9.81) / MaxAccel.
-                    }
-                    if periapsis > -2000000 and periapsis < 0 and RSS {
-                        lock throttle to 0.4.
-                    }
-                    if periapsis > -100000 {
-                        lock throttle to 0.
-                        set OrbitBurnPitchCorrection to 0.
-                    }
+
+            print " ".
+            //print "Prograde Angle: " + ProgradeAngle.
+            //print "Azimuth: " + myAzimuth.
+            //print "Facing Vector: " + facing:forevector.
+            //print "Guidance Vector: " + result:vector.
+            print "Steering Error: " + round(vang(facing:forevector, result:vector), 2).
+
+            if quickengine3:pressed {
+                if quickengine2:pressed = true and DesiredAccel / max(MaxAccel, 0.000001) > 0.6 {
+                    lock throttle to (3 * Planet1G) / max(MaxAccel, 0.000001).
                 }
-                if not (Launch180) {
-                    rcs on.
-                    set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, up:vector).
+                else if MaintainVS and apoapsis < targetap + 5000 and KUniverse:activevessel = ship and periapsis < altitude - 500 {
+                    lock throttle to min((2 * Planet1G) / max(MaxAccel, 0.000001), max(deltaV / max(MaxAccel, 0.000001), 0.1)).
+                }
+                else if periapsis < targetap - 500 and apoapsis < targetap + 5000 and periapsis < altitude - 500 {
+                    lock throttle to DesiredAccel / max(MaxAccel, 0.000001).
                 }
                 else {
-                    rcs on.
-                    set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, -up:vector).
+                    lock throttle to 0.
+                    set BurnComplete to true.
                 }
             }
-            else if apoapsis > targetap - 5000 {
-                if not hasnode and apoapsis > 70000 {
-                    set CircularizationNode to Node(timespan(ETA:APOAPSIS), 0, 0, deltaV).
-                    add CircularizationNode.
-                    set CircularizationStart to CircularizationNode:deltav.
-                    set BurnAccel to min(MaxAccel, 29.43).
-                }
-                else if apoapsis > 70000 {
-                    if vdot(CircularizationStart, CircularizationNode:deltav) > 5000 {
-                        if not (Launch180) {
-                            set result to lookdirup(CircularizationNode:burnvector, ship:facing:topvector).
-                        }
-                        else {
-                            set result to CircularizationNode:burnvector:direction + R(0, 0, 90).
-                        }
-                    }
-                    if vdot(CircularizationStart, CircularizationNode:deltav) < 0.5 {
-                        lock throttle to 0.
-                        set BurnComplete to true.
-                    }
-                    else if ETA:APOAPSIS < 0.5 * BurnDuration or ETA:APOAPSIS > 1000 {
-                        if vang(facing:forevector, CircularizationNode:burnvector) < 5 {
-                            lock throttle to min(CircularizationNode:deltav:mag / MaxAccel, BurnAccel / MaxAccel).
-                        }
-                    }
-                }
+            if not (Launch180) {
+                rcs on.
+                set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, up:vector).
+            }
+            else {
+                rcs on.
+                set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, -up:vector).
             }
             if not ClosingIsRunning {
                 if not hasnode {
@@ -6145,7 +6164,9 @@ Function LaunchSteering {
             }
         }
     }
-    LogToFile("Launch Telemetry").
+    if Apoapsis < targetap - 1000 and not (KUniverse:activevessel = ship) {
+        LogToFile("Launch Telemetry").
+    }
     BackGroundUpdate().
     return result.
 }
@@ -7428,7 +7449,7 @@ function ActivateEngines {
 
 
 function ShutDownAllEngines {
-    if quickengine1:pressed = "true" {
+    if quickengine1:pressed = true {
         set quickengine1:pressed to false.
     }
     set quickengine1:pressed to true.
@@ -8061,7 +8082,7 @@ function updateStatus {
         if OnOrbitalMount {
             set status1label5:text to "<b>MASS:</b>  " + round(ship:mass - OLM:mass - TowerBase:mass - TowerCore:mass - TowerTop:mass - Mechazilla:mass) + "t".
         }
-        else if ShipMass > 999999 {
+        else if ShipMass < 999999 {
             set status1label5:text to "<b>MASS:</b>  " + round(ShipMass / 1000, 1) + "t".
         }
         else {
@@ -9010,10 +9031,16 @@ function ClearInterfaceAndSteering {
 function BackGroundUpdate {
     if not BGUisRunning {
         set BGUisRunning to true.
-        SendPing().
-        updatestatusbar().
+        if not (KUniverse:activevessel = ship) and LaunchButtonIsRunning {
+            set UpdateInterval to 1.
+        }
+        else {
+            set UpdateInterval to 0.1.
+        }
 
-        if prevCalcTime + 0.1 < time:seconds {
+        if prevCalcTime + UpdateInterval < time:seconds {
+            SendPing().
+            updatestatusbar().
             FindParts().
             SetPlanetData().
             if ShipIsDocked {
@@ -9077,10 +9104,11 @@ function BackGroundUpdate {
             else {
                 attitudebutton:hide().
             }
+            if orbitbutton:pressed and LaunchButtonIsRunning {updateOrbit().}
             set prevCalcTime to time:seconds.
         }
 
-        if orbitbutton:pressed {updateOrbit().}
+        if orbitbutton:pressed and not (LaunchButtonIsRunning) {updateOrbit().}
         if statusbutton:pressed {updateStatus().}
         if enginebutton:pressed {updateEnginePage().}
         if cargobutton:pressed {updateCargoPage().}
@@ -9874,21 +9902,24 @@ function PerformBurn {
     parameter Burntime, ProgradeVelocity, NormalVelocity, RadialVelocity, BurnType.
     set config:ipu to CPUSPEED.
     set textbox:style:bg to "starship_img/starship_main_square_bg".
-    if BurnType = "Execute" {}
-    else if BurnTime:istype("TimeStamp") {
-        set burn to node(BurnTime, 0, NormalVelocity, ProgradeVelocity).
-        add burn.
-    }
-    else {
-        set burn to node(timespan(BurnTime), 0, NormalVelocity, ProgradeVelocity).
-        add burn.
-    }
+    print Burntime.
     if BurnTime:istype("TimeStamp") {
+        if BurnType = "Execute" {}
+        else {
+            set burn to node(BurnTime, 0, NormalVelocity, ProgradeVelocity).
+            add burn.
+        }
         set burnstarttime to BurnTime.
     }
     else {
+        if BurnType = "Execute" {}
+        else {
+            set burn to node(timespan(BurnTime), 0, NormalVelocity, ProgradeVelocity).
+            add burn.
+        }
         set burnstarttime to timestamp(time:seconds + BurnTime).
     }
+    print burnstarttime.
     if burnstarttime - 60 < timestamp(time:seconds) {
         ShowHomePage().
         LogToFile("Stopping De-Orbit Burn due to wrong orientation").
