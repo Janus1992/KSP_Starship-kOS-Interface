@@ -365,8 +365,8 @@ function Boostback {
 
     when verticalspeed > -100 and (stopDist3 / RadarAlt) < 1 then {
         BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
-        lock TotalstopTime to verticalspeed / min(maxDecel, 5).
-        lock TotalstopDist to (verticalspeed / 2) * TotalstopTime.
+        lock TotalstopTime to abs(verticalspeed) / min(maxDecel, 5).
+        lock TotalstopDist to (abs(verticalspeed) / 2) * TotalstopTime.
         lock landingRatio to TotalstopDist / RadarAlt.
         lock throttle to landingRatio * (min(maxDecel, 5) / maxDecel).
         if abs(LngError) > 200 or abs(LatError) > 100 {
