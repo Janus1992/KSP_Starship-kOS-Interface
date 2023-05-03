@@ -319,7 +319,7 @@ function Boostback {
     }
 
 
-    until landingRatio > 1 and alt:radar < 3000 or alt:radar < 1750 {
+    until landingRatio > 1 and alt:radar < 3000 or alt:radar < 1650 {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         rcs on.
@@ -328,7 +328,7 @@ function Boostback {
     }
     
     HUDTEXT("Performing Landing Burn..", 3, 2, 20, green, false).
-    lock throttle to landingRatio * (min(maxDecel, 34) / maxDecel).
+    lock throttle to (landingRatio * min(maxDecel, 34)) / maxDecel.
     lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface, ApproachVector).
     lock steering to SteeringVector.
 
@@ -368,7 +368,7 @@ function Boostback {
         lock TotalstopTime to abs(verticalspeed) / min(maxDecel, 5).
         lock TotalstopDist to (abs(verticalspeed) / 2) * TotalstopTime.
         lock landingRatio to TotalstopDist / RadarAlt.
-        lock throttle to landingRatio * (min(maxDecel, 5) / maxDecel).
+        lock throttle to (landingRatio * min(maxDecel, 5)) / maxDecel.
         if abs(LngError) > 200 or abs(LatError) > 100 {
             lock RadarAlt to alt:radar - BoosterHeight.
             set LandSomewhereElse to true.
@@ -380,7 +380,7 @@ function Boostback {
         else {
             lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface, ApproachVector).
             lock steering to SteeringVector.
-            when verticalspeed > -85 then {
+            when verticalspeed > -80 then {
                 lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.02 * ErrorVector, heading(270,0):vector).
                 lock steering to SteeringVector.
                 when verticalspeed > -25 then {
@@ -557,7 +557,7 @@ FUNCTION SteeringCorrections {
                 set LngCtrlPID:setpoint to 1 * GS.
             }
             else {
-                set LngCtrlPID:setpoint to 1.3 * GS.
+                set LngCtrlPID:setpoint to 1.375 * GS.
             }
 
             set LngCtrl to -LngCtrlPID:UPDATE(time:seconds, LngError).
