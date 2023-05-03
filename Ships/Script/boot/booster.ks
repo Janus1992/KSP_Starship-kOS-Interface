@@ -363,7 +363,7 @@ function Boostback {
         }
     }
 
-    when verticalspeed > -100 then {
+    when verticalspeed > -100 and (stopDist3 / RadarAlt) < 1 then {
         BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
         lock TotalstopTime to verticalspeed / min(maxDecel, 5).
         lock TotalstopDist to (verticalspeed / 2) * TotalstopTime.
@@ -545,7 +545,7 @@ FUNCTION SteeringCorrections {
                 set InitialError to LngError.
             }
 
-            if altitude > 6000 and not (RSS) or altitude > 5500 and RSS {
+            if altitude > 5500 and not (RSS) or altitude > 5500 and RSS {
                 if RSS {
                     set LngCtrlPID:setpoint to 1000.
                 }
@@ -557,7 +557,7 @@ FUNCTION SteeringCorrections {
                 set LngCtrlPID:setpoint to 1 * GS.
             }
             else {
-                set LngCtrlPID:setpoint to 1.25 * GS.
+                set LngCtrlPID:setpoint to 1.3 * GS.
             }
 
             set LngCtrl to -LngCtrlPID:UPDATE(time:seconds, LngError).
