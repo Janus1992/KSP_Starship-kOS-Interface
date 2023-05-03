@@ -554,7 +554,7 @@ FUNCTION SteeringCorrections {
                 }
             }
             else if RSS {
-                set LngCtrlPID:setpoint to 1 * GS.
+                set LngCtrlPID:setpoint to 1.1 * GS.
             }
             else {
                 set LngCtrlPID:setpoint to 1.375 * GS.
