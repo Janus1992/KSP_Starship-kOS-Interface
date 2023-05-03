@@ -363,7 +363,7 @@ function Boostback {
         }
     }
 
-    when verticalspeed > -100 and (stopDist3 / RadarAlt) < 1 then {
+    when verticalspeed > -100 and (stopDist3 / RadarAlt) < 1 and LngError < 55 or verticalspeed > -60 then {
         BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
         lock TotalstopTime to abs(verticalspeed) / min(maxDecel, 5).
         lock TotalstopDist to (abs(verticalspeed) / 2) * TotalstopTime.
@@ -381,7 +381,7 @@ function Boostback {
             lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface, ApproachVector).
             lock steering to SteeringVector.
             when verticalspeed > -80 then {
-                lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.02 * ErrorVector, heading(270,0):vector).
+                lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.025 * ErrorVector, heading(270,0):vector).
                 lock steering to SteeringVector.
                 when verticalspeed > -25 then {
                     lock SteeringVector to lookdirup(up:vector - 0.02 * velocity:surface, heading(270,0):vector).
