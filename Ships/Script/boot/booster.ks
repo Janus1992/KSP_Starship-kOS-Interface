@@ -312,7 +312,7 @@ function Boostback {
         if RSS {
             set LngCtrlPID to PIDLOOP(0.025, 0.005, 0.005, -15, 15).
             when altitude < 7500 then {
-                set LngCtrlPID to PIDLOOP(0.1, 0.005, 0.005, -15, 15).
+                set LngCtrlPID to PIDLOOP(0.2, 0.005, 0.005, -15, 15).
             }
         }
         else {
@@ -559,10 +559,10 @@ FUNCTION SteeringCorrections {
 
             if RSS {
                 if BoosterCore[0]:hasmodule("FARPartModule") {
-                    set LngCtrlPID:setpoint to 175.
+                    set LngCtrlPID:setpoint to 185.
                 }
                 else {
-                    set LngCtrlPID:setpoint to 175.
+                    set LngCtrlPID:setpoint to 185.
                 }
             }
             else {
