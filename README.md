@@ -31,12 +31,11 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
     Dev Version: https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev
 
 # OPTIONAL:
-- Kerbal Joint Reinforcement Continued
+- Kerbal Joint Reinforcement Continued (For use with RSS)
     https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued
 
 # INCOMPATIBLE(!!):
 - TweakableEverything
-- FerramAerospaceResearch (FAR)
 
 
 

@@ -5877,8 +5877,8 @@ function Launch {
                 if RSS {
                     when DesiredAccel / max(MaxAccel, 0.000001) < 0.6 and altitude > 100000 then {
                         set quickengine2:pressed to false.
-                        when altitude > targetap - 1000 or eta:apoapsis > 0.5 * ship:orbit:period then {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(1, 0.1, 0.1, -12.5, 12.5).
+                        when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period then {
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -10, 12.5).
                             set MaintainVS to true.
                         }
                     }
@@ -5887,7 +5887,7 @@ function Launch {
                     when apoapsis > targetap - 10000 then {
                         set quickengine2:pressed to false.
                         when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period then {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(2, 0.1, 0.1, -10, 10).
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -7.5, 7.5).
                             set MaintainVS to true.
                         }
                     }
@@ -6050,7 +6050,16 @@ Function LaunchSteering {
             else {
                 lock throttle to 1.
             }
-            if apoapsis > BoosterAp - 1500 {
+            if Tank:hasmodule("FARPartModule") and RSS and apoapsis > BoosterAp - 1000 {
+                lock throttle to 0.25 + (1 - ((apoapsis - BoosterAp + 1000) / 1000)).
+                if not (Launch180) {
+                    set result to heading(myAzimuth, 85).
+                }
+                else {
+                    set result to heading(myAzimuth, 85) * R(0, 0, 180).
+                }
+            }
+            else if apoapsis > BoosterAp - 1500 {
                 lock throttle to 0.25 + (1 - ((apoapsis - BoosterAp + 1500) / 1500)).
                 if not (Launch180) {
                     set result to heading(myAzimuth, 85).
@@ -6121,10 +6130,10 @@ Function LaunchSteering {
                 if quickengine2:pressed = true and DesiredAccel / max(MaxAccel, 0.000001) > 0.6 {
                     lock throttle to (3 * Planet1G) / max(MaxAccel, 0.000001).
                 }
-                else if MaintainVS and apoapsis < targetap + 5000 and KUniverse:activevessel = ship and periapsis < altitude - 500 {
+                else if MaintainVS and apoapsis < targetap + 5000 and KUniverse:activevessel = ship and periapsis < altitude - 100 {
                     lock throttle to min((2 * Planet1G) / max(MaxAccel, 0.000001), max(deltaV / max(MaxAccel, 0.000001), 0.1)).
                 }
-                else if periapsis < targetap - 500 and apoapsis < targetap + 5000 and periapsis < altitude - 500 {
+                else if periapsis < targetap - 500 and apoapsis < targetap + 5000 and periapsis < altitude - 100 {
                     lock throttle to DesiredAccel / max(MaxAccel, 0.000001).
                 }
                 else {

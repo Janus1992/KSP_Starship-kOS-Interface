@@ -1,3 +1,6 @@
+# 2.0.9 (2023-05-05)
+- FAR is an accepted mod again.
+
 # 2.0.8 (2023-05-03)
 - Major rework of the booster and ship launch trajectory, booster landing and circularization burn for working with RSS. The new code could have bugs. Let me know if you find any.
 - Major rework of patches (for example drag cubes) for RSS and stock.
