@@ -312,7 +312,7 @@ function Boostback {
         if RSS {
             set LngCtrlPID to PIDLOOP(0.025, 0.005, 0.005, -15, 15).
             when altitude < 7500 then {
-                set LngCtrlPID to PIDLOOP(0.2, 0.005, 0.005, -15, 15).
+                set LngCtrlPID to PIDLOOP(0.175, 0.005, 0.005, -15, 15).
             }
         }
         else {
@@ -388,7 +388,7 @@ function Boostback {
                     lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.05 * ErrorVector, heading(270,0):vector).
                     lock steering to SteeringVector.
                 }
-                when abs(LngError) < 10 and abs(LatError) < 10 then {
+                when abs(LngError) < 5 and abs(LatError) < 5 then {
                     lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.02 * ErrorVector, heading(270,0):vector).
                     lock steering to SteeringVector.
                 }
@@ -559,10 +559,10 @@ FUNCTION SteeringCorrections {
 
             if RSS {
                 if BoosterCore[0]:hasmodule("FARPartModule") {
-                    set LngCtrlPID:setpoint to 185.
+                    set LngCtrlPID:setpoint to 190.
                 }
                 else {
-                    set LngCtrlPID:setpoint to 185.
+                    set LngCtrlPID:setpoint to 190.
                 }
             }
             else {
