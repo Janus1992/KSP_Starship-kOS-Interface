@@ -38,13 +38,13 @@ set LastPingReceivedRealTime to 0.
 until false {
     until not core:messages:empty {
         clearscreen.
-        if min(time:seconds - LastPingReceived, kuniverse:realtime - LastPingReceivedRealTime) > 2.5 and not (LastPingReceived = 0) and kuniverse:timewarp:warp = 0 {
+        if min(time:seconds - LastPingReceived, kuniverse:realtime - LastPingReceivedRealTime) > 5 and not (LastPingReceived = 0) and kuniverse:timewarp:warp = 0 {
             wait 1.
-            if not (core:messages:empty) or min(time:seconds - LastPingReceived, kuniverse:realtime - LastPingReceivedRealTime) < 2.5 {}
+            if not (core:messages:empty) or min(time:seconds - LastPingReceived, kuniverse:realtime - LastPingReceivedRealTime) < 5 {}
             else {
                 sas on.
                 print "Status: Rebooting Main CPU..".
-                HUDTEXT("Rebooting due to Interface Time-Out..", 5, 2, 20, yellow, false).
+                HUDTEXT("Rebooting due to Interface Time-Out..", 10, 2, 20, yellow, false).
                 MainCPU:deactivate().
                 wait 0.001.
                 MainCPU:activate().

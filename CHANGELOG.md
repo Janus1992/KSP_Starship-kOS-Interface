@@ -1,7 +1,11 @@
-# 2.0.9 (2023-05-05)
-- FAR is an accepted mod again.
+# V2.0.10 (2023-05-08)
+- Fixed some booster and ship landing bugs.
+- Fixed an error when calculating a de-orbit burn and Trajectories doesn't find an impact position.
 
-# 2.0.8 (2023-05-03)
+# V2.0.9 (2023-05-05)
+- FAR is an accepted mod again. However ship re-entry and landing won't work with FAR yet. Only launches are currently supported until the flap module has been rewritten to work with FAR.
+
+# V2.0.8 (2023-05-03)
 - Major rework of the booster and ship launch trajectory, booster landing and circularization burn for working with RSS. The new code could have bugs. Let me know if you find any.
 - Major rework of patches (for example drag cubes) for RSS and stock.
 - New .craft files. Don't use old ones.

@@ -17,14 +17,14 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Before filing a bug, read the "Bug support guide" at the bottom of this page.
 
 # REQUIRES:
-- Stock KSP (no RSS, KSRSS or other planet changing mods) that has the language set to "english" (important).
+- Stock KSP or RSS (no KSRSS or other planet changing mods), and the language has to be set to "english" (important).
 - Starship Expansion Project
     https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
 - Trajectories
     https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/
 - kOS
     https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/
-- TundraExploration (only TundraExploration.dll)
+- TundraExploration (actually only TundraExploration.dll)
     https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/
 - Starship Launch Expansion - the DEV version(!!)
     https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229
@@ -46,7 +46,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 - When using multiple ships of the same name, they might get renamed by my scripts to avoid Interface crashes.
 
-- Seldom Interface crashes may occur (it makes a little crashing noise). A watchdog computer should try to restart the Interface after 2.5 seconds.
+- Seldom Interface crashes may occur (it makes a little crashing noise). A watchdog computer should try to restart the Interface after 5 seconds.
 
 - Existing Ships will automatically try to update the Interface after installing the latest version from here, provided a connection to the KSC is available.
 
@@ -55,10 +55,10 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 
 # Tips & Tricks:
-To Load Cargo in the Cargo Ship:
+To Load Cargo in the Cargo Ship (due to the vehicle not fitting in the VAB):
 
 - Drag the whole ship down to access the cargo-bay (root: Ships tank section).
-- Connect your payload.
+- Insert your payload.
 - Drage the whole ship up so far that the Tower is completely above ground (or the OLM will explode on booster return).
 
 
@@ -73,6 +73,8 @@ To Load Cargo in the Cargo Ship:
 - Sometimes I've noticed that running some parts of the script generates tiny amounts of liquid fuel? It uses electricity, but generates LF. I haven't gotten to the bottom of this issue. One user reports that the ship can't land since oxidizer somehow gets created after the de-orbit burn. Investigation in progress..
 
 - Being in IVA during Booster Separation can cause problems with returning back into the IVA later on, and break the camera. A reload after launch completion fixes everything.
+
+- FAR is currently only half-way supported. The Launch and Booster return should work properly in RSS and stock with FAR or without. However the ship won't be able to re-enter and land with FAR, so please do this manually if you really want to use FAR.
 
 
 

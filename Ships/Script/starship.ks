@@ -71,7 +71,7 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
 if RSS {    // Set of variables when Real Solar System has been installed
     set aoa to 60.
     set MaxCargoToOrbit to 150000.
-    set MaxReEntryCargoThickAtmo to 30000.
+    set MaxReEntryCargoThickAtmo to 25000.
     set MaxIU to 400.
     set MaxReEntryCargoThinAtmo to 50000.
     set LaunchTimeSpanInSeconds to 246.     // To be determined..
@@ -100,8 +100,8 @@ set SNStart to 30.  // Defines the first Serial Number when multiple ships are f
 set MaxTilt to 2.5.  // Defines maximum allowed slope for the Landing Zone Search Function
 set maxstabengage to 50.  // Defines max closing of the stabilizers after landing.
 set CPUSPEED to 500.  // Defines cpu speed in lines per second.
-set FWDFlapDefault to 55.
-set AFTFlapDefault to 55.
+set FWDFlapDefault to 65.
+set AFTFlapDefault to 50.
 set rcsRaptorBoundary to 100.  // Defines the custom burn boundary velocity where the ship will burn either RCS below it or Raptors above it.
 set SafeAltOverLZ to 1500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
 
@@ -141,6 +141,7 @@ set prevCargoPageTime to time:seconds.
 set TimeSinceLastSteering to time:seconds - 1.
 set TimeSinceLastAttSteering to time:seconds - 1.
 set prevattroll to 0.
+set DescentAngles to list(aoa, aoa, aoa, aoa).
 SetPlanetData().
 set prevattpitch to aoa.
 set towerrot to 8.
@@ -213,6 +214,9 @@ set ARflap to false.
 set DesiredAccel to 0.
 set deltaV to 0.
 set MaintainVS to false.
+set myAzimuth to 90.
+set targetpitch to 90.
+set LaunchLabelIsRunning to false.
 
 
 
@@ -1696,12 +1700,7 @@ set quickattitude2:onclick to {
                 SetPlanetData().
                 set addons:tr:descentmodes to list(true, true, true, true).
                 set addons:tr:descentgrades to list(false, false, false, false).
-                if RSS {
-                    set addons:tr:descentangles to list(aoa, aoa, aoa, 75).
-                }
-                else {
-                    set addons:tr:descentangles to list(aoa, aoa, 75, 75).
-                }
+                set addons:tr:descentangles to DescentAngles.
                 SetRadarAltitude().
                 LogToFile("Attitude Control Set to ON").
                 Droppriority().
@@ -4602,8 +4601,8 @@ set landbutton:ontoggle to {
                         set LngLatErrorList to LngLatError().
                         if ship:body:atm:sealevelpressure > 0.5 {
                             if RSS {
-                                set LongitudinalAcceptanceLimit to 250000.
-                                set LatitudinalAcceptanceLimit to 100000.
+                                set LongitudinalAcceptanceLimit to 500000.
+                                set LatitudinalAcceptanceLimit to 200000.
                             }
                             else {
                                 set LongitudinalAcceptanceLimit to 50000.
@@ -4684,15 +4683,25 @@ set landbutton:ontoggle to {
                             LogToFile("Land Function cancelled due to ship:status").
                             ClearInterfaceAndSteering().
                         }
-                        else if apoapsis > 350000 or periapsis < 70000 and ship:body:atm:sealevelpressure > 0.5 or periapsis < 50000 and ship:body:atm:sealevelpressure < 0.5 or abs(ship:orbit:inclination) + 2.5 < abs(setting1:text:split(",")[0]:toscalar(0)) {
+                        else if RSS and apoapsis > 500000 or not (RSS) and apoapsis > 350000 or periapsis < ship:body:atm:height or abs(ship:orbit:inclination) + 2.5 < abs(setting1:text:split(",")[0]:toscalar(0)) {
                             ShowHomePage().
                             LogToFile("De-Orbit cancelled due to orbit requirements not fulfilled").
                             set message1:text to "<b>Automatic De-Orbit Requirements:</b>".
                             if ship:body:atm:sealevelpressure > 0.5 {
-                                set message2:text to "<b>Ap/Pe 70-350km   LZ latitude < Inclination</b>".
+                                if RSS {
+                                    set message2:text to "<b>Ap/Pe " + round(ship:body:atm:height / 1000) + "-500km   LZ latitude < Inclination</b>".
+                                }
+                                else {
+                                    set message2:text to "<b>Ap/Pe 70-350km   LZ latitude < Inclination</b>".
+                                }
                             }
                             if ship:body:atm:sealevelpressure < 0.5 {
-                                set message2:text to "<b>Ap/Pe 50-350km   LZ latitude < Inclination</b>".
+                                if RSS {
+                                    set message2:text to "<b>Ap/Pe " + round(ship:body:atm:height / 1000) + "-500km   LZ latitude < Inclination</b>".
+                                }
+                                else {
+                                    set message2:text to "<b>Ap/Pe 50-350km   LZ latitude < Inclination</b>".
+                                }
                             }
                             set message3:text to "<b>Modify orbit or perform manual de-orbit..</b>".
                             set message2:style:textcolor to yellow.
@@ -5502,12 +5511,7 @@ if addons:tr:available and not startup {
         if kuniverse:activevessel = ship {
             set addons:tr:descentmodes to list(true, true, true, true).
             set addons:tr:descentgrades to list(false, false, false, false).
-            if RSS {
-                set addons:tr:descentangles to list(aoa, aoa, aoa, 75).
-            }
-            else {
-                set addons:tr:descentangles to list(aoa, aoa, 75, 75).
-            }
+            set addons:tr:descentangles to DescentAngles.
             ADDONS:TR:SETTARGET(landingzone).
         }
         LandAtOLM().
@@ -5752,6 +5756,7 @@ function Launch {
 
         if RadarAlt < 100 {
             lock throttle to 1.
+            set SteeringManager:rollts to 5.
             if ShipType = "Cargo" or ShipType = "Tanker" {
                 InhibitButtons(1, 1, 1).
             }
@@ -5836,7 +5841,8 @@ function Launch {
                 HideEngineToggles(1).
                 if not cancelconfirmed {
                     until time:seconds > StageSeparationTime + 7 {
-                        BackGroundUpdate().
+                        SendPing().
+                        LaunchLabelData().
                     }
                 }
                 set quickengine3:pressed to true.
@@ -5878,7 +5884,7 @@ function Launch {
                     when DesiredAccel / max(MaxAccel, 0.000001) < 0.6 and altitude > 100000 then {
                         set quickengine2:pressed to false.
                         when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period then {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -10, 12.5).
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(1, 0, 0, -10, 12.5).
                             set MaintainVS to true.
                         }
                     }
@@ -5900,6 +5906,7 @@ function Launch {
 
         when BurnComplete then {
             unlock steering.
+            SteeringManager:RESETTODEFAULT().
             wait 0.001.
             lock throttle to 0.
             unlock throttle.
@@ -5944,6 +5951,7 @@ function Launch {
             }
 
             until false or AbortLaunchInProgress {
+                BackGroundUpdate().
                 set kuniverse:timewarp:warp to 0.
                 if defined Booster {
                     if not Booster:isdead {
@@ -5972,13 +5980,16 @@ function Launch {
                 }
             }
             set textbox:style:bg to "starship_img/starship_main_square_bg".
+            ShowHomePage().
             wait 3.
             LogToFile("Launch Program Ended").
             print "Launch Program Ended".
             ClearInterfaceAndSteering().
             set LaunchComplete to true.
         }
-        wait until LaunchComplete or AbortLaunchInProgress.
+        until LaunchComplete or AbortLaunchInProgress {
+            LaunchLabelData().
+        }
         LogToFile("Launch Program has shut down").
     }
 }.
@@ -5986,63 +5997,17 @@ function Launch {
 
 
 Function LaunchSteering {
-    SendPing().
-    clearscreen.
-    if quicksetting1:pressed and altitude - LaunchElev > 150 and altitude - LaunchElev < 1000 {
-        set kuniverse:timewarp:warp to 4.
-    }
-    if quicksetting1:pressed and altitude - LaunchElev > 500 and altitude - LaunchElev < 2000 or kuniverse:timewarp:warp > 0 and altitude - LaunchElev > 500 and altitude - LaunchElev < 2000 {
-        set kuniverse:timewarp:warp to 1.
-    }
-    if quicksetting1:pressed and altitude - LaunchElev > 2000 and apoapsis < BoosterAp - 5000 or altitude - LaunchElev > 2000 and altitude - LaunchElev < 2500 and kuniverse:timewarp:warp = 1 {
-        set kuniverse:timewarp:warp to 4.
-    }
-    if periapsis > targetap {
-        set BurnComplete to true.
-    }
-    else if apoapsis > BoosterAp - 5000 {
-        if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
-    }
-    set DownRange to landingzone:distance / 1000.
     set myAzimuth to LAZcalc(LaunchData).
     if altitude - LaunchElev < 500 {
-        if not ClosingIsRunning {
-            set message1:text to "<b>Actual/Target Apoapsis:</b>   " + round(apoapsis/1000,1) + "/" + round(targetap / 1000, 1) + "km".
-            set message2:text to "<b>Guidance (Pitch/Az.):</b>         90°/" + round(myAzimuth, 1) + "°".
-            set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
-        }
         set result to heading(myAzimuth, 90).
     }
     else {
-        if not ClosingIsRunning {
-            set message1:text to "<b>Actual/Target Apoapsis:</b>   " + round(apoapsis/1000,1) + "/" + round(targetap / 1000, 1) + "km".
-        }
-        else {
-            if defined Booster and not ClosingIsRunning {
-                if not Booster:isdead {
-                    if Booster:status = "LANDED" {
-                        set message3:text to "<b>Booster Landing Confirmed!</b>".
-                    }
-                    else {
-                        set message3:text to "<b>Booster Alt / Spd:</b> " + round(Booster:altitude - 116) + "m / " + round(Booster:airspeed) + "m/s".
-                    }
-                }
-                else {
-                    set message3:text to "<b>Booster Loss of Signal..</b>".
-                    set message3:style:textcolor to yellow.
-                }
-            }
-        }
         if Boosterconnected {
             if RSS {
                 set targetpitch to 90 - (7.85 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
             }
             else {
                 set targetpitch to 90 - (10 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
-            }
-            if not ClosingIsRunning {
-                set message2:text to "<b>Guidance (Pitch/Az.):</b>         " + round(targetpitch, 1) + "°/" + round(myAzimuth, 1) + "°".
-                set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
             }
             if ship:q > 0.25 {
                 lock throttle to 1 - 3 * (ship:q - 0.25).
@@ -6089,8 +6054,11 @@ Function LaunchSteering {
             else if quickengine3:pressed {
                 set MaxAccel to 10.
             }
-            else if altitude > 30000 and time:seconds > StageSeparationTime + 5 {
+            else if altitude > 30000 and time:seconds > StageSeparationTime + 7 {
                 set quickengine3:pressed to true.
+                if NrOfVacEngines = 3 {
+                    set quickengine2:pressed to true.
+                }
             }
             if not hasnode and quickengine3:pressed {
                 set OrbitalVelocity to ship:body:radius * sqrt(9.81 / (ship:body:radius + targetap)).
@@ -6101,17 +6069,15 @@ Function LaunchSteering {
             set ProgradeAngle to 90 - vang(velocity:surface, up:vector).
 
             set TimeToOrbitCompletion to TimeFromLaunchToOrbit - (time:seconds - LiftOffTime).
-            print "Time to Orbit: " + round(TimeToOrbitCompletion) + "s".
             set DesiredAccel to deltaV / (TimeToOrbitCompletion).
-            print "Desired Accel: " + round(DesiredAccel / 9.81, 2) + "G".
             if MaintainVS {
                 if deltaV > 750 {
                     set OrbitBurnPitchCorrectionPID:setpoint to (targetap - altitude) / 100.
-                    print "Desired V/S: " + round((targetap - altitude) / 100, 2).
+                    //print "Desired V/S: " + round((targetap - altitude) / 100, 2).
                 }
                 else {
                     set OrbitBurnPitchCorrectionPID:setpoint to 0.
-                    print "Desired V/S: 0".
+                    //print "Desired V/S: 0".
                 }
                 set OrbitBurnPitchCorrection to OrbitBurnPitchCorrectionPID:UPDATE(TIME:SECONDS, verticalspeed).
             }
@@ -6119,11 +6085,14 @@ Function LaunchSteering {
                 set OrbitBurnPitchCorrection to OrbitBurnPitchCorrectionPID:UPDATE(TIME:SECONDS, apoapsis).
             }
 
-            print " ".
+            clearscreen.
+            //print " ".
             //print "Prograde Angle: " + ProgradeAngle.
             //print "Azimuth: " + myAzimuth.
             //print "Facing Vector: " + facing:forevector.
             //print "Guidance Vector: " + result:vector.
+            //print "Desired Accel: " + round(DesiredAccel / 9.81, 2) + "G".
+            //print "Time to Orbit: " + round(TimeToOrbitCompletion) + "s".
             print "Steering Error: " + round(vang(facing:forevector, result:vector), 2).
 
             if quickengine3:pressed {
@@ -6149,20 +6118,47 @@ Function LaunchSteering {
                 rcs on.
                 set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, -up:vector).
             }
+        }
+    }
+    return result.
+}
+
+
+function LaunchLabelData {
+    if not (LaunchLabelIsRunning) {
+        set LaunchLabelIsRunning to true.
+        if quicksetting1:pressed and altitude - LaunchElev > 150 and altitude - LaunchElev < 1000 {
+            set kuniverse:timewarp:warp to 4.
+        }
+        if quicksetting1:pressed and altitude - LaunchElev > 500 and altitude - LaunchElev < 2000 or kuniverse:timewarp:warp > 0 and altitude - LaunchElev > 500 and altitude - LaunchElev < 2000 {
+            set kuniverse:timewarp:warp to 1.
+        }
+        if quicksetting1:pressed and altitude - LaunchElev > 2000 and apoapsis < BoosterAp - 5000 or altitude - LaunchElev > 2000 and altitude - LaunchElev < 2500 and kuniverse:timewarp:warp = 1 {
+            set kuniverse:timewarp:warp to 4.
+        }
+        else if apoapsis > BoosterAp - 5000 {
+            if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
+        }
+        set DownRange to landingzone:distance / 1000.
+        if altitude - LaunchElev < 500 {
             if not ClosingIsRunning {
-                if not hasnode {
-                    set message2:text to "<b>Guidance (Pitch/Az.):</b>         " + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/" + round(myAzimuth, 1) + "°".
-                }
-                else {
-                    set message2:text to "<b>Guidance Target:</b>                 Finalizing Vector".
-                }
-                if defined Booster {
+                set message1:text to "<b>Actual/Target Apoapsis:</b>   " + round(apoapsis/1000,1) + "/" + round(targetap / 1000, 1) + "km".
+                set message2:text to "<b>Guidance (Pitch/Az.):</b>         90°/" + round(myAzimuth, 1) + "°".
+                set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
+            }
+        }
+        else {
+            if not ClosingIsRunning {
+                set message1:text to "<b>Actual/Target Apoapsis:</b>   " + round(apoapsis/1000,1) + "/" + round(targetap / 1000, 1) + "km".
+            }
+            else {
+                if defined Booster and not ClosingIsRunning {
                     if not Booster:isdead {
                         if Booster:status = "LANDED" {
                             set message3:text to "<b>Booster Landing Confirmed!</b>".
                         }
                         else {
-                            set message3:text to "<b>Booster Alt / Spd:</b>                " + round(Booster:altitude - 116) + "m / " + round(Booster:airspeed) + "m/s".
+                            set message3:text to "<b>Booster Alt / Spd:</b> " + round(Booster:altitude - 116) + "m / " + round(Booster:airspeed) + "m/s".
                         }
                     }
                     else {
@@ -6171,16 +6167,44 @@ Function LaunchSteering {
                     }
                 }
             }
+            if Boosterconnected {
+                if not ClosingIsRunning {
+                    set message2:text to "<b>Guidance (Pitch/Az.):</b>         " + round(targetpitch, 1) + "°/" + round(myAzimuth, 1) + "°".
+                    set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
+                }
+            }
+            else {
+                if not ClosingIsRunning {
+                    if not hasnode {
+                        set message2:text to "<b>Guidance (Pitch/Az.):</b>         " + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/" + round(myAzimuth, 1) + "°".
+                    }
+                    else {
+                        set message2:text to "<b>Guidance Target:</b>                 Finalizing Vector".
+                    }
+                    if defined Booster {
+                        if not Booster:isdead {
+                            if Booster:status = "LANDED" {
+                                set message3:text to "<b>Booster Landing Confirmed!</b>".
+                            }
+                            else {
+                                set message3:text to "<b>Booster Alt / Spd:</b>                " + round(Booster:altitude - 116) + "m / " + round(Booster:airspeed) + "m/s".
+                            }
+                        }
+                        else {
+                            set message3:text to "<b>Booster Loss of Signal..</b>".
+                            set message3:style:textcolor to yellow.
+                        }
+                    }
+                }
+            }
         }
+        if not (BurnComplete) {
+            LogToFile("Launch Telemetry").
+            BackGroundUpdate().
+        }
+        set LaunchLabelIsRunning to false.
     }
-    if Apoapsis < targetap - 1000 and not (KUniverse:activevessel = ship) {
-        LogToFile("Launch Telemetry").
-    }
-    BackGroundUpdate().
-    return result.
 }
-
-
 
 
 FUNCTION LAZcalc_init {
@@ -6497,19 +6521,14 @@ Function AbortLaunchSteering {
 
 
 function ReEntryAndLand {
-    if addons:tr:hasimpact{
+    if addons:tr:hasimpact {
         set LandButtonIsRunning to true.
         set config:ipu to CPUSPEED.
         set LandSomewhereElse to false.
+        set DescentAngles to list(aoa, aoa, aoa, aoa).
         SetPlanetData().
         set addons:tr:descentmodes to list(true, true, true, true).
         set addons:tr:descentgrades to list(false, false, false, false).
-        if RSS {
-            set addons:tr:descentangles to list(aoa, aoa, aoa, 75).
-        }
-        else {
-            set addons:tr:descentangles to list(aoa, aoa, 75, 75).
-        }
         LogToFile("Re-Entry & Landing Program Started").
         set runningprogram to "De-orbit & Landing".
         SetRadarAltitude().
@@ -6553,9 +6572,8 @@ function ReEntryAndLand {
         }
 
         SteeringManager:RESETTODEFAULT().
-        set PitchPID to PIDLOOP(0.00025, 0, 0, -30, 15).
+        set PitchPID to PIDLOOP(0.0005, 0, 0, -25, 30).
         set YawPID to PIDLOOP(0.025, 0, 0, -50, 50).
-        set SteeringManager:PITCHTS to 5.
 
         lock STEERING to ReEntrySteering().
         if quicksetting1:pressed and altitude > 30000 {
@@ -6568,41 +6586,36 @@ function ReEntryAndLand {
             if quicksetting1:pressed and altitude > 30000 {
                 set kuniverse:timewarp:warp to 4.
             }
-            if RSS {
-                set PitchPID:setpoint to -400000.
-            }
-            when airspeed < 2150 and not (RSS) or airspeed < 5000 and RSS then {
-                if RSS {
-                    set PitchPID to PIDLOOP(0.0035, 0, 0, -20, 15).
-                    set PitchPID:setpoint to 0.
-                }
-                else {
-                    set PitchPID to PIDLOOP(0.0025, 0, 0, -15, 15).
-                }
-                when airspeed < 1350 and ship:body:atm:sealevelpressure > 0.5 and not (RSS) or airspeed < 2500 and ship:body:atm:sealevelpressure > 0.5 and RSS or airspeed < 600 and ship:body:atm:sealevelpressure < 0.5 then {
-                    set PitchPID to PIDLOOP(0.025, 0.01, 0.01, -30, 15).
-                    set YawPID to PIDLOOP(0.1, 0, 0, -50, 50).
+            when airspeed < 2150 then {
+                set PitchPID:kp to 0.0025.
+                when airspeed < 1350 and ship:body:atm:sealevelpressure > 0.5 or airspeed < 600 and ship:body:atm:sealevelpressure < 0.5 then {
+                    set PitchPID:kp to 0.025.
+                    set YawPID:kp to 0.1.
                     when airspeed < 300 and ship:body:atm:sealevelpressure > 0.5 or airspeed < 450 and ship:body:atm:sealevelpressure < 0.5 then {
                         if ship:body:atm:sealevelpressure > 0.5 {
-                            set PitchPID to PIDLOOP(0.075, 0.02, 0.05, -30, 15).
-                        }
-                        if ship:body:atm:sealevelpressure < 0.5 {
-                            set PitchPID to PIDLOOP(0.05, 0.01, 0.025, -30, 15).
-                        }
-                        set YawPID to PIDLOOP(0.25, 0.01, 0.01, -15, 15).
-                        set SteeringManager:ROLLCONTROLANGLERANGE to 15.
-                        set SteeringManager:ROLLTS to 0.45.
-                        set SteeringManager:YAWTS to 5.
-                        DisengageYawRCS(1).
-                        if ship:body:atm:sealevelpressure > 0.5 {
+                            set PitchPID:kp to 0.25.
+                            set PitchPID:ki to 0.005.
+                            set PitchPID:kd to 0.005.
+                            set YawPID:kp to 0.1.
+                            set YawPID:ki to 0.
+                            set YawPID:kd to 0.
+                            set YawPID:minoutput to -1.5.
+                            set YawPID:maxoutput to 1.5.
                             set FlipAltitude to 750.
                         }
                         if ship:body:atm:sealevelpressure < 0.5 {
+                            set PitchPID:kp to 0.25.
+                            set PitchPID:ki to 0.005.
+                            set PitchPID:kd to 0.005.
+                            set YawPID:kp to 0.1.
+                            set YawPID:ki to 0.
+                            set YawPID:kd to 0.
                             set FlipAltitude to 2000.
                         }
                         set runningprogram to "Final Approach".
                         LogToFile("Vehicle is Subsonic, precise steering activated").
                         when RadarAlt < 10000 then {
+                            DisengageYawRCS(1).
                             InhibitButtons(1, 1, 1).
                             CheckLZReachable().
                             wait 0.001.
@@ -6651,12 +6664,22 @@ function ReEntrySteering {
         set DesiredAoA to aoa + pitchctrl.
         set yawctrl to -YawPID:UPDATE(TIME:SECONDS, LngLatErrorList[1]).
         set result to srfprograde * R(-DesiredAoA * cos(yawctrl), DesiredAoA * sin(yawctrl), 0).
-        set result to lookdirup(result:vector, -vxcl(result:vector, velocity:surface)).
+        if RadarAlt < 15000 {
+            set result to lookdirup(result:vector, -vxcl(result:vector, velocity:surface) * AngleAxis(-0.25 * yawctrl, ApproachVector)).
+        }
+        else {
+            set result to lookdirup(result:vector, -vxcl(result:vector, velocity:surface)).
+        }
         if LandSomewhereElse {
             set result to srfprograde * R(-60, 0, 0).
         }
 
-        //set ReEntryVector to vecdraw(v(0, 0, 0), result:vector, green, "Re-Entry Vector", 25, true, 0.005, true, true).
+        clearscreen.
+        //set ReEntryVector to vecdraw(v(0, 0, 0), result:vector, green, "Re-Entry Vector", 35, true, 0.005, true, true).
+        print "LngError: " + round(LngLatErrorList[0]).
+        print "Desired AoA: " + round(DesiredAoA,2).
+        //print "pitchctrl: " + round(pitchctrl,2).
+        print "Yawctrl: " + round(yawctrl, 2).
 
         set TimeSinceLastSteering to time:seconds.
         set SteeringIsRunning to false.
@@ -6906,11 +6929,11 @@ function ReEntryData {
             LogToFile("Engines Activated").
 
             if ship:body:atm:sealevelpressure > 0.5 {
-                if abs(LngLatErrorList[0]) > 50 or abs(LngLatErrorList[1]) > 15 {
+                if abs(LngLatErrorList[0]) > 50 or abs(LngLatErrorList[1]) > 25 {
                     set LandSomewhereElse to true.
                     set MechaZillaExists to false.
                     SetRadarAltitude().
-                    LogToFile("Landing parameters out of bounds (" + (LngLatErrorList[0] + 50) + "," + (LngLatErrorList[0] - 50) + "," + (LngLatErrorList[1] + 15) + "," + (LngLatErrorList[1] - 15) + "), Landing Off-Target").
+                    LogToFile("Landing parameters out of bounds (" + (LngLatErrorList[0] + 50) + "," + (LngLatErrorList[0] - 50) + "," + (LngLatErrorList[1] + 25) + "," + (LngLatErrorList[1] - 15) + "), Landing Off-Target").
                     LogToFile("Lng Error: " + LngError + "    LatError: " + LatError).
                 }
             }
@@ -7309,6 +7332,7 @@ function LngLatError {
 
             if ship:body:atm:exists {
                 set ApproachUPVector to landingzone:position - ship:body:position.
+
                 if periapsis > 0 and vang(positionat(ship, time:seconds + eta:periapsis) - ship:body:position, ApproachUPVector) < 90 {
                     set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, time:seconds + eta:periapsis):surface):normalized.
                 }
@@ -7334,6 +7358,10 @@ function LngLatError {
                 }
             }
 
+            //print " ".
+            //print "periapsis: " + round(periapsis/1000,3).
+            //print "angle: " + round(vang(positionat(ship, time:seconds + eta:periapsis) - ship:body:position, ApproachUPVector),2).
+
             //clearvecdraws().
 
             //set ApproachVectorDraw to vecdraw(v(0, 0, 0), ApproachVector, green, "Approach Vector", 20, true, 0.005, true, true).
@@ -7356,20 +7384,35 @@ function LngLatError {
 
             if ship:body:atm:sealevelpressure > 0.5 {
                 if MechaZillaExists and TargetOLM {
-                    set LngLatOffset to ((50.9 / ship:mass) * -67) + 82 + (max(CargoCoG - 150, 0) / 100) * 10.
+                    if RSS {
+                        set LngLatOffset to 0.
+                    }
+                    else {
+                        set LngLatOffset to ((48.8 / ship:mass) * 251) - 171 + (max(CargoCoG - 150, 0) / 100) * 10.
+                    }
                 }
                 else {
-                    set LngLatOffset to ((50.9 / ship:mass) * -67) + 97 + (max(CargoCoG - 150, 0) / 100) * 10.
+                    if RSS {
+                        set LngLatOffset to 0.
+                    }
+                    else {
+                        set LngLatOffset to ((48.8 / ship:mass) * 105) - 50 + (max(CargoCoG - 150, 0) / 100) * 10.
+                    }
                 }
             }
             else if ship:body:atm:sealevelpressure < 0.5 {
-                set LngLatOffset to ((50.9 / ship:mass) * -56) + 156.
+                if RSS {
+                    set LngLatOffset to ((50.9 / ship:mass) * -56) + 156.
+                }
+                else {
+                    set LngLatOffset to ((50.9 / ship:mass) * -56) + 156.
+                }
             }
             else {
                 set LngLatOffset to 0.
             }
 
-            set lngresult to lngresult + LngLatOffset.
+            set lngresult to lngresult - LngLatOffset.
 
             if LandSomewhereElse {
                 set lngresult to 0.
@@ -7538,7 +7581,7 @@ function DeOrbitVelocity {
     set message3:style:textcolor to white.
     if ship:body:atm:sealevelpressure > 0.5 {
         if RSS {
-            set ErrorTolerance to 150000.
+            set ErrorTolerance to 200000.
             set StartPoint to -altitude / 4000.
         }
         else {
@@ -7566,8 +7609,14 @@ function DeOrbitVelocity {
             SendPing().
             set burn to node(deorbitburnstarttime, 0, 0, ProgradeVelocity).
             add burn.
+            set calcTime to time:seconds.
             wait 0.001.
-            until addons:tr:hasimpact {}
+            until addons:tr:hasimpact {
+                if time:seconds > calcTime + 0.25 {
+                    set config:ipu to CPUSPEED.
+                    return 0.
+                }
+            }
             wait 0.001.
             if not (addons:tr:hasimpact) {
                 set config:ipu to CPUSPEED.
@@ -9040,14 +9089,7 @@ function ClearInterfaceAndSteering {
 function BackGroundUpdate {
     if not BGUisRunning {
         set BGUisRunning to true.
-        if not (KUniverse:activevessel = ship) and LaunchButtonIsRunning {
-            set UpdateInterval to 1.
-        }
-        else {
-            set UpdateInterval to 0.1.
-        }
-
-        if prevCalcTime + UpdateInterval < time:seconds {
+        if prevCalcTime + 0.1 < time:seconds {
             SendPing().
             updatestatusbar().
             FindParts().
@@ -9113,18 +9155,15 @@ function BackGroundUpdate {
             else {
                 attitudebutton:hide().
             }
-            if orbitbutton:pressed and LaunchButtonIsRunning {updateOrbit().}
             set prevCalcTime to time:seconds.
         }
-
-        if orbitbutton:pressed and not (LaunchButtonIsRunning) {updateOrbit().}
+        if orbitbutton:pressed {updateOrbit().}
         if statusbutton:pressed {updateStatus().}
         if enginebutton:pressed {updateEnginePage().}
         if cargobutton:pressed {updateCargoPage().}
         if crewbutton:pressed {updateCrew().}
         if towerbutton:pressed {updateTower().}
         if maneuverbutton:pressed {updateManeuver().}
-
         set BGUisRunning to false.
     }
 }
@@ -9477,12 +9516,7 @@ function SetPlanetData {
             set addons:tr:descentmodes to list(true, true, true, true).
             set addons:tr:descentgrades to list(false, false, false, false).
             if KUniverse:activevessel = vessel(ship:name) {
-                if RSS {
-                    set addons:tr:descentangles to list(aoa, aoa, aoa, 75).
-                }
-                else {
-                    set addons:tr:descentangles to list(aoa, aoa, 75, 75).
-                }
+                set addons:tr:descentangles to DescentAngles.
                 if defined landingzone {
                     ADDONS:TR:SETTARGET(landingzone).
                 }
@@ -10322,35 +10356,6 @@ function relative_inc {
 }
 
 
-function DisengageYawRCS {
-    parameter boolean.
-    if boolean {
-        if tank:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
-            tank:getmodule("MODULERCSFX"):doevent("show actuation toggles").
-        }
-        if nose:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
-            nose:getmodule("MODULERCSFX"):doevent("show actuation toggles").
-        }
-        tank:getmodule("MODULERCSFX"):setfield("yaw", 0).
-        nose:getmodule("MODULERCSFX"):setfield("yaw", 0).
-        tank:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
-        nose:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
-    }
-    else {
-        if tank:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
-            tank:getmodule("MODULERCSFX"):doevent("show actuation toggles").
-        }
-        if nose:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
-            nose:getmodule("MODULERCSFX"):doevent("show actuation toggles").
-        }
-        tank:getmodule("MODULERCSFX"):setfield("yaw", 1).
-        nose:getmodule("MODULERCSFX"):setfield("yaw", 1).
-        tank:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
-        nose:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
-    }
-}
-
-
 function SetLoadDistances {
     parameter distance.
 
@@ -10381,5 +10386,34 @@ function SetLoadDistances {
         set ship:loaddistance:suborbital:pack to distance - 2500.
         set ship:loaddistance:suborbital:unpack to distance - 10000.
         wait 0.001.
+    }
+}
+
+
+function DisengageYawRCS {
+    parameter boolean.
+    if boolean {
+        if tank:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
+            tank:getmodule("MODULERCSFX"):doevent("show actuation toggles").
+        }
+        if nose:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
+            nose:getmodule("MODULERCSFX"):doevent("show actuation toggles").
+        }
+        tank:getmodule("MODULERCSFX"):setfield("yaw", 0).
+        nose:getmodule("MODULERCSFX"):setfield("yaw", 0).
+        tank:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
+        nose:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
+    }
+    else {
+        if tank:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
+            tank:getmodule("MODULERCSFX"):doevent("show actuation toggles").
+        }
+        if nose:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
+            nose:getmodule("MODULERCSFX"):doevent("show actuation toggles").
+        }
+        tank:getmodule("MODULERCSFX"):setfield("yaw", 1).
+        nose:getmodule("MODULERCSFX"):setfield("yaw", 1).
+        tank:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
+        nose:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
     }
 }
