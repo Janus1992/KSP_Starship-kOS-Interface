@@ -5885,7 +5885,7 @@ function Launch {
                     when DesiredAccel / max(MaxAccel, 0.000001) < 0.6 and altitude > 100000 then {
                         set quickengine2:pressed to false.
                         when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period then {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(1, 0, 0, -10, 12.5).
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 7.5).
                             set MaintainVS to true.
                         }
                     }
@@ -6072,7 +6072,7 @@ Function LaunchSteering {
             set TimeToOrbitCompletion to TimeFromLaunchToOrbit - (time:seconds - LiftOffTime).
             set DesiredAccel to deltaV / (TimeToOrbitCompletion).
             if MaintainVS {
-                if deltaV > 750 {
+                if deltaV > 1000 {
                     set OrbitBurnPitchCorrectionPID:setpoint to (targetap - altitude) / 100.
                     //print "Desired V/S: " + round((targetap - altitude) / 100, 2).
                 }
