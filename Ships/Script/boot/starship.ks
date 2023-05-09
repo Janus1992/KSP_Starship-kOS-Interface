@@ -71,7 +71,7 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
 if RSS {    // Set of variables when Real Solar System has been installed
     set aoa to 60.
     set MaxCargoToOrbit to 150000.
-    set MaxReEntryCargoThickAtmo to 25000.
+    set MaxReEntryCargoThickAtmo to 30000.
     set MaxIU to 400.
     set MaxReEntryCargoThinAtmo to 50000.
     set LaunchTimeSpanInSeconds to 246.     // To be determined..
@@ -80,7 +80,8 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set ShipMinPusherDistance to 1.12.
     set towerhgt to 96.
     set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
-    set FuelVentCutOffValue to 1150.
+    set FuelVentCutOffValue to 1200.
+    set FuelBalanceSpeed to 100.
 }
 else {  // Set of variables when Real Solar System has NOT been installed
     set aoa to 60.
@@ -95,6 +96,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set towerhgt to 60.
     set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
     set FuelVentCutOffValue to 450.
+    set FuelBalanceSpeed to 40.
 }
 set SNStart to 30.  // Defines the first Serial Number when multiple ships are found and renaming is necessary.
 set MaxTilt to 2.5.  // Defines maximum allowed slope for the Landing Zone Search Function
@@ -204,7 +206,6 @@ set MaxAccel to 10.
 set Launch180 to false.
 set ShipWasDocked to false.
 set FlipAltitude to 750.
-set FuelBalanceSpeed to 40.
 set TargetOLM to false.
 set StageSepComplete to false.
 set FLflap to false.
@@ -6588,39 +6589,47 @@ function ReEntryAndLand {
             }
             when airspeed < 2150 then {
                 set PitchPID:kp to 0.0025.
-                when airspeed < 1350 and ship:body:atm:sealevelpressure > 0.5 or airspeed < 600 and ship:body:atm:sealevelpressure < 0.5 then {
-                    set PitchPID:kp to 0.025.
-                    set YawPID:kp to 0.1.
-                    when airspeed < 300 and ship:body:atm:sealevelpressure > 0.5 or airspeed < 450 and ship:body:atm:sealevelpressure < 0.5 then {
-                        if ship:body:atm:sealevelpressure > 0.5 {
-                            set PitchPID:kp to 0.25.
-                            set PitchPID:ki to 0.005.
-                            set PitchPID:kd to 0.005.
+                when airspeed < 300 and ship:body:atm:sealevelpressure > 0.5 or airspeed < 450 and ship:body:atm:sealevelpressure < 0.5 then {
+                    if ship:body:atm:sealevelpressure > 0.5 {
+                        set FlipAltitude to 750.
+                        if RSS {
+                            set PitchPID:kp to 0.1.
+                            set PitchPID:ki to 0.001.
+                            set PitchPID:kd to 0.001.
+                            set YawPID:kp to 0.025.
+                            set YawPID:ki to 0.
+                            set YawPID:kd to 0.
+                            set YawPID:minoutput to -1.5.
+                            set YawPID:maxoutput to 1.5.
+                        }
+                        else {
+                            set PitchPID:kp to 0.2.
+                            set PitchPID:ki to 0.0025.
+                            set PitchPID:kd to 0.0025.
                             set YawPID:kp to 0.1.
                             set YawPID:ki to 0.
                             set YawPID:kd to 0.
                             set YawPID:minoutput to -1.5.
                             set YawPID:maxoutput to 1.5.
-                            set FlipAltitude to 750.
                         }
-                        if ship:body:atm:sealevelpressure < 0.5 {
-                            set PitchPID:kp to 0.25.
-                            set PitchPID:ki to 0.005.
-                            set PitchPID:kd to 0.005.
-                            set YawPID:kp to 0.1.
-                            set YawPID:ki to 0.
-                            set YawPID:kd to 0.
-                            set FlipAltitude to 2000.
-                        }
-                        set runningprogram to "Final Approach".
-                        LogToFile("Vehicle is Subsonic, precise steering activated").
-                        when RadarAlt < 10000 then {
-                            DisengageYawRCS(1).
-                            InhibitButtons(1, 1, 1).
-                            CheckLZReachable().
-                            wait 0.001.
-                            LandAtOLM().
-                        }
+                    }
+                    if ship:body:atm:sealevelpressure < 0.5 {
+                        set PitchPID:kp to 0.25.
+                        set PitchPID:ki to 0.005.
+                        set PitchPID:kd to 0.005.
+                        set YawPID:kp to 0.1.
+                        set YawPID:ki to 0.
+                        set YawPID:kd to 0.
+                        set FlipAltitude to 2000.
+                    }
+                    set runningprogram to "Final Approach".
+                    LogToFile("Vehicle is Subsonic, precise steering activated").
+                    when RadarAlt < 10000 then {
+                        DisengageYawRCS(1).
+                        InhibitButtons(1, 1, 1).
+                        CheckLZReachable().
+                        wait 0.001.
+                        LandAtOLM().
                     }
                 }
             }
@@ -6879,8 +6888,8 @@ function ReEntryData {
 
             if ship:body:atm:sealevelpressure > 0.5 {
                 if RSS {
-                    set ThrottleMin to 0.4 * (ship:mass / 150) * (ship:mass / 150).
-                    set LandingFlipTime to 4.5.
+                    set ThrottleMin to 0.3 * (ship:mass / 168.5) * (ship:mass / 168.5).
+                    set LandingFlipTime to 6.
                 }
                 else {
                     set ThrottleMin to 0.4 * (ship:mass / 67.5) * (ship:mass / 67.5).
@@ -6891,8 +6900,8 @@ function ReEntryData {
             }
             if ship:body:atm:sealevelpressure < 0.5 {
                 if RSS {
-                    set ThrottleMin to 0.25 + (ship:mass / 50) * 0.15 - 0.15.
-                    set LandingFlipTime to 4.8 + (3.6 - (ship:mass / 130) * 1.5).
+                    set ThrottleMin to 0.25 + (ship:mass / 138.5) * 0.15 - 0.15.
+                    set LandingFlipTime to 4.8 + (3.6 - (ship:mass / 138.5) * 1.5).
                 }
                 else {
                     set ThrottleMin to 0.25 + (ship:mass / 50) * 0.15 - 0.15.
@@ -6929,11 +6938,11 @@ function ReEntryData {
             LogToFile("Engines Activated").
 
             if ship:body:atm:sealevelpressure > 0.5 {
-                if abs(LngLatErrorList[0]) > 50 or abs(LngLatErrorList[1]) > 25 {
+                if abs(LngLatErrorList[0]) > 65 or abs(LngLatErrorList[1]) > 25 {
                     set LandSomewhereElse to true.
                     set MechaZillaExists to false.
                     SetRadarAltitude().
-                    LogToFile("Landing parameters out of bounds (" + (LngLatErrorList[0] + 50) + "," + (LngLatErrorList[0] - 50) + "," + (LngLatErrorList[1] + 25) + "," + (LngLatErrorList[1] - 15) + "), Landing Off-Target").
+                    LogToFile("Landing parameters out of bounds (" + (LngLatErrorList[0] + 65) + "," + (LngLatErrorList[0] - 65) + "," + (LngLatErrorList[1] + 25) + "," + (LngLatErrorList[1] - 25) + "), Landing Off-Target").
                     LogToFile("Lng Error: " + LngError + "    LatError: " + LatError).
                 }
             }
@@ -7002,7 +7011,7 @@ function ReEntryData {
                 }
             }
 
-            until verticalspeed > -0.02 and RadarAlt < 5 and ship:status = "LANDED" or verticalspeed > 0.5 and RadarAlt < 5 {
+            until verticalspeed > -0.02 and RadarAlt < 1.25 and ship:status = "LANDED" or verticalspeed > 0.5 and RadarAlt < 5 {
                 if MechaZillaExists and TargetOLM {
                     if RadarAlt < 4 * ShipHeight and RadarAlt > 3.5 * ShipHeight {
                         sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,60,true").
@@ -7060,7 +7069,7 @@ function LandingVector {
         set LngError to vdot(LandingForwardDirection, ErrorVector).
         set LatError to vdot(LandingLateralDirection, ErrorVector).
 
-        if abs(LngLatErrorList[0]) > 40 and RadarAlt < 200 or abs(LngLatErrorList[1]) > 15 and RadarAlt < 200 {
+        if abs(LngError) > 40 and RadarAlt < 200 or abs(LatError) > 15 and RadarAlt < 200 {
             if ship:body:atm:sealevelpressure > 0.5 {
                 set DesiredDecel to 11 - 9.81.
             }
@@ -7071,7 +7080,12 @@ function LandingVector {
 
         if ship:body:atm:sealevelpressure > 0.5 {
             if RadarAlt < 200 {
-                set ErrorVector to ErrorVector + 2 * vxcl(up:vector, ship:position - landingzone:position).
+                if RSS {
+                    set ErrorVector to ErrorVector + 1 * vxcl(up:vector, ship:position - landingzone:position).
+                }
+                else {
+                    set ErrorVector to ErrorVector + 2 * vxcl(up:vector, ship:position - landingzone:position).
+                }
             }
             if ErrorVector:mag > max(min(RadarAlt / 20, 10), 7.5) {
                 set ErrorVector to ErrorVector:normalized * max(min(RadarAlt / 20, 10), 7.5).
@@ -7100,7 +7114,7 @@ function LandingVector {
         else {
             if LandSomewhereElse {
                 if ship:body:atm:sealevelpressure > 0.5 {
-                    if ErrorVector:MAG < (RadarAlt + 10) and not LandSomewhereElse {
+                    if ErrorVector:MAG < (RadarAlt + 10) {
                         set LandSomewhereElse to false.
                         LogToFile("Re-acquired Target").
                     }
@@ -7109,7 +7123,7 @@ function LandingVector {
                     }
                 }
                 if ship:body:atm:sealevelpressure < 0.5 {
-                    if ErrorVector:MAG < 2 * RadarAlt and not LandSomewhereElse {
+                    if ErrorVector:MAG < 2 * RadarAlt {
                         set LandSomewhereElse to false.
                         LogToFile("Re-acquired Target").
                     }
@@ -7385,7 +7399,7 @@ function LngLatError {
             if ship:body:atm:sealevelpressure > 0.5 {
                 if MechaZillaExists and TargetOLM {
                     if RSS {
-                        set LngLatOffset to 0.
+                        set LngLatOffset to ((138.5 / ship:mass) * 365) - 245 + (max(CargoCoG - 150, 0) / 100) * 10.
                     }
                     else {
                         set LngLatOffset to ((48.8 / ship:mass) * 251) - 171 + (max(CargoCoG - 150, 0) / 100) * 10.
@@ -7393,7 +7407,7 @@ function LngLatError {
                 }
                 else {
                     if RSS {
-                        set LngLatOffset to 0.
+                        set LngLatOffset to ((138.5 / ship:mass) * 281) - 251 + (max(CargoCoG - 150, 0) / 100) * 10.
                     }
                     else {
                         set LngLatOffset to ((48.8 / ship:mass) * 105) - 50 + (max(CargoCoG - 150, 0) / 100) * 10.

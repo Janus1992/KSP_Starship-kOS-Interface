@@ -1,3 +1,6 @@
+# V2.0.11 (2023-05-09)
+- Enabled precise Earth landings in RSS (without FAR!).
+
 # V2.0.10 (2023-05-08)
 - Fixed some booster and ship landing bugs.
 - Fixed an error when calculating a de-orbit burn and Trajectories doesn't find an impact position.
