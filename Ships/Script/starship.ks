@@ -6576,7 +6576,7 @@ function ReEntryAndLand {
         }
 
         SteeringManager:RESETTODEFAULT().
-        set STEERINGMANAGER:YAWTS to 2.
+        set STEERINGMANAGER:YAWTS to 5.
         set PitchPID to PIDLOOP(0.0005, 0, 0, -25, 20).
         set YawPID to PIDLOOP(0.01, 0, 0, -50, 50).
 
@@ -6646,6 +6646,7 @@ function ReEntryAndLand {
                     LogToFile("Vehicle is Subsonic, precise steering activated").
                     when RadarAlt < 10000 then {
                         DisengageYawRCS(1).
+                        set STEERINGMANAGER:YAWTS to 2.5.
                         InhibitButtons(1, 1, 1).
                         CheckLZReachable().
                         wait 0.001.
@@ -7078,9 +7079,6 @@ function LandingVector {
         set LngLatErrorList to LngLatError().
 
         if ship:body:atm:sealevelpressure > 0.5 {
-            //if RadarAlt < 200 and ReducingSensitivity {
-            //    set ErrorVector to vxcl(up:vector, ship:position - landingzone:position).
-            //}
             if ErrorVector:MAG > (RadarAlt + 15) and RadarAlt > 5 and not LandSomewhereElse {
                 set LandSomewhereElse to true.
                 set MechaZillaExists to false.
@@ -7120,7 +7118,7 @@ function LandingVector {
         if ship:body:atm:sealevelpressure > 0.5 {
             if RadarAlt < 200 {
                 if RSS {
-                    set ErrorVector to ErrorVector + 1 * vxcl(up:vector, ship:position - landingzone:position).
+                    set ErrorVector to ErrorVector + 2 * vxcl(up:vector, ship:position - landingzone:position).
                 }
                 else {
                     set ErrorVector to ErrorVector + 2 * vxcl(up:vector, ship:position - landingzone:position).
@@ -7188,7 +7186,7 @@ function LandingVector {
             else {
                 if ship:body:atm:sealevelpressure > 0.5 {
                     if ReducingSensitivity {
-                        set result to ship:up:vector - 0.03 * velocity:surface - 0.015 * ErrorVector + 0.02 * facing:starvector.
+                        set result to ship:up:vector - 0.03 * velocity:surface - 0.0075 * ErrorVector + 0.02 * facing:starvector.
                     }
                     else {
                         set result to ship:up:vector - 0.03 * velocity:surface - 0.03 * ErrorVector + 0.02 * facing:starvector.
