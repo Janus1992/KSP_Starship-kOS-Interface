@@ -27,7 +27,7 @@ set LandingBurnStarted to false.
 lock RadarAlt to alt:radar - BoosterHeight.
 set stopTime9 to 0.
 
-if ship:body:radius > 600001 and ship:body:atm:sealevelpressure > 0.6 {
+if bodyexists("Earth") {
     set RSS to true.
     set Planet to "Earth".
     set LaunchSites to lexicon("KSC", "28.6084,-80.59975").

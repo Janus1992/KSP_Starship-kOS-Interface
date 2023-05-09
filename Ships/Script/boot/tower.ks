@@ -1,5 +1,5 @@
 set config:ipu to 500.
-if ship:body:radius > 600001 and ship:body:atm:sealevelpressure > 0.6 {
+if bodyexists("Earth") {
     set RSS to true.
     set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
 }

@@ -11,7 +11,7 @@ unlock steering.
 clearguis().
 clearscreen.
 
-if ship:body:radius > 600001 and ship:body:atm:sealevelpressure > 0.6 {
+if bodyexists("Earth") {
     set RSS to true.
 }
 else {
@@ -4288,8 +4288,14 @@ set launchbutton:ontoggle to {
                             LogToFile("Starting Launch Function").
                             if TargetShip = 0 {}
                             else if abs(TargetShip:orbit:inclination) < 0.5 {
-                                set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
-                                set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
+                                if RSS {
+                                    set LaunchTimeSpanInSeconds to 540.
+                                    set LaunchDistance to 1460000.
+                                }
+                                else {
+                                    set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
+                                    set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
+                                }
                                 if NrOfVacEngines = 3 {
                                     set LaunchTimeSpanInSeconds to LaunchTimeSpanInSeconds + 3.
                                 }
@@ -4338,8 +4344,14 @@ set launchbutton:ontoggle to {
                                 }
                             }
                             else {
-                                set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
-                                set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
+                                if RSS {
+                                    set LaunchTimeSpanInSeconds to 540.
+                                    set LaunchDistance to 1460000.
+                                }
+                                else {
+                                    set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
+                                    set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
+                                }
                                 if NrOfVacEngines = 3 {
                                     set LaunchTimeSpanInSeconds to LaunchTimeSpanInSeconds + 3.
                                 }
@@ -7079,7 +7091,7 @@ function LandingVector {
         set LngLatErrorList to LngLatError().
 
         if ship:body:atm:sealevelpressure > 0.5 {
-            if ErrorVector:MAG > (RadarAlt + 15) and RadarAlt > 5 and not LandSomewhereElse {
+            if ErrorVector:MAG > (RadarAlt + 15) and RadarAlt > 5 and not (LandSomewhereElse) or RadarAlt < -5 and not (LandSomewhereElse) {
                 set LandSomewhereElse to true.
                 set MechaZillaExists to false.
                 SetRadarAltitude().
@@ -7639,7 +7651,7 @@ function DeOrbitVelocity {
     else if ship:body:atm:sealevelpressure < 0.5 {
         if RSS {
             set ErrorTolerance to 100000.
-            set StartPoint to -altitude / 2000.
+            set StartPoint to -altitude / 3000.
         }
         else {
             set ErrorTolerance to 20000.
@@ -10180,7 +10192,7 @@ function PerformBurn {
                 if quicksetting1:pressed and kuniverse:timewarp:warp > 3 and nextnode:eta - 0.5 * BurnDuration < 10800 or nextnode:eta - 0.5 * BurnDuration < 10800 and kuniverse:timewarp:warp > 3 {
                     set kuniverse:timewarp:warp to 3.
                 }
-                if nextnode:eta - 0.5 * BurnDuration < 75 {
+                if nextnode:eta - 0.5 * BurnDuration < 85 {
                     if kuniverse:timewarp:warp > 0 {
                         set kuniverse:timewarp:warp to 0.
                     }
