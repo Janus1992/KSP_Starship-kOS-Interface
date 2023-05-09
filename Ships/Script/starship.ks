@@ -6524,6 +6524,7 @@ Function AbortLaunchSteering {
 function ReEntryAndLand {
     if addons:tr:hasimpact {
         set LandButtonIsRunning to true.
+        set tt to time:seconds.
         set config:ipu to CPUSPEED.
         set LandSomewhereElse to false.
         set DescentAngles to list(aoa, aoa, aoa, aoa).
@@ -6542,6 +6543,8 @@ function ReEntryAndLand {
         ShutDownAllEngines().
         set launchlabel:style:bg to "starship_img/starship_background".
         set textbox:style:bg to "starship_img/starship_main_square_bg".
+        Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 20).
+        Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 20).
         ShowButtons(0).
         InhibitButtons(1, 1, 0).
         if altitude > 30000 {
@@ -6562,7 +6565,7 @@ function ReEntryAndLand {
         rcs off.
         ActivateEngines(0).
 
-        setflaps(FWDFlapDefault, AFTFlapDefault, 1, 30).
+        setflaps(FWDFlapDefault, AFTFlapDefault, 1, 20).
 
         if LFShip > FuelVentCutOffValue and ship:body:atm:sealevelpressure > 0.5 {
             Nose:activate.
@@ -6573,8 +6576,9 @@ function ReEntryAndLand {
         }
 
         SteeringManager:RESETTODEFAULT().
-        set PitchPID to PIDLOOP(0.0005, 0, 0, -25, 30).
-        set YawPID to PIDLOOP(0.025, 0, 0, -50, 50).
+        set STEERINGMANAGER:YAWTS to 2.
+        set PitchPID to PIDLOOP(0.0005, 0, 0, -25, 20).
+        set YawPID to PIDLOOP(0.01, 0, 0, -50, 50).
 
         lock STEERING to ReEntrySteering().
         if quicksetting1:pressed and altitude > 30000 {
@@ -6595,6 +6599,8 @@ function ReEntryAndLand {
                     setflaps(FWDFlapDefault, AFTFlapDefault, 1, 30).
                 }
                 when airspeed < 300 and ship:body:atm:sealevelpressure > 0.5 or airspeed < 450 and ship:body:atm:sealevelpressure < 0.5 then {
+                    Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+                    Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
                     setflaps(FWDFlapDefault, AFTFlapDefault, 1, 5).
                     set t to time:seconds.
                     when time:seconds > t + 5 then {
@@ -6606,6 +6612,8 @@ function ReEntryAndLand {
                             set PitchPID:kp to 0.1.
                             set PitchPID:ki to 0.0025.
                             set PitchPID:kd to 0.0025.
+                            set PitchPID:minoutput to -15.
+                            set PitchPID:maxoutput to 0.
                             set YawPID:kp to 0.025.
                             set YawPID:ki to 0.
                             set YawPID:kd to 0.
@@ -6616,6 +6624,8 @@ function ReEntryAndLand {
                             set PitchPID:kp to 0.125.
                             set PitchPID:ki to 0.0025.
                             set PitchPID:kd to 0.0025.
+                            set PitchPID:minoutput to -15.
+                            set PitchPID:maxoutput to 0.
                             set YawPID:kp to 0.1.
                             set YawPID:ki to 0.
                             set YawPID:kd to 0.
@@ -6730,6 +6740,17 @@ function ReEntryData {
         set status1:style:textcolor to green.
     }
 
+    if vang(facing:forevector, result:vector) > 10 {
+        Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+        Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+        set tt to time:seconds.
+
+    }
+    if time:seconds > tt + 15 {
+        Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 20).
+        Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 20).
+    }
+
     if LngLatErrorList[1] < 100 and LngLatErrorList[1] > -100 and RadarAlt < 15000 and not LandSomewhereElse {
         FLflap:getmodule("ModuleSEPControlSurface"):DoAction("deactivate yaw control", true).
         FRflap:getmodule("ModuleSEPControlSurface"):DoAction("deactivate yaw control", true).
@@ -6745,7 +6766,7 @@ function ReEntryData {
         set FlapsYawEngaged to true.
     }
 
-    if altitude < ship:body:ATM:height and RadarAlt > FlipAltitude + 100 {
+    if altitude < ship:body:ATM:height - 20000 and RadarAlt > FlipAltitude + 100 {
         set PitchInput to SLEngines[0]:gimbal:pitchangle.
         if PitchInput > 0.005 {
             for res in HeaderTank:resources {
@@ -6892,6 +6913,8 @@ function ReEntryData {
             set RepositionLF to TRANSFERALL("LiquidFuel", HeaderTank, Tank).
             set RepositionOxidizer:ACTIVE to TRUE.
             set RepositionLF:ACTIVE to TRUE.
+            Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+            Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             DisengageYawRCS(0).
             LogToFile("Landing Procedure started. Starting Landing Flip Now!").
             ShutDownAllEngines().
@@ -6934,6 +6957,7 @@ function ReEntryData {
             set landingRatio to 0.
             set maxDecel to 0.
             set DesiredDecel to 0.
+            set ReducingSensitivity to false.
             lock steering to LandingVector().
 
             LogToFile("Starting Engines").
@@ -6975,7 +6999,7 @@ function ReEntryData {
                 setflaps(60, 60, 1, 0).
                 when vang(-1 * velocity:surface, ship:facing:forevector) < 0.05 * FlipAngle and ship:body:atm:sealevelpressure > 0.5 or vang(-1 * velocity:surface, ship:facing:forevector) < 0.4 * FlipAngle and ship:body:atm:sealevelpressure < 0.5 then {
                     if ship:body:atm:sealevelpressure > 0.5 {
-                        set DesiredDecel to 12 - 9.81.
+                        set DesiredDecel to 12.5 - 9.81.
                     }
                     if ship:body:atm:sealevelpressure < 0.5 {
                         set DesiredDecel to 11 - 9.81.
@@ -7010,18 +7034,20 @@ function ReEntryData {
                     SLEngines[2]:shutdown.
                     LogToFile("2nd and 3rd engine shutdown; performing a 1-engine landing").
                 }
+                when abs(LngError) < 10 and abs(LatError) < 10 and vxcl(up:vector, ship:position - landingzone:position):mag < 20 then {
+                    set ReducingSensitivity to true.
+                    when verticalspeed > -10 then {
+                        if MechaZillaExists and TargetOLM and not (LandSomewhereElse) {
+                            setflaps(0, 85, 1, 0).
+                        }
+                        else {
+                            gear on.
+                        }
+                    }
+                }
             }
 
-            when verticalspeed > -10 then {
-                if MechaZillaExists and TargetOLM and not (LandSomewhereElse) {
-                    setflaps(0, 85, 1, 0).
-                }
-                else {
-                    gear on.
-                }
-            }
-
-            until verticalspeed > -0.02 and RadarAlt < 1.25 and ship:status = "LANDED" or verticalspeed > 0.5 and RadarAlt < 5 {
+            until verticalspeed > -0.02 and RadarAlt < 1.25 and ship:status = "LANDED" or verticalspeed > 0.75 and RadarAlt < 5 {
                 if MechaZillaExists and TargetOLM {
                     if RadarAlt < 4 * ShipHeight and RadarAlt > 3.5 * ShipHeight {
                         sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,60,true").
@@ -7030,7 +7056,7 @@ function ReEntryData {
                     else if RadarAlt < 2 * ShipHeight and RadarAlt > 1.5 * ShipHeight {
                         sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,30,true").
                     }
-                    else if RadarAlt < (0.5 * DesiredDecel * 1.5 * 1.5) + 1 and RadarAlt > (0.5 * DesiredDecel * 1.5 * 1.5) - 2.5 {
+                    else if RadarAlt < (0.5 * DesiredDecel * 1.5 * 1.5) + 2 and RadarAlt > (0.5 * DesiredDecel * 1.5 * 1.5) - 2.5 {
                         sendMessage(Vessel(TargetOLM), ("MechazillaArms,8,10,30,false")).
                     }
                 }
@@ -7052,7 +7078,10 @@ function LandingVector {
         set LngLatErrorList to LngLatError().
 
         if ship:body:atm:sealevelpressure > 0.5 {
-            if ErrorVector:MAG > (RadarAlt + 15) and not LandSomewhereElse {
+            //if RadarAlt < 200 and ReducingSensitivity {
+            //    set ErrorVector to vxcl(up:vector, ship:position - landingzone:position).
+            //}
+            if ErrorVector:MAG > (RadarAlt + 15) and RadarAlt > 5 and not LandSomewhereElse {
                 set LandSomewhereElse to true.
                 set MechaZillaExists to false.
                 SetRadarAltitude().
@@ -7091,10 +7120,10 @@ function LandingVector {
         if ship:body:atm:sealevelpressure > 0.5 {
             if RadarAlt < 200 {
                 if RSS {
-                    set ErrorVector to ErrorVector + min(0.5 * vxcl(up:vector, ship:position - landingzone:position):mag, 2.5) * vxcl(up:vector, ship:position - landingzone:position):normalized.
+                    set ErrorVector to ErrorVector + 1 * vxcl(up:vector, ship:position - landingzone:position).
                 }
                 else {
-                    set ErrorVector to ErrorVector + min(1 * vxcl(up:vector, ship:position - landingzone:position):mag, 2.5) * vxcl(up:vector, ship:position - landingzone:position):normalized.
+                    set ErrorVector to ErrorVector + 2 * vxcl(up:vector, ship:position - landingzone:position).
                 }
             }
             if ErrorVector:mag > max(min(RadarAlt / 20, 10), 7.5) {
@@ -7158,7 +7187,7 @@ function LandingVector {
             }
             else {
                 if ship:body:atm:sealevelpressure > 0.5 {
-                    if abs(LngError) < 10 and abs(LatError) < 10 and vxcl(up:vector, ship:position - landingzone:position):mag < 10 {
+                    if ReducingSensitivity {
                         set result to ship:up:vector - 0.03 * velocity:surface - 0.015 * ErrorVector + 0.02 * facing:starvector.
                     }
                     else {
@@ -7405,7 +7434,7 @@ function LngLatError {
             if ship:body:atm:sealevelpressure > 0.5 {
                 if MechaZillaExists and TargetOLM {
                     if RSS {
-                        set LngLatOffset to ((138.5 / ship:mass) * 365) - 245 + (max(CargoCoG - 150, 0) / 100) * 10.
+                        set LngLatOffset to ((138.5 / ship:mass) * 309) - 184 + (max(CargoCoG - 150, 0) / 100) * 10.
                     }
                     else {
                         set LngLatOffset to ((48.8 / ship:mass) * 209) - 129 + (max(CargoCoG - 150, 0) / 100) * 10.
@@ -7413,7 +7442,7 @@ function LngLatError {
                 }
                 else {
                     if RSS {
-                        set LngLatOffset to ((138.5 / ship:mass) * 281) - 251 + (max(CargoCoG - 150, 0) / 100) * 10.
+                        set LngLatOffset to ((138.5 / ship:mass) * 281) - 236 + (max(CargoCoG - 150, 0) / 100) * 10.
                     }
                     else {
                         set LngLatOffset to ((48.8 / ship:mass) * 105) - 50 + (max(CargoCoG - 150, 0) / 100) * 10.
@@ -8212,10 +8241,20 @@ function CalculateShipTemperature {
     }
     if Gforce > 0.15 and throttle = 0 {
         if ship:body:atm:sealevelpressure > 0.5 {
-            set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -86) + max(vang(facing:forevector, velocity:surface), 10)/90 * (GForce * airspeed), 2653).
+            if RSS {
+                set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -86) + max(vang(facing:forevector, velocity:surface), 10)/90 * (abs(GForce) * airspeed / 5), 2653).
+            }
+            else {
+                set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -86) + max(vang(facing:forevector, velocity:surface), 10)/90 * (abs(GForce) * airspeed), 2653).
+            }
         }
         else if ship:body:atm:sealevelpressure < 0.5 {
-            set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -87) + max(vang(facing:forevector, velocity:surface), 10)/90 * (GForce * 3 * airspeed), 2653).
+            if RSS {
+                set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -87) + max(vang(facing:forevector, velocity:surface), 10)/90 * (abs(GForce) * airspeed / 2), 2653).
+            }
+            else {
+                set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -87) + max(vang(facing:forevector, velocity:surface), 10)/90 * (abs(GForce) * 3 * airspeed), 2653).
+            }
         }
         else {
             set ShipTemperature to -85.

@@ -540,9 +540,6 @@ FUNCTION SteeringCorrections {
         if addons:tr:hasimpact {
             set ErrorVector to ADDONS:TR:IMPACTPOS:POSITION - landingzone:POSITION.
             set impactpos to ship:body:geopositionof(ADDONS:TR:IMPACTPOS:POSITION).
-            if RadarAlt < 500 {
-                set ErrorVector to ErrorVector + min(2 * vxcl(up:vector, ship:position - landingzone:position):mag, 2.5) * vxcl(up:vector, ship:position - landingzone:position):normalized.
-            }
         }
         set LatError to vdot(AngleAxis(-90, ApproachUPVector) * ApproachVector, ErrorVector).
         set LngError to vdot(ApproachVector, ErrorVector).
