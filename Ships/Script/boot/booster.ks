@@ -409,7 +409,7 @@ function Boostback {
     }
 
 
-    until verticalspeed > -0.01 and RadarAlt < 1.5 and ship:status = "LANDED" or verticalspeed > 0.75 {
+    until verticalspeed > -0.01 and RadarAlt < 1.5 and ship:status = "LANDED" or verticalspeed > 0.75 and RadarAlt < 2.5 {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         rcs on.

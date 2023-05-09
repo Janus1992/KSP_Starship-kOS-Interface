@@ -7628,7 +7628,7 @@ function DeOrbitVelocity {
     set message3:style:textcolor to white.
     if ship:body:atm:sealevelpressure > 0.5 {
         if RSS {
-            set ErrorTolerance to 200000.
+            set ErrorTolerance to 300000.
             set StartPoint to -altitude / 4000.
         }
         else {
@@ -7683,17 +7683,24 @@ function DeOrbitVelocity {
         set ApproachUPVector to (landingzone:position - body:position):normalized.
         set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, time:seconds + addons:tr:TIMETILLIMPACT - 120):surface):normalized.
         //set apprvec to vecdraw(ship:position, 25 * ApproachVector, green, "Approach Vector", 1, true).
-        until LngError < 250 and LngError > -250 {
+        until LngError < 500 and LngError > -500 {
             SendPing().
             set burn to node(deorbitburnstarttime, 0, 0, ProgradeVelocity).
             add burn.
-            until addons:tr:hasimpact {}
+            set calcTime to time:seconds.
+            wait 0.001.
+            until addons:tr:hasimpact {
+                if time:seconds > calcTime + 0.25 {
+                    set config:ipu to CPUSPEED.
+                    return 0.
+                }
+            }
             wait 0.1.
             set ErrorVector to ADDONS:TR:IMPACTPOS:POSITION - landingzone:POSITION.
             set LngError to (vdot(ApproachVector, ErrorVector)).
             set message2:text to "<b>Longitude Error: </b>" + round(LngError / 1000, 1) + "km".
             if RSS {
-                set ProgradeVelocity to ProgradeVelocity - LngError / 500000.
+                set ProgradeVelocity to ProgradeVelocity - LngError / 600000.
             }
             else {
                 set ProgradeVelocity to ProgradeVelocity - LngError / 20000.
