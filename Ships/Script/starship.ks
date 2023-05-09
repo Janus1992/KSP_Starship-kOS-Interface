@@ -6588,14 +6588,24 @@ function ReEntryAndLand {
                 set kuniverse:timewarp:warp to 4.
             }
             when airspeed < 2150 then {
+                setflaps(FWDFlapDefault, AFTFlapDefault, 1, 5).
                 set PitchPID:kp to 0.0025.
+                set t to time:seconds.
+                when time:seconds > t + 5 then {
+                    setflaps(FWDFlapDefault, AFTFlapDefault, 1, 30).
+                }
                 when airspeed < 300 and ship:body:atm:sealevelpressure > 0.5 or airspeed < 450 and ship:body:atm:sealevelpressure < 0.5 then {
+                    setflaps(FWDFlapDefault, AFTFlapDefault, 1, 5).
+                    set t to time:seconds.
+                    when time:seconds > t + 5 then {
+                        setflaps(FWDFlapDefault, AFTFlapDefault, 1, 30).
+                    }
                     if ship:body:atm:sealevelpressure > 0.5 {
                         set FlipAltitude to 750.
                         if RSS {
                             set PitchPID:kp to 0.1.
-                            set PitchPID:ki to 0.001.
-                            set PitchPID:kd to 0.001.
+                            set PitchPID:ki to 0.0025.
+                            set PitchPID:kd to 0.0025.
                             set YawPID:kp to 0.025.
                             set YawPID:ki to 0.
                             set YawPID:kd to 0.
@@ -6603,7 +6613,7 @@ function ReEntryAndLand {
                             set YawPID:maxoutput to 1.5.
                         }
                         else {
-                            set PitchPID:kp to 0.2.
+                            set PitchPID:kp to 0.125.
                             set PitchPID:ki to 0.0025.
                             set PitchPID:kd to 0.0025.
                             set YawPID:kp to 0.1.
@@ -7081,10 +7091,10 @@ function LandingVector {
         if ship:body:atm:sealevelpressure > 0.5 {
             if RadarAlt < 200 {
                 if RSS {
-                    set ErrorVector to ErrorVector + 1 * vxcl(up:vector, ship:position - landingzone:position).
+                    set ErrorVector to ErrorVector + min(0.5 * vxcl(up:vector, ship:position - landingzone:position):mag, 2.5) * vxcl(up:vector, ship:position - landingzone:position):normalized.
                 }
                 else {
-                    set ErrorVector to ErrorVector + 2 * vxcl(up:vector, ship:position - landingzone:position).
+                    set ErrorVector to ErrorVector + min(1 * vxcl(up:vector, ship:position - landingzone:position):mag, 2.5) * vxcl(up:vector, ship:position - landingzone:position):normalized.
                 }
             }
             if ErrorVector:mag > max(min(RadarAlt / 20, 10), 7.5) {
@@ -7116,15 +7126,16 @@ function LandingVector {
                 if ship:body:atm:sealevelpressure > 0.5 {
                     if ErrorVector:MAG < (RadarAlt + 10) {
                         set LandSomewhereElse to false.
-                        LogToFile("Re-acquired Target").
-                    }
-                    if MechaZillaExists and TargetOLM {
+                        set message1:text to "<b>Target Re-acquired..</b>".
                         SetRadarAltitude().
+                        LogToFile("Re-acquired Target").
                     }
                 }
                 if ship:body:atm:sealevelpressure < 0.5 {
                     if ErrorVector:MAG < 2 * RadarAlt {
                         set LandSomewhereElse to false.
+                        set message1:text to "<b>Target Re-acquired..</b>".
+                        SetRadarAltitude().
                         LogToFile("Re-acquired Target").
                     }
                 }
@@ -7147,16 +7158,11 @@ function LandingVector {
             }
             else {
                 if ship:body:atm:sealevelpressure > 0.5 {
-                    if MechaZillaExists and TargetOLM {
-                        if RSS {
-                            set result to ship:up:vector - 0.03 * velocity:surface - 0.015 * ErrorVector + 0.02 * facing:topvector.
-                        }
-                        else {
-                            set result to ship:up:vector - 0.03 * velocity:surface - 0.015 * ErrorVector + 0.02 * facing:starvector.
-                        }
+                    if abs(LngError) < 10 and abs(LatError) < 10 and vxcl(up:vector, ship:position - landingzone:position):mag < 10 {
+                        set result to ship:up:vector - 0.03 * velocity:surface - 0.015 * ErrorVector + 0.02 * facing:starvector.
                     }
                     else {
-                        set result to ship:up:vector - 0.03 * velocity:surface - 0.015 * ErrorVector + 0.02 * facing:starvector.
+                        set result to ship:up:vector - 0.03 * velocity:surface - 0.03 * ErrorVector + 0.02 * facing:starvector.
                     }
                 }
                 if ship:body:atm:sealevelpressure < 0.5 {
@@ -7402,7 +7408,7 @@ function LngLatError {
                         set LngLatOffset to ((138.5 / ship:mass) * 365) - 245 + (max(CargoCoG - 150, 0) / 100) * 10.
                     }
                     else {
-                        set LngLatOffset to ((48.8 / ship:mass) * 251) - 171 + (max(CargoCoG - 150, 0) / 100) * 10.
+                        set LngLatOffset to ((48.8 / ship:mass) * 209) - 129 + (max(CargoCoG - 150, 0) / 100) * 10.
                     }
                 }
                 else {
@@ -9706,6 +9712,9 @@ function LandAtOLM {
                         set L to readjson("0:/settings.json").
                         if L:haskey("ArmsHeight") {
                             set ArmsHeight to L["ArmsHeight"].
+                            if not (RSS) and ArmsHeight > 90 {
+                                set ArmsHeight to 86.35.
+                            }
                         }
                         else {
                             if RSS {
