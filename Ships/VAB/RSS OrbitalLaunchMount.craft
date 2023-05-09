@@ -1,8 +1,8 @@
 ship = RSS OrbitalLaunchMount
 version = 1.12.5
-description = 
+description = Yes, I know it doesnt fit in the VAB..
 type = VAB
-size = 59.0783463,138.325211,24.3496323
+size = 59.0783539,138.325211,24.3496361
 steamPublishedFileId = 0
 persistentId = 1525475771
 rot = 0,0,0,0
@@ -16,9 +16,9 @@ PART
 {
 	part = SLE.SS.OLM.KOS_4293680544
 	partName = Part
-	persistentId = 341096146
-	pos = -0.175349355,14.3051081,-0.1825369
-	attPos = -0.631473422,0.433590889,-0.8466838
+	persistentId = 2529485680
+	pos = 0.0421534032,14.3051081,-0.1825369
+	attPos = -0.413970649,0.433590889,-0.8466838
 	attPos0 = 0.456124067,13.8715172,0.6641469
 	rot = 0,1,0,0
 	attRot = 0,0.99999994,0,0
@@ -568,8 +568,8 @@ PART
 {
 	part = SLE.SS.OLIT.Base.KOS_4293662600
 	partName = Part
-	persistentId = 3678048867
-	pos = -33.5268326,5.79207706,-1.87707591
+	persistentId = 1666419649
+	pos = -33.30933,5.79207706,-1.87707591
 	attPos = 0,0,0
 	attPos0 = 33.351017,-8.51303101,1.6945318
 	rot = 0,1,0,0
@@ -850,8 +850,8 @@ PART
 {
 	part = SLE.SS.OLIT.Core.KOS_4293661612
 	partName = Part
-	persistentId = 1797966783
-	pos = -33.5268326,11.4223871,-1.87707591
+	persistentId = 635929452
+	pos = -33.30933,11.4223871,-1.87707591
 	attPos = 0,0,0
 	attPos0 = 0,5.63031006,0
 	rot = 0,1,0,0
@@ -1044,8 +1044,8 @@ PART
 {
 	part = SLE.SS.OLIT.Top.KOS_4293653166
 	partName = Part
-	persistentId = 2506449941
-	pos = -33.5268326,128.988632,-1.87707591
+	persistentId = 1053168032
+	pos = -33.30933,128.988632,-1.87707591
 	attPos = 0,0,0
 	attPos0 = 0,117.566246,0
 	rot = 0,1,0,0
@@ -1217,8 +1217,8 @@ PART
 {
 	part = SLE.SS.OLIT.MZ.KOS_4293650462
 	partName = Part
-	persistentId = 848981350
-	pos = -24.9479218,126.324501,-0.669552684
+	persistentId = 2594395995
+	pos = -24.7304173,126.324501,-0.669552624
 	attPos = 0,0,0
 	attPos0 = -8.57891464,114.902115,-1.20752168
 	rot = 0,1,0,0
