@@ -7000,7 +7000,7 @@ function ReEntryData {
                 setflaps(60, 60, 1, 0).
                 when vang(-1 * velocity:surface, ship:facing:forevector) < 0.05 * FlipAngle and ship:body:atm:sealevelpressure > 0.5 or vang(-1 * velocity:surface, ship:facing:forevector) < 0.4 * FlipAngle and ship:body:atm:sealevelpressure < 0.5 then {
                     if ship:body:atm:sealevelpressure > 0.5 {
-                        set DesiredDecel to 12.5 - 9.81.
+                        set DesiredDecel to 12 - 9.81.
                     }
                     if ship:body:atm:sealevelpressure < 0.5 {
                         set DesiredDecel to 11 - 9.81.
@@ -7435,7 +7435,7 @@ function LngLatError {
                         set LngLatOffset to ((138.5 / ship:mass) * 309) - 184 + (max(CargoCoG - 150, 0) / 100) * 10.
                     }
                     else {
-                        set LngLatOffset to ((48.8 / ship:mass) * 209) - 129 + (max(CargoCoG - 150, 0) / 100) * 10.
+                        set LngLatOffset to ((48.8 / ship:mass) * 126) - 66 + (max(CargoCoG - 150, 0) / 100) * 10.
                     }
                 }
                 else {
@@ -9771,7 +9771,9 @@ function LandAtOLM {
                         set ArmsHeight to 86.35.
                     }
                 }
-                set FlipAltitude to FlipAltitude + ArmsHeight.
+                if FlipAltitude = 750 {
+                    set FlipAltitude to FlipAltitude + ArmsHeight.
+                }
                 when RadarAlt < 2000 then {
                     if not (TargetOLM = "false") {
                         sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").

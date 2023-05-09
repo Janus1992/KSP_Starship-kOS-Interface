@@ -386,11 +386,11 @@ function Boostback {
             lock steering to SteeringVector.
             when verticalspeed > -80 then {
                 if not (LandSomewhereElse) {
-                    lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.05 * ErrorVector, heading(270,0):vector).
+                    lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.04 * ErrorVector, heading(270,0):vector).
                     lock steering to SteeringVector.
                 }
-                when abs(LngError) < 5 and abs(LatError) < 5 and vxcl(up:vector, ship:position - landingzone:position):mag < 5 then {
-                    lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.025 * ErrorVector, heading(270,0):vector).
+                when abs(LngError) < 10 and abs(LatError) < 10 and vxcl(up:vector, ship:position - landingzone:position):mag < 20 then {
+                    lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.015 * ErrorVector, heading(270,0):vector).
                     lock steering to SteeringVector.
                 }
                 when verticalspeed > -25 then {
