@@ -17,7 +17,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Before filing a bug, read the "Bug support guide" at the bottom of this page.
 
 # REQUIRES:
-- Stock KSP or RSS (no KSRSS or other planet changing mods), and the language has to be set to "english" (important).
+- Stock KSP, RSS or KSRSS (no other planet changing mods), and the language has to be set to "english" (important).
 - Starship Expansion Project
     https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
 - Trajectories
@@ -31,7 +31,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
     Dev Version: https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev
 
 # OPTIONAL:
-- Kerbal Joint Reinforcement Continued (For use with RSS)
+- Kerbal Joint Reinforcement Continued (Required for use with RSS or KSRSS)
     https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued
 
 # INCOMPATIBLE(!!):
@@ -40,7 +40,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 
 # Notes:
-- My mod copies the original SEP parts and changes it's fuel and thrust (and more) values to portray a more playable behaviour on Kerbin. As SEP is optimized for 2.5/2.7x sized Kerbin, SEP default will result in more fuel in orbit than a real life Starship would have in lower Earth orbit. Although SEP's behaviour is realistic for a planet the size of Kerbin, I decided that simulating the tight margins to orbit makes SEP more playable and fun on stock Kerbin.
+- My mod copies the original SEP parts and changes it's fuel and thrust (and more) values to portray a more playable behaviour on Kerbin. As SEP is optimized for 2.5/2.7x sized Kerbin, SEP default will result in more fuel in orbit than a real life Starship would have in lower Kerbin orbit. Although SEP's behaviour is realistic for a planet the size of Kerbin, I decided that simulating the tight margins to orbit makes SEP more playable and fun on stock Kerbin.
 
 - Automatic re-stacking/refueling is currently impossible because the SEP & SLE mods lack the ability to dock together.
 
@@ -74,7 +74,7 @@ To Load Cargo in the Cargo Ship (due to the vehicle not fitting in the VAB):
 
 - Being in IVA during Booster Separation can cause problems with returning back into the IVA later on, and break the camera. A reload after launch completion fixes everything.
 
-- FAR is currently only half-way supported. The Launch and Booster return should work properly in RSS and stock with FAR or without. However the ship won't be able to re-enter and land with FAR, so please do this manually if you really want to use FAR.
+- FAR is currently only half-way supported. The Launch and Booster return should work properly in KSRSS, RSS and stock with FAR or without. However the ship won't be able to re-enter and land with FAR on a non-stock planet, so please do this manually if you really want to use FAR.
 
 
 
