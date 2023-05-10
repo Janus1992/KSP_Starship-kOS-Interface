@@ -1,10 +1,19 @@
 set config:ipu to 500.
+set RSS to false.
+set KSRSS to false.
+set STOCK to false.
 if bodyexists("Earth") {
-    set RSS to true.
-    set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
+    if body("Earth"):radius > 1600000 {
+        set RSS to true.
+        set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
+    }
+    else {
+        set KSRSS to true.
+        set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
+    }
 }
 else {
-    set RSS to false.
+    set STOCK to true.
     set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
 }
 

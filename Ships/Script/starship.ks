@@ -11,11 +11,19 @@ unlock steering.
 clearguis().
 clearscreen.
 
+set RSS to false.
+set KSRSS to false.
+set STOCK to false.
 if bodyexists("Earth") {
-    set RSS to true.
+    if body("Earth"):radius > 1600000 {
+        set RSS to true.
+    }
+    else {
+        set KSRSS to true.
+    }
 }
 else {
-    set RSS to false.
+    set STOCK to true.
 }
 
 
@@ -80,8 +88,25 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set ShipMinPusherDistance to 1.12.
     set towerhgt to 96.
     set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
+    set DefaultLaunchSite to "28.6084,-80.59975".
     set FuelVentCutOffValue to 1200.
     set FuelBalanceSpeed to 100.
+}
+else if KSRSS {
+    set aoa to 60.
+    set MaxCargoToOrbit to 125005.
+    set MaxReEntryCargoThickAtmo to 15000.
+    set MaxIU to 260.
+    set MaxReEntryCargoThinAtmo to 40000.
+    set LaunchTimeSpanInSeconds to 246.
+    set ShipHeight to 31.1.
+    set BoosterMinPusherDistance to 0.3.
+    set ShipMinPusherDistance to 0.7.
+    set towerhgt to 60.
+    set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
+    set DefaultLaunchSite to "28.5166,-81.2062".
+    set FuelVentCutOffValue to 450.
+    set FuelBalanceSpeed to 40.
 }
 else {  // Set of variables when Real Solar System has NOT been installed
     set aoa to 60.
@@ -95,6 +120,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set ShipMinPusherDistance to 0.7.
     set towerhgt to 60.
     set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
+    set DefaultLaunchSite to "-0.0972,-74.5577".
     set FuelVentCutOffValue to 450.
     set FuelBalanceSpeed to 40.
 }
@@ -968,8 +994,8 @@ local setting1label is settingsstackvlayout1:addlabel("<b>Target Landing Zone:</
     set setting1label:style:fontsize to 19.
     set setting1label:style:wordwrap to false.
     set setting1label:style:width to 225.
-    set setting1label:tooltip to "Ship Landing Target coördinates (e.g. -0.0972,-74.5577). Default = Launchpad".
-local setting1 is settingsstackvlayout2:addtextfield("-0.0972,-74.5577").
+    set setting1label:tooltip to "Ship Landing Target coördinates (e.g. " + DefaultLaunchSite + "). Default = Launchpad".
+local setting1 is settingsstackvlayout2:addtextfield(DefaultLaunchSite).
     set setting1:style:width to 175.
     set setting1:style:margin:top to 10.
 local setting2 is settingsstackvlayout1:addcheckbox("<b>  Show Tooltips</b>").
@@ -1004,7 +1030,7 @@ local TargetLZPicker is settingsstackvlayout2:addpopupmenu().
     set TargetLZPicker:style:active_on:bg to "starship_img/starship_background_light".
     set TargetLZPicker:style:focused:bg to "starship_img/starship_background_light".
     set TargetLZPicker:style:focused_on:bg to "starship_img/starship_background_light".
-    if RSS {
+    if RSS or KSRSS {
         set TargetLZPicker:options to list("<color=grey><b>Select existing LZ</b></color>", "<b><color=white>Current Impact</color></b>", "<b><color=white>KSC</color></b>").
     }
     else {
@@ -1080,8 +1106,9 @@ set setting1:onconfirm to {
                 }
             }
             else {
-                set value to "-0.0972,-74.5577".
-                set landingzone to latlng(-0.0972,-74.5577).
+                set value to DefaultLaunchSite.
+                set value2 to value:split(",").
+                set landingzone to latlng(value2[0]:toscalar, value2[1]:toscalar).
                 print "Default KSC Pad Coordinates set instead".
             }
             set setting1:text to value.
@@ -1090,8 +1117,9 @@ set setting1:onconfirm to {
         else {
             set value to value:split(",").
             if value[0]:toscalar(-9999) = -9999 or value[1]:toscalar(-9999) = -9999 {
-                set value to "-0.0972,-74.5577".
-                set landingzone to latlng(-0.0972,-74.5577).
+                set value to DefaultLaunchSite.
+                set value2 to value:split(",").
+                set landingzone to latlng(value2[0]:toscalar, value2[1]:toscalar).
                 set setting1:text to value.
                 SaveToSettings("Landing Coordinates", value).
                 print "Default KSC Pad Coordinates set due to input error".
@@ -1131,6 +1159,13 @@ set TargetLZPicker:onchange to {
             set landingzone to latlng(28.6084,-80.59975).
             if homeconnection:isconnected {
                 SaveToSettings("Landing Coordinates", "28.6084,-80.59975").
+            }
+        }
+        else if KSRSS {
+            set setting1:text to "28.5166,-81.2062".
+            set landingzone to latlng(28.5166,-81.2062).
+            if homeconnection:isconnected {
+                SaveToSettings("Landing Coordinates", "28.5166,-81.2062").
             }
         }
         else {
@@ -5471,7 +5506,7 @@ if addons:tr:available and not startup {
                     set setting1:text to LandingCoords.
                 }
                 else {
-                    set LandingCoords to "-0.0972,-74.5577".
+                    set LandingCoords to DefaultLaunchSite.
                     set setting1:text to LandingCoords.
                 }
                 if L:haskey("CPU_SPD") {
@@ -5494,14 +5529,14 @@ if addons:tr:available and not startup {
             }
             else {
                 set L to lexicon().
-                set L["Landing Coordinates"] to "-0.0972,-74.5577".
-                set LandingCoords to "-0.0972,-74.5577".
+                set L["Landing Coordinates"] to DefaultLaunchSite.
+                set LandingCoords to DefaultLaunchSite.
                 set setting1:text to LandingCoords.
                 writejson(L, "0:/settings.json").
             }
         }
         else {
-            set LandingCoords to "-0.0972,-74.5577".
+            set LandingCoords to DefaultLaunchSite.
             set setting1:text to LandingCoords.
         }
         set LandingCoords to LandingCoords:split(",").
@@ -5708,6 +5743,13 @@ function Launch {
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.01, 0, 0, -30, 3.25 + 2.6 * CargoMass / MaxCargoToOrbit).
             set TimeFromLaunchToOrbit to 560.
         }
+        else if KSRSS {
+            set targetap to 125000.
+            set LaunchElev to altitude - 67.74.
+            set BoosterAp to 80000.
+            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.05, 0, 0, -30, 2.5 + 2.5 * CargoMass / MaxCargoToOrbit).
+            set TimeFromLaunchToOrbit to 360.
+        }
         else {
             set targetap to 75000.
             set LaunchElev to altitude - 67.74.
@@ -5871,6 +5913,9 @@ function Launch {
                 if RSS {
                     SetLoadDistances(1500000).
                 }
+                else if KSRSS {
+                    SetLoadDistances(1000000).
+                }
                 else {
                     SetLoadDistances(300000).
                 }
@@ -5896,8 +5941,17 @@ function Launch {
                 if RSS {
                     when DesiredAccel / max(MaxAccel, 0.000001) < 0.6 and altitude > 100000 then {
                         set quickengine2:pressed to false.
-                        when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period then {
+                        when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 0 then {
                             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 7.5).
+                            set MaintainVS to true.
+                        }
+                    }
+                }
+                else if KSRSS {
+                    when DesiredAccel / max(MaxAccel, 0.000001) < 0.6 and altitude > 80000 or apoapsis > targetap then {
+                        set quickengine2:pressed to false.
+                        when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 0 then {
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(1.5, 0, 0, -10, 15).
                             set MaintainVS to true.
                         }
                     }
@@ -5905,14 +5959,14 @@ function Launch {
                 else {
                     when apoapsis > targetap - 10000 then {
                         set quickengine2:pressed to false.
-                        when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period then {
+                        when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 0 then {
                             set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -7.5, 7.5).
                             set MaintainVS to true.
                         }
                     }
-                    SLEngines[0]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
-                    SLEngines[1]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
-                    SLEngines[2]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
+                    //SLEngines[0]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
+                    //SLEngines[1]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
+                    //SLEngines[2]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
                 }
             }
         }
@@ -5948,7 +6002,7 @@ function Launch {
             Droppriority().
 
             rcs off.
-            if defined Booster and not (RSS) {
+            if defined Booster and STOCK {
                 if Booster:altitude < 30000 {
                     HUDTEXT("Changing Focus to: Booster", 5, 2, 20, green, false).
                     wait 1.5.
@@ -5975,7 +6029,7 @@ function Launch {
                             BREAK.
                         }
                         else {
-                            set message2:text to "<b>Booster Trk/X-Trk:</b>              " + round((latlng(-0.0972,-74.5577):lng - Booster:geoposition:lng) * 1000 * Planet1Degree) + "m / " + round((latlng(-0.0972,-74.5577):lat - Booster:geoposition:lat) * 1000 * Planet1Degree) + "m".
+                            set message2:text to "<b>Booster Trk/X-Trk:</b>              " + round((landingzone:lng - Booster:geoposition:lng) * 1000 * Planet1Degree) + "m / " + round((landingzone:lat - Booster:geoposition:lat) * 1000 * Planet1Degree) + "m".
                             set message3:text to "<b>Booster Alt / Spd:</b>                " + round(Booster:altitude - 116) + "m / " + round(Booster:airspeed) + "m/s".
                             BackGroundUpdate().
                         }
@@ -6002,6 +6056,7 @@ function Launch {
         }
         until LaunchComplete or AbortLaunchInProgress {
             LaunchLabelData().
+            BackGroundUpdate().
         }
         LogToFile("Launch Program has shut down").
     }
@@ -6018,6 +6073,9 @@ Function LaunchSteering {
         if Boosterconnected {
             if RSS {
                 set targetpitch to 90 - (7.85 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+            }
+            else if KSRSS {
+                set targetpitch to 90 - (10.5 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
             }
             else {
                 set targetpitch to 90 - (10 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
@@ -6082,7 +6140,7 @@ Function LaunchSteering {
             set ProgradeAngle to 90 - vang(velocity:surface, up:vector).
 
             set TimeToOrbitCompletion to TimeFromLaunchToOrbit - (time:seconds - LiftOffTime).
-            set DesiredAccel to deltaV / (TimeToOrbitCompletion).
+            set DesiredAccel to max(deltaV / (TimeToOrbitCompletion), 9.81).
             if MaintainVS {
                 if deltaV > 1000 {
                     set OrbitBurnPitchCorrectionPID:setpoint to (targetap - altitude) / 100.
@@ -10061,6 +10119,9 @@ function PerformBurn {
         if RSS {
             lock MaxAccel to 100/ship:mass.
         }
+        else if KSRSS {
+            lock MaxAccel to 70/ship:mass.
+        }
         else {
             lock MaxAccel to 40/ship:mass.
         }
@@ -10453,6 +10514,12 @@ function SetLoadDistances {
         set ship:loaddistance:suborbital:pack to 10000.
         set ship:loaddistance:suborbital:unpack to 200.
         wait 0.001.
+        set ship:loaddistance:orbit:unload to 2500.
+        set ship:loaddistance:orbit:load to 2250.
+        wait 0.001.
+        set ship:loaddistance:orbit:pack to 350.
+        set ship:loaddistance:orbit:unpack to 200.
+        wait 0.001.
     }
     else {
         set ship:loaddistance:flying:unload to distance.
@@ -10466,6 +10533,12 @@ function SetLoadDistances {
         wait 0.001.
         set ship:loaddistance:suborbital:pack to distance - 2500.
         set ship:loaddistance:suborbital:unpack to distance - 10000.
+        wait 0.001.
+        set ship:loaddistance:orbit:unload to distance.
+        set ship:loaddistance:orbit:load to distance - 5000.
+        wait 0.001.
+        set ship:loaddistance:orbit:pack to distance - 2500.
+        set ship:loaddistance:orbit:unpack to distance - 10000.
         wait 0.001.
     }
 }

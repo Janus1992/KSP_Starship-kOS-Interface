@@ -1,7 +1,6 @@
 set config:ipu to 500.
 wait until ship:unpacked.
 
-
 set LogData to false.
 set LandSomewhereElse to false.
 set idealVS to 0.
@@ -27,28 +26,51 @@ set LandingBurnStarted to false.
 lock RadarAlt to alt:radar - BoosterHeight.
 set stopTime9 to 0.
 
+set RSS to false.
+set KSRSS to false.
+set STOCK to false.
 if bodyexists("Earth") {
-    set RSS to true.
-    set Planet to "Earth".
-    set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
-    set BoosterHeight to 71.04396.
-    if BoosterCore[0]:hasmodule("FARPartModule") {
-        set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+    if body("Earth"):radius > 1600000 {
+        set RSS to true.
+        set Planet to "Earth".
+        set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
+        set BoosterHeight to 71.04396.
+        if BoosterCore[0]:hasmodule("FARPartModule") {
+            set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+        }
+        else {
+            set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+        }
+        set LatCtrlPID to PIDLOOP(0.04, 0.0025, 0.0025, -2, 2).
+        set LFBoosterFuelCutOff to 2000.
+        set LandHeadingVector to heading(270,0):vector.
     }
     else {
-        set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+        set KSRSS to true.
+        set Planet to "Earth".
+        set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
+        set BoosterHeight to 71.04396.
+        if BoosterCore[0]:hasmodule("FARPartModule") {
+            set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+        }
+        else {
+            set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+        }
+        set LatCtrlPID to PIDLOOP(0.04, 0.0025, 0.0025, -2, 2).
+        set LFBoosterFuelCutOff to 1500.
+        set LandHeadingVector to heading(242,0):vector.
     }
-    set LatCtrlPID to PIDLOOP(0.04, 0.0025, 0.0025, -2, 2).
-    set LFBoosterFuelCutOff to 2000.
+
 }
 else {
-    set RSS to false.
+    set STOCK to true.
     set Planet to "Kerbin".
     set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
     set BoosterHeight to 44.2.
     set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -30, 30).
     set LatCtrlPID to PIDLOOP(0.05, 0.0005, 0.0005, -2, 2).
     set LFBoosterFuelCutOff to 1500.
+    set LandHeadingVector to heading(270,0):vector.
 }
 
 if exists("0:/BoosterFlightData.csv") {
@@ -155,6 +177,9 @@ function Boostback {
     if RSS {
         SetLoadDistances(1500000).
     }
+    else if KSRSS {
+        SetLoadDistances(1000000).
+    }
     else {
         SetLoadDistances(300000).
     }
@@ -224,6 +249,7 @@ function Boostback {
     lock throttle to 0.
     set BoostBackComplete to true.
     set turnTime to time:seconds.
+    HUDTEXT("Rotating Booster for re-entry and landing..", 20, 2, 20, green, false).
 
     CheckFuel().
     if LFBooster > LFBoosterFuelCutOff {
@@ -268,12 +294,11 @@ function Boostback {
     }
     set ship:control:translation to v(0, 0, 0).
 
-    wait 5.
-    BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 25).
-    HUDTEXT("Starship will continue its orbit insertion..", 20, 2, 20, green, false).
     wait 1.
-
-
+    HUDTEXT("Starship will continue its orbit insertion..", 20, 2, 20, green, false).
+    wait 3.
+    BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 25).
+    wait 1.
 
     until altitude < 30000 and not (RSS) or altitude < 50000 and RSS {
         SteeringCorrections().
@@ -346,7 +371,7 @@ function Boostback {
         lock steering to SteeringVector.
     }
 
-    when alt:radar < 1800 and not (LandSomewhereElse) then {
+    when alt:radar < 1500 and not (LandSomewhereElse) then {
         if OLMexists() and Vessel(OLM):distance < 2250 {
             if RSS {
                 lock RadarAlt to alt:radar - ((Vessel(OLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position - Body(Planet):position):mag - SHIP:BODY:RADIUS - Vessel(OLM):geoposition:terrainheight) - 3.64.
@@ -369,7 +394,7 @@ function Boostback {
     when verticalspeed > -100 and (stopDist3 / RadarAlt) < 1 and LngError < 75 or verticalspeed > -50 or RadarAlt < 500 then {
         BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
         lock maxDecel to max((ship:availablethrust / ship:mass), 0.000001).
-        lock TotalstopTime to airspeed / min(maxDecel, 5).
+        lock TotalstopTime to airspeed / min(maxDecel - 9.81, 5).
         lock TotalstopDist to (airspeed / 2) * TotalstopTime.
         lock landingRatio to TotalstopDist / RadarAlt.
         lock throttle to (landingRatio * min(maxDecel, 5 + 9.81)) / maxDecel.
@@ -386,15 +411,15 @@ function Boostback {
             lock steering to SteeringVector.
             when verticalspeed > -80 then {
                 if not (LandSomewhereElse) {
-                    lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.04 * ErrorVector, heading(270,0):vector).
+                    lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.04 * ErrorVector, LandHeadingVector).
                     lock steering to SteeringVector.
                 }
                 when abs(LngError) < 10 and abs(LatError) < 10 and vxcl(up:vector, ship:position - landingzone:position):mag < 20 then {
-                    lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.015 * ErrorVector, heading(270,0):vector).
+                    lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.015 * ErrorVector, LandHeadingVector).
                     lock steering to SteeringVector.
                 }
                 when verticalspeed > -25 then {
-                    lock SteeringVector to lookdirup(up:vector - 0.025 * velocity:surface, heading(270,0):vector).
+                    lock SteeringVector to lookdirup(up:vector - 0.015 * velocity:surface, LandHeadingVector).
                     lock steering to SteeringVector.
                     if abs(LngError) > 10 or abs(LatError) > 10 {
                         lock RadarAlt to alt:radar - BoosterHeight.
@@ -426,9 +451,8 @@ function Boostback {
     wait 0.001.
     unlock throttle.
     BoosterEngines[0]:shutdown.
-    SetLoadDistances("default").
 
-    if not (LandSomewhereElse) and not (RSS) {
+    if not (LandSomewhereElse) and STOCK {
         print "capture at: " + RadarAlt + "m RA".
 
         print "Landing Burn started at: " + round(LandingBurnAltitude) + "m Altitude".
@@ -516,9 +540,14 @@ function Boostback {
     }
     unlock throttle.
 
-    if RSS {
-        wait 5.
+    if RSS or KSRSS {
+        wait 2.
+        HUDTEXT("Changing focus to Starship..", 20, 2, 20, green, false).
+        wait 3.
         SetStarshipActive().
+    }
+    else {
+        SetLoadDistances("default").
     }
 }
 
@@ -561,6 +590,14 @@ FUNCTION SteeringCorrections {
                 }
                 else {
                     set LngCtrlPID:setpoint to 150.
+                }
+            }
+            else if KSRSS {
+                if BoosterCore[0]:hasmodule("FARPartModule") {
+                    set LngCtrlPID:setpoint to 375.
+                }
+                else {
+                    set LngCtrlPID:setpoint to 375.
                 }
             }
             else {
@@ -739,6 +776,12 @@ function SetLoadDistances {
         set ship:loaddistance:suborbital:pack to 10000.
         set ship:loaddistance:suborbital:unpack to 200.
         wait 0.001.
+        set ship:loaddistance:landed:unload to 2500.
+        set ship:loaddistance:landed:load to 2250.
+        wait 0.001.
+        set ship:loaddistance:landed:pack to 350.
+        set ship:loaddistance:landed:unpack to 200.
+        wait 0.001.
     }
     else {
         set ship:loaddistance:flying:unload to distance.
@@ -752,6 +795,12 @@ function SetLoadDistances {
         wait 0.001.
         set ship:loaddistance:suborbital:pack to distance - 2500.
         set ship:loaddistance:suborbital:unpack to distance - 10000.
+        wait 0.001.
+        set ship:loaddistance:landed:unload to distance.
+        set ship:loaddistance:landed:load to distance - 5000.
+        wait 0.001.
+        set ship:loaddistance:landed:pack to distance - 2500.
+        set ship:loaddistance:landed:unpack to distance - 10000.
         wait 0.001.
     }
 }
