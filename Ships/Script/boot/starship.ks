@@ -91,12 +91,13 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set DefaultLaunchSite to "28.6084,-80.59975".
     set FuelVentCutOffValue to 1200.
     set FuelBalanceSpeed to 100.
+    set LandHeadingVector to heading(270,0):vector.
 }
 else if KSRSS {
     set aoa to 60.
     set MaxCargoToOrbit to 125005.
     set MaxReEntryCargoThickAtmo to 15000.
-    set MaxIU to 260.
+    set MaxIU to 300.
     set MaxReEntryCargoThinAtmo to 40000.
     set LaunchTimeSpanInSeconds to 246.
     set ShipHeight to 31.1.
@@ -105,8 +106,9 @@ else if KSRSS {
     set towerhgt to 60.
     set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
     set DefaultLaunchSite to "28.5166,-81.2062".
-    set FuelVentCutOffValue to 450.
+    set FuelVentCutOffValue to 550.
     set FuelBalanceSpeed to 40.
+    set LandHeadingVector to heading(242,0):vector.
 }
 else {  // Set of variables when Real Solar System has NOT been installed
     set aoa to 60.
@@ -123,6 +125,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set DefaultLaunchSite to "-0.0972,-74.5577".
     set FuelVentCutOffValue to 450.
     set FuelBalanceSpeed to 40.
+    set LandHeadingVector to heading(270,0):vector.
 }
 set SNStart to 30.  // Defines the first Serial Number when multiple ships are found and renaming is necessary.
 set MaxTilt to 2.5.  // Defines maximum allowed slope for the Landing Zone Search Function
@@ -4863,6 +4866,7 @@ set landbutton:ontoggle to {
                             }
                             if LFShip < FuelVentCutOffValue + 0.01 {
                                 set runningprogram to "Input".
+                                wait 0.1.
                                 if KUniverse:activevessel = vessel(ship:name) {}
                                 else {
                                     set KUniverse:activevessel to vessel(ship:name).
@@ -5788,6 +5792,9 @@ function Launch {
                     set message2:text to "<b>Stage 0/Mechazilla:    <color=yellow>Disconnecting..</color></b>".
                 }
                 else {
+                    if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("activate engine") {
+                        ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("activate engine").
+                    }
                     set message2:text to "<b>Booster/Ship:             <color=green>Start-Up Confirmed..</color></b>".
                 }
             }
@@ -6021,7 +6028,7 @@ function Launch {
                 BackGroundUpdate().
                 set kuniverse:timewarp:warp to 0.
                 if defined Booster {
-                    if not Booster:isdead {
+                    if not (Booster:isdead) {
                         if Booster:status = "LANDED" {
                             set message2:text to "<b>Shutdown Message received!</b>".
                             set message3:text to "<b>Booster Landing Confirmed!</b>".
@@ -6765,7 +6772,7 @@ function ReEntrySteering {
         set yawctrl to -YawPID:UPDATE(TIME:SECONDS, LngLatErrorList[1]).
         set result to srfprograde * R(-DesiredAoA * cos(yawctrl), DesiredAoA * sin(yawctrl), 0).
         if RadarAlt < 15000 {
-            set result to lookdirup(result:vector, -vxcl(result:vector, velocity:surface) * AngleAxis(-0.25 * yawctrl, ApproachVector)).
+            set result to lookdirup(result:vector, -vxcl(result:vector, velocity:surface) * AngleAxis(-0.35 * yawctrl, ApproachVector)).
         }
         else {
             set result to lookdirup(result:vector, -vxcl(result:vector, velocity:surface)).
@@ -6837,62 +6844,64 @@ function ReEntryData {
         set FlapsYawEngaged to true.
     }
 
-    if altitude < ship:body:ATM:height - 20000 and RadarAlt > FlipAltitude + 100 {
-        set PitchInput to SLEngines[0]:gimbal:pitchangle.
-        if PitchInput > 0.005 {
-            for res in HeaderTank:resources {
-                if res:name = "Oxidizer" {
-                    if res:amount < abs(FuelBalanceSpeed * PitchInput) {}
-                    for res in Tank:resources {
-                        if res:name = "Oxidizer" {
-                            if res:amount > res:capacity - abs(FuelBalanceSpeed * PitchInput) {}
-                            else {
-                                set RebalanceCoGox to TRANSFER("Oxidizer", HeaderTank, Tank, abs(FuelBalanceSpeed * PitchInput)).
+    if altitude < ship:body:ATM:height - 10000 and RadarAlt > FlipAltitude + 100 {
+        if not (RebalanceCoGox:status = "Transferring") or (RebalanceCoGlf:status = "Transferring") {
+            set PitchInput to SLEngines[0]:gimbal:pitchangle.
+            if PitchInput > 0.005 {
+                for res in HeaderTank:resources {
+                    if res:name = "Oxidizer" {
+                        if res:amount < abs(FuelBalanceSpeed * PitchInput) {}
+                        for res in Tank:resources {
+                            if res:name = "Oxidizer" {
+                                if res:amount > res:capacity - abs(FuelBalanceSpeed * PitchInput) {}
+                                else {
+                                    set RebalanceCoGox to TRANSFER("Oxidizer", HeaderTank, Tank, abs(FuelBalanceSpeed * PitchInput)).
+                                }
                             }
                         }
                     }
-                }
-                else if res:name = "LiquidFuel" {
-                    if res:amount < abs(FuelBalanceSpeed/3.6 * PitchInput) {}
-                    for res in Tank:resources {
-                        if res:name = "LiquidFuel" {
-                            if res:amount > res:capacity - abs(FuelBalanceSpeed/3.6 * PitchInput) {}
-                            else {
-                                set RebalanceCoGlf to TRANSFER("LiquidFuel", HeaderTank, Tank, abs(FuelBalanceSpeed/3.6 * PitchInput)).
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else if PitchInput < -0.005 {
-            for res in Tank:resources {
-                if res:name = "Oxidizer" {
-                    if res:amount < abs(FuelBalanceSpeed * PitchInput) {}
-                    for res in HeaderTank:resources {
-                        if res:name = "Oxidizer" {
-                            if res:amount > res:capacity - abs(FuelBalanceSpeed * PitchInput) {}
-                            else {
-                                set RebalanceCoGox to TRANSFER("Oxidizer", Tank, HeaderTank, abs(FuelBalanceSpeed * PitchInput)).
-                            }
-                        }
-                    }
-                }
-                else if res:name = "LiquidFuel" {
-                    if res:amount < abs(FuelBalanceSpeed/3.6 * PitchInput) {}
-                    for res in HeaderTank:resources {
-                        if res:name = "LiquidFuel" {
-                            if res:amount > res:capacity - abs(FuelBalanceSpeed/3.6 * PitchInput) {}
-                            else {
-                                set RebalanceCoGlf to TRANSFER("LiquidFuel", Tank, HeaderTank, abs(FuelBalanceSpeed/3.6 * PitchInput)).
+                    else if res:name = "LiquidFuel" {
+                        if res:amount < abs(FuelBalanceSpeed/3.6 * PitchInput) {}
+                        for res in Tank:resources {
+                            if res:name = "LiquidFuel" {
+                                if res:amount > res:capacity - abs(FuelBalanceSpeed/3.6 * PitchInput) {}
+                                else {
+                                    set RebalanceCoGlf to TRANSFER("LiquidFuel", HeaderTank, Tank, abs(FuelBalanceSpeed/3.6 * PitchInput)).
+                                }
                             }
                         }
                     }
                 }
             }
+            else if PitchInput < -0.005 {
+                for res in Tank:resources {
+                    if res:name = "Oxidizer" {
+                        if res:amount < abs(FuelBalanceSpeed * PitchInput) {}
+                        for res in HeaderTank:resources {
+                            if res:name = "Oxidizer" {
+                                if res:amount > res:capacity - abs(FuelBalanceSpeed * PitchInput) {}
+                                else {
+                                    set RebalanceCoGox to TRANSFER("Oxidizer", Tank, HeaderTank, abs(FuelBalanceSpeed * PitchInput)).
+                                }
+                            }
+                        }
+                    }
+                    else if res:name = "LiquidFuel" {
+                        if res:amount < abs(FuelBalanceSpeed/3.6 * PitchInput) {}
+                        for res in HeaderTank:resources {
+                            if res:name = "LiquidFuel" {
+                                if res:amount > res:capacity - abs(FuelBalanceSpeed/3.6 * PitchInput) {}
+                                else {
+                                    set RebalanceCoGlf to TRANSFER("LiquidFuel", Tank, HeaderTank, abs(FuelBalanceSpeed/3.6 * PitchInput)).
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            set RebalanceCoGox:ACTIVE to true.
+            set RebalanceCoGlf:ACTIVE to true.
         }
-        set RebalanceCoGox:ACTIVE to true.
-        set RebalanceCoGlf:ACTIVE to true.
     }
 
     if (landingzone:lng - ship:geoposition:lng) < -180 {
@@ -7105,7 +7114,7 @@ function ReEntryData {
                     SLEngines[2]:shutdown.
                     LogToFile("2nd and 3rd engine shutdown; performing a 1-engine landing").
                 }
-                when abs(LngError) < 10 and abs(LatError) < 10 and vxcl(up:vector, ship:position - landingzone:position):mag < 20 then {
+                when abs(LngError) < 10 and abs(LatError) < 5 and vxcl(up:vector, ship:position - landingzone:position):mag < 20 then {
                     set ReducingSensitivity to true.
                     when verticalspeed > -10 then {
                         if MechaZillaExists and TargetOLM and not (LandSomewhereElse) {
@@ -7176,7 +7185,7 @@ function LandingVector {
         set LngError to vdot(LandingForwardDirection, ErrorVector).
         set LatError to vdot(LandingLateralDirection, ErrorVector).
 
-        if abs(LngError) > 40 and RadarAlt < 200 or abs(LatError) > 15 and RadarAlt < 200 {
+        if abs(LngError) > 35 and RadarAlt < 200 or abs(LatError) > 12.5 and RadarAlt < 200 or vxcl(up:vector, ship:position - landingzone:position):mag > 5 and RadarAlt < 75 {
             if ship:body:atm:sealevelpressure > 0.5 {
                 set DesiredDecel to 11 - 9.81.
             }
@@ -7256,7 +7265,7 @@ function LandingVector {
             else {
                 if ship:body:atm:sealevelpressure > 0.5 {
                     if ReducingSensitivity {
-                        set result to ship:up:vector - 0.03 * velocity:surface - 0.0075 * ErrorVector + 0.02 * facing:starvector.
+                        set result to ship:up:vector - 0.03 * velocity:surface - 0.0125 * ErrorVector + 0.02 * facing:starvector.
                     }
                     else {
                         set result to ship:up:vector - 0.03 * velocity:surface - 0.03 * ErrorVector + 0.02 * facing:starvector.
@@ -7289,7 +7298,7 @@ function LandingVector {
         BackGroundUpdate().
     }
     if MechaZillaExists and TargetOLM and verticalspeed > -25 {
-        return lookDirUp(result, heading(270,0):vector).
+        return lookDirUp(result, LandHeadingVector).
     }
     else {
         return lookDirUp(result, facing:topvector).
@@ -7504,6 +7513,9 @@ function LngLatError {
                     if RSS {
                         set LngLatOffset to ((138.5 / ship:mass) * 309) - 184 + (max(CargoCoG - 150, 0) / 100) * 10.
                     }
+                    else if KSRSS {
+                        set LngLatOffset to ((48.8 / ship:mass) * 105) - 50 + (max(CargoCoG - 150, 0) / 100) * 10.
+                    }
                     else {
                         set LngLatOffset to ((48.8 / ship:mass) * 126) - 66 + (max(CargoCoG - 150, 0) / 100) * 10.
                     }
@@ -7512,6 +7524,9 @@ function LngLatError {
                     if RSS {
                         set LngLatOffset to ((138.5 / ship:mass) * 281) - 236 + (max(CargoCoG - 150, 0) / 100) * 10.
                     }
+                    else if KSRSS {
+                        set LngLatOffset to ((48.8 / ship:mass) * 125) - 85 + (max(CargoCoG - 150, 0) / 100) * 10.
+                    }
                     else {
                         set LngLatOffset to ((48.8 / ship:mass) * 105) - 50 + (max(CargoCoG - 150, 0) / 100) * 10.
                     }
@@ -7519,6 +7534,9 @@ function LngLatError {
             }
             else if ship:body:atm:sealevelpressure < 0.5 {
                 if RSS {
+                    set LngLatOffset to ((50.9 / ship:mass) * -56) + 156.
+                }
+                else if KSRSS {
                     set LngLatOffset to ((50.9 / ship:mass) * -56) + 156.
                 }
                 else {
@@ -7701,6 +7719,10 @@ function DeOrbitVelocity {
             set ErrorTolerance to 300000.
             set StartPoint to -altitude / 4000.
         }
+        else if KSRSS {
+            set ErrorTolerance to 100000.
+            set StartPoint to -altitude / 2000.
+        }
         else {
             set ErrorTolerance to 50000.
             set StartPoint to -altitude / 1000.
@@ -7710,6 +7732,10 @@ function DeOrbitVelocity {
         if RSS {
             set ErrorTolerance to 100000.
             set StartPoint to -altitude / 3000.
+        }
+        else if KSRSS {
+            set ErrorTolerance to 40000.
+            set StartPoint to -altitude / 2000.
         }
         else {
             set ErrorTolerance to 20000.
@@ -7771,6 +7797,9 @@ function DeOrbitVelocity {
             set message2:text to "<b>Longitude Error: </b>" + round(LngError / 1000, 1) + "km".
             if RSS {
                 set ProgradeVelocity to ProgradeVelocity - LngError / 600000.
+            }
+            else if KSRSS {
+                set ProgradeVelocity to ProgradeVelocity - LngError / 100000.
             }
             else {
                 set ProgradeVelocity to ProgradeVelocity - LngError / 20000.
@@ -9366,7 +9395,7 @@ function LogToFile {
                         }
                         if altitude > 1500 {
                             if homeconnection:isconnected {
-                                LOG ("Time: " + timestamp():clock + "   Dist: " + round(DistanceToTarget, 3) + "km   Alt: " + round(altitude) + "m   Vert Speed: " + round(ship:verticalspeed,1) + "m/s   Airspeed: " + round(airspeed, 1) + "m/s   Trk/X-Trk Error: " + round(LngLatErrorList[0] / 1000, 3) + "km  " + round((LngLatErrorList[1] / 1000), 3) + "km") to "0:/FlightData.txt".
+                                LOG ("Time: " + timestamp():clock + "   Dist: " + round(DistanceToTarget, 3) + "km   Alt: " + round(altitude) + "m   Vert Speed: " + round(ship:verticalspeed,1) + "m/s   Airspeed: " + round(airspeed, 1) + "m/s   Trk/X-Trk Error: " + round((LngLatErrorList[0] + LngLatOffset) / 1000, 3) + "km  " + round((LngLatErrorList[1] / 1000), 3) + "km") to "0:/FlightData.txt".
                             }
                             if homeconnection:isconnected {
                                 LOG ("                 Actual AoA: " + round(vang(ship:facing:forevector, velocity:surface), 1) + "°   Throttle: " + (100 * throttle) + "%   Battery: " + round(100 * (ship:electriccharge / ELECcap), 2) + "%   Mass: " + round(ship:mass * 1000, 3) + "kg") to "0:/FlightData.txt".
@@ -9378,15 +9407,15 @@ function LogToFile {
                                 LOG "" to "0:/FlightData.txt".
                             }
                             if homeconnection:isconnected {
-                                LOG (timestamp():clock + "," + DistanceToTarget + "," + altitude + "," + ship:verticalspeed + "," + airspeed + "," + LngLatErrorList[0] + "," + LngLatErrorList[1] + "," + vang(ship:facing:forevector, velocity:surface) + "," + (100 * throttle) + "," + (100 * (LFShip / LFShipCap)) + "," + (ship:mass * 1000) + "," + RadarAlt) to "0:/LandingData.csv".
+                                LOG (timestamp():clock + "," + DistanceToTarget + "," + altitude + "," + ship:verticalspeed + "," + airspeed + "," + (LngLatErrorList[0] + LngLatOffset) + "," + LngLatErrorList[1] + "," + vang(ship:facing:forevector, velocity:surface) + "," + (100 * throttle) + "," + (100 * (LFShip / LFShipCap)) + "," + (ship:mass * 1000) + "," + RadarAlt) to "0:/LandingData.csv".
                             }
                         }
                         else {
-                            LOG ("Time: " + timestamp():clock + "   Dist: " + round(DistanceToTarget, 3) + "km   Alt: " + round(altitude) + "m   Vert Speed: " + round(ship:verticalspeed,1) + "m/s   Airspeed: " + round(airspeed, 1) + "m/s   Trk/X-Trk Error: " + round(LngLatErrorList[0] / 1000, 3) + "km  " + round((LngLatErrorList[1] / 1000), 3) + "km") to "0:/FlightData.txt".
+                            LOG ("Time: " + timestamp():clock + "   Dist: " + round(DistanceToTarget, 3) + "km   Alt: " + round(altitude) + "m   Vert Speed: " + round(ship:verticalspeed,1) + "m/s   Airspeed: " + round(airspeed, 1) + "m/s   Trk/X-Trk Error: " + round((LngLatErrorList[0] + LngLatOffset) / 1000, 3) + "km  " + round((LngLatErrorList[1] / 1000), 3) + "km") to "0:/FlightData.txt".
                             LOG ("                 Actual AoA: " + round(vang(ship:facing:forevector, velocity:surface), 1) + "°   Throttle: " + (100 * throttle) + "%   Battery: " + round(100 * (ship:electriccharge / ELECcap), 2) + "%   Mass: " + round(ship:mass * 1000, 3) + "kg") to "0:/FlightData.txt".
                             LOG ("                 Radar Altitude: " + round(RadarAlt, 1) + "m") to "0:/FlightData.txt".
                             LOG "" to "0:/FlightData.txt".
-                            LOG (timestamp():clock + "," + DistanceToTarget + "," + altitude + "," + ship:verticalspeed + "," + airspeed + "," + LngLatErrorList[0] + "," + LngLatErrorList[1] + "," + vang(ship:facing:forevector, velocity:surface) + "," + (100 * throttle) + "," + (100 * (ship:electriccharge / ELECcap)) + "," + (ship:mass * 1000) + "," + RadarAlt) to "0:/LandingData.csv".
+                            LOG (timestamp():clock + "," + DistanceToTarget + "," + altitude + "," + ship:verticalspeed + "," + airspeed + "," + (LngLatErrorList[0] + LngLatOffset) + "," + LngLatErrorList[1] + "," + vang(ship:facing:forevector, velocity:surface) + "," + (100 * throttle) + "," + (100 * (ship:electriccharge / ELECcap)) + "," + (ship:mass * 1000) + "," + RadarAlt) to "0:/LandingData.csv".
                         }
                         set PrevLogTimeLanding to timestamp(time:seconds).
                     }

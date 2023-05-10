@@ -1,5 +1,5 @@
 # V2.0.12 (2023-05-10)
-- Initial KSRSS launch and booster catch support.
+- Initial KSRSS support (ship landings only without FAR).
 
 # V2.0.11 (2023-05-09)
 - Enabled precise Earth landings with ship in RSS (without FAR!).
