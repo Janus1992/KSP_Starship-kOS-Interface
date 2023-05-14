@@ -7204,11 +7204,11 @@ function ReEntryData {
                 }
                 setflaps(60, 60, 1, 0).
                 when vang(-1 * velocity:surface, ship:facing:forevector) < 0.05 * FlipAngle and ship:body:atm:sealevelpressure > 0.5 or vang(-1 * velocity:surface, ship:facing:forevector) < FlipAngleFactor * FlipAngle and ship:body:atm:sealevelpressure < 0.5 then {
-                    ActivateEngines(1).
                     if ship:body:atm:sealevelpressure > 0.5 {
                         set DesiredDecel to 12 - 9.81.
                     }
                     if ship:body:atm:sealevelpressure < 0.5 {
+                        ActivateEngines(1).
                         set DesiredDecel to 12 - 9.81.
                     }
                     set LandingBurnStarted to true.
