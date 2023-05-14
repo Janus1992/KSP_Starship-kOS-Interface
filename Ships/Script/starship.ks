@@ -7438,7 +7438,7 @@ function LandingVector {
                 set message3:style:textcolor to white.
             }
         }
-        set LdgVectorDraw to vecdraw(v(0, 0, 0), 2 * result, green, "Landing Vector", 20, true, 0.005, true, true).
+        //set LdgVectorDraw to vecdraw(v(0, 0, 0), 2 * result, green, "Landing Vector", 20, true, 0.005, true, true).
 
         clearscreen.
         print "RA:" + round(RadarAlt,2).
