@@ -1,3 +1,7 @@
+# V2.0.13 (2023-05-14)
+- New Mars/Duna Landing Mechanism allowing max cargo to be landed on Mars/Duna (RSS, KSRSS and stock).
+- Fixes to Moon/Mun landings allowing max cargo to be landed on Moon/Mun (RSS, KSRSS and stock).
+
 # V2.0.12 (2023-05-10)
 - Initial KSRSS support (ship landings only without FAR).
 
