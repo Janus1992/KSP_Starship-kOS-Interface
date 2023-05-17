@@ -812,6 +812,7 @@ function CheckFuel {
     for res in BoosterCore[0]:resources {
         if res:name = "LiquidFuel" {
             set LFBooster to res:amount.
+            print "LFOB: " + round(LFBooster).
         }
     }
 }
