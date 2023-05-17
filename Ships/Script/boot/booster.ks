@@ -636,8 +636,9 @@ FUNCTION SteeringCorrections {
         print "Radar Altitude: " + round(RadarAlt).
         print "Ship Distance: " + (round(vessel(starship):distance) / 1000) + "km".
         print " ".
-        //print "Steering Target: " + steeringmanager:target.
-        //print "Steering Direction: " + facing:forevector.
+        print "ErrorVector: " + ErrorVector.
+        print "ApproachVector: " + ApproachVector.
+        print " ".
         print "Steering Roll   Error: " + round(SteeringManager:rollerror, 2).
         print "Steering Total  Error: " + round(SteeringManager:angleerror, 2).
 
@@ -649,6 +650,7 @@ FUNCTION SteeringCorrections {
             //print "Ship Flying Load Distances: " + vessel(starship):loaddistance:flying:unpack + ", " + vessel(starship):loaddistance:flying:pack + ", " + vessel(starship):loaddistance:flying:unload + ", " + vessel(starship):loaddistance:flying:load.
             //print "Default Flying Load Distances: " + kuniverse:defaultloaddistance:flying:unpack + ", " + kuniverse:defaultloaddistance:flying:pack + ", " + kuniverse:defaultloaddistance:flying:unload + ", " + kuniverse:defaultloaddistance:flying:load.
             //print "Ship Parts Nr: " + vessel(starship):parts:length.
+            print "Impact Pos: " + ship:body:geopositionof(ADDONS:TR:IMPACTPOS:POSITION).
         }
 
 
