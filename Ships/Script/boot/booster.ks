@@ -379,7 +379,7 @@ function Boostback {
             else {
                 lock RadarAlt to alt:radar - ((Vessel(OLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position - Body(Planet):position):mag - SHIP:BODY:RADIUS - Vessel(OLM):geoposition:terrainheight).
             }
-            when RadarAlt < 5 * BoosterHeight then {
+            when RadarAlt < 5 * BoosterHeight and vxcl(up:vector, landingzone:position - ship:position):mag < 7.5 or RadarAlt < 2 * BoosterHeight then {
                 sendMessage(Vessel(OLM), "MechazillaArms,8,6,60,true").
                 sendMessage(Vessel(OLM), "MechazillaStabilizers,0").
                 when RadarAlt < BoosterHeight then {
@@ -391,7 +391,14 @@ function Boostback {
         }
     }
 
-    when verticalspeed > -100 and (stopDist3 / RadarAlt) < 1 and LngError < 75 or verticalspeed > -50 or RadarAlt < 500 then {
+    if BoosterCore[0]:hasmodule("FARPartModule") {
+        set MaxError to 100.
+    }
+    else {
+        set MaxError to 80.
+    }
+
+    when verticalspeed > -100 and (stopDist3 / RadarAlt) < 1 and LngError < MaxError or verticalspeed > -50 or RadarAlt < 500 then {
         BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
         lock maxDecel to max((ship:availablethrust / ship:mass), 0.000001).
         lock TotalstopTime to airspeed / min(maxDecel - 9.81, 5).
@@ -586,7 +593,7 @@ FUNCTION SteeringCorrections {
 
             if RSS {
                 if BoosterCore[0]:hasmodule("FARPartModule") {
-                    set LngCtrlPID:setpoint to 220.
+                    set LngCtrlPID:setpoint to 225.
                 }
                 else {
                     set LngCtrlPID:setpoint to 150.
@@ -594,7 +601,7 @@ FUNCTION SteeringCorrections {
             }
             else if KSRSS {
                 if BoosterCore[0]:hasmodule("FARPartModule") {
-                    set LngCtrlPID:setpoint to 375.
+                    set LngCtrlPID:setpoint to 400.
                 }
                 else {
                     set LngCtrlPID:setpoint to 375.
@@ -602,7 +609,7 @@ FUNCTION SteeringCorrections {
             }
             else {
                 if BoosterCore[0]:hasmodule("FARPartModule") {
-                    set LngCtrlPID:setpoint to 200.
+                    set LngCtrlPID:setpoint to 225.
                 }
                 else {
                     set LngCtrlPID:setpoint to 165.

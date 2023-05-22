@@ -1,3 +1,9 @@
+# V2.0.14 (2023-05-22)
+- Fixed a launch issue for 6 RVACs.
+- Changed the ship catching guidance vectors. Might impact landings (hopefully in a positive way).
+- RSS: Reduced sensitivity on the initial re-entry guidance to avoid high rcs usage.
+- Fixed a ship landing issue where the ship rolls when the tower is destroyed after starting the landing program.
+
 # V2.0.13 (2023-05-14)
 - New Mars/Duna Landing Mechanism allowing max cargo to be landed on Mars/Duna (RSS, KSRSS and stock).
 - Fixes to Moon/Mun landings allowing max cargo to be landed on Moon/Mun (RSS, KSRSS and stock).
