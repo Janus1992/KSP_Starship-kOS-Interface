@@ -5761,14 +5761,26 @@ function Launch {
             set targetap to 250000.
             set LaunchElev to altitude - 108.384.
             set BoosterAp to 135000.
-            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.01, 0, 0, -30, 3.25 + 2.6 * CargoMass / MaxCargoToOrbit).
+            if NrOfVacEngines = 6 {
+                set PitchIncrement to 3.5 + 2.6 * CargoMass / MaxCargoToOrbit.
+            }
+            else {
+                set PitchIncrement to 3.25 + 2.6 * CargoMass / MaxCargoToOrbit.
+            }
+            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.01, 0, 0, -30, PitchIncrement).
             set TimeFromLaunchToOrbit to 560.
         }
         else if KSRSS {
             set targetap to 125000.
             set LaunchElev to altitude - 67.74.
             set BoosterAp to 80000.
-            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.025, 0, 0, -30, 2.5 + 2.5 * CargoMass / MaxCargoToOrbit).
+            if NrOfVacEngines = 6 {
+                set PitchIncrement to 2.75 + 2.5 * CargoMass / MaxCargoToOrbit.
+            }
+            else {
+                set PitchIncrement to 2.5 + 2.5 * CargoMass / MaxCargoToOrbit.
+            }
+            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.025, 0, 0, -30, PitchIncrement).
             set TimeFromLaunchToOrbit to 360.
         }
         else {
@@ -5853,16 +5865,21 @@ function Launch {
             }
             set LiftOffTime to time:seconds.
             wait 0.1.
-            if round(ship:geoposition:lat, 2) = round(landingzone:lat, 2) and round(ship:geoposition:lng, 2) = round(landingzone:lng, 2) {}
-            else {
-                if not (RSS) {
-                    set landingzone to latlng(round(ship:geoposition:lat, 4), round(ship:geoposition:lng, 4)).
-                }
+            if RSS {
+                if round(ship:geoposition:lat, 3) = round(landingzone:lat, 3) and round(ship:geoposition:lng, 3) = round(landingzone:lng, 3) {}
                 else {
                     set landingzone to latlng(round(ship:geoposition:lat, 5), round(ship:geoposition:lng, 5)).
+                    set setting1:text to (landingzone:lat + "," + landingzone:lng).
+                    SaveToSettings("Landing Coordinates", (landingzone:lat + "," + landingzone:lng)).
                 }
-                set setting1:text to (landingzone:lat + "," + landingzone:lng).
-                SaveToSettings("Landing Coordinates", (landingzone:lat + "," + landingzone:lng)).
+            }
+            else {
+                if round(ship:geoposition:lat, 2) = round(landingzone:lat, 2) and round(ship:geoposition:lng, 2) = round(landingzone:lng, 2) {}
+                else {
+                    set landingzone to latlng(round(ship:geoposition:lat, 4), round(ship:geoposition:lng, 4)).
+                    set setting1:text to (landingzone:lat + "," + landingzone:lng).
+                    SaveToSettings("Landing Coordinates", (landingzone:lat + "," + landingzone:lng)).
+                }
             }
             SaveToSettings("Launch Coordinates", (landingzone:lat + "," + landingzone:lng)).
             ADDONS:TR:SETTARGET(landingzone).
@@ -5967,7 +5984,12 @@ function Launch {
                         set quickengine2:pressed to false.
                     }
                     when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 0 then {
-                        set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 7.5).
+                        if NrOfVacEngines = 6 {
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 10).
+                        }
+                        else {
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 7.5).
+                        }
                         set MaintainVS to true.
                     }
                 }
@@ -6045,8 +6067,9 @@ function Launch {
                 }
             }
 
+            set BGUisRunning to false.
+
             until false or AbortLaunchInProgress {
-                SendPing().
                 BackGroundUpdate().
                 set kuniverse:timewarp:warp to 0.
                 if defined Booster {
@@ -6077,7 +6100,9 @@ function Launch {
             set textbox:style:bg to "starship_img/starship_main_square_bg".
             ShowHomePage().
             set LaunchComplete to true.
+            set BGUisRunning to false.
         }
+
         until LaunchComplete or AbortLaunchInProgress {
             BackGroundUpdate().
             LaunchLabelData().
@@ -6198,15 +6223,17 @@ Function LaunchSteering {
                 if quickengine2:pressed = true and DesiredAccel / max(MaxAccel, 0.000001) > 0.6 {
                     lock throttle to (3 * Planet1G) / max(MaxAccel, 0.000001).
                 }
-                else if MaintainVS and apoapsis < targetap + 5000 and KUniverse:activevessel = ship and periapsis < altitude - 100 {
+                else if MaintainVS and apoapsis < targetap + 10000 and KUniverse:activevessel = ship and periapsis < altitude - 100 {
                     lock throttle to min((2 * Planet1G) / max(MaxAccel, 0.000001), max(deltaV / max(MaxAccel, 0.000001), 0.1)).
                 }
-                else if periapsis < targetap - 500 and apoapsis < targetap + 5000 and periapsis < altitude - 100 {
+                else if periapsis < targetap - 500 and apoapsis < targetap + 10000 and periapsis < altitude - 100 {
                     lock throttle to DesiredAccel / max(MaxAccel, 0.000001).
                 }
                 else {
                     lock throttle to 0.
-                    set BurnComplete to true.
+                    if periapsis > body:atm:height {
+                        set BurnComplete to true.
+                    }
                 }
             }
             if not (Launch180) {
@@ -6754,8 +6781,8 @@ function ReEntryAndLand {
                         set FlipAltitude to 750.
                         if RSS {
                             set PitchPID:kp to 0.1.
-                            set PitchPID:ki to 0.0025.
-                            set PitchPID:kd to 0.0025.
+                            set PitchPID:ki to 0.001.
+                            set PitchPID:kd to 0.001.
                             set PitchPID:minoutput to -15.
                             set PitchPID:maxoutput to 0.
                             set YawPID:kp to 0.025.
@@ -6942,7 +6969,7 @@ function ReEntryData {
         set FlapsYawEngaged to true.
     }
 
-    if altitude < ship:body:ATM:height - 10000 and RadarAlt > FlipAltitude + 10000 {
+    if altitude < ship:body:ATM:height - 10000 and RadarAlt > FlipAltitude + 100 {
         if not (RebalanceCoGox:status = "Transferring") or (RebalanceCoGlf:status = "Transferring") {
             set PitchInput to SLEngines[0]:gimbal:pitchangle.
             if PitchInput > 0.005 {
@@ -9391,7 +9418,6 @@ function BackGroundUpdate {
                     InhibitButtons(0, 1, 1).
                     set cancel:text to "<b>CANCEL</b>".
                 }
-
                 set ShipWasDocked to true.
             }
             else if ShipWasDocked {
@@ -9964,9 +9990,17 @@ function LandAtOLM {
     list targets in shiplist.
     if shiplist:length > 0 {
         for var in LaunchSites:keys {
-            if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(landingzone:lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(landingzone:lng, 2) {
-                set TargetOLM to var + " OrbitalLaunchMount".
-                break.
+            if RSS {
+                if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 3) = round(landingzone:lat, 3) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 3) = round(landingzone:lng, 3) {
+                    set TargetOLM to var + " OrbitalLaunchMount".
+                    break.
+                }
+            }
+            else {
+                if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(landingzone:lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(landingzone:lng, 2) {
+                    set TargetOLM to var + " OrbitalLaunchMount".
+                    break.
+                }
             }
             set TargetOLM to false.
         }

@@ -1,3 +1,9 @@
+# V2.0.15 (2023-05-23)
+- Numerous RSS improvements (landing, 6RVAC, etc).
+- Booster landing adjustments.
+- Fixed a problem during launch where Ap would get to high and cause 0 thrust.
+- Fixed a problem with the background update after orbit completion, but before booster landing.
+
 # V2.0.14 (2023-05-22)
 - Fixed a launch issue for 6 RVACs.
 - Changed the ship catching guidance vectors. Might impact landings (hopefully in a positive way).

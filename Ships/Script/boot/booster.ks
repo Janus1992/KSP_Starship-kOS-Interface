@@ -175,13 +175,13 @@ function Boostback {
     //set ApproachVectorDraw to vecdraw(v(0,0,0), 5 * ApproachVector, green, "ApproachVector", 20, true, 0.005, true, true).
 
     if RSS {
-        SetLoadDistances(1500000).
+        SetLoadDistances(1750000).
     }
     else if KSRSS {
         SetLoadDistances(1000000).
     }
     else {
-        SetLoadDistances(300000).
+        SetLoadDistances(350000).
     }
 
     if verticalspeed > 0 {
@@ -217,11 +217,23 @@ function Boostback {
     }
 
     if RSS {
+        if BoosterCore[0]:hasmodule("FARPartModule") {
+            set BoosterGlideDistance to 9000.
+        }
+        else {
+            set BoosterGlideDistance to 8000.
+        }
         lock throttle to min(-(LngError + 6500) / 20000 + 0.01, 7.5 * 9.81 / (ship:availablethrust / ship:mass)).
         lock SteeringVector to lookdirup(vxcl(up:vector, -ErrorVector), -up:vector).
         lock steering to SteeringVector.
     }
     else {
+        if BoosterCore[0]:hasmodule("FARPartModule") {
+            set BoosterGlideDistance to 7500.
+        }
+        else {
+            set BoosterGlideDistance to 6500.
+        }
         lock throttle to min(-(LngError + 5000) / 10000 + 0.01, 7.5 * 9.81 / (ship:availablethrust / ship:mass)).
         lock SteeringVector to lookdirup(vxcl(up:vector, -ErrorVector), -up:vector).
         lock steering to SteeringVector.
@@ -230,7 +242,7 @@ function Boostback {
     print "Available Thrust: " + round(ship:availablethrust) + "kN".
     wait 0.1.
 
-    until ErrorVector:mag < 14000 and RSS or ErrorVector:mag < 12500 and not (RSS) {
+    until ErrorVector:mag < BoosterGlideDistance + 5000 {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         SetBoosterActive().
@@ -240,7 +252,7 @@ function Boostback {
     lock SteeringVector to lookdirup(CurrentVec, ApproachVector:normalized - 0.5 * up:vector:normalized).
     lock steering to SteeringVector.
 
-    until LngError > -9000 and RSS or LngError > -7500 and not (RSS) {
+    until LngError > -BoosterGlideDistance {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         SetBoosterActive().
@@ -330,17 +342,17 @@ function Boostback {
 
     when RSS and LngError > LngCtrlPID:setpoint - 500 or not (RSS) and LngError > LngCtrlPID:setpoint - 100 then {
         if RSS {
-            set LngCtrlPID to PIDLOOP(0.025, 0.005, 0.005, -15, 15).
+            set LngCtrlPID to PIDLOOP(0.015, 0.005, 0.005, -15, 15).
             when altitude < 7500 then {
-                set LngCtrlPID:kp to 0.075.
+                set LngCtrlPID:kp to 0.05.
             }
         }
         else {
             if BoosterCore[0]:hasmodule("FARPartModule") {
-                set LngCtrlPID to PIDLOOP(0.2, 0, 0, -15, 15).
+                set LngCtrlPID to PIDLOOP(0.1, 0.015, 0.015, -15, 15).
             }
             else {
-                set LngCtrlPID to PIDLOOP(0.1, 0, 0, -15, 15).
+                set LngCtrlPID to PIDLOOP(0.05, 0.015, 0.015, -15, 15).
             }
         }
         unlock steering.
@@ -601,10 +613,10 @@ FUNCTION SteeringCorrections {
             }
             else if KSRSS {
                 if BoosterCore[0]:hasmodule("FARPartModule") {
-                    set LngCtrlPID:setpoint to 400.
+                    set LngCtrlPID:setpoint to 375.
                 }
                 else {
-                    set LngCtrlPID:setpoint to 375.
+                    set LngCtrlPID:setpoint to 350.
                 }
             }
             else {
@@ -612,7 +624,7 @@ FUNCTION SteeringCorrections {
                     set LngCtrlPID:setpoint to 225.
                 }
                 else {
-                    set LngCtrlPID:setpoint to 165.
+                    set LngCtrlPID:setpoint to 150.
                 }
             }
 
@@ -643,9 +655,9 @@ FUNCTION SteeringCorrections {
         print "Radar Altitude: " + round(RadarAlt).
         print "Ship Distance: " + (round(vessel(starship):distance) / 1000) + "km".
         print " ".
-        print "ErrorVector: " + ErrorVector.
-        print "ApproachVector: " + ApproachVector.
-        print " ".
+        //print "ErrorVector: " + ErrorVector.
+        //print "ApproachVector: " + ApproachVector.
+        //print " ".
         print "Steering Roll   Error: " + round(SteeringManager:rollerror, 2).
         print "Steering Total  Error: " + round(SteeringManager:angleerror, 2).
 
@@ -657,7 +669,7 @@ FUNCTION SteeringCorrections {
             //print "Ship Flying Load Distances: " + vessel(starship):loaddistance:flying:unpack + ", " + vessel(starship):loaddistance:flying:pack + ", " + vessel(starship):loaddistance:flying:unload + ", " + vessel(starship):loaddistance:flying:load.
             //print "Default Flying Load Distances: " + kuniverse:defaultloaddistance:flying:unpack + ", " + kuniverse:defaultloaddistance:flying:pack + ", " + kuniverse:defaultloaddistance:flying:unload + ", " + kuniverse:defaultloaddistance:flying:load.
             //print "Ship Parts Nr: " + vessel(starship):parts:length.
-            print "Impact Pos: " + ship:body:geopositionof(ADDONS:TR:IMPACTPOS:POSITION).
+            print "Impact Pos: " + round(ship:body:geopositionof(ADDONS:TR:IMPACTPOS:POSITION):lat, 4) + "," + round(ship:body:geopositionof(ADDONS:TR:IMPACTPOS:POSITION):lng, 4).
         }
 
 
