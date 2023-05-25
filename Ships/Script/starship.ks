@@ -7349,12 +7349,12 @@ function LandingVector {
         }
 
         if ship:body:atm:sealevelpressure > 0.5 {
-            if RadarAlt < 500 {
+            if RadarAlt < 350 {
                 if MechaZillaExists and TargetOLM {
-                    set ErrorVector to 0.25 * ErrorVector + 2 * vxcl(up:vector, ship:position - landingzone:position).
+                    set ErrorVector to 0.25 * ErrorVector + vxcl(up:vector, ship:position - landingzone:position).
                 }
                 else {
-                    set ErrorVector to ErrorVector + 2 * vxcl(up:vector, ship:position - landingzone:position).
+                    set ErrorVector to ErrorVector + vxcl(up:vector, ship:position - landingzone:position).
                 }
             }
             if ErrorVector:mag > max(min(RadarAlt / 20, 10), 7.5) {
