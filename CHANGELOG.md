@@ -1,3 +1,6 @@
+# V2.0.16 (2023-05-25)
+- If a user turns off the header tank or main tank of the ship, it gets enabled again automatically.
+
 # V2.0.15 (2023-05-23)
 - Numerous RSS improvements (landing, 6RVAC, etc).
 - Booster landing adjustments.

@@ -92,7 +92,7 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set FuelVentCutOffValue to 1200.
     set FuelBalanceSpeed to 100.
     set LandHeadingVector to heading(270,0):vector.
-    set SafeAltOverLZ to 5000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
+    set SafeAltOverLZ to 7500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
 }
 else if KSRSS {
     set aoa to 60.
@@ -5787,7 +5787,13 @@ function Launch {
             set targetap to 75000.
             set LaunchElev to altitude - 67.74.
             set BoosterAp to 60000.
-            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.05, 0, 0, -30, 0).
+            if NrOfVacEngines = 6 {
+                set PitchIncrement to 1.
+            }
+            else {
+                set PitchIncrement to 0.
+            }
+            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.05, 0, 0, -30, PitchIncrement).
             set TimeFromLaunchToOrbit to 260.
         }
         set targetincl to setting3:text:split("°")[0]:toscalar(0).
@@ -5958,7 +5964,7 @@ function Launch {
                     SetLoadDistances(1000000).
                 }
                 else {
-                    SetLoadDistances(300000).
+                    SetLoadDistances(500000).
                 }
                 LogToFile("Stage-separation Complete").
             }
@@ -8163,6 +8169,9 @@ function updatestatusbar {
                 set OxShip to res:amount.
                 set OxShipCap to res:capacity.
             }
+            if not (res:enabled) {
+                set res:enabled to true.
+            }
         }
         for res in HeaderTank:resources {
             if res:name = "LiquidFuel" {
@@ -8172,6 +8181,9 @@ function updatestatusbar {
             if res:name = "Oxidizer" {
                 set OxShip to OxShip + res:amount.
                 set OxShipCap to OxShipCap + res:capacity.
+            }
+            if not (res:enabled) {
+                set res:enabled to true.
             }
         }
         set FuelMass to (Tank:mass - Tank:drymass) + (HeaderTank:mass - HeaderTank:drymass).
