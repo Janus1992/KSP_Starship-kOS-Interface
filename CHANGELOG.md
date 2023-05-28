@@ -1,3 +1,6 @@
+# V2.0.17 (2023-05-28)
+- Fixed a Cryotanks bug. Header Tank fuel should be normal again.
+
 # V2.0.16 (2023-05-25)
 - If a user turns off the header tank or main tank of the ship, it gets enabled again automatically.
 - Fixed a landing bug that I created a few days ago.
