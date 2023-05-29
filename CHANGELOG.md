@@ -1,6 +1,9 @@
 # V2.0.18 (2023-05-29)
 - Attempt to fix RSS ship rotation on catch.
 - Tower location now gets updated at 300m RA in case it moves slightly (for example in RSS).
+- Added earth, mars and moon images for the orbit page.
+- RSS re-entry PIDloop less sensitive on final approach (less prone to spinning out of control).
+- Changed .crafts to fix engine rotations.
 
 # V2.0.17 (2023-05-28)
 - Fixed a Cryotanks bug. Header Tank fuel should be normal again.

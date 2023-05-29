@@ -93,6 +93,7 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set FuelBalanceSpeed to 100.
     set LandRollVector to heading(270,0):vector.
     set SafeAltOverLZ to 7500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
+    set targetap to 250000.
 }
 else if KSRSS {
     set aoa to 60.
@@ -111,6 +112,7 @@ else if KSRSS {
     set FuelBalanceSpeed to 40.
     set LandRollVector to heading(242,0):vector.
     set SafeAltOverLZ to 3000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
+    set targetap to 125000.
 }
 else {  // Set of variables when Real Solar System has NOT been installed
     set aoa to 60.
@@ -129,6 +131,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set FuelBalanceSpeed to 40.
     set LandRollVector to heading(270,0):vector.
     set SafeAltOverLZ to 1500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
+    set targetap to 75000.
 }
 set SNStart to 30.  // Defines the first Serial Number when multiple ships are found and renaming is necessary.
 set MaxTilt to 2.5.  // Defines maximum allowed slope for the Landing Zone Search Function
@@ -4264,14 +4267,8 @@ set launchbutton:ontoggle to {
                             set TargetShip to false.
                             until false {
                                 for tship in ShipsInOrbit {
-                                    if abs(tship:orbit:inclination) > 0.5 {
-                                        set message1:text to "<b>Launch to Intercept Orbit</b>  (± 75km, " + round(tship:orbit:inclination, 2) + "°)".
-                                        set message2:text to "<b>Rendezvous Target:  <color=green>" + tship:name + "</color></b>".
-                                    }
-                                    else {
-                                        set message1:text to "<b>Launch to Target</b>  (within ± 25km)".
-                                        set message2:text to "<b>Rendezvous Target:  <color=green>" + tship:name + "</color></b>".
-                                    }
+                                    set message1:text to "<b>Launch to Intercept Orbit</b>  (± " + (targetap / 1000) + "km, " + round(tship:orbit:inclination, 2) + "°)".
+                                    set message2:text to "<b>Rendezvous Target:  <color=green>" + tship:name + "</color></b>".
                                     set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
                                     set message3:style:textcolor to cyan.
                                     set execute:text to "<b>CONFIRM</b>".
@@ -4303,16 +4300,11 @@ set launchbutton:ontoggle to {
                             }
                         }
                         if TargetShip = 0 {
-                            set message1:text to "<b>Launch to Parking Orbit</b>  (± 75km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
+                            set message1:text to "<b>Launch to Parking Orbit</b>  (± " + (targetap / 1000) + "km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
                             set message2:text to "<b>Booster Return to Launch Site</b>".
                         }
-                        else if abs(TargetShip:orbit:inclination) > 0.5 {
-                            set message1:text to "<b>Launch to Intercept Orbit</b>  (± 75km, " + round(TargetShip:orbit:inclination, 2) + "°)".
-                            set message2:text to "<b>Target Ship:  <color=green>" + TargetShip:name + "</color></b>".
-                        }
                         else {
-                            set setting3:text to (round(TargetShip:orbit:inclination, 1) + "°").
-                            set message1:text to "<b>Launch to Rendezvous Orbit</b>  (± 75km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
+                            set message1:text to "<b>Launch to Intercept Orbit</b>  (± " + (targetap / 1000) + "km, " + round(TargetShip:orbit:inclination, 2) + "°)".
                             set message2:text to "<b>Target Ship:  <color=green>" + TargetShip:name + "</color></b>".
                         }
                         if quicksetting1:pressed {
@@ -6786,9 +6778,9 @@ function ReEntryAndLand {
                         setflaps(FWDFlapDefault, AFTFlapDefault, 1, 5).
                         set FlipAltitude to 750.
                         if RSS {
-                            set PitchPID:kp to 0.1.
-                            set PitchPID:ki to 0.001.
-                            set PitchPID:kd to 0.001.
+                            set PitchPID:kp to 0.05.
+                            set PitchPID:ki to 0.0025.
+                            set PitchPID:kd to 0.0025.
                             set PitchPID:minoutput to -15.
                             set PitchPID:maxoutput to 0.
                             set YawPID:kp to 0.025.
@@ -7351,7 +7343,7 @@ function LandingVector {
         if ship:body:atm:sealevelpressure > 0.5 {
             if RadarAlt < 300 {
                 if MechaZillaExists and TargetOLM {
-                    set ErrorVector to 0.5 * ErrorVector + 1.5 * vxcl(up:vector, ship:position - landingzone:position).
+                    set ErrorVector to 0.25 * ErrorVector + 1.5 * vxcl(up:vector, ship:position - landingzone:position).
                 }
                 else {
                     set ErrorVector to ErrorVector + 1.5 * vxcl(up:vector, ship:position - landingzone:position).
@@ -8944,64 +8936,113 @@ function updateOrbit {
             set orbit1label3:style:textcolor to grey.
             set orbit2label3:style:textcolor to grey.}
         if homeconnection:isconnected {
-            if BodyExists("Kerbin") {
-                if ship:body = BODY("Kerbin") {
-                    if ship:status = "LANDED" or ship:status = "PRELAUNCH" {
-                        set orbit1label2:style:bg to "starship_img/orbit_page_background_kerbin_landed".
-                    }
-                    else if ship:status = "SUB_ORBITAL" and verticalspeed > 0 or ship:status = "FLYING" and verticalspeed > 0 {
-                        set orbit1label2:style:bg to "starship_img/orbit_page_background_kerbin_launch".
-                    }
-                    else if ship:status = "SUB_ORBITAL" and verticalspeed < 0 or ship:status = "FLYING" and verticalspeed < 0 {
-                        set orbit1label2:style:bg to "starship_img/orbit_page_background_kerbin_reentry".
-                    }
-                    else {
-                        set orbit1label2:style:bg to "starship_img/orbit_page_background_kerbin".
-                    }
-                    set orbit3label3:style:textcolor to cyan.
-                    set orbit3label3:style:bg to "starship_img/starship_comms_cyan".
-                    set orbit3label3:text to "<b>      GPS/GPS</b>".
+            if body:name = "Kerbin" {
+                if ship:status = "LANDED" or ship:status = "PRELAUNCH" {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_kerbin_landed".
                 }
-                else if ship:body = BODY("Duna") {
-                    if ship:status = "LANDED" or ship:status = "PRELAUNCH" {
-                        set orbit1label2:style:bg to "starship_img/orbit_page_background_duna_landed".
-                    }
-                    else if ship:status = "SUB_ORBITAL" and verticalspeed > 0 or ship:status = "FLYING" and verticalspeed > 0 {
-                        set orbit1label2:style:bg to "starship_img/orbit_page_background_duna_launch".
-                    }
-                    else if ship:status = "SUB_ORBITAL" and verticalspeed < 0 or ship:status = "FLYING" and verticalspeed < 0 {
-                        set orbit1label2:style:bg to "starship_img/orbit_page_background_duna_reentry".
-                    }
-                    else {
-                        set orbit1label2:style:bg to "starship_img/orbit_page_background_duna".
-                    }
-                    set orbit3label3:style:textcolor to white.
-                    set orbit3label3:style:bg to "starship_img/starship_comms_celestial_nav".
-                    set orbit3label3:text to "<b>      CBN/CBN</b>".
+                else if ship:status = "SUB_ORBITAL" and verticalspeed > 0 or ship:status = "FLYING" and verticalspeed > 0 {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_kerbin_launch".
                 }
-                else if ship:body = BODY("Mun") {
-                    if ship:status = "LANDED" or ship:status = "PRELAUNCH" {
-                        set orbit1label2:style:bg to "starship_img/orbit_page_background_mun_landed".
-                    }
-                    else if ship:status = "SUB_ORBITAL" and verticalspeed > 0 or ship:status = "FLYING" and verticalspeed > 0 {
-                        set orbit1label2:style:bg to "starship_img/orbit_page_background_mun_launch".
-                    }
-                    else if ship:status = "SUB_ORBITAL" and verticalspeed < 0 or ship:status = "FLYING" and verticalspeed < 0 {
-                        set orbit1label2:style:bg to "starship_img/orbit_page_background_mun_reentry".
-                    }
-                    else {
-                        set orbit1label2:style:bg to "starship_img/orbit_page_background_mun".
-                    }
-                    set orbit3label3:style:textcolor to cyan.
-                    set orbit3label3:style:bg to "starship_img/starship_comms_cyan".
-                    set orbit3label3:text to "<b>      GPS/CBN</b>".
+                else if ship:status = "SUB_ORBITAL" and verticalspeed < 0 or ship:status = "FLYING" and verticalspeed < 0 {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_kerbin_reentry".
                 }
                 else {
-                    set orbit1label2:style:bg to "starship_img/orbit_page_background_transfer".
-                    set orbit3label3:style:textcolor to white.
-                    set orbit3label3:style:bg to "starship_img/starship_comms_celestial_nav".
-                    set orbit3label3:text to "<b>      CBN/CBN</b>".
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_kerbin".
                 }
+                set orbit3label3:style:textcolor to cyan.
+                set orbit3label3:style:bg to "starship_img/starship_comms_cyan".
+                set orbit3label3:text to "<b>      GPS/GPS</b>".
+            }
+            else if body:name = "Earth" {
+                if ship:status = "LANDED" or ship:status = "PRELAUNCH" {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_earth_landed".
+                }
+                else if ship:status = "SUB_ORBITAL" and verticalspeed > 0 or ship:status = "FLYING" and verticalspeed > 0 {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_earth_launch".
+                }
+                else if ship:status = "SUB_ORBITAL" and verticalspeed < 0 or ship:status = "FLYING" and verticalspeed < 0 {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_earth_reentry".
+                }
+                else {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_earth".
+                }
+                set orbit3label3:style:textcolor to cyan.
+                set orbit3label3:style:bg to "starship_img/starship_comms_cyan".
+                set orbit3label3:text to "<b>      GPS/GPS</b>".
+            }
+            else if body:name = "Duna" {
+                if ship:status = "LANDED" or ship:status = "PRELAUNCH" {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_duna_landed".
+                }
+                else if ship:status = "SUB_ORBITAL" and verticalspeed > 0 or ship:status = "FLYING" and verticalspeed > 0 {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_duna_launch".
+                }
+                else if ship:status = "SUB_ORBITAL" and verticalspeed < 0 or ship:status = "FLYING" and verticalspeed < 0 {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_duna_reentry".
+                }
+                else {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_duna".
+                }
+                set orbit3label3:style:textcolor to white.
+                set orbit3label3:style:bg to "starship_img/starship_comms_celestial_nav".
+                set orbit3label3:text to "<b>      CBN/CBN</b>".
+            }
+            else if body:name = "Mars" {
+                if ship:status = "LANDED" or ship:status = "PRELAUNCH" {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_mars_landed".
+                }
+                else if ship:status = "SUB_ORBITAL" and verticalspeed > 0 or ship:status = "FLYING" and verticalspeed > 0 {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_mars_launch".
+                }
+                else if ship:status = "SUB_ORBITAL" and verticalspeed < 0 or ship:status = "FLYING" and verticalspeed < 0 {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_mars_reentry".
+                }
+                else {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_mars".
+                }
+                set orbit3label3:style:textcolor to white.
+                set orbit3label3:style:bg to "starship_img/starship_comms_celestial_nav".
+                set orbit3label3:text to "<b>      CBN/CBN</b>".
+            }
+            else if body:name = "Mun" {
+                if ship:status = "LANDED" or ship:status = "PRELAUNCH" {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_mun_landed".
+                }
+                else if ship:status = "SUB_ORBITAL" and verticalspeed > 0 or ship:status = "FLYING" and verticalspeed > 0 {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_mun_launch".
+                }
+                else if ship:status = "SUB_ORBITAL" and verticalspeed < 0 or ship:status = "FLYING" and verticalspeed < 0 {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_mun_reentry".
+                }
+                else {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_mun".
+                }
+                set orbit3label3:style:textcolor to cyan.
+                set orbit3label3:style:bg to "starship_img/starship_comms_cyan".
+                set orbit3label3:text to "<b>      GPS/CBN</b>".
+            }
+            else if body:name = "Moon" {
+                if ship:status = "LANDED" or ship:status = "PRELAUNCH" {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_moon_landed".
+                }
+                else if ship:status = "SUB_ORBITAL" and verticalspeed > 0 or ship:status = "FLYING" and verticalspeed > 0 {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_moon_launch".
+                }
+                else if ship:status = "SUB_ORBITAL" and verticalspeed < 0 or ship:status = "FLYING" and verticalspeed < 0 {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_moon_reentry".
+                }
+                else {
+                    set orbit1label2:style:bg to "starship_img/orbit_page_background_moon".
+                }
+                set orbit3label3:style:textcolor to cyan.
+                set orbit3label3:style:bg to "starship_img/starship_comms_cyan".
+                set orbit3label3:text to "<b>      GPS/CBN</b>".
+            }
+            else {
+                set orbit1label2:style:bg to "starship_img/orbit_page_background_transfer".
+                set orbit3label3:style:textcolor to white.
+                set orbit3label3:style:bg to "starship_img/starship_comms_celestial_nav".
+                set orbit3label3:text to "<b>      CBN/CBN</b>".
             }
         }
         else {
@@ -10076,13 +10117,13 @@ function ShipsInOrbit {
             }
             if x:status = "ORBITING" and x:body = ship:body {
                 if x:name:contains("Starship Crew") or x:name:contains("Starship Cargo") or x:name:contains("Starship Tanker") {
-                    if RSS and x:orbit:apoapsis < 260000 and x:orbit:periapsis > 240000 {
+                    if RSS and x:orbit:apoapsis < 500000 and x:orbit:periapsis > 140000 {
                         ShipsInOrbitList:add(Vessel(x:name)).
                     }
-                    else if KSRSS and x:orbit:apoapsis < 130000 and x:orbit:periapsis > 120000 {
+                    else if KSRSS and x:orbit:apoapsis < 250000 and x:orbit:periapsis > 90000 {
                         ShipsInOrbitList:add(Vessel(x:name)).
                     }
-                    else if x:orbit:apoapsis < 80000 and x:orbit:periapsis > 70000 {
+                    else if x:orbit:apoapsis < 150000 and x:orbit:periapsis > 70000 {
                         ShipsInOrbitList:add(Vessel(x:name)).
                     }
                 }
