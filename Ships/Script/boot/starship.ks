@@ -91,7 +91,7 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set DefaultLaunchSite to "28.6084,-80.59975".
     set FuelVentCutOffValue to 1200.
     set FuelBalanceSpeed to 100.
-    set LandHeadingVector to heading(270,0):vector.
+    set LandRollVector to heading(270,0):vector.
     set SafeAltOverLZ to 7500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
 }
 else if KSRSS {
@@ -109,7 +109,7 @@ else if KSRSS {
     set DefaultLaunchSite to "28.5166,-81.2062".
     set FuelVentCutOffValue to 550.
     set FuelBalanceSpeed to 40.
-    set LandHeadingVector to heading(242,0):vector.
+    set LandRollVector to heading(242,0):vector.
     set SafeAltOverLZ to 3000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
 }
 else {  // Set of variables when Real Solar System has NOT been installed
@@ -127,7 +127,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set DefaultLaunchSite to "-0.0972,-74.5577".
     set FuelVentCutOffValue to 450.
     set FuelBalanceSpeed to 40.
-    set LandHeadingVector to heading(270,0):vector.
+    set LandRollVector to heading(270,0):vector.
     set SafeAltOverLZ to 1500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
 }
 set SNStart to 30.  // Defines the first Serial Number when multiple ships are found and renaming is necessary.
@@ -7451,7 +7451,7 @@ function LandingVector {
         BackGroundUpdate().
     }
     if MechaZillaExists and TargetOLM and verticalspeed > -25 {
-        return lookDirUp(result, LandHeadingVector).
+        return lookDirUp(result, LandRollVector).
     }
     else {
         return lookDirUp(result, -LandingForwardDirection).
@@ -10027,6 +10027,9 @@ function LandAtOLM {
                 else {
                     set ArmsHeight to 86.35.
                 }
+
+                //print Vessel(TargetOLM):parts.
+
                 if FlipAltitude = 750 {
                     set FlipAltitude to FlipAltitude + ArmsHeight.
                 }
@@ -10036,6 +10039,15 @@ function LandAtOLM {
                         sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,97,true").
                         sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,false").
                         sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
+                        when RadarAlt < 300 then {
+                            set LandRollVector to Vessel(TargetOLM):partstitled("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position.
+                            if RSS {
+                                set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 5), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 5)).
+                            }
+                            else {
+                                set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 4), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 4)).
+                            }
+                        }
                     }
                     else {
                         SetRadarAltitude().

@@ -1,3 +1,7 @@
+# V2.0.18 (2023-05-29)
+- Attempt to fix RSS ship rotation on catch.
+- Tower location now gets updated at 300m RA in case it moves slightly (for example in RSS).
+
 # V2.0.17 (2023-05-28)
 - Fixed a Cryotanks bug. Header Tank fuel should be normal again.
 
