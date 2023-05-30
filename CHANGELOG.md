@@ -1,3 +1,7 @@
+# V2.0.19 (2023-05-30)
+- Change in orbit-completion sequence to reduce crashes and enable booster recovery in KSRSS/RSS.
+- Fix for 6RVAC Moon Landing: shut down 2 more engines for landing.
+
 # V2.0.18 (2023-05-29)
 - Attempt to fix RSS ship rotation on catch.
 - Tower location now gets updated at 300m RA in case it moves slightly (for example in RSS).

@@ -471,15 +471,18 @@ function Boostback {
     unlock throttle.
     BoosterEngines[0]:shutdown.
 
-    if not (LandSomewhereElse) and STOCK {
+    if not (LandSomewhereElse) and not (RSS) {
         print "capture at: " + RadarAlt + "m RA".
-
         print "Landing Burn started at: " + round(LandingBurnAltitude) + "m Altitude".
-
         if OLMexists() {
             HUDTEXT("Booster Landing Confirmed! Stand by for Mechazilla Operation..", 10, 2, 20, green, false).
             set LandingTime to time:seconds.
-            lock RollAngle to vang(facing:starvector, heading(180,0):vector).
+            if KSRSS {
+                lock RollAngle to vang(facing:starvector, heading(152,0):vector).
+            }
+            else {
+                lock RollAngle to vang(facing:starvector, heading(180,0):vector).
+            }
             set TowerReset to false.
             set PusherSpeed5 to false.
             set PusherSpeed2 to false.
@@ -559,11 +562,14 @@ function Boostback {
     }
     unlock throttle.
 
-    if RSS or KSRSS {
+    if RSS {
         wait 2.
         HUDTEXT("Changing focus to Starship..", 20, 2, 20, green, false).
+        SetLoadDistances("default").
         wait 3.
-        SetStarshipActive().
+        when ship:status = "LANDED" then {
+            SetStarshipActive().
+        }
     }
     else {
         SetLoadDistances("default").

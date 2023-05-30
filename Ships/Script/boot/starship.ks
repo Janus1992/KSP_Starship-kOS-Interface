@@ -254,6 +254,9 @@ set targetpitch to 90.
 set LaunchLabelIsRunning to false.
 set MinFuel to 0.
 set MaxFuel to 0.
+set TwoVacEngineLanding to false.
+set FourVacBrakingBurn to false.
+set FinalDescentEngines to list().
 
 
 
@@ -405,6 +408,7 @@ function FindParts {
 //-------------Initial Program Start-Up--------------------//
 
 
+SetLoadDistances("default").
 FindParts().
 SetRadarAltitude().
 lock throttle to 0.
@@ -4263,7 +4267,7 @@ set launchbutton:ontoggle to {
                     if CargoMass < MaxCargoToOrbit + 1 and cargo1text:text = "Closed" {
                         ShowHomePage().
                         InhibitButtons(0, 0, 0).
-                        if ShipsInOrbit():length > 0 {
+                        if ShipsInOrbit():length > 0 and not (RSS) {
                             set TargetShip to false.
                             until false {
                                 for tship in ShipsInOrbit {
@@ -5184,8 +5188,25 @@ function LandwithoutAtmo {
         rcs on.
         ActivateEngines(1).
         if NrOfVacEngines = 6 {
-            VACEngines[2]:shutdown.
-            VACEngines[4]:shutdown.
+            set FinalDescentEngines to list().
+            for engine in VACEngines {
+                print "vdot: " + vdot(engine:position - ship:position, facing:starvector).
+                if RSS {
+                    if vdot(engine:position - ship:position, facing:starvector) > 3 or vdot(engine:position - ship:position, facing:starvector) < -3 {
+                        engine:shutdown.
+                        FinalDescentEngines:add(engine).
+                    }
+                }
+                else {
+                    if vdot(engine:position - ship:position, facing:starvector) > 1.8 or vdot(engine:position - ship:position, facing:starvector) < -1.8 {
+                        engine:shutdown.
+                        FinalDescentEngines:add(engine).
+                    }
+
+                }
+                set FourVacBrakingBurn to true.
+            }
+            print FinalDescentEngines.
         }
         lock throttle to 0.
         if quicksetting1:pressed and altitude > 10000 {
@@ -5197,7 +5218,7 @@ function LandwithoutAtmo {
 
         if groundspeed > 50 or altitude > 10000 {
             when horDist < horStopDist then {
-                lock throttle to max(min(LngLatErrorList[0] / (CosAngle * 1000), min(29.43 / MaxAccel, CancelHorVelRatio * min(29.43, MaxAccel) / MaxAccel)), 0.2).
+                lock throttle to max(min(LngLatErrorList[0] / (CosAngle * 1000), min(29.43 / MaxAccel, CancelHorVelRatio * min(29.43, MaxAccel) / MaxAccel)), 0.25).
                 set runningprogram to "Landing".
                 set LandingFacingVector to vxcl(ApproachUPVector, ApproachVector).
                 set CancelVelocityHasStarted to true.
@@ -5224,16 +5245,40 @@ function LandwithoutAtmo {
         }
         lock STEERING to LandwithoutAtmoSteering.
 
-        when RadarAlt < SafeAltOverLZ - (SafeAltOverLZ / 2) then {
-            if abs(LngLatErrorList[0]) > 1000 or abs(LngLatErrorList[1]) > 1000 {
-                CheckLZReachable().
-                set LandingFacingVector to vxcl(up:vector, landingzone:position - ship:position):normalized.
-                set NewTargetSet to true.
-            }
+        when RadarAlt < SafeAltOverLZ / 2 then {
+            //if abs(LngLatErrorList[0]) > 1000 or abs(LngLatErrorList[1]) > 1000 {
+            //    CheckLZReachable().
+            //    set LandingFacingVector to vxcl(up:vector, landingzone:position - ship:position):normalized.
+            //    set NewTargetSet to true.
+            //}
             InhibitButtons(1, 1, 1).
+            if NrOfVacEngines = 6 {
+                if RSS {
+                    if ship:mass < 750 {
+                        for engine in VACEngines {
+                            engine:shutdown.
+                        }
+                        for engine in FinalDescentEngines {
+                            engine:activate.
+                        }
+                        set FourVacBrakingBurn to false.
+                        set TwoVacEngineLanding to true.
+                    }
+                }
+                else {
+                    for engine in VACEngines {
+                        engine:shutdown.
+                    }
+                    for engine in FinalDescentEngines {
+                        engine:activate.
+                    }
+                    set FourVacBrakingBurn to false.
+                    set TwoVacEngineLanding to true.
+                }
+            }
         }
 
-        when verticalspeed > -10 then {
+        when verticalspeed > -10 and CancelVelocityHasStarted then {
             GEAR on.
         }
 
@@ -5271,6 +5316,7 @@ function LandwithoutAtmo {
             Nose:activate. Tank:activate.
         }
         ShutDownAllEngines().
+        set TwoVacEngineLanding to false.
         until ShutdownComplete {
             set message3:text to "<b>Please Standby..</b> (" + round((ShutdownProcedureStart + 17) - time:seconds) + "s)".
             BackGroundUpdate().
@@ -5361,23 +5407,26 @@ function LandwithoutAtmoSteering {
         set ApproachAltitude to ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)).
     }
 
-    //clearscreen.
-    //print "stop time: " + stopTime.
-    //print "stop dist: " + stopDist.
-    //print "landing ratio: " + landingRatio.
-    //print "horizontal distance: " + horDist.
-    //print "groundspeed: " + groundspeed.
-    //print "horizontal stop time: " + horStopTime.
-    //print "horizontal stop distance: " + horStopDist.
-    //print "cancel ratio: " + CancelHorVelRatio.
-    //print "Radar Alt: " + RadarAlt.
-    //print "Time to Overhead: " + TimeToOVHD.
-    //print "Approach Altitude: " + round(ApproachAltitude).
-    //print "Angle: " + vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface)).
-    //print "Cos Angle result: " + cos(vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface))).
+    clearscreen.
+    print "stop time: " + stopTime.
+    print "stop dist: " + stopDist.
+    print "landing ratio: " + landingRatio.
+    print "horizontal distance: " + horDist.
+    print "groundspeed: " + groundspeed.
+    print "horizontal stop time: " + horStopTime.
+    print "horizontal stop distance: " + horStopDist.
+    print "cancel ratio: " + CancelHorVelRatio.
+    print "Radar Alt: " + RadarAlt.
+    print "Time to Overhead: " + TimeToOVHD.
+    print "Approach Altitude: " + round(ApproachAltitude).
+    print "LZ alt: " + round(landingzone:terrainheight).
+    print "Angle: " + vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface)).
+    print "Cos Angle result: " + cos(vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface))).
 
     if not CancelVelocityHasStarted and RadarAlt > SafeAltOverLZ + 1000 {
-        set ship:control:translation to v(LngLatErrorList[1] / 250, (ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ)) / 2500, 0).
+        if vang(facing:topvector, -up:vector) < 10 {
+            set ship:control:translation to v(LngLatErrorList[1] / 250, (ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ)) / 2500, 0).
+        }
     }
     else if CancelVelocityHasStarted {
         if addons:tr:hasimpact and not (ship:status = "LANDED") {
@@ -6013,102 +6062,65 @@ function Launch {
                         set MaintainVS to true.
                     }
                 }
-                //SLEngines[0]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
-                //SLEngines[1]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
-                //SLEngines[2]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
             }
         }
 
-        when BurnComplete then {
-            unlock steering.
-            SteeringManager:RESETTODEFAULT().
-            wait 0.001.
-            lock throttle to 0.
-            unlock throttle.
-            set config:ipu to CPUSPEED.
-            if NrOfVacEngines = 3 {
-                SLEngines[0]:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
-                SLEngines[1]:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
-                SLEngines[2]:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
-            }
-            wait 0.001.
-            if hasnode {
-                remove nextnode.
-                wait 0.001.
-            }
-            ShutDownAllEngines().
-            set DistanceToTarget to ((landingzone:lng - ship:geoposition:lng) * Planet1Degree).
-            LogToFile("Distance flown from Launch Site to Orbit Complete: " + round(DistanceToTarget, 3) + "km").
-            if not (LiftOffTime = 0) {
-                LogToFile("Circularization Burn Finished. Time since Lift-Off: " + timeSpanCalculator(time:seconds - LiftOffTime)).
-            }
-            sas on.
-            set message1:text to "<b>Current Orbit:</b>                        " + round(APOAPSIS / 1000, 1) + "km x " + round(PERIAPSIS / 1000, 1) + "km".
-            wait 0.001.
-            HideEngineToggles(1).
-            wait 0.001.
-            Droppriority().
-
-            rcs off.
-            if defined Booster and STOCK {
-                if Booster:altitude < 30000 {
-                    HUDTEXT("Changing Focus to: Booster", 5, 2, 20, green, false).
-                    wait 1.5.
-                    HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 20, 2, 20, green, false).
-                    wait 0.001.
-                    set kuniverse:activevessel to vessel("Booster").
-                }
-                else {
-                    HUDTEXT("Changing Focus when Booster passes below 30km Altitude", 15, 2, 20, yellow, false).
-                    wait 1.5.
-                    HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 20, 2, 20, green, false).
-                }
-            }
-
-            set BGUisRunning to false.
-
-            until false or AbortLaunchInProgress {
-                BackGroundUpdate().
-                set kuniverse:timewarp:warp to 0.
-                if defined Booster {
-                    if not (Booster:isdead) {
-                        if Booster:status = "LANDED" {
-                            set message2:text to "<b>Shutdown Message received!</b>".
-                            set message3:text to "<b>Booster Landing Confirmed!</b>".
-                            LogToFile("Booster has Landed!").
-                            BREAK.
-                        }
-                        else {
-                            set message2:text to "<b>Booster Trk/X-Trk:</b>              " + round((landingzone:lng - Booster:geoposition:lng) * 1000 * Planet1Degree) + "m / " + round((landingzone:lat - Booster:geoposition:lat) * 1000 * Planet1Degree) + "m".
-                            set message3:text to "<b>Booster Alt / Spd:</b>                " + round(Booster:altitude - 116) + "m / " + round(Booster:airspeed) + "m/s".
-                        }
-                    }
-                    else {
-                        set message2:text to "<b>Booster Signal:</b>               <color=red>0%</color>".
-                        set message3:text to "<b>Booster Loss of Signal..</b>".
-                        LogToFile("Booster Signal Lost").
-                        BREAK.
-                    }
-                }
-                else {
-                    set message3:text to "".
-                    BREAK.
-                }
-            }
-            set textbox:style:bg to "starship_img/starship_main_square_bg".
-            ShowHomePage().
-            set LaunchComplete to true.
-            set BGUisRunning to false.
-        }
-
-        until LaunchComplete or AbortLaunchInProgress {
+        until BurnComplete or AbortLaunchInProgress {
             BackGroundUpdate().
             LaunchLabelData().
         }
+
+        unlock steering.
+        SteeringManager:RESETTODEFAULT().
+        wait 0.001.
+        lock throttle to 0.
+        unlock throttle.
+        set config:ipu to CPUSPEED.
+        if NrOfVacEngines = 3 {
+            SLEngines[0]:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
+            SLEngines[1]:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
+            SLEngines[2]:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
+        }
+        wait 0.001.
+        if hasnode {
+            remove nextnode.
+            wait 0.001.
+        }
+        ShutDownAllEngines().
+        set DistanceToTarget to ((landingzone:lng - ship:geoposition:lng) * Planet1Degree).
+        LogToFile("Distance flown from Launch Site to Orbit Complete: " + round(DistanceToTarget, 3) + "km").
+        if not (LiftOffTime = 0) {
+            LogToFile("Circularization Burn Finished. Time since Lift-Off: " + timeSpanCalculator(time:seconds - LiftOffTime)).
+        }
+        sas on.
+        set message1:text to "<b>Current Orbit:</b>  " + round(APOAPSIS / 1000, 1) + "km x " + round(PERIAPSIS / 1000, 1) + "km".
+        set message2:text to "<b>Launch Program Completed!</b>".
+        set message3:text to "".
+        wait 0.001.
+        HideEngineToggles(1).
+        wait 0.001.
+        Droppriority().
+        rcs off.
+        if defined Booster and STOCK {
+            if Booster:altitude < 30000 {
+                HUDTEXT("Changing Focus to: Booster", 5, 2, 20, green, false).
+                wait 1.5.
+                HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 20, 2, 20, green, false).
+                wait 0.001.
+                set kuniverse:activevessel to vessel("Booster").
+            }
+            else {
+                HUDTEXT("Changing Focus when Booster passes below 30km Altitude", 15, 2, 20, yellow, false).
+                wait 1.5.
+                HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 20, 2, 20, green, false).
+            }
+        }
+        set textbox:style:bg to "starship_img/starship_main_square_bg".
         LogToFile("Launch Complete").
         wait 3.
         LogToFile("Launch Program Ended").
         print "Launch Program Ended".
+        SetLoadDistances("default").
         ClearInterfaceAndSteering().
     }
 }.
@@ -8659,7 +8671,7 @@ function updateEnginePage {
             set engine1label4:tooltip to "Status of the Vacuum Raptor Engines".
             set engine2label1:tooltip to "Thrust in kN of the Sea-Level Raptor Engines".
             set engine2label5:tooltip to "Thrust in kN of the Vacuum Raptor Engines".
-            if SLEngines[0]:ignition = false and VACEngines[0]:ignition = false {
+            if SLEngines[0]:ignition = false and VACEngines[0]:ignition = false and not (FourVacBrakingBurn) and not (TwoVacEngineLanding) {
                 if ship:control:translation:z > 0 or ship:control:pilottranslation:z > 0 {
                     if NrOfVacEngines = 6 {
                         set engine2label3:style:bg to "starship_img/starship_9engine_rcs".
@@ -8771,41 +8783,37 @@ function updateEnginePage {
                 }
                 set engine2label5:text to "SBY".
             }
-            if SLEngines[0]:ignition = false and VACEngines[0]:ignition = true {
-                if VACEngines[0]:thrust > 0 {
-                    if VACEngines[2]:ignition = true {
-                        if NrOfVacEngines = 6 {
-                            set engine2label3:style:bg to "starship_img/starship_9engine_vac_active".
+            if SLEngines[0]:ignition = false and VACEngines[0]:ignition = true or FourVacBrakingBurn or TwoVacEngineLanding {
+                if throttle > 0 {
+                    if NrOfVacEngines = 6 {
+                        if FourVacBrakingBurn {
+                            set engine2label3:style:bg to "starship_img/starship_9engine_4vac_active".
                         }
-                        if NrOfVacEngines = 3 {
-                            set engine2label3:style:bg to "starship_img/starship_6engine_vac_active".
+                        else if TwoVacEngineLanding {
+                            set engine2label3:style:bg to "starship_img/starship_9engine_2vac_active".
+                        }
+                        else {
+                            set engine2label3:style:bg to "starship_img/starship_9engine_vac_active".
                         }
                     }
                     else {
-                        if NrOfVacEngines = 6 {
-                            set engine2label3:style:bg to "starship_img/starship_9engine_4vac_active".
-                        }
-                        if NrOfVacEngines = 3 {
-                            set engine2label3:style:bg to "starship_img/starship_6engine_vac_active".
-                        }
+                        set engine2label3:style:bg to "starship_img/starship_6engine_vac_active".
                     }
                 }
                 else {
-                    if VACEngines[2]:ignition = true {
-                        if NrOfVacEngines = 6 {
-                            set engine2label3:style:bg to "starship_img/starship_9engine_vac_ready".
+                    if NrOfVacEngines = 6 {
+                        if FourVacBrakingBurn {
+                            set engine2label3:style:bg to "starship_img/starship_9engine_4vac_ready".
                         }
-                        if NrOfVacEngines = 3 {
-                            set engine2label3:style:bg to "starship_img/starship_6engine_vac_ready".
+                        else if TwoVacEngineLanding {
+                            set engine2label3:style:bg to "starship_img/starship_9engine_2vac_ready".
+                        }
+                        else {
+                            set engine2label3:style:bg to "starship_img/starship_9engine_vac_ready".
                         }
                     }
                     else {
-                        if NrOfVacEngines = 6 {
-                            set engine2label3:style:bg to "starship_img/starship_9engine_4vac_ready".
-                        }
-                        if NrOfVacEngines = 3 {
-                            set engine2label3:style:bg to "starship_img/starship_6engine_vac_ready".
-                        }
+                        set engine2label3:style:bg to "starship_img/starship_6engine_vac_ready".
                     }
                 }
                 set engine1label1:style:textcolor to white.
@@ -8826,11 +8834,14 @@ function updateEnginePage {
                 set engine2label4:style:border:h to throttleborder.
                 set engine2label4:style:border:v to throttleborder.
                 set engine2label1:style:overflow:right to -100.
-                if VACEngines[2]:ignition = true {
-                    set engine2label5:text to round(NrOfVacEngines * VACEngines[0]:thrust):tostring + " kN".
+                if FourVacBrakingBurn {
+                    set engine2label5:text to round(throttle * 4 * VACEngines[0]:availablethrust):tostring + " kN".
+                }
+                else if TwoVacEngineLanding {
+                    set engine2label5:text to round(2 * FinalDescentEngines[0]:thrust):tostring + " kN".
                 }
                 else {
-                    set engine2label5:text to round(4 * VACEngines[0]:thrust):tostring + " kN".
+                    set engine2label5:text to round(NrOfVacEngines * VACEngines[0]:thrust):tostring + " kN".
                 }
                 if EngineTogglesHidden {
                     set engine2label4:style:overflow:right to 39 + (100 * (VACEngines[0]:thrust / max(VACEngines[0]:availablethrust, 0.000001))).
@@ -8940,7 +8951,7 @@ function updateOrbit {
                 if ship:status = "LANDED" or ship:status = "PRELAUNCH" {
                     set orbit1label2:style:bg to "starship_img/orbit_page_background_kerbin_landed".
                 }
-                else if ship:status = "SUB_ORBITAL" and verticalspeed > 0 or ship:status = "FLYING" and verticalspeed > 0 {
+                else if ship:status = "SUB_ORBITAL" and verticalspeed > 0 or ship:status = "FLYING" and verticalspeed > 0 or LaunchButtonIsRunning {
                     set orbit1label2:style:bg to "starship_img/orbit_page_background_kerbin_launch".
                 }
                 else if ship:status = "SUB_ORBITAL" and verticalspeed < 0 or ship:status = "FLYING" and verticalspeed < 0 {
@@ -8957,7 +8968,7 @@ function updateOrbit {
                 if ship:status = "LANDED" or ship:status = "PRELAUNCH" {
                     set orbit1label2:style:bg to "starship_img/orbit_page_background_earth_landed".
                 }
-                else if ship:status = "SUB_ORBITAL" and verticalspeed > 0 or ship:status = "FLYING" and verticalspeed > 0 {
+                else if ship:status = "SUB_ORBITAL" and verticalspeed > 0 or ship:status = "FLYING" and verticalspeed > 0 or LaunchButtonIsRunning {
                     set orbit1label2:style:bg to "starship_img/orbit_page_background_earth_launch".
                 }
                 else if ship:status = "SUB_ORBITAL" and verticalspeed < 0 or ship:status = "FLYING" and verticalspeed < 0 {
