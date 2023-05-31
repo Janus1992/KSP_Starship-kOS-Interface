@@ -5506,6 +5506,10 @@ function LandwithoutAtmoSteering {
             if (horDist - horStopDist) / groundspeed < 60 and kuniverse:timewarp:warp > 0 {
                 set kuniverse:timewarp:warp to 0.
             }
+            if vang(facing:forevector, -velocity:surface) > 45 and kuniverse:timewarp:warp > 0 {
+                set kuniverse:timewarp:warp to 0.
+                HUDTEXT("Correcting to Retrograde..", 5, 2, 20, yellow, false).
+            }
         }
         else {
             if (horDist - horStopDist) / groundspeed < 240 and kuniverse:timewarp:warp > 2 {
@@ -5515,9 +5519,14 @@ function LandwithoutAtmoSteering {
             if (horDist - horStopDist) / groundspeed < 85 and kuniverse:timewarp:warp > 0 {
                 set kuniverse:timewarp:warp to 0.
             }
+            if vang(facing:forevector, -velocity:surface) > 45 and kuniverse:timewarp:warp > 0 {
+                set kuniverse:timewarp:warp to 0.
+                HUDTEXT("Correcting to Retrograde..", 5, 2, 20, yellow, false).
+            }
         }
-        if abs(LngLatErrorList[1]) > 100 and kuniverse:timewarp:warp > 0 or ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ) < -1000 {
+        if abs(LngLatErrorList[1]) > 100 and kuniverse:timewarp:warp > 0 or ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ) < -1000 and kuniverse:timewarp:warp > 0 {
             set kuniverse:timewarp:warp to 0.
+            HUDTEXT("Small RCS Corrections in progress..", 1, 2, 20, yellow, false).
         }
     }
 
@@ -7822,7 +7831,7 @@ function CalculateDeOrbitBurn {
     parameter x.
     set config:ipu to 2000.
     set correctedIdealLng to 0.
-    set lngPredict to 180.
+    set lngPredict to 9999.
     if ship:body:atm:exists {
         if RSS {
             if ship:body:atm:sealevelpressure > 0.5 {
@@ -8008,9 +8017,9 @@ function DeOrbitVelocity {
             set TimeToOVHD to x.
             set AltitudeOverLZ to ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)).
 
-            print "OVHD Point: " + ship:body:geopositionof(positionat(ship, time:seconds + TimeToOVHD)):lng.
-            print "Time to overhead: " + round(TimeToOVHD).
-            print "Altitude over LZ: " + round(AltitudeOverLZ) + "   /   " + round(GoalAltOverLZ).
+            //print "OVHD Point: " + ship:body:geopositionof(positionat(ship, time:seconds + TimeToOVHD)):lng.
+            //print "Time to overhead: " + round(TimeToOVHD).
+            //print "Altitude over LZ: " + round(AltitudeOverLZ) + "   /   " + round(GoalAltOverLZ).
 
             //set OVHDpoint to vecdraw(positionat(ship, time:seconds + TimeToOVHD), ship:position - positionat(ship, time:seconds + TimeToOVHD), green, "OVHD Point", 1, true).
 
@@ -8023,7 +8032,7 @@ function DeOrbitVelocity {
             //set tolzvec to vecdraw(positionat(ship, time:seconds + TimeToOVHD), ToLZVector, blue, "toLZ Vector", 1, true).
             wait 0.001.
 
-            print "Lateral Difference: " + ApproachLateralError.
+            //print "Lateral Difference: " + ApproachLateralError.
 
             if abs(AltitudeOverLZ - GoalAltOverLZ) < 100 and abs(ApproachLateralError) < 1 {
                 break.
@@ -8031,6 +8040,12 @@ function DeOrbitVelocity {
             set ProgradeVelocity to ProgradeVelocity - ((ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)) - GoalAltOverLZ) / 10000).
             set NormalVelocity to NormalVelocity + ApproachLateralError / 5000.
             remove burn.
+
+            if abs(ProgradeVelocity) > 1000 or abs(NormalVelocity) > 250 {
+                set ProgradeVelocity to 0.
+                set NormalVelocity to 0.
+                break.
+            }
         }
         remove burn.
         set config:ipu to CPUSPEED.
@@ -10334,7 +10349,7 @@ function PerformBurn {
     parameter Burntime, ProgradeVelocity, NormalVelocity, RadialVelocity, BurnType.
     set config:ipu to CPUSPEED.
     set textbox:style:bg to "starship_img/starship_main_square_bg".
-    print Burntime.
+    //print Burntime.
     if BurnTime:istype("TimeStamp") {
         if BurnType = "Execute" {}
         else {
@@ -10351,7 +10366,7 @@ function PerformBurn {
         }
         set burnstarttime to timestamp(time:seconds + BurnTime).
     }
-    print burnstarttime.
+    //print burnstarttime.
     if burnstarttime - 60 < timestamp(time:seconds) {
         ShowHomePage().
         LogToFile("Stopping De-Orbit Burn due to wrong orientation").
