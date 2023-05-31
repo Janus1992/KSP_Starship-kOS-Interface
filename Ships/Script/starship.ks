@@ -189,7 +189,6 @@ set attroll to 0.
 set attpitch to aoa.
 set acc TO V(0, 0, 0).
 set ApproachVector to v(0,0,0).
-set ApproachTime to 0.
 set SteeringIsRunning to false.
 set BGUisRunning to false.
 set LandButtonIsRunning to false.
@@ -257,6 +256,7 @@ set MaxFuel to 0.
 set TwoVacEngineLanding to false.
 set FourVacBrakingBurn to false.
 set FinalDescentEngines to list().
+set result to v(0, 0, 0).
 
 
 
@@ -326,7 +326,6 @@ function FindParts {
                     set Nose to x.
                     set ShipType to "Crew".
                     set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
-                    set CargoCoG to CargoCoG + 300.
                 }
                 else if x:name:contains("SEP.22.SHIP.TANKER.KOS") {
                     set Nose to x.
@@ -4692,7 +4691,7 @@ set landbutton:ontoggle to {
                             LogToFile("Land Function cancelled due to ship:status").
                             ClearInterfaceAndSteering().
                         }
-                        else if RSS and apoapsis > 500000 or not (RSS) and apoapsis > 350000 or periapsis < ship:body:atm:height or abs(ship:orbit:inclination) + 2.5 < abs(setting1:text:split(",")[0]:toscalar(0)) {
+                        else if RSS and apoapsis > 500000 and ship:body:atm:sealevelpressure > 0.5 or not (RSS) and apoapsis > 250000 and ship:body:atm:sealevelpressure > 0.5 or RSS and apoapsis > 200000 and ship:body:atm:sealevelpressure < 0.5 or not (RSS) and apoapsis > 100000 and ship:body:atm:sealevelpressure < 0.5 or periapsis < ship:body:atm:height or abs(ship:orbit:inclination) + 2.5 < abs(setting1:text:split(",")[0]:toscalar(0)) {
                             ShowHomePage().
                             LogToFile("De-Orbit cancelled due to orbit requirements not fulfilled").
                             set message1:text to "<b>Automatic De-Orbit Requirements:</b>".
@@ -4701,15 +4700,15 @@ set landbutton:ontoggle to {
                                     set message2:text to "<b>Ap/Pe " + round(ship:body:atm:height / 1000) + "-500km   LZ latitude < Inclination</b>".
                                 }
                                 else {
-                                    set message2:text to "<b>Ap/Pe 70-350km   LZ latitude < Inclination</b>".
+                                    set message2:text to "<b>Ap/Pe " + round(ship:body:atm:height / 1000) + "-250km   LZ latitude < Inclination</b>".
                                 }
                             }
                             if ship:body:atm:sealevelpressure < 0.5 {
                                 if RSS {
-                                    set message2:text to "<b>Ap/Pe " + round(ship:body:atm:height / 1000) + "-500km   LZ latitude < Inclination</b>".
+                                    set message2:text to "<b>Ap/Pe " + round(ship:body:atm:height / 1000) + "-200km   LZ latitude < Inclination</b>".
                                 }
                                 else {
-                                    set message2:text to "<b>Ap/Pe 50-350km   LZ latitude < Inclination</b>".
+                                    set message2:text to "<b>Ap/Pe " + round(ship:body:atm:height / 1000) + "-100km   LZ latitude < Inclination</b>".
                                 }
                             }
                             set message3:text to "<b>Modify orbit or perform manual de-orbit..</b>".
@@ -5246,11 +5245,11 @@ function LandwithoutAtmo {
         lock STEERING to LandwithoutAtmoSteering.
 
         when RadarAlt < SafeAltOverLZ / 2 then {
-            //if abs(LngLatErrorList[0]) > 1000 or abs(LngLatErrorList[1]) > 1000 {
-            //    CheckLZReachable().
-            //    set LandingFacingVector to vxcl(up:vector, landingzone:position - ship:position):normalized.
-            //    set NewTargetSet to true.
-            //}
+            if abs(LngLatErrorList[0]) > 1000 or abs(LngLatErrorList[1]) > 1000 and CancelVelocityHasStarted {
+                CheckLZReachable().
+                set LandingFacingVector to vxcl(up:vector, landingzone:position - ship:position):normalized.
+                set NewTargetSet to true.
+            }
             InhibitButtons(1, 1, 1).
             if NrOfVacEngines = 6 {
                 if RSS {
@@ -5378,6 +5377,9 @@ function LandwithoutAtmoSteering {
         set CosAngle to cos(vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface))).
     }
     set horDist to 1000 * DistanceToTarget.
+    if horDist < stopDist + 10000 {
+        set horDist to min(horDist, vdot(vxcl(up:vector, Landingzone:position - ship:position), ApproachVector)).
+    }
     set horStopTime to groundspeed / BurnAccel.
     set horStopDist to (0.5 * BurnAccel * horStopTime * horStopTime) / CosAngle + 100.
     set CancelHorVelRatio to horStopDist / horDist.
@@ -5399,7 +5401,7 @@ function LandwithoutAtmoSteering {
         set SecondsToCancelHorVelocity to (horDist - horStopDist) / groundspeed.
         set x to SecondsToCancelHorVelocity.
         set OVHDlng to -180.
-        until OVHDlng > landingzone:lng + x / (ship:body:rotationperiod / 360) {
+        until OVHDlng > landingzone:lng + x / ship:body:rotationperiod * 360 {
             set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
             set x to x + 1.
         }
@@ -5411,10 +5413,12 @@ function LandwithoutAtmoSteering {
     print "stop time: " + stopTime.
     print "stop dist: " + stopDist.
     print "landing ratio: " + landingRatio.
+    print " ".
     print "horizontal distance: " + horDist.
+    print "horizontal stop distance: " + horStopDist.
     print "groundspeed: " + groundspeed.
     print "horizontal stop time: " + horStopTime.
-    print "horizontal stop distance: " + horStopDist.
+    print " ".
     print "cancel ratio: " + CancelHorVelRatio.
     print "Radar Alt: " + RadarAlt.
     print "Time to Overhead: " + TimeToOVHD.
@@ -5424,8 +5428,11 @@ function LandwithoutAtmoSteering {
     print "Cos Angle result: " + cos(vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface))).
 
     if not CancelVelocityHasStarted and RadarAlt > SafeAltOverLZ + 1000 {
-        if vang(facing:topvector, -up:vector) < 10 {
+        if vang(facing:topvector, -up:vector) < 45 and vang(result, facing:forevector) < 10 {
             set ship:control:translation to v(LngLatErrorList[1] / 250, (ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ)) / 2500, 0).
+        }
+        else {
+            set ship:control:translation to v(0, 0, 0).
         }
     }
     else if CancelVelocityHasStarted {
@@ -5499,9 +5506,6 @@ function LandwithoutAtmoSteering {
             if (horDist - horStopDist) / groundspeed < 60 and kuniverse:timewarp:warp > 0 {
                 set kuniverse:timewarp:warp to 0.
             }
-            if vang(facing:forevector, -velocity:surface) > 60 and kuniverse:timewarp:warp > 0 {
-                set kuniverse:timewarp:warp to 0.
-            }
         }
         else {
             if (horDist - horStopDist) / groundspeed < 240 and kuniverse:timewarp:warp > 2 {
@@ -5511,9 +5515,9 @@ function LandwithoutAtmoSteering {
             if (horDist - horStopDist) / groundspeed < 85 and kuniverse:timewarp:warp > 0 {
                 set kuniverse:timewarp:warp to 0.
             }
-            if vang(facing:forevector, -velocity:surface) > 60 and kuniverse:timewarp:warp > 0 {
-                set kuniverse:timewarp:warp to 0.
-            }
+        }
+        if abs(LngLatErrorList[1]) > 100 and kuniverse:timewarp:warp > 0 or ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ) < -1000 {
+            set kuniverse:timewarp:warp to 0.
         }
     }
 
@@ -7627,16 +7631,11 @@ function LngLatError {
                 }
             }
             else {
-                if ApproachVector = v(0,0,0) and not (ApproachTime = 0) or (time:seconds < ApproachTime) and not (ApproachTime = 0) {
-                    set ApproachUPVector to (landingzone:position - body:position):normalized.
-                    set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, ApproachTime):surface):normalized.
-                }
-                else if not (CancelVelocityHasStarted) {
-                    set ApproachUPVector to (landingzone:position - body:position):normalized.
+                set ApproachUPVector to (landingzone:position - body:position):normalized.
+                if ApproachVector = v(0,0,0) or not (CancelVelocityHasStarted) {
                     set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, time:seconds + addons:tr:TIMETILLIMPACT - 120):surface):normalized.
                 }
                 else if not (LandingFacingVector = v(0, 0, 0)) {
-                    set ApproachUPVector to (landingzone:position - body:position):normalized.
                     set ApproachVector to LandingFacingVector.
                 }
             }
@@ -7648,6 +7647,7 @@ function LngLatError {
             //clearvecdraws().
 
             //set ApproachVectorDraw to vecdraw(v(0, 0, 0), ApproachVector, green, "Approach Vector", 20, true, 0.005, true, true).
+            //set ApproachSideVectorDraw to vecdraw(v(0, 0, 0), AngleAxis(-90, ApproachUPVector) * ApproachVector, cyan, "Approach Side Vector", 20, true, 0.005, true, true).
             //set SFCVectorDraw to vecdraw(v(0, 0, 0), 5*velocity:surface:normalized, white, "Velocity Vector", 20, true, 0.005, true, true).
             //set ApproachUPVectorDraw to vecdraw(v(0, 0, 0), 5*ApproachUPVector, Blue, "Approach UP Vector", 20, true, 0.005, true, true).
             //set ApproachRAWVectorDraw to vecdraw(v(0, 0, 0), velocityat(ship, time:seconds + addons:tr:TIMETILLIMPACT - 120):surface, Magenta, "Approach Raw Vector", 20, true, 0.005, true, true).
@@ -7658,7 +7658,7 @@ function LngLatError {
 
 
             set lngresult to vdot(ApproachVector, ErrorVector).
-            if vang(ApproachVector, velocity:surface) < 90 {
+            if vang(ApproachVector, velocity:surface) < 90 or (landingzone:position - ship:position):mag < 25000 {
                 set latresult to vdot(AngleAxis(-90, ApproachUPVector) * ApproachVector, ErrorVector).
             }
             else {
@@ -7687,6 +7687,9 @@ function LngLatError {
                     else {
                         set LngLatOffset to ((48.8 / ship:mass) * 105) - 50 + (max(CargoCoG - 150, 0) / 100) * 10.
                     }
+                }
+                if ShipType = "Crew" {
+                    set LngLatOffset to LngLatOffset + 15.
                 }
             }
             else if ship:body:atm:sealevelpressure < 0.5 and ship:body:atm:exists {
@@ -7834,10 +7837,10 @@ function CalculateDeOrbitBurn {
         }
     }
     else if ship:body:radius > 199999 {
-        set DegreestoLDGzone to 90.
+        set DegreestoLDGzone to 60.
     }
     else {
-        set DegreestoLDGzone to 60.
+        set DegreestoLDGzone to 45.
     }
     if abs(ship:orbit:inclination) > 90 {
         set DegreestoLDGzone to -DegreestoLDGzone.
@@ -7973,49 +7976,56 @@ function DeOrbitVelocity {
         set GoalAltOverLZ to landingzone:terrainheight + SafeAltOverLZ.
         set x to (deorbitburnstarttime + 0.24 * ship:orbit:period):seconds - time:seconds.
         set OVHDlng to -180.
-        until OVHDlng > landingzone:lng + x / (ship:body:rotationperiod / 360) {
+        until OVHDlng > landingzone:lng {
             set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
             set x to x + 1.
         }
         set TimeToOVHD to x.
-        set ApproachTime to timestamp(time:seconds + x).
 
         set ApproachUPVector to (landingzone:position - body:position):normalized.
-        set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, ApproachTime):surface):normalized.
+        set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, timestamp(time:seconds + x)):surface):normalized.
         until false {
             SendPing().
             set burn to node(deorbitburnstarttime, 0, NormalVelocity, ProgradeVelocity).
             add burn.
 
-            set x to x - 5.
+            if addons:tr:hasimpact {
+                if RSS {
+                    set x to min(x - 5, addons:tr:TIMETILLIMPACT - 60).
+                }
+                else {
+                    set x to min(x - 5, addons:tr:TIMETILLIMPACT - 20).
+                }
+            }
+            else {
+                set x to x - 5.
+            }
             set OVHDlng to -180.
-            until OVHDlng > landingzone:lng + x / (ship:body:rotationperiod / 360) {
+            until OVHDlng > landingzone:lng + x / ship:body:rotationperiod * 360 {
                 set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
                 set x to x + 1.
             }
             set TimeToOVHD to x.
-            set ApproachTime to timestamp(time:seconds + x).
             set AltitudeOverLZ to ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)).
 
-            //print "OVHD Point: " + ship:body:geopositionof(positionat(ship, time:seconds + TimeToOVHD)):lng.
-            //print "Time to overhead: " + round(TimeToOVHD).
-            //print "Altitude over LZ: " + round(AltitudeOverLZ) + "   /   " + round(GoalAltOverLZ).
+            print "OVHD Point: " + ship:body:geopositionof(positionat(ship, time:seconds + TimeToOVHD)):lng.
+            print "Time to overhead: " + round(TimeToOVHD).
+            print "Altitude over LZ: " + round(AltitudeOverLZ) + "   /   " + round(GoalAltOverLZ).
 
             //set OVHDpoint to vecdraw(positionat(ship, time:seconds + TimeToOVHD), ship:position - positionat(ship, time:seconds + TimeToOVHD), green, "OVHD Point", 1, true).
 
-            set ApproachUPVector to (landingzone:position - body:position):normalized.
-            set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, ApproachTime):surface):normalized.
-            set LZatNewTime to latlng(landingzone:lat, landingzone:lng + (((deorbitburnstarttime:seconds - time:seconds + 0.2 *  ship:orbit:period) / ship:body:rotationperiod) * 360)).
+            set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, timestamp(time:seconds + x)):surface):normalized.
+            set LZatNewTime to latlng(landingzone:lat, landingzone:lng + TimeToOVHD / body:rotationperiod * 360).
             set ToLZVector to (LZatNewTime:position - positionat(ship, time:seconds + TimeToOVHD)).
             set ApproachLateralError to vdot(AngleAxis(-90, ApproachUPVector) * ApproachVector, ToLZVector).
+
             //set apprvec to vecdraw(ship:position, 25 * ApproachVector, green, "Approach Vector", 1, true).
             //set tolzvec to vecdraw(positionat(ship, time:seconds + TimeToOVHD), ToLZVector, blue, "toLZ Vector", 1, true).
             wait 0.001.
-            //set message2:text to "<b>bla: </b>".
 
-            //print "Lateral Difference: " + ApproachLateralError.
+            print "Lateral Difference: " + ApproachLateralError.
 
-            if AltitudeOverLZ < GoalAltOverLZ + 25 and AltitudeOverLZ > GoalAltOverLZ - 25 and abs(ApproachLateralError) < 5 {
+            if abs(AltitudeOverLZ - GoalAltOverLZ) < 100 and abs(ApproachLateralError) < 1 {
                 break.
             }
             set ProgradeVelocity to ProgradeVelocity - ((ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)) - GoalAltOverLZ) / 10000).
@@ -10508,7 +10518,7 @@ function PerformBurn {
                 if quicksetting1:pressed and kuniverse:timewarp:warp = 6 and nextnode:eta - 0.5 * BurnDuration < 5400 or nextnode:eta - 0.5 * BurnDuration < 5400 and kuniverse:timewarp:warp = 6 {
                     set kuniverse:timewarp:warp to 5.
                 }
-                if nextnode:eta - 0.5 * BurnDuration < 75 {
+                if nextnode:eta - 0.5 * BurnDuration < 90 {
                     if kuniverse:timewarp:warp > 0 {
                         set kuniverse:timewarp:warp to 0.
                     }

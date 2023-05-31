@@ -1,3 +1,7 @@
+# V2.0.20 (2023-05-31)
+- Fixed an issue with stock crew kerbin de-orbit (too high CoG reported).
+- Fixed a number of Moon Landing problems.
+
 # V2.0.19 (2023-05-30)
 - Change in orbit-completion sequence to reduce crashes and enable booster recovery in KSRSS/RSS.
 - Fix for 6RVAC Moon Landing: shut down 2 more engines for landing.
