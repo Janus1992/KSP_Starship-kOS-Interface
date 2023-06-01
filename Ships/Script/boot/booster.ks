@@ -65,7 +65,7 @@ if bodyexists("Earth") {
 else {
     if body("Kerbin"):radius > 1000000 {
         set KSRSS to true.
-        set Planet to "Earth".
+        set Planet to "Kerbin".
         set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
         set BoosterHeight to 71.04396.
         if BoosterCore[0]:hasmodule("FARPartModule") {
