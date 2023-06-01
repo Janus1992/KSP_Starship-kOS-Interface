@@ -63,14 +63,31 @@ if bodyexists("Earth") {
 
 }
 else {
-    set STOCK to true.
-    set Planet to "Kerbin".
-    set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
-    set BoosterHeight to 44.2.
-    set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -30, 30).
-    set LatCtrlPID to PIDLOOP(0.05, 0.0005, 0.0005, -2, 2).
-    set LFBoosterFuelCutOff to 1500.
-    set LandHeadingVector to heading(270,0):vector.
+    if body("Kerbin"):radius > 1000000 {
+        set KSRSS to true.
+        set Planet to "Earth".
+        set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
+        set BoosterHeight to 71.04396.
+        if BoosterCore[0]:hasmodule("FARPartModule") {
+            set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+        }
+        else {
+            set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+        }
+        set LatCtrlPID to PIDLOOP(0.04, 0.0025, 0.0025, -2, 2).
+        set LFBoosterFuelCutOff to 1500.
+        set LandHeadingVector to heading(242,0):vector.
+    }
+    else {
+        set STOCK to true.
+        set Planet to "Kerbin".
+        set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
+        set BoosterHeight to 44.2.
+        set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -30, 30).
+        set LatCtrlPID to PIDLOOP(0.05, 0.0005, 0.0005, -2, 2).
+        set LFBoosterFuelCutOff to 1500.
+        set LandHeadingVector to heading(270,0):vector.
+    }
 }
 
 if exists("0:/BoosterFlightData.csv") {

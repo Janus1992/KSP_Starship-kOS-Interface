@@ -23,7 +23,12 @@ if bodyexists("Earth") {
     }
 }
 else {
-    set STOCK to true.
+    if body("Kerbin"):radius > 1000000 {
+        set KSRSS to true.
+    }
+    else {
+        set STOCK to true.
+    }
 }
 
 
@@ -92,8 +97,11 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set FuelVentCutOffValue to 1200.
     set FuelBalanceSpeed to 100.
     set LandRollVector to heading(270,0):vector.
-    set SafeAltOverLZ to 7500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
+    set SafeAltOverLZ to 10000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
     set targetap to 250000.
+    set RCSThrust to 100.
+    set RCSBurnTimeLimit to 240.
+    set VentRate to 88.67.
 }
 else if KSRSS {
     set aoa to 60.
@@ -111,8 +119,11 @@ else if KSRSS {
     set FuelVentCutOffValue to 550.
     set FuelBalanceSpeed to 40.
     set LandRollVector to heading(242,0):vector.
-    set SafeAltOverLZ to 3000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
+    set SafeAltOverLZ to 3500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
     set targetap to 125000.
+    set RCSThrust to 70.
+    set RCSBurnTimeLimit to 180.
+    set VentRate to 17.73.
 }
 else {  // Set of variables when Real Solar System has NOT been installed
     set aoa to 60.
@@ -130,8 +141,11 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set FuelVentCutOffValue to 450.
     set FuelBalanceSpeed to 40.
     set LandRollVector to heading(270,0):vector.
-    set SafeAltOverLZ to 1500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
+    set SafeAltOverLZ to 2500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
     set targetap to 75000.
+    set RCSThrust to 40.
+    set RCSBurnTimeLimit to 120.
+    set VentRate to 17.73.
 }
 set SNStart to 30.  // Defines the first Serial Number when multiple ships are found and renaming is necessary.
 set MaxTilt to 2.5.  // Defines maximum allowed slope for the Landing Zone Search Function
@@ -157,7 +171,6 @@ set MechaZillaExists to false.
 set currentdeltav to 0.
 set ShipMass to 0.
 set FuelMass to 1.
-set VentRate to 17.73.
 set TargetShip to false.
 set FindNewTarget to false.
 set executeconfirmed to 0.
@@ -4943,6 +4956,105 @@ set landbutton:ontoggle to {
             else if not (ship:body:atm:exists) {
                 ShowHomePage().
                 SetPlanetData().
+                if RSS {
+                    set MinFuel to 0.
+                    set MaxFuel to 900000.
+                    if LFShip * 4.6 * 5 > 600000 {
+                        set SafeAltOverLZ to 10000 + (LFShip * 4.6 * 5 - 600000) / 1000 * 20.
+                    }
+                }
+                else if KSRSS {
+                    set MinFuel to 0.
+                    set MaxFuel to 600000.
+                }
+                else {
+                    set MinFuel to 0.
+                    set MaxFuel to 600000.
+                }
+                print "Min Fuel for safe landing: " + round(MinFuel).
+                print "Max Fuel for safe landing: " + round(MaxFuel).
+                print "Fuel on board: " + round(LFShip * 4.6 * 5).
+                if LFShip * 4.6 * 5 < MinFuel {
+                    LogToFile("Automatic De-Orbit burn not possible, not enough fuel for a safe landing..").
+                    set message1:text to "<b>Error: Not enough Fuel on Board..</b>".
+                    set message1:style:textcolor to yellow.
+                    set message2:text to "<b>Min. Fuel: </b>" + round(MinFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * 4.6 * 5) / 1000, 1) + "t)".
+                    set message2:style:textcolor to yellow.
+                    set message3:text to "".
+                    set textbox:style:bg to "starship_img/starship_main_square_bg".
+                    wait 3.
+                    ClearInterfaceAndSteering().
+                    return.
+                }
+
+                if LFShip * 4.6 * 5 > MaxFuel {
+                    ShowHomePage().
+                    set drainBegin to LFShip.
+                    set landlabel:style:textcolor to white.
+                    set message1:text to "<b>Required Fuel Venting:</b>  " + timeSpanCalculator((LFShip - MaxFuel / 4.6 / 5) / VentRate).
+                    set message2:text to "<b>Max. Fuel Mass: </b>" + round(MaxFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * 4.6 * 5) / 1000, 1) + "t)".
+                    if quicksetting1:pressed {
+                        set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
+                    }
+                    else {
+                        set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
+                    }
+                    set message3:style:textcolor to cyan.
+                    InhibitButtons(0, 0, 0).
+                    if confirm() {
+                        if KUniverse:activevessel = vessel(ship:name) {}
+                        else {
+                            set KUniverse:activevessel to vessel(ship:name).
+                        }
+                        LogToFile("Start Venting").
+                        set landlabel:style:textcolor to green.
+                        InhibitButtons(0, 1, 0).
+                        sas on.
+                        set runningprogram to "Venting Fuel..".
+                        HideEngineToggles(1).
+                        Nose:activate.
+                        Tank:activate.
+                        lock throttle to 0.
+                        set message1:text to "<b>Fuel Vent Progress:</b>".
+                        set message2:text to "".
+                        set message3:text to "".
+                        set message3:style:textcolor to white.
+                        until cancelconfirmed or LFShip * 4.6 * 5 < MaxFuel or runningprogram = "Input" {
+                            if not cancelconfirmed {
+                                if KUniverse:activevessel = vessel(ship:name) {}
+                                else {
+                                    ShutDownAllEngines().
+                                    LogToFile("Stop Venting").
+                                    ClearInterfaceAndSteering().
+                                    return.
+                                }
+                                set message2:text to round((((drainBegin - MaxFuel / 4.6 / 5) - (LFShip - MaxFuel / 4.6 / 5)) / (LFcap - (LFcap - drainBegin) - MaxFuel / 4.6 / 5)) * 100, 1):tostring + "% Complete".
+                                set message3:text to "<b>Time Remaining:</b> " + timeSpanCalculator((LFShip - MaxFuel / 4.6 / 5) / VentRate).
+                                BackGroundUpdate().
+                            }
+                        }
+                        ShutDownAllEngines().
+                        if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
+                        LogToFile("Stop Venting").
+                        HideEngineToggles(0).
+                        set message1:text to "".
+                        set message2:text to "".
+                        set message3:text to "".
+                        if cancelconfirmed {
+                            ShutDownAllEngines().
+                            HideEngineToggles(0).
+                            LogToFile("Venting stopped by user").
+                            set runningprogram to "None".
+                            ClearInterfaceAndSteering().
+                        }
+                    }
+                    else {
+                        ShutDownAllEngines().
+                        HideEngineToggles(0).
+                        LogToFile("Venting cancelled by user").
+                        ClearInterfaceAndSteering().
+                    }
+                }
                 if cargo1text:text = "Open" {
                     ShowHomePage().
                     LogToFile("De-Orbit cancelled due to orbit requirements not fulfilled").
@@ -4955,7 +5067,7 @@ set landbutton:ontoggle to {
                     wait 3.
                     ClearInterfaceAndSteering().
                 }
-                else {
+                else if LFShip * 4.6 * 5 < MaxFuel {
                     set landlabel:style:textcolor to green.
                     set launchlabel:style:textcolor to grey.
                     set launchlabel:style:bg to "starship_img/starship_background".
@@ -4976,8 +5088,14 @@ set landbutton:ontoggle to {
                             return.
                         }
                         set LngLatErrorList to LngLatError().
-                        set LongitudinalAcceptanceLimit to 50000.
-                        set LatitudinalAcceptanceLimit to 50000.
+                        if RSS {
+                            set LongitudinalAcceptanceLimit to 350000.
+                            set LatitudinalAcceptanceLimit to 10000.
+                        }
+                        else {
+                            set LongitudinalAcceptanceLimit to 100000.
+                            set LatitudinalAcceptanceLimit to 5000.
+                        }
                         if abs(LngLatErrorList[0]) > LongitudinalAcceptanceLimit or abs(LngLatErrorList[1]) > LatitudinalAcceptanceLimit {
                             ShowHomePage().
                             set message1:text to "<b>Landingzone out of Range..   Slope:  </b>" + round(AvailableLandingSpots[3], 1) + "°".
@@ -5245,12 +5363,12 @@ function LandwithoutAtmo {
         lock STEERING to LandwithoutAtmoSteering.
 
         when RadarAlt < SafeAltOverLZ / 2 then {
-            if abs(LngLatErrorList[0]) > 1000 or abs(LngLatErrorList[1]) > 1000 and CancelVelocityHasStarted {
-                CheckLZReachable().
-                set LandingFacingVector to vxcl(up:vector, landingzone:position - ship:position):normalized.
-                set NewTargetSet to true.
-            }
-            InhibitButtons(1, 1, 1).
+            //if abs(LngLatErrorList[1]) > 1000 and CancelVelocityHasStarted {
+            //    CheckLZReachable().
+            //    set LandingFacingVector to vxcl(up:vector, landingzone:position - ship:position):normalized.
+            //    set NewTargetSet to true.
+            //}
+            //InhibitButtons(1, 1, 1).
             if NrOfVacEngines = 6 {
                 if RSS {
                     if ship:mass < 750 {
@@ -5277,7 +5395,7 @@ function LandwithoutAtmo {
             }
         }
 
-        when verticalspeed > -10 and CancelVelocityHasStarted then {
+        when verticalspeed > -10 and LandingBurnStarted then {
             GEAR on.
         }
 
@@ -5400,34 +5518,42 @@ function LandwithoutAtmoSteering {
     if not (CancelVelocityHasStarted) {
         set SecondsToCancelHorVelocity to (horDist - horStopDist) / groundspeed.
         set x to SecondsToCancelHorVelocity.
-        set OVHDlng to -180.
-        until OVHDlng > landingzone:lng + x / ship:body:rotationperiod * 360 {
-            set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
-            set x to x + 1.
-        }
-        set TimeToOVHD to x.
-        set ApproachAltitude to ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)).
     }
+    else {
+        set x to 0.
+    }
+    set OVHDlng to -9999.
+    until OVHDlng > landingzone:lng + x / ship:body:rotationperiod * 360 {
+        set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
+        set x to x + 1.
+    }
+    set TimeToOVHD to x.
+    set ApproachAltitude to ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)).
 
     clearscreen.
-    print "stop time: " + stopTime.
-    print "stop dist: " + stopDist.
-    print "landing ratio: " + landingRatio.
-    print " ".
-    print "horizontal distance: " + horDist.
-    print "horizontal stop distance: " + horStopDist.
-    print "groundspeed: " + groundspeed.
-    print "horizontal stop time: " + horStopTime.
-    print " ".
-    print "cancel ratio: " + CancelHorVelRatio.
-    print "Radar Alt: " + RadarAlt.
-    print "Time to Overhead: " + TimeToOVHD.
-    print "Approach Altitude: " + round(ApproachAltitude).
-    print "LZ alt: " + round(landingzone:terrainheight).
-    print "Angle: " + vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface)).
-    print "Cos Angle result: " + cos(vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface))).
+    if RadarAlt < 5000 {
+        print "Radar Alt:      " + round(RadarAlt) + "m".
+        print "stop time:      " + round(stopTime) + "s".
+        print "stop dist:      " + round(stopDist) + "m".
+        print "landing ratio:  " + round(landingRatio, 2).
+    }
+    else {
+        print "hor. distance:  " + round(horDist) + "m".
+        print "hor. stop dist: " + round(horStopDist) + "m".
+        print "groundspeed:    " + round(groundspeed) + "m/s".
+        print "hor. stop time: " + round(horStopTime) + "s".
+        print "cancel ratio:   " + round(CancelHorVelRatio, 2).
+        print "T to cancel V:  " + round(SecondsToCancelHorVelocity) + "s".
+        print " ".
+        print "Time to OVHD:   " + round(TimeToOVHD) + "s".
+        print "Radar Alt:      " + round(RadarAlt) + "m".
+        print "LZ Altitude:    " + round(ApproachAltitude) + "m".
+        print "Goal Alt:       " + round(landingzone:terrainheight + SafeAltOverLZ) + "m".
+    }
+    //print "Angle: " + vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface)).
+    //print "Cos Angle result: " + cos(vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface))).
 
-    if not CancelVelocityHasStarted and RadarAlt > SafeAltOverLZ + 1000 {
+    if not CancelVelocityHasStarted and RadarAlt > SafeAltOverLZ + 1000 and SecondsToCancelHorVelocity < 300 {
         if vang(facing:topvector, -up:vector) < 45 and vang(result, facing:forevector) < 10 {
             set ship:control:translation to v(LngLatErrorList[1] / 250, (ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ)) / 2500, 0).
         }
@@ -5489,8 +5615,11 @@ function LandwithoutAtmoSteering {
         if abs(LngLatErrorList[0]) < 100 and abs(LngLatErrorList[1]) < 100 and RadarAlt < 5000 {
             set message3:text to "<b>Track/X-Trk Error:</b>             " + round(LngLatErrorList[0]) + "m  " + round(LngLatErrorList[1]) + "m".
         }
+        else if abs(ApproachAltitude - landingzone:terrainheight + SafeAltOverLZ) > 1000 {
+            set message3:text to "<b>R Alt. @LZ/X-Trk Error:</b>   <color=yellow>" + round((ApproachAltitude - landingzone:terrainheight) / 1000, 1) + "km</color>  " + round((LngLatErrorList[1] / 1000), 2) + "km".
+        }
         else {
-            set message3:text to "<b>Track/X-Trk Error:</b>             " + round(LngLatErrorList[0] / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km".
+            set message3:text to "<b>R Alt. @LZ/X-Trk Error:</b>   " + round((ApproachAltitude - landingzone:terrainheight) / 1000, 1) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km".
         }
     }
     else {
@@ -5499,16 +5628,17 @@ function LandwithoutAtmoSteering {
 
     if not (CancelVelocityHasStarted) {
         if STOCK {
-            if (horDist - horStopDist) / groundspeed < 120 and kuniverse:timewarp:warp > 3 {
-                set kuniverse:timewarp:warp to 3.
+            if (horDist - horStopDist) / groundspeed < 120 and kuniverse:timewarp:warp > 2 {
+                set kuniverse:timewarp:warp to 2.
             }
 
             if (horDist - horStopDist) / groundspeed < 60 and kuniverse:timewarp:warp > 0 {
                 set kuniverse:timewarp:warp to 0.
+                rcs on.
             }
             if vang(facing:forevector, -velocity:surface) > 45 and kuniverse:timewarp:warp > 0 {
                 set kuniverse:timewarp:warp to 0.
-                HUDTEXT("Correcting to Retrograde..", 5, 2, 20, yellow, false).
+                HUDTEXT("Correcting to Retrograde..", 15, 2, 20, yellow, false).
             }
         }
         else {
@@ -5516,15 +5646,20 @@ function LandwithoutAtmoSteering {
                 set kuniverse:timewarp:warp to 2.
             }
 
-            if (horDist - horStopDist) / groundspeed < 85 and kuniverse:timewarp:warp > 0 {
+            if (horDist - horStopDist) / groundspeed < 180 and kuniverse:timewarp:warp > 1 {
+                set kuniverse:timewarp:warp to 1.
+            }
+
+            if (horDist - horStopDist) / groundspeed < 90 and kuniverse:timewarp:warp > 0 {
                 set kuniverse:timewarp:warp to 0.
+                rcs on.
             }
             if vang(facing:forevector, -velocity:surface) > 45 and kuniverse:timewarp:warp > 0 {
                 set kuniverse:timewarp:warp to 0.
                 HUDTEXT("Correcting to Retrograde..", 5, 2, 20, yellow, false).
             }
         }
-        if abs(LngLatErrorList[1]) > 100 and kuniverse:timewarp:warp > 0 or ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ) < -1000 and kuniverse:timewarp:warp > 0 {
+        if abs(LngLatErrorList[1]) > 100 and kuniverse:timewarp:warp > 0 and SecondsToCancelHorVelocity < 300 or abs(ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ)) > 1000 and kuniverse:timewarp:warp > 0 and SecondsToCancelHorVelocity < 300 {
             set kuniverse:timewarp:warp to 0.
             HUDTEXT("Small RCS Corrections in progress..", 1, 2, 20, yellow, false).
         }
@@ -7984,7 +8119,7 @@ function DeOrbitVelocity {
     else {
         set GoalAltOverLZ to landingzone:terrainheight + SafeAltOverLZ.
         set x to (deorbitburnstarttime + 0.24 * ship:orbit:period):seconds - time:seconds.
-        set OVHDlng to -180.
+        set OVHDlng to -9999.
         until OVHDlng > landingzone:lng {
             set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
             set x to x + 1.
@@ -8009,7 +8144,7 @@ function DeOrbitVelocity {
             else {
                 set x to x - 5.
             }
-            set OVHDlng to -180.
+            set OVHDlng to -9999.
             until OVHDlng > landingzone:lng + x / ship:body:rotationperiod * 360 {
                 set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
                 set x to x + 1.
@@ -10349,7 +10484,6 @@ function PerformBurn {
     parameter Burntime, ProgradeVelocity, NormalVelocity, RadialVelocity, BurnType.
     set config:ipu to CPUSPEED.
     set textbox:style:bg to "starship_img/starship_main_square_bg".
-    //print Burntime.
     if BurnTime:istype("TimeStamp") {
         if BurnType = "Execute" {}
         else {
@@ -10366,7 +10500,6 @@ function PerformBurn {
         }
         set burnstarttime to timestamp(time:seconds + BurnTime).
     }
-    //print burnstarttime.
     if burnstarttime - 60 < timestamp(time:seconds) {
         ShowHomePage().
         LogToFile("Stopping De-Orbit Burn due to wrong orientation").
@@ -10380,16 +10513,8 @@ function PerformBurn {
         return.
     }
     lock deltaV to nextnode:deltav:mag.
-    if deltaV < rcsRaptorBoundary {
-        if RSS {
-            lock MaxAccel to 100/ship:mass.
-        }
-        else if KSRSS {
-            lock MaxAccel to 70/ship:mass.
-        }
-        else {
-            lock MaxAccel to 40/ship:mass.
-        }
+    if deltaV < rcsRaptorBoundary and deltaV / (RCSThrust / ship:mass) < RCSBurnTimeLimit {
+        lock MaxAccel to RCSThrust / ship:mass.
         set UseRCSforBurn to true.
     }
     else {
@@ -10512,11 +10637,14 @@ function PerformBurn {
             BackGroundUpdate().
 
             if RSS {
-                if quicksetting1:pressed and kuniverse:timewarp:warp = 3 and nextnode:eta - 0.5 * BurnDuration < 1800 or nextnode:eta - 0.5 * BurnDuration < 1800 and kuniverse:timewarp:warp = 3 {
+                if nextnode:eta - 0.5 * BurnDuration < 10800 and kuniverse:timewarp:warp > 3 {
+                    set kuniverse:timewarp:warp to 3.
+                }
+                if nextnode:eta - 0.5 * BurnDuration < 1800 and kuniverse:timewarp:warp > 2 {
                     set kuniverse:timewarp:warp to 2.
                 }
-                if quicksetting1:pressed and kuniverse:timewarp:warp > 3 and nextnode:eta - 0.5 * BurnDuration < 10800 or nextnode:eta - 0.5 * BurnDuration < 10800 and kuniverse:timewarp:warp > 3 {
-                    set kuniverse:timewarp:warp to 3.
+                if nextnode:eta - 0.5 * BurnDuration < 180 and kuniverse:timewarp:warp > 1 {
+                    set kuniverse:timewarp:warp to 1.
                 }
                 if nextnode:eta - 0.5 * BurnDuration < 100 {
                     if kuniverse:timewarp:warp > 0 {
@@ -10527,11 +10655,14 @@ function PerformBurn {
                 else {rcs off.}
             }
             else {
-                if quicksetting1:pressed and kuniverse:timewarp:warp = 5 and nextnode:eta - 0.5 * BurnDuration < 900 or nextnode:eta - 0.5 * BurnDuration < 900 and kuniverse:timewarp:warp = 5 {
+                if nextnode:eta - 0.5 * BurnDuration < 900 and kuniverse:timewarp:warp = 5 {
                     set kuniverse:timewarp:warp to 4.
                 }
-                if quicksetting1:pressed and kuniverse:timewarp:warp = 6 and nextnode:eta - 0.5 * BurnDuration < 5400 or nextnode:eta - 0.5 * BurnDuration < 5400 and kuniverse:timewarp:warp = 6 {
+                if nextnode:eta - 0.5 * BurnDuration < 5400 and kuniverse:timewarp:warp = 6 {
                     set kuniverse:timewarp:warp to 5.
+                }
+                if nextnode:eta - 0.5 * BurnDuration < 150 and kuniverse:timewarp:warp > 1 {
+                    set kuniverse:timewarp:warp to 1.
                 }
                 if nextnode:eta - 0.5 * BurnDuration < 90 {
                     if kuniverse:timewarp:warp > 0 {

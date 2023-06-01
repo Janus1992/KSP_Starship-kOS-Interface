@@ -1,3 +1,8 @@
+# V2.0.21 (2023-06-01)
+- Fixed an issue where KSRSS was not recognized correctly.
+- Fixed a small number of moon landing problems.
+- Introducing fuel venting for moon landings.
+
 # V2.0.20 (2023-05-31)
 - Fixed an issue with stock crew kerbin de-orbit (too high CoG reported).
 - Fixed a number of Moon Landing problems.

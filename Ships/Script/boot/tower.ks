@@ -13,8 +13,14 @@ if bodyexists("Earth") {
     }
 }
 else {
-    set STOCK to true.
-    set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
+    if body("Kerbin"):radius > 1000000 {
+        set KSRSS to true.
+        set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
+    }
+    else {
+        set STOCK to true.
+        set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
+    }
 }
 
 
