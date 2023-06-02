@@ -4770,15 +4770,15 @@ set landbutton:ontoggle to {
                             if ship:body:atm:sealevelpressure < 0.5 {
                                 if RSS {
                                     set MinFuel to 75000 + (CargoMass / 150000 * 110000).
-                                    set MaxFuel to CargoMass + 75000.
+                                    set MaxFuel to MinFuel + CargoMass + 75000.
                                 }
                                 else if KSRSS {
                                     set MinFuel to max(10000 + (CargoMass / 100000 * 40000), CargoMass - 25000).
-                                    set MaxFuel to CargoMass + 25000.
+                                    set MaxFuel to MinFuel + CargoMass + 25000.
                                 }
                                 else {
                                     set MinFuel to max(10000 + (CargoMass / 75000 * 15000), CargoMass - 25000).
-                                    set MaxFuel to CargoMass + 25000.
+                                    set MaxFuel to MinFuel + CargoMass + 25000.
                                 }
                                 print "Min Fuel for safe re-entry: " + round(MinFuel).
                                 print "Max Fuel for safe re-entry: " + round(MaxFuel).
