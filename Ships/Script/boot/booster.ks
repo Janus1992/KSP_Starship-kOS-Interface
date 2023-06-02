@@ -238,7 +238,7 @@ function Boostback {
             set BoosterGlideDistance to 8000.
         }
         else {
-            set BoosterGlideDistance to 9000.
+            set BoosterGlideDistance to 8000.
         }
         lock throttle to min(-(LngError + 6500) / 20000 + 0.01, 7.5 * 9.81 / (ship:availablethrust / ship:mass)).
         lock SteeringVector to lookdirup(vxcl(up:vector, -ErrorVector), -up:vector).
@@ -249,7 +249,7 @@ function Boostback {
             set BoosterGlideDistance to 6500.
         }
         else {
-            set BoosterGlideDistance to 7500.
+            set BoosterGlideDistance to 6500.
         }
         lock throttle to min(-(LngError + 5000) / 10000 + 0.01, 7.5 * 9.81 / (ship:availablethrust / ship:mass)).
         lock SteeringVector to lookdirup(vxcl(up:vector, -ErrorVector), -up:vector).
