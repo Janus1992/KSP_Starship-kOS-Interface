@@ -4704,7 +4704,7 @@ set landbutton:ontoggle to {
                             LogToFile("Land Function cancelled due to ship:status").
                             ClearInterfaceAndSteering().
                         }
-                        else if RSS and apoapsis > 500000 and ship:body:atm:sealevelpressure > 0.5 or not (RSS) and apoapsis > 250000 and ship:body:atm:sealevelpressure > 0.5 or RSS and apoapsis > 200000 and ship:body:atm:sealevelpressure < 0.5 or not (RSS) and apoapsis > 100000 and ship:body:atm:sealevelpressure < 0.5 or periapsis < ship:body:atm:height or abs(ship:orbit:inclination) + 2.5 < abs(setting1:text:split(",")[0]:toscalar(0)) {
+                        else if RSS and apoapsis > 500000 and ship:body:atm:sealevelpressure > 0.5 or not (RSS) and apoapsis > 250000 and ship:body:atm:sealevelpressure > 0.5 or RSS and apoapsis > 300000 and ship:body:atm:sealevelpressure < 0.5 or not (RSS) and apoapsis > 100000 and ship:body:atm:sealevelpressure < 0.5 or periapsis < ship:body:atm:height or abs(ship:orbit:inclination) + 2.5 < abs(setting1:text:split(",")[0]:toscalar(0)) {
                             ShowHomePage().
                             LogToFile("De-Orbit cancelled due to orbit requirements not fulfilled").
                             set message1:text to "<b>Automatic De-Orbit Requirements:</b>".
@@ -4718,7 +4718,7 @@ set landbutton:ontoggle to {
                             }
                             if ship:body:atm:sealevelpressure < 0.5 {
                                 if RSS {
-                                    set message2:text to "<b>Ap/Pe " + round(ship:body:atm:height / 1000) + "-200km   LZ latitude < Inclination</b>".
+                                    set message2:text to "<b>Ap/Pe " + round(ship:body:atm:height / 1000) + "-300km   LZ latitude < Inclination</b>".
                                 }
                                 else {
                                     set message2:text to "<b>Ap/Pe " + round(ship:body:atm:height / 1000) + "-100km   LZ latitude < Inclination</b>".
