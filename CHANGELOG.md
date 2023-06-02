@@ -1,3 +1,8 @@
+# V2.0.22 (2023-06-02)
+- Fixed an issue where ship would vent too much for a duna landing.
+- Fixed a Moon Landing Issue where it would burn for too long due to script hang.
+- Enabled rcs during venting.
+
 # V2.0.21 (2023-06-01)
 - Fixed an issue where KSRSS was not recognized correctly.
 - Fixed a small number of moon landing problems.

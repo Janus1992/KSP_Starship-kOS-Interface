@@ -202,6 +202,8 @@ set attroll to 0.
 set attpitch to aoa.
 set acc TO V(0, 0, 0).
 set ApproachVector to v(0,0,0).
+set ApproachUPVector to v(0,0,0).
+set SecondsToCancelHorVelocity to 0.
 set SteeringIsRunning to false.
 set BGUisRunning to false.
 set LandButtonIsRunning to false.
@@ -4769,7 +4771,7 @@ set landbutton:ontoggle to {
 
                             if ship:body:atm:sealevelpressure < 0.5 {
                                 if RSS {
-                                    set MinFuel to 75000 + (CargoMass / 150000 * 110000).
+                                    set MinFuel to 85000 + (CargoMass / 150000 * 100000).
                                     set MaxFuel to MinFuel + CargoMass + 75000.
                                 }
                                 else if KSRSS {
@@ -4826,6 +4828,7 @@ set landbutton:ontoggle to {
                                     set landlabel:style:textcolor to green.
                                     InhibitButtons(0, 1, 0).
                                     sas on.
+                                    rcs on.
                                     set runningprogram to "Venting Fuel..".
                                     HideEngineToggles(1).
                                     Nose:activate.
@@ -4856,6 +4859,7 @@ set landbutton:ontoggle to {
                                         }
                                     }
                                     ShutDownAllEngines().
+                                    rcs off.
                                     if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
                                     LogToFile("Stop Venting").
                                     HideEngineToggles(0).
@@ -5016,6 +5020,7 @@ set landbutton:ontoggle to {
                         set landlabel:style:textcolor to green.
                         InhibitButtons(0, 1, 0).
                         sas on.
+                        rcs on.
                         set runningprogram to "Venting Fuel..".
                         HideEngineToggles(1).
                         Nose:activate.
@@ -5040,6 +5045,7 @@ set landbutton:ontoggle to {
                             }
                         }
                         ShutDownAllEngines().
+                        rcs off.
                         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
                         LogToFile("Stop Venting").
                         HideEngineToggles(0).
@@ -5314,7 +5320,7 @@ function LandwithoutAtmo {
         if NrOfVacEngines = 6 {
             set FinalDescentEngines to list().
             for engine in VACEngines {
-                print "vdot: " + vdot(engine:position - ship:position, facing:starvector).
+                //print "vdot: " + vdot(engine:position - ship:position, facing:starvector).
                 if RSS {
                     if vdot(engine:position - ship:position, facing:starvector) > 3 or vdot(engine:position - ship:position, facing:starvector) < -3 {
                         engine:shutdown.
@@ -5330,7 +5336,7 @@ function LandwithoutAtmo {
                 }
                 set FourVacBrakingBurn to true.
             }
-            print FinalDescentEngines.
+            //print FinalDescentEngines.
         }
         lock throttle to 0.
         if quicksetting1:pressed and altitude > 10000 {
@@ -5338,7 +5344,6 @@ function LandwithoutAtmo {
         }
         Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
-        LngLatError().
 
         if groundspeed > 50 or altitude > 10000 {
             LogToFile("Landing without atmo, with cancelling of velocity enabled").
@@ -5416,7 +5421,11 @@ function LandwithoutAtmo {
             LogToFile("Extending Landing Gear").
         }
 
-        until verticalspeed > -0.02 and ship:status = "LANDED" and RadarAlt < 5 or verticalspeed > -0.02 and RadarAlt < 2 or ship:status = "LANDED" or cancelconfirmed and not ClosingIsRunning {}
+        until verticalspeed > -0.02 and ship:status = "LANDED" and RadarAlt < 5 or verticalspeed > -0.02 and RadarAlt < 2 or ship:status = "LANDED" or cancelconfirmed and not ClosingIsRunning {
+            if defined horStopDist {
+                LandwithoutAtmoLabels().
+            }
+        }
 
         lock steering to lookdirup(ship:up:vector,ship:facing:topvector).
         lock throttle to 0.
@@ -5484,10 +5493,7 @@ function LandwithoutAtmo {
 
 
 function LandwithoutAtmoSteering {
-    if addons:tr:hasimpact {
-        set LngLatErrorList to LngLatError().
-    }
-
+    set LngLatErrorList to LngLatError().
     set MaxAccel to max(ship:availablethrust / ship:mass, 0.000001).
     set BurnAccel to min(29.43, MaxAccel).
     set DesiredDecel to 4.
@@ -5535,17 +5541,14 @@ function LandwithoutAtmoSteering {
     if not (CancelVelocityHasStarted) {
         set SecondsToCancelHorVelocity to (horDist - horStopDist) / groundspeed.
         set x to SecondsToCancelHorVelocity.
+        set OVHDlng to -9999.
+        until OVHDlng > landingzone:lng + x / ship:body:rotationperiod * 360 {
+            set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
+            set x to x + 1.
+        }
+        set TimeToOVHD to x.
+        set ApproachAltitude to ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)).
     }
-    else {
-        set x to 0.
-    }
-    set OVHDlng to -9999.
-    until OVHDlng > landingzone:lng + x / ship:body:rotationperiod * 360 {
-        set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
-        set x to x + 1.
-    }
-    set TimeToOVHD to x.
-    set ApproachAltitude to ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)).
 
     clearscreen.
     if CancelVelocityHasFinished {
@@ -5555,7 +5558,8 @@ function LandwithoutAtmoSteering {
         print "landing ratio:  " + round(landingRatio, 2).
     }
     else {
-        print "Lng Error: " + round(LngLatErrorList[0]).
+        print "Lng Error:      " + round(LngLatErrorList[0]) + "m".
+        print " ".
         print "hor. distance:  " + round(horDist) + "m".
         print "hor. stop dist: " + round(horStopDist) + "m".
         print "groundspeed:    " + round(groundspeed) + "m/s".
@@ -5571,12 +5575,14 @@ function LandwithoutAtmoSteering {
     //print "Angle: " + vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface)).
     //print "Cos Angle result: " + cos(vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface))).
 
-    if not CancelVelocityHasStarted and RadarAlt > SafeAltOverLZ + 1000 and SecondsToCancelHorVelocity < 300 {
-        if vang(facing:topvector, -up:vector) < 45 and vang(result, facing:forevector) < 10 {
-            set ship:control:translation to v(LngLatErrorList[1] / 250, (ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ)) / 2500, 0).
-        }
-        else {
-            set ship:control:translation to v(0, 0, 0).
+    if not CancelVelocityHasStarted and RadarAlt > SafeAltOverLZ + 1000 {
+        if SecondsToCancelHorVelocity < 300 and not (RSS) or SecondsToCancelHorVelocity < 600 and RSS {
+            if vang(facing:topvector, -up:vector) < 45 and vang(result, facing:forevector) < 10 {
+                set ship:control:translation to v(LngLatErrorList[1] / 250, (ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ)) / 2500, 0).
+            }
+            else {
+                set ship:control:translation to v(0, 0, 0).
+            }
         }
     }
     else if CancelVelocityHasStarted {
@@ -5615,6 +5621,17 @@ function LandwithoutAtmoSteering {
     //set LdgVectorDraw to vecdraw(v(0, 0, 0), 5 * result:normalized, green, "Landing Vector", 20, true, 0.005, true, true).
     //set LdgFcgVectorDraw to vecdraw(v(0, 0, 0), -LandingFacingVector, blue, "Landing Vector", 20, true, 0.005, true, true).
 
+    BackGroundUpdate().
+
+    if CancelVelocityHasStarted and vang(facing:forevector, up:vector) < 45 {
+        return lookDirUp(result, -LandingFacingVector).
+    }
+    else {
+        return lookDirUp(result, -up:vector).
+    }
+}
+
+function LandwithoutAtmoLabels {
     if CancelVelocityHasStarted {
         if RadarAlt > SafeAltOverLZ {
             set message1:text to "<b>Remaining Flight Time:</b>  " + timeSpanCalculator(ADDONS:TR:TIMETILLIMPACT).
@@ -5625,29 +5642,6 @@ function LandwithoutAtmoSteering {
     }
     else {
         set message1:text to "<b>Slowing down Ship in:</b>    " + timeSpanCalculator(SecondsToCancelHorVelocity).
-    }
-    if DistanceToTarget < 10 {
-        set message2:text to "<b>Distance to Target:</b>           " + round(DistanceToTarget, 2) + "km".
-    }
-    else {
-        set message2:text to "<b>Distance to Target:</b>           " + round(DistanceToTarget) + "km".
-    }
-    if addons:tr:hasimpact and not LandSomewhereElse {
-        if CancelVelocityHasFinished {
-            set message3:text to "<b>Track/X-Trk Error:</b>             " + round(LngLatErrorList[0]) + "m  " + round(LngLatErrorList[1]) + "m".
-        }
-        else if abs(ApproachAltitude - landingzone:terrainheight - SafeAltOverLZ) > 1000 {
-            set message3:text to "<b>R Alt. @LZ/X-Trk Error:</b>   <color=yellow>" + round((ApproachAltitude - landingzone:terrainheight) / 1000, 1) + "km</color>  " + round((LngLatErrorList[1] / 1000), 2) + "km".
-        }
-        else {
-            set message3:text to "<b>R Alt. @LZ/X-Trk Error:</b>   " + round((ApproachAltitude - landingzone:terrainheight) / 1000, 1) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km".
-        }
-    }
-    else {
-        set message3:text to "<b><color=yellow>Landing off-Target..</color></b>".
-    }
-
-    if not (CancelVelocityHasStarted) {
         if STOCK {
             if (horDist - horStopDist) / groundspeed < 120 and kuniverse:timewarp:warp > 2 {
                 set kuniverse:timewarp:warp to 2.
@@ -5682,21 +5676,39 @@ function LandwithoutAtmoSteering {
                 HUDTEXT("Correcting to Retrograde..", 5, 2, 20, yellow, false).
             }
         }
-        if abs(LngLatErrorList[1]) > 100 and kuniverse:timewarp:warp > 0 and SecondsToCancelHorVelocity < 300 or abs(ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ)) > 1000 and kuniverse:timewarp:warp > 0 and SecondsToCancelHorVelocity < 300 {
-            set kuniverse:timewarp:warp to 0.
-            HUDTEXT("Small RCS Corrections in progress..", 1, 2, 20, yellow, false).
+        if abs(LngLatErrorList[1]) > 100 and kuniverse:timewarp:warp > 0 or abs(ApproachAltitude - (landingzone:terrainheight + SafeAltOverLZ)) > 1000 and kuniverse:timewarp:warp > 0 {
+            if SecondsToCancelHorVelocity < 300 and not (RSS) or SecondsToCancelHorVelocity < 600 and RSS {
+                set kuniverse:timewarp:warp to 0.
+                HUDTEXT("Small RCS Corrections in progress..", 2.5, 2, 20, yellow, false).
+            }
         }
     }
 
-    BackGroundUpdate().
-
-    if CancelVelocityHasStarted and vang(facing:forevector, up:vector) < 45 {
-        return lookDirUp(result, -LandingFacingVector).
+    if DistanceToTarget < 10 {
+        set message2:text to "<b>Distance to Target:</b>           " + round(DistanceToTarget, 2) + "km".
     }
     else {
-        return lookDirUp(result, -up:vector).
+        set message2:text to "<b>Distance to Target:</b>           " + round(DistanceToTarget) + "km".
     }
-}
+
+    if addons:tr:hasimpact and not LandSomewhereElse {
+        if CancelVelocityHasFinished {
+            set message3:text to "<b>Track/X-Trk Error:</b>             " + round(LngLatErrorList[0]) + "m  " + round(LngLatErrorList[1]) + "m".
+        }
+        else if CancelVelocityHasStarted {
+            set message3:text to "<b>Track/X-Trk Error:</b>             " + round(LngLatErrorList[0] / 1000, 2) + "km  " + round(LngLatErrorList[1] / 1000, 2) + "km".
+        }
+        else if abs(ApproachAltitude - landingzone:terrainheight - SafeAltOverLZ) > 1000 {
+            set message3:text to "<b>R Alt. @LZ/X-Trk Error:</b>   <color=yellow>" + round((ApproachAltitude - landingzone:terrainheight) / 1000, 1) + "km</color>  " + round((LngLatErrorList[1] / 1000), 2) + "km".
+        }
+        else {
+            set message3:text to "<b>R Alt. @LZ/X-Trk Error:</b>   " + round((ApproachAltitude - landingzone:terrainheight) / 1000, 1) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km".
+        }
+    }
+    else {
+        set message3:text to "<b><color=yellow>Landing off-Target..</color></b>".
+    }
+}.
 
 
 g:show().
@@ -7884,6 +7896,9 @@ function LngLatError {
             return list(lngresult, latresult).
         }
     }
+    else {
+        return list(0, 0).
+    }
 }
 
 
@@ -9029,6 +9044,9 @@ function updateEnginePage {
                 if EngineTogglesHidden {
                     set engine2label4:style:overflow:right to 39 + (100 * (VACEngines[0]:thrust / max(VACEngines[0]:availablethrust, 0.000001))).
                 }
+                else if TwoVacEngineLanding {
+                    set engine2label4:style:overflow:right to 10 + (100 * (FinalDescentEngines[0]:thrust / max(VACEngines[0]:availablethrust, 0.000001))).
+                }
                 else {
                     set engine2label4:style:overflow:right to 10 + (100 * (VACEngines[0]:thrust / max(VACEngines[0]:availablethrust, 0.000001))).
                 }
@@ -10104,8 +10122,13 @@ function CheckSlope {
     set LowestSlopeDictionary to lexicon().
     set multiplier to 2.
     if SetNewLZNow {
-        set impactpos to addons:tr:impactpos.
-        set landingzone to latlng(impactpos:lat, impactpos:lng).
+        if ship:body:atm:sealevelpressure > 0.5 {
+            set impactpos to addons:tr:impactpos.
+            set landingzone to latlng(impactpos:lat, impactpos:lng).
+        }
+        else {
+            set landingzone to latlng(ship:geoposition:lat, ship:geoposition:lng).
+        }
     }
     until IsLandingZoneOkay or cancelconfirmed {
         if ClosingIsRunning or cancelconfirmed or SetNewLZNow and iteration > 3 {
@@ -10432,7 +10455,7 @@ function CheckLZReachable {
         LogToFile("Dense Atmo Planet Automated Landing Activated").
     }
     else if ship:body:atm:sealevelpressure < 0.5 and ship:body:atm:exists {
-        if abs(LngLatErrorList[0]) > 5000 and not (RSS) or abs(LngLatErrorList[0]) > 15000 and RSS or abs(LngLatErrorList[1]) > 150 {
+        if abs(LngLatErrorList[0]) > 7500 and not (RSS) or abs(LngLatErrorList[0]) > 25000 and RSS or abs(LngLatErrorList[1]) > 250 {
             set AvailableLandingSpots to CheckSlope(1).
             wait 0.1.
             set FindNewTarget to true.
@@ -10658,7 +10681,6 @@ function PerformBurn {
         }
         until nextnode:eta < 0.5 * BurnDuration or cancelconfirmed and not ClosingIsRunning {
             BackGroundUpdate().
-
             if RSS {
                 if nextnode:eta - 0.5 * BurnDuration < 10800 and kuniverse:timewarp:warp > 3 {
                     set kuniverse:timewarp:warp to 3.
@@ -10669,7 +10691,7 @@ function PerformBurn {
                 if nextnode:eta - 0.5 * BurnDuration < 180 and kuniverse:timewarp:warp > 1 {
                     set kuniverse:timewarp:warp to 1.
                 }
-                if nextnode:eta - 0.5 * BurnDuration < 100 {
+                if nextnode:eta - 0.5 * BurnDuration < 60 {
                     if kuniverse:timewarp:warp > 0 {
                         set kuniverse:timewarp:warp to 0.
                     }
@@ -10687,7 +10709,7 @@ function PerformBurn {
                 if nextnode:eta - 0.5 * BurnDuration < 150 and kuniverse:timewarp:warp > 1 {
                     set kuniverse:timewarp:warp to 1.
                 }
-                if nextnode:eta - 0.5 * BurnDuration < 90 {
+                if nextnode:eta - 0.5 * BurnDuration < 60 {
                     if kuniverse:timewarp:warp > 0 {
                         set kuniverse:timewarp:warp to 0.
                     }
@@ -10710,7 +10732,7 @@ function PerformBurn {
                 }
                 until vdot(facing:forevector, nextnode:deltav) < 0 or cancelconfirmed = true and not ClosingIsRunning {
                     BackGroundUpdate().
-                    if vang(facing:forevector, nextnode:burnvector) < 5 {
+                    if vang(facing:forevector, nextnode:burnvector) < 10 {
                         if UseRCSforBurn {
                             rcs on.
                             set ship:control:translation to v(0, 0, 1).
