@@ -376,7 +376,7 @@ function Boostback {
         lock steering to SteeringVector.
     }
 
-    until landingRatio > 1 and alt:radar < 2250 or alt:radar < 1750 {
+    until landingRatio > 1 and alt:radar < 2250 or alt:radar < 1750 or alt:radar < 2100 and KSRSS {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         rcs on.
@@ -394,6 +394,7 @@ function Boostback {
 
     if abs(LngError) > 600 or abs(LatError) > 150 {
         set LandSomewhereElse to true.
+        lock RadarAlt to alt:radar - BoosterHeight.
         HUDTEXT("Mechazilla out of range..", 10, 2, 20, red, false).
         HUDTEXT("Landing somewhere else..", 10, 2, 20, red, false).
         lock SteeringVector to lookdirup(-1 * velocity:surface, ApproachVector).
