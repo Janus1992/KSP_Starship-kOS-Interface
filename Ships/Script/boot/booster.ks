@@ -856,6 +856,9 @@ function CheckFuel {
         if res:name = "LiquidFuel" {
             set LFBooster to res:amount.
             print "LFOB: " + round(LFBooster).
+            if LFBooster < LFBoosterFuelCutOff {
+                BoosterCore[0]:shutdown.
+            }
         }
     }
 }
