@@ -376,7 +376,7 @@ function Boostback {
         lock steering to SteeringVector.
     }
 
-    until landingRatio > 1 and alt:radar < 2250 or alt:radar < 1750 or alt:radar < 2100 and KSRSS {
+    until landingRatio > 1 and alt:radar < 2250 or alt:radar < 1750 {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         rcs on.
