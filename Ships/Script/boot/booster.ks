@@ -235,10 +235,10 @@ function Boostback {
 
     if RSS {
         if BoosterCore[0]:hasmodule("FARPartModule") {
-            set BoosterGlideDistance to 9000.
+            set BoosterGlideDistance to 8000.
         }
         else {
-            set BoosterGlideDistance to 8000.
+            set BoosterGlideDistance to 9000.
         }
         lock throttle to min(-(LngError + 6500) / 20000 + 0.01, 7.5 * 9.81 / (ship:availablethrust / ship:mass)).
         lock SteeringVector to lookdirup(vxcl(up:vector, -ErrorVector), -up:vector).
@@ -246,10 +246,10 @@ function Boostback {
     }
     else {
         if BoosterCore[0]:hasmodule("FARPartModule") {
-            set BoosterGlideDistance to 7500.
+            set BoosterGlideDistance to 6500.
         }
         else {
-            set BoosterGlideDistance to 6500.
+            set BoosterGlideDistance to 7500.
         }
         lock throttle to min(-(LngError + 5000) / 10000 + 0.01, 7.5 * 9.81 / (ship:availablethrust / ship:mass)).
         lock SteeringVector to lookdirup(vxcl(up:vector, -ErrorVector), -up:vector).
@@ -283,9 +283,6 @@ function Boostback {
     CheckFuel().
     if LFBooster > LFBoosterFuelCutOff {
         BoosterCore[0]:activate.
-        when LFBooster < LFBoosterFuelCutOff then {
-            BoosterCore[0]:shutdown.
-        }
     }
 
     lock SteeringVector to lookdirup(CurrentVec * AngleAxis(-9 * min(time:seconds - turnTime, 15), lookdirup(CurrentVec, up:vector):starvector), -up:vector).
@@ -321,18 +318,23 @@ function Boostback {
             }
         }
     }
-    set ship:control:translation to v(0, 0, 0).
 
-    wait 1.
-    HUDTEXT("Starship will continue its orbit insertion..", 20, 2, 20, green, false).
-    wait 3.
+    set ship:control:translation to v(0, 0, 0).
+    set switchTime to time:seconds.
+    until time:seconds > switchTime + 5 {
+        SteeringCorrections().
+        rcs on.
+        SetBoosterActive().
+        CheckFuel().
+    }
+    HUDTEXT("Starship will continue its orbit insertion..", 10, 2, 20, green, false).
     BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 25).
-    wait 1.
+    KUniverse:forceactive(vessel(starship)).
 
     until altitude < 30000 and not (RSS) or altitude < 50000 and RSS {
         SteeringCorrections().
         rcs on.
-        SetStarshipActive().
+        //SetStarshipActive().
         CheckFuel().
     }
 

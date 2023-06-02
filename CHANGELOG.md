@@ -3,7 +3,7 @@
 - Fixed a Moon Landing Issue where it would burn for too long due to script hang.
 - Enabled rcs during venting.
 - 2 Engine RVAC landing on the Moon engine page fixed.
-- KSRSS booster landing fix for if the booster is too light.
+- KSRSS booster fix: fuel vent stopped to late.
 
 # V2.0.21 (2023-06-01)
 - Fixed an issue where KSRSS was not recognized correctly.
