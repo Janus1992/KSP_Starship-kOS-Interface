@@ -83,7 +83,7 @@ else {
         set Planet to "Kerbin".
         set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
         set BoosterHeight to 44.2.
-        set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -30, 30).
+        set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
         set LatCtrlPID to PIDLOOP(0.05, 0.0005, 0.0005, -2, 2).
         set LFBoosterFuelCutOff to 1500.
         set LandHeadingVector to heading(270,0):vector.
@@ -240,18 +240,29 @@ function Boostback {
         else {
             set BoosterGlideDistance to 8000.
         }
-        lock throttle to min(-(LngError + 6500) / 20000 + 0.01, 7.5 * 9.81 / (ship:availablethrust / ship:mass)).
+        lock throttle to min(-(LngError + BoosterGlideDistance - 1000) / 20000 + 0.01, 7.5 * 9.81 / (ship:availablethrust / ship:mass)).
+        lock SteeringVector to lookdirup(vxcl(up:vector, -ErrorVector), -up:vector).
+        lock steering to SteeringVector.
+    }
+    else if KSRSS {
+        if BoosterCore[0]:hasmodule("FARPartModule") {
+            set BoosterGlideDistance to 6000.
+        }
+        else {
+            set BoosterGlideDistance to 6000.
+        }
+        lock throttle to min(-(LngError + BoosterGlideDistance - 1000) / 10000 + 0.01, 7.5 * 9.81 / (ship:availablethrust / ship:mass)).
         lock SteeringVector to lookdirup(vxcl(up:vector, -ErrorVector), -up:vector).
         lock steering to SteeringVector.
     }
     else {
         if BoosterCore[0]:hasmodule("FARPartModule") {
-            set BoosterGlideDistance to 6500.
+            set BoosterGlideDistance to 6000.
         }
         else {
-            set BoosterGlideDistance to 6500.
+            set BoosterGlideDistance to 6000.
         }
-        lock throttle to min(-(LngError + 5000) / 10000 + 0.01, 7.5 * 9.81 / (ship:availablethrust / ship:mass)).
+        lock throttle to min(-(LngError + BoosterGlideDistance - 1000) / 10000 + 0.01, 7.5 * 9.81 / (ship:availablethrust / ship:mass)).
         lock SteeringVector to lookdirup(vxcl(up:vector, -ErrorVector), -up:vector).
         lock steering to SteeringVector.
     }
@@ -491,100 +502,100 @@ function Boostback {
     unlock throttle.
     BoosterEngines[0]:shutdown.
 
-    if not (LandSomewhereElse) and not (RSS) {
-        print "capture at: " + RadarAlt + "m RA".
-        print "Landing Burn started at: " + round(LandingBurnAltitude) + "m Altitude".
-        if OLMexists() {
-            HUDTEXT("Booster Landing Confirmed! Stand by for Mechazilla Operation..", 10, 2, 20, green, false).
-            set LandingTime to time:seconds.
-            if KSRSS {
-                lock RollAngle to vang(facing:starvector, heading(152,0):vector).
-            }
-            else {
-                lock RollAngle to vang(facing:starvector, heading(180,0):vector).
-            }
-            set TowerReset to false.
-            set PusherSpeed5 to false.
-            set PusherSpeed2 to false.
-            set PusherSpeed1 to false.
-            set RollAngleExceeded to false.
-            set BoosterSecured to false.
-            set BoosterBroughtDown to false.
-            set MechazillaGoesUp to false.
-            set MechazillaResetsItself to false.
-            print "Tower Operation in Progress..".
-            sendMessage(Vessel(OLM), "MechazillaPushers,0,1,0.3,false").
-            sendMessage(Vessel(OLM), ("MechazillaStabilizers," + maxstabengage)).
-            until TowerReset {
-                clearscreen.
-                print "Roll Angle: " + round(RollAngle,1).
-                if time:seconds > LandingTime + 3.25 and not PusherSpeed5 {
-                    sendMessage(Vessel(OLM), "MechazillaPushers,0,0.5,0.3,false").
-                    set PusherSpeed5 to true.
-                }
-                if time:seconds > LandingTime + 5.75 and not PusherSpeed2 {
-                    sendMessage(Vessel(OLM), "MechazillaPushers,0,0.3,0.3,false").
-                    set PusherSpeed2 to true.
-                }
-                if time:seconds > LandingTime + 8.25 and not PusherSpeed1 {
-                    sendMessage(Vessel(OLM), "MechazillaPushers,0,0.1,0.3,false").
-                    set PusherSpeed1 to true.
-                }
-                if time:seconds > LandingTime + 15 and time:seconds < LandingTime + 75 and not BoosterSecured {
-                    sendMessage(Vessel(OLM), "MechazillaHeight,28,0.5").
-                }
-                if time:seconds > LandingTime + 75 and not BoosterSecured {
-                    sendMessage(Vessel(OLM), "MechazillaHeight,42,0.5").
-                    set BoosterSecured to true.
-                }
-                if time:seconds > LandingTime + 105 and not BoosterBroughtDown {
-                    sendMessage(Vessel(OLM), "MechazillaArms,8,2.5,60,true").
-                    set BoosterBroughtDown to true.
-                }
-                if time:seconds > LandingTime + 114 and not MechazillaGoesUp {
-                    sendMessage(Vessel(OLM), "MechazillaHeight,0,2").
-                    set MechazillaGoesUp to true.
-                }
-                if time:seconds > LandingTime + 117 and not MechazillaResetsItself {
-                    sendMessage(Vessel(OLM), "MechazillaArms,8,5,90,true").
-                    if RSS {
-                        sendMessage(Vessel(OLM), "MechazillaPushers,0,0.3,20,true").
-                    }
-                    else {
-                        sendMessage(Vessel(OLM), "MechazillaPushers,0,0.3,12.5,true").
-                    }
-                    sendMessage(Vessel(OLM), "MechazillaStabilizers,0").
-                    set MechazillaResetsItself to true.
-                }
-                if time:seconds > LandingTime + 135 {
-                    set TowerReset to true.
-                    break.
-                }
-                if RollAngle > 15 or RollAngle < -15 {
-                    set RollAngleExceeded to true.
-                    break.
-                }
-            }
-            if not RollAngleExceeded {
-                print "Booster has been secured & Tower has been reset!".
-                HUDTEXT("Tower has been reset, Booster may now be recovered!", 10, 2, 20, green, false).
-            }
-            else {
-                sendMessage(Vessel(OLM), "EmergencyStop").
-                print "Emergency Stop Activated! Roll Angle exceeded: " + round(RollAngle, 1).
-                print "Continue manually with great care..".
-            }
-        }
-        else {
-            print "Booster has been secured".
-            HUDTEXT("Booster may now be recovered!", 10, 2, 20, green, false).
-        }
-    }
+    //if not (LandSomewhereElse) and not (RSS) {
+    //    print "capture at: " + RadarAlt + "m RA".
+    //    print "Landing Burn started at: " + round(LandingBurnAltitude) + "m Altitude".
+    //    if OLMexists() {
+    //        HUDTEXT("Booster Landing Confirmed! Stand by for Mechazilla Operation..", 10, 2, 20, green, false).
+    //        set LandingTime to time:seconds.
+    //        if KSRSS {
+    //            lock RollAngle to vang(facing:starvector, heading(152,0):vector).
+    //        }
+    //        else {
+    //            lock RollAngle to vang(facing:starvector, heading(180,0):vector).
+    //        }
+    //        set TowerReset to false.
+    //        set PusherSpeed5 to false.
+    //        set PusherSpeed2 to false.
+    //        set PusherSpeed1 to false.
+    //        set RollAngleExceeded to false.
+    //        set BoosterSecured to false.
+    //        set BoosterBroughtDown to false.
+    //        set MechazillaGoesUp to false.
+    //        set MechazillaResetsItself to false.
+    //        print "Tower Operation in Progress..".
+    //        sendMessage(Vessel(OLM), "MechazillaPushers,0,1,0.3,false").
+    //        sendMessage(Vessel(OLM), ("MechazillaStabilizers," + maxstabengage)).
+    //        until TowerReset {
+    //            clearscreen.
+    //            print "Roll Angle: " + round(RollAngle,1).
+    //            if time:seconds > LandingTime + 3.25 and not PusherSpeed5 {
+    //                sendMessage(Vessel(OLM), "MechazillaPushers,0,0.5,0.3,false").
+    //                set PusherSpeed5 to true.
+    //            }
+    //            if time:seconds > LandingTime + 5.75 and not PusherSpeed2 {
+    //                sendMessage(Vessel(OLM), "MechazillaPushers,0,0.3,0.3,false").
+    //                set PusherSpeed2 to true.
+    //            }
+    //            if time:seconds > LandingTime + 8.25 and not PusherSpeed1 {
+    //                sendMessage(Vessel(OLM), "MechazillaPushers,0,0.1,0.3,false").
+    //                set PusherSpeed1 to true.
+    //            }
+    //            if time:seconds > LandingTime + 15 and time:seconds < LandingTime + 75 and not BoosterSecured {
+    //                sendMessage(Vessel(OLM), "MechazillaHeight,28,0.5").
+    //            }
+    //            if time:seconds > LandingTime + 75 and not BoosterSecured {
+    //                sendMessage(Vessel(OLM), "MechazillaHeight,42,0.5").
+    //                set BoosterSecured to true.
+    //            }
+    //            if time:seconds > LandingTime + 105 and not BoosterBroughtDown {
+    //                sendMessage(Vessel(OLM), "MechazillaArms,8,2.5,60,true").
+    //                set BoosterBroughtDown to true.
+    //            }
+    //            if time:seconds > LandingTime + 114 and not MechazillaGoesUp {
+    //                sendMessage(Vessel(OLM), "MechazillaHeight,0,2").
+    //                set MechazillaGoesUp to true.
+    //            }
+    //            if time:seconds > LandingTime + 117 and not MechazillaResetsItself {
+    //                sendMessage(Vessel(OLM), "MechazillaArms,8,5,90,true").
+    //                if RSS {
+    //                    sendMessage(Vessel(OLM), "MechazillaPushers,0,0.3,20,true").
+    //                }
+    //                else {
+    //                    sendMessage(Vessel(OLM), "MechazillaPushers,0,0.3,12.5,true").
+    //                }
+    //                sendMessage(Vessel(OLM), "MechazillaStabilizers,0").
+    //                set MechazillaResetsItself to true.
+    //            }
+    //            if time:seconds > LandingTime + 135 {
+    //                set TowerReset to true.
+    //                break.
+    //            }
+    //            if RollAngle > 15 or RollAngle < -15 {
+    //                set RollAngleExceeded to true.
+    //                break.
+    //            }
+    //        }
+    //        if not RollAngleExceeded {
+    //            print "Booster has been secured & Tower has been reset!".
+    //            HUDTEXT("Tower has been reset, Booster may now be recovered!", 10, 2, 20, green, false).
+    //        }
+    //        else {
+    //            sendMessage(Vessel(OLM), "EmergencyStop").
+    //            print "Emergency Stop Activated! Roll Angle exceeded: " + round(RollAngle, 1).
+    //            print "Continue manually with great care..".
+    //        }
+    //    }
+    //    else {
+    //        print "Booster has been secured".
+    //        HUDTEXT("Booster may now be recovered!", 10, 2, 20, green, false).
+    //    }
+    //}
     unlock throttle.
 
     if RSS {
         wait 2.
-        HUDTEXT("Changing focus to Starship..", 20, 2, 20, green, false).
+        HUDTEXT("Changing focus back to Starship..", 20, 2, 20, green, false).
         SetLoadDistances("default").
         wait 3.
         when ship:status = "LANDED" then {
@@ -593,6 +604,7 @@ function Boostback {
     }
     else {
         SetLoadDistances("default").
+        HUDTEXT("Booster may now be recovered!", 10, 2, 20, green, false).
     }
 }
 
@@ -631,26 +643,26 @@ FUNCTION SteeringCorrections {
 
             if RSS {
                 if BoosterCore[0]:hasmodule("FARPartModule") {
-                    set LngCtrlPID:setpoint to 225.
+                    set LngCtrlPID:setpoint to 160.
                 }
                 else {
-                    set LngCtrlPID:setpoint to 150.
+                    set LngCtrlPID:setpoint to 160.
                 }
             }
             else if KSRSS {
                 if BoosterCore[0]:hasmodule("FARPartModule") {
-                    set LngCtrlPID:setpoint to 375.
+                    set LngCtrlPID:setpoint to 440.
                 }
                 else {
-                    set LngCtrlPID:setpoint to 350.
+                    set LngCtrlPID:setpoint to 440.
                 }
             }
             else {
                 if BoosterCore[0]:hasmodule("FARPartModule") {
-                    set LngCtrlPID:setpoint to 225.
+                    set LngCtrlPID:setpoint to 275.
                 }
                 else {
-                    set LngCtrlPID:setpoint to 150.
+                    set LngCtrlPID:setpoint to 275.
                 }
             }
 

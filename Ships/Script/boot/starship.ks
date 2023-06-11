@@ -1,7 +1,7 @@
 //
 // SEP Starship kOS Script
 //
-// Version 1.1 - GNUGPL3
+// Version 2.1 - GNUGPL3
 // Janus92
 //
 //
@@ -102,6 +102,7 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set RCSThrust to 100.
     set RCSBurnTimeLimit to 240.
     set VentRate to 88.67.
+    set ArmsHeight to 138.16.
 }
 else if KSRSS {
     set aoa to 60.
@@ -124,6 +125,7 @@ else if KSRSS {
     set RCSThrust to 70.
     set RCSBurnTimeLimit to 180.
     set VentRate to 17.73.
+    set ArmsHeight to 86.35.
 }
 else {  // Set of variables when Real Solar System has NOT been installed
     set aoa to 60.
@@ -146,6 +148,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set RCSThrust to 40.
     set RCSBurnTimeLimit to 120.
     set VentRate to 17.73.
+    set ArmsHeight to 86.35.
 }
 set SNStart to 30.  // Defines the first Serial Number when multiple ships are found and renaming is necessary.
 set MaxTilt to 2.5.  // Defines maximum allowed slope for the Landing Zone Search Function
@@ -272,6 +275,8 @@ set TwoVacEngineLanding to false.
 set FourVacBrakingBurn to false.
 set FinalDescentEngines to list().
 set result to v(0, 0, 0).
+set LandAtOLMisrunning to false.
+set BoosterAlreadyExists to false.
 
 
 
@@ -424,7 +429,6 @@ function FindParts {
 
 SetLoadDistances("default").
 FindParts().
-SetRadarAltitude().
 lock throttle to 0.
 unlock throttle.
 
@@ -1766,7 +1770,6 @@ set quickattitude2:onclick to {
                 set addons:tr:descentmodes to list(true, true, true, true).
                 set addons:tr:descentgrades to list(false, false, false, false).
                 set addons:tr:descentangles to DescentAngles.
-                SetRadarAltitude().
                 LogToFile("Attitude Control Set to ON").
                 Droppriority().
                 sas off.
@@ -4278,6 +4281,18 @@ set launchbutton:ontoggle to {
                     else {
                         set Launch180 to false.
                     }
+                    ShipsInOrbit().
+                    if BoosterAlreadyExists {
+                        LogToFile("Launch cancelled due to other Booster found").
+                        set message1:text to "<b>Error: Recover other Boosters first!</b>".
+                        set message2:text to "".
+                        set message3:text to "".
+                        set message1:style:textcolor to yellow.
+                        set textbox:style:bg to "starship_img/starship_main_square_bg".
+                        wait 3.
+                        ClearInterfaceAndSteering().
+                        return.
+                    }
                     if CargoMass < MaxCargoToOrbit + 1 and cargo1text:text = "Closed" {
                         ShowHomePage().
                         InhibitButtons(0, 0, 0).
@@ -4860,8 +4875,11 @@ set landbutton:ontoggle to {
                                     }
                                     ShutDownAllEngines().
                                     rcs off.
-                                    if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
                                     LogToFile("Stop Venting").
+                                    if kuniverse:timewarp:warp > 0 {
+                                        set kuniverse:timewarp:warp to 0.
+                                        wait 1.
+                                    }
                                     HideEngineToggles(0).
                                     set message1:text to "".
                                     set message2:text to "".
@@ -5424,6 +5442,7 @@ function LandwithoutAtmo {
         until verticalspeed > -0.02 and ship:status = "LANDED" and RadarAlt < 5 or verticalspeed > -0.02 and RadarAlt < 2 or ship:status = "LANDED" or cancelconfirmed and not ClosingIsRunning {
             if defined horStopDist {
                 LandwithoutAtmoLabels().
+                BackGroundUpdate().
             }
         }
 
@@ -5621,8 +5640,6 @@ function LandwithoutAtmoSteering {
     //set LdgVectorDraw to vecdraw(v(0, 0, 0), 5 * result:normalized, green, "Landing Vector", 20, true, 0.005, true, true).
     //set LdgFcgVectorDraw to vecdraw(v(0, 0, 0), -LandingFacingVector, blue, "Landing Vector", 20, true, 0.005, true, true).
 
-    BackGroundUpdate().
-
     if CancelVelocityHasStarted and vang(facing:forevector, up:vector) < 45 {
         return lookDirUp(result, -LandingFacingVector).
     }
@@ -5717,6 +5734,7 @@ g:show().
 if addons:tr:available and not startup {
     if Career():canmakenodes = true and Career():candoactions = true and Career():patchlimit > 0 {
         InhibitButtons(0, 1, 1).
+        SetRadarAltitude().
         set runningprogram to "None".
         FindParts().
         if homeconnection:isconnected {
@@ -5807,7 +5825,7 @@ if addons:tr:available and not startup {
             set addons:tr:descentangles to DescentAngles.
             ADDONS:TR:SETTARGET(landingzone).
         }
-        LandAtOLM().
+        //LandAtOLM().
         if LIGHTS {set quickstatus2:pressed to true.}
         if GEAR {set quickstatus3:pressed to true.}
 
@@ -9042,13 +9060,10 @@ function updateEnginePage {
                     set engine2label5:text to round(NrOfVacEngines * VACEngines[0]:thrust):tostring + " kN".
                 }
                 if EngineTogglesHidden {
-                    set engine2label4:style:overflow:right to 39 + (100 * (VACEngines[0]:thrust / max(VACEngines[0]:availablethrust, 0.000001))).
-                }
-                else if TwoVacEngineLanding {
-                    set engine2label4:style:overflow:right to 10 + (100 * (FinalDescentEngines[0]:thrust / max(VACEngines[0]:availablethrust, 0.000001))).
+                    set engine2label4:style:overflow:right to 39 + (100 * min(throttle, 1)).
                 }
                 else {
-                    set engine2label4:style:overflow:right to 10 + (100 * (VACEngines[0]:thrust / max(VACEngines[0]:availablethrust, 0.000001))).
+                    set engine2label4:style:overflow:right to 10 + (100 * min(throttle, 1)).
                 }
             }
             if SLEngines[0]:ignition = true and VACEngines[0]:ignition = true {
@@ -9629,6 +9644,8 @@ function ClearInterfaceAndSteering {
     set executeconfirmed to false.
     set cancelconfirmed to false.
     set cancel:text to "<b>CANCEL</b>".
+    set TwoVacEngineLanding to false.
+    set FourVacBrakingBurn to false.
     set landbutton:pressed to false.
     set launchbutton:pressed to false.
     wait 0.001.
@@ -10079,9 +10096,11 @@ function SetRadarAltitude {
         else {
             lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ArmsHeight + (24.698 - ShipBottomRadarHeight) - 0.25.
         }
+        LogToFile("Radar Altitude set.. (" + (ArmsHeight + (39.5167 - ShipBottomRadarHeight) - 0.25) + ")").
     }
     else {
         lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ShipBottomRadarHeight - 0.25.
+        LogToFile("Radar Altitude set (no OLM)").
     }
 }
 
@@ -10257,69 +10276,67 @@ function CheckSlope {
 
 
 function LandAtOLM {
-    list targets in shiplist.
-    if shiplist:length > 0 {
-        for var in LaunchSites:keys {
-            if RSS {
-                if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 3) = round(landingzone:lat, 3) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 3) = round(landingzone:lng, 3) {
-                    set TargetOLM to var + " OrbitalLaunchMount".
-                    break.
-                }
-            }
-            else {
-                if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(landingzone:lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(landingzone:lng, 2) {
-                    set TargetOLM to var + " OrbitalLaunchMount".
-                    break.
-                }
-            }
-            set TargetOLM to false.
-        }
-        for x in shiplist {
-            set MechaZillaExists to false.
-            if x:name = TargetOLM {
-                set MechaZillaExists to true.
-                print "Orbital Launch Mount recognized and targeted".
+    if not (LandAtOLMisrunning) {
+        set LandAtOLMisrunning to true.
+        list targets in shiplist.
+        if shiplist:length > 0 {
+            for var in LaunchSites:keys {
                 if RSS {
-                    set ArmsHeight to 138.16.
+                    if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 3) = round(landingzone:lat, 3) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 3) = round(landingzone:lng, 3) {
+                        set TargetOLM to var + " OrbitalLaunchMount".
+                        break.
+                    }
                 }
                 else {
-                    set ArmsHeight to 86.35.
+                    if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(landingzone:lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(landingzone:lng, 2) {
+                        set TargetOLM to var + " OrbitalLaunchMount".
+                        break.
+                    }
                 }
-
-                //print Vessel(TargetOLM):parts.
-
-                if FlipAltitude = 750 {
-                    set FlipAltitude to FlipAltitude + ArmsHeight.
-                }
-                when RadarAlt < 2000 then {
-                    if not (TargetOLM = "false") {
-                        sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
-                        sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,97,true").
-                        sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,false").
-                        sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
-                        when RadarAlt < 300 then {
-                            set LandRollVector to Vessel(TargetOLM):partstitled("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position.
-                            if RSS {
-                                set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 5), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 5)).
-                            }
-                            else {
-                                set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 4), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 4)).
+                set TargetOLM to false.
+            }
+            for x in shiplist {
+                set MechaZillaExists to false.
+                if x:name = TargetOLM {
+                    set MechaZillaExists to true.
+                    print "Orbital Launch Mount recognized and targeted".
+                    LogToFile("Orbital Launch Mount recognized and targeted").
+                    if FlipAltitude = 750 {
+                        set FlipAltitude to FlipAltitude + ArmsHeight.
+                    }
+                    SetRadarAltitude().
+                    when RadarAlt < 2000 then {
+                        if not (TargetOLM = "false") {
+                            sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
+                            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,97,true").
+                            sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,false").
+                            sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
+                            when RadarAlt < 300 then {
+                                set LandRollVector to Vessel(TargetOLM):partstitled("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position.
+                                if RSS {
+                                    set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 5), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 5)).
+                                }
+                                else {
+                                    set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 4), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 4)).
+                                }
                             }
                         }
+                        else {
+                            SetRadarAltitude().
+                            set FlipAltitude to 750.
+                            LogToFile("TargetOLM was false").
+                        }
                     }
-                    else {
-                        SetRadarAltitude().
-                        set FlipAltitude to 750.
-                    }
+                    return true.
+                    break.
                 }
-                return true.
-                break.
             }
+            return false.
         }
-        return false.
-    }
-    else {
-        return false.
+        else {
+            return false.
+        }
+        set LandAtOLMisrunning to false.
     }
 }
 
@@ -10327,10 +10344,14 @@ function LandAtOLM {
 function ShipsInOrbit {
     list targets in shiplist.
     set ShipsInOrbitList to list().
+    set b to 0.
     if shiplist:length > 0 {
         for x in shiplist {
             if x:name = ship:name {
                 RenameShip().
+            }
+            if x:name = "Booster" {
+                set b to b + 1.
             }
             if x:status = "ORBITING" and x:body = ship:body {
                 if x:name:contains("Starship Crew") or x:name:contains("Starship Cargo") or x:name:contains("Starship Tanker") {
@@ -10346,6 +10367,12 @@ function ShipsInOrbit {
                 }
             }
         }
+    }
+    if b > 0 {
+        set BoosterAlreadyExists to true.
+    }
+    else {
+        set BoosterAlreadyExists to false.
     }
     return ShipsInOrbitList.
 }

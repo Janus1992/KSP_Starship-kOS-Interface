@@ -2,6 +2,11 @@
 An Interface for automating the 'Starship Expansion Project' and 'Starship Launch Expansion' mods within Kerbal Space Program. It's meant only for stock kerbin at the moment.
 
 
+# IMPORTANT to users of older versions than V2.1
+- Please remove the SEP_kOS_Guidance.cfg that is located in /gamedata before/after installing V2.1
+- In V2.1 the structure of the mod has been changed to reduce the amount of unreliable patching.
+
+
 ![Alt text](/Infographic.png)
 
 
@@ -36,19 +41,20 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 # INCOMPATIBLE(!!):
 - TweakableEverything
+- Ferram AeroSpace Research (FAR)
 
 
 
 # Notes:
-- My mod copies the original SEP parts and changes it's fuel and thrust (and more) values to portray a more playable behaviour on Kerbin. As SEP is optimized for 2.5/2.7x sized Kerbin, SEP default will result in more fuel in orbit than a real life Starship would have in lower Kerbin orbit. Although SEP's behaviour is realistic for a planet the size of Kerbin, I decided that simulating the tight margins to orbit makes SEP more playable and fun on stock Kerbin.
+- Concerning stock KSP: My mod copies the original SEP parts and changes its fuel and thrust (and more) values to portray a more "usable" behaviour on Kerbin. As SEP is optimized for 2.5/2.7x sized Kerbin, SEP default will result in more fuel in orbit than a real life Starship would have in lower (stock) Kerbin orbit. I decided that simulating the tight margins to orbit makes SEP more playable and fun on stock Kerbin.
 
-- Automatic re-stacking/refueling is currently impossible because the SEP & SLE mods lack the ability to dock together.
+- Automatic re-stacking/refueling is currently impossible because the Booster lacks the ability to dock to the tower.
 
 - When using multiple ships of the same name, they might get renamed by my scripts to avoid Interface crashes.
 
-- Seldom Interface crashes may occur (it makes a little crashing noise). A watchdog computer should try to restart the Interface after 5 seconds.
+- Seldom Interface crashes may/will occur (it makes a little crashing noise). A watchdog computer should try to restart the Interface after 5 seconds.
 
-- Existing Ships will automatically try to update the Interface after installing the latest version from here, provided a connection to the KSC is available.
+- Existing Ships out on a trip will automatically try to update the Interface after one installs the latest version from here, provided a connection to the KSC is available.
 
 - The KSP delta-V calculations are not correct, so trust the Interface instead! :)
 
@@ -66,15 +72,11 @@ To Load Cargo in the Cargo Ship (due to the vehicle not fitting in the VAB):
 # Known Issues:
 - Your KSP should be set to english for the scripts to work.
 
-- Settings page: Sometimes the landing coördinates cannot be confirmed with "enter" or by pressing away from the text field. Closing the Settings page will however confirm the coördinates.
-
-- Enabling logging of data can seldomly cause a crash when it attempts to write and it loses the connection before/during the writing. Logging is therefore disabled by default.
-
-- Sometimes I've noticed that running some parts of the script generates tiny amounts of liquid fuel? It uses electricity, but generates LF. I haven't gotten to the bottom of this issue. One user reports that the ship can't land since oxidizer somehow gets created after the de-orbit burn. Investigation in progress..
+- In RSS on booster catch the tower may be glitching due to Kraken.
 
 - Being in IVA during Booster Separation can cause problems with returning back into the IVA later on, and break the camera. A reload after launch completion fixes everything.
 
-- FAR is currently only half-way supported. The Launch and Booster return should work properly in KSRSS, RSS and stock with FAR or without. However the ship won't be able to re-enter and land with FAR on a non-stock planet, so please do this manually if you really want to use FAR.
+- Enabling logging of data can seldomly cause a crash when it attempts to write and it loses the connection before/during the writing. Logging is therefore disabled by default.
 
 
 
@@ -93,4 +95,4 @@ To Load Cargo in the Cargo Ship (due to the vehicle not fitting in the VAB):
 
 
 # By the author:
-This has been a pet project of mine since around May 2021, and I had a lot of fun making and using this Interface. I hope you will too! Let me know what you think! I thank all the mod makers whose work I have been able to rely on, and without whom none of this would have been possible.
+This has been a pet project of mine since around May 2021, and I had a lot of fun making and using this Interface. I hope you will too! Let me know what you think! I thank all the mod makers whose work I have been able to rely on, and without whom none of this would have been possible. Especially I want to thank the makers of SEP: Kari, Sofie, etc.. and SAMCG14 for his work on the Launch Tower, both of whose CFGs I'm modifying for better stability across different peoples use cases.
