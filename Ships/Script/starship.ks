@@ -8167,7 +8167,7 @@ function DeOrbitVelocity {
                 set ProgradeVelocity to ProgradeVelocity - LngError / 100000.
             }
             else {
-                set ProgradeVelocity to ProgradeVelocity - LngError / 20000.
+                set ProgradeVelocity to ProgradeVelocity - LngError / 50000.
             }
             remove burn.
         }
