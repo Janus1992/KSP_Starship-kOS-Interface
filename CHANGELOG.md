@@ -1,3 +1,6 @@
+# V2.1.1 (2023-06-15)
+- Fixed Cluster rotation on stock and RSS .craft files.
+
 # V2.1 (2023-06-12) - MAJOR CHANGE
 - Reworked the structure of the mod in an effort to make the mod work more reliably across different systems. Instead of patching most changes, I reduce the patching to a minimum by using pre-made CFGs for the parts.
 - Fixed an issue where the ship would not set the Radar Altimeter correctly for catching into the arms.
