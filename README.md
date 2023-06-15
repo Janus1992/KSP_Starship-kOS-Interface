@@ -25,18 +25,16 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Stock KSP, RSS or KSRSS (no other planet changing mods), and the language has to be set to "english" (important).
 - Starship Expansion Project
     https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
-- Trajectories
-    https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/
-- kOS
-    https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/
-- TundraExploration (actually only TundraExploration.dll)
-    https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/
 - Starship Launch Expansion - the DEV version(!!)
     https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229
     Dev Version: https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev
-
-# OPTIONAL:
-- Kerbal Joint Reinforcement Continued (Required for use with RSS or KSRSS)
+- kOS
+    https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/
+- Trajectories
+    https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/
+- TundraExploration (actually only TundraExploration.dll)
+    https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/
+- Kerbal Joint Reinforcement Continued
     https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued
 
 # INCOMPATIBLE(!!):
