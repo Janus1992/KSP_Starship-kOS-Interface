@@ -1,20 +1,25 @@
 # KSP_Starship-kOS-Interface V2
-An Interface for automating the 'Starship Expansion Project' and 'Starship Launch Expansion' mods within Kerbal Space Program. It's meant only for stock kerbin at the moment.
+An Interface for automating the 'Starship Expansion Project' and 'Starship Launch Expansion' mods within Kerbal Space Program.
 
 
 # IMPORTANT to users of older versions than V2.1
-- Please remove the SEP_kOS_Guidance.cfg that is located in /gamedata before/after installing V2.1
+- Please remove the SEP_kOS_Guidance.cfg that is located in /gamedata before installing V2.1
 - In V2.1 the structure of the mod has been changed to reduce the amount of unreliable patching.
 
 
 ![Alt text](/Infographic.png)
 
 
-# TO INSTALL (NO CKAN):
+# INSTALL INSTRUCTIONS (NO CKAN):
 - Download and install all requirements listed below (SLE needs the DEV version, not available on CKAN).
 - Download the zip file.
 - Extract the contents to a folder.
 - Copy the 'GameData' and 'Ships' folders into your /Kerbal Space Program folder.
+    - It should look like this:
+        Kerbal Space Program/GameData/StarshipInterface
+        Kerbal Space Program/Ships/Script
+        Kerbal Space Program/Ships/VAB
+
 
 # IMPORTANT!:
 - Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker"). These can be found if you enable stock vehicles in your savegame, or you copy them manually to your savegame.
@@ -23,7 +28,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 # REQUIRES:
 - Stock KSP, RSS or KSRSS (no other planet changing mods), and the language has to be set to "english" (important).
-- Starship Expansion Project
+- Starship Expansion Project - github repository version and its requirements (!!)
     https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
 - Starship Launch Expansion - the DEV version(!!)
     https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229
@@ -44,8 +49,6 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 
 # Notes:
-- Concerning stock KSP: My mod copies the original SEP parts and changes its fuel and thrust (and more) values to portray a more "usable" behaviour on Kerbin. As SEP is optimized for 2.5/2.7x sized Kerbin, SEP default will result in more fuel in orbit than a real life Starship would have in lower (stock) Kerbin orbit. I decided that simulating the tight margins to orbit makes SEP more playable and fun on stock Kerbin.
-
 - Automatic re-stacking/refueling is currently impossible because the Booster lacks the ability to dock to the tower.
 
 - When using multiple ships of the same name, they might get renamed by my scripts to avoid Interface crashes.

@@ -1,3 +1,7 @@
+# V2.1.2 (2023-06-18)
+- Added .craft files for the Expendable and Depot Starship versions.
+- A minor tweak to the boosters landing burn.
+
 # V2.1.1 (2023-06-15)
 - Fixed Cluster rotation on stock and RSS .craft files.
 

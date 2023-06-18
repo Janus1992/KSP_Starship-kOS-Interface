@@ -277,6 +277,8 @@ set FinalDescentEngines to list().
 set result to v(0, 0, 0).
 set LandAtOLMisrunning to false.
 set BoosterAlreadyExists to false.
+set OrbitBurnPitchCorrection to 0.
+set ProgradeAngle to 0.
 
 
 
@@ -300,6 +302,22 @@ function FindParts {
     set CargoCoG to 0.
     set SLEnginesStep to List().
     set VACEnginesStep to List().
+    if Tank:name:contains("SEP.23.SHIP.DEPOT.KOS") {
+        set ShipType to "Depot".
+        set CargoMassStep to CargoMassStep + Tank:mass - Tank:drymass.
+        if stock {
+            set MaxCargoToOrbit to 251000.
+            set RCSThrust to 80.
+        }
+        else if KSRSS {
+            set MaxCargoToOrbit to 481000.
+            set RCSThrust to 140.
+        }
+        else if RSS {
+            set MaxCargoToOrbit to 1701000.
+            set RCSThrust to 200.
+        }
+    }
     Treewalking(Core:part).
     function TreeWalking {
         parameter StartPart.
@@ -355,6 +373,11 @@ function FindParts {
                     if RSS {
                         set MaxCargoToOrbit to 150000.
                     }
+                }
+                else if x:name:contains("SEP.23.SHIP.NOSE.EXP.KOS") {
+                    set Nose to x.
+                    set ShipType to "Expendable".
+                    set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
                 }
                 else {
                     set CargoMassStep to CargoMassStep + x:mass.
@@ -722,11 +745,15 @@ set g_close:onclick to {
             sas on.
             lock throttle to 0.
             unlock throttle.
-            Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+            if defined Nose {
+                Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+            }
             Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
             LogToFile("Closing GUI confirmed").
-            Watchdog:deactivate().
+            if defined watchdog {
+                Watchdog:deactivate().
+            }
             g:hide().
             shutdown.
         }
@@ -765,6 +792,12 @@ set g_close:onclick to {
             }
             if ShipType = "Tanker" {
                 set textbox:style:bg to "starship_img/starship_main_square_bg_tanker".
+            }
+            if ShipType = "Expendable" {
+                set textbox:style:bg to "starship_img/starship_main_square_bg_expendable".
+            }
+            if ShipType = "Depot" {
+                set textbox:style:bg to "starship_img/starship_main_square_bg_depot".
             }
         }
         set ClosingIsRunning to false.
@@ -959,6 +992,12 @@ local textbox is flightstack:addhlayout().
     }
     if ShipType = "Tanker" {
         set textbox:style:bg to "starship_img/starship_main_square_bg_tanker".
+    }
+    if ShipType = "Expendable" {
+        set textbox:style:bg to "starship_img/starship_main_square_bg_expendable".
+    }
+    if ShipType = "Depot" {
+        set textbox:style:bg to "starship_img/starship_main_square_bg_depot".
     }
 local textboxvlayout1 is textbox:addvlayout().
     set textboxvlayout1:style:vstretch to true.
@@ -1735,7 +1774,9 @@ set quickattitude1:onclick to {
     set attitude2label:style:align to "CENTER".
     set attitude2label:style:textcolor to grey.
     set attitude2label:style:bg to "starship_img/attitude_page_background".
-    Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+    if defined Nose {
+        Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+    }
     Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
     unlock steering.
     SetPlanetData().
@@ -2336,14 +2377,16 @@ set quickengine1:onclick to {
     for eng in SLEngines {eng:shutdown.}.
     for eng in VACEngines {eng:shutdown.}.
     LogToFile("ALL Engines turned OFF").
-    Nose:shutdown.
+    if not (ShipType = "Expendable") and not (ShipType = "Depot") {
+        Nose:shutdown.
+    }
     Tank:shutdown.
     SLEngines[0]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
     SLEngines[1]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
     SLEngines[2]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
     set ShowSLdeltaV to true.
 }.
-    
+
 set quickengine2:ontoggle to {
     parameter click.
     if click {
@@ -4375,30 +4418,52 @@ set launchbutton:ontoggle to {
                                     set LaunchTimeSpanInSeconds to LaunchTimeSpanInSeconds + 3.
                                 }
 
-                                launchWindow(TargetShip, 0).
+                                if abs(TargetShip:orbit:inclination) < 0.5 {
+                                    set LongitudeToRendezvous to 360 * (LaunchTimeSpanInSeconds / TargetShip:orbit:period).
+                                    set OrbitalCircumferenceDelta to (((LongitudeToRendezvous / 360) * 471239) / 4241150) * 360 * 0.5.
+                                    set LongitudeToRendezvous to LongitudeToRendezvous - OrbitalCircumferenceDelta.
 
-                                if launchWindowList[0] = -1 {
-                                    ShowHomePage().
-                                    set message1:text to "<b>No close encounters found (10 days)..</b>".
-                                    set message2:text to "<b>Try again later..</b>".
-                                    set message3:text to "".
-                                    set message1:style:textcolor to yellow.
-                                    set message2:style:textcolor to yellow.
-                                    set message3:style:textcolor to yellow.
-                                    set textbox:style:bg to "starship_img/starship_main_square_bg".
-                                    wait 3.
-                                    ClearInterfaceAndSteering().
-                                    return.
+                                    //print "delta Longitude: " + LongitudeToRendezvous.
+
+                                    set IdealLaunchTargetShipsLongitude to ship:geoposition:lng + (LaunchDistance / (1000 * Planet1Degree)) - LongitudeToRendezvous.
+
+                                    //print "Launch when Target passes Longitude: " + IdealLaunchTargetShipsLongitude.
+
+                                    set LaunchToRendezvousLng to mod(IdealLaunchTargetShipsLongitude - TargetShip:geoposition:lng, 360).
+                                    if LaunchToRendezvousLng < 0 {
+                                        set LaunchToRendezvousLng to 360 + LaunchToRendezvousLng.
+                                    }
+                                    set LaunchToRendezvousTime to (LaunchToRendezvousLng / 360) * TargetShip:orbit:period.
+                                    set LaunchToRendezvousTime to LaunchToRendezvousTime + (LaunchToRendezvousTime + LaunchTimeSpanInSeconds) / body:rotationperiod * TargetShip:orbit:period.
+
+                                    set LaunchTime to time:seconds + LaunchToRendezvousTime - 16.
                                 }
-                                set LaunchToRendezvousTime to launchWindowList[0] - 16.
-                                set LaunchTime to launchWindowList[1] - 16.
-                                set targetincl to launchWindowList[2].
-                                set setting3:text to (round(targetincl, 2) + "°").
+                                else {
+                                    launchWindow(TargetShip, 0).
 
-                                print "Launch To Rendezvous time: " + LaunchToRendezvousTime.
-                                print "Launch on Node: " + LaunchTime.
+                                    if launchWindowList[0] = -1 {
+                                        ShowHomePage().
+                                        set message1:text to "<b>No close encounters found (10 days)..</b>".
+                                        set message2:text to "<b>Try again later..</b>".
+                                        set message3:text to "".
+                                        set message1:style:textcolor to yellow.
+                                        set message2:style:textcolor to yellow.
+                                        set message3:style:textcolor to yellow.
+                                        set textbox:style:bg to "starship_img/starship_main_square_bg".
+                                        wait 3.
+                                        ClearInterfaceAndSteering().
+                                        return.
+                                    }
+                                    set LaunchToRendezvousTime to launchWindowList[0] - 16.
+                                    set LaunchTime to launchWindowList[1] - 16.
+                                    set targetincl to launchWindowList[2].
+                                    set setting3:text to (round(targetincl, 2) + "°").
 
-                                set LaunchTime to time:seconds + LaunchToRendezvousTime.
+                                    print "Launch To Rendezvous time: " + LaunchToRendezvousTime.
+                                    print "Launch on Node: " + LaunchTime.
+
+                                    set LaunchTime to time:seconds + LaunchToRendezvousTime.
+                                }
 
                                 InhibitButtons(1, 1, 0).
                                 set cancel:text to "<b>ABORT</b>".
@@ -4531,7 +4596,7 @@ set landbutton:ontoggle to {
         set message2:style:textcolor to white.
         set message3:style:textcolor to white.
         set textbox:style:bg to "starship_img/starship_main_square_bg".
-        if click {
+        if click and not (ShipType = "Expendable") and not (ShipType = "Depot") {
             if ship:body:atm:exists {
                 ShowHomePage().
                 SetPlanetData().
@@ -5289,6 +5354,18 @@ set landbutton:ontoggle to {
                 ClearInterfaceAndSteering().
             }
         }
+        else if ShipType = "Expendable" or ShipType = "Depot" {
+            ShowHomePage().
+            LogToFile("Land Function Stopped").
+            set message1:text to "<b>De-Orbit & Landing Cancelled.</b>".
+            set message1:style:textcolor to yellow.
+            set message2:text to "<b>This Ship is not fitted for recovery..</b>".
+            set message2:style:textcolor to yellow.
+            set textbox:style:bg to "starship_img/starship_main_square_bg".
+            set message3:text to "".
+            wait 3.
+            ClearInterfaceAndSteering().
+        }
     }
 }.
 
@@ -5360,7 +5437,9 @@ function LandwithoutAtmo {
         if quicksetting1:pressed and altitude > 10000 {
             set kuniverse:timewarp:warp to 4.
         }
-        Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+        if defined Nose {
+            Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+        }
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
 
         if groundspeed > 50 or altitude > 10000 {
@@ -5475,7 +5554,10 @@ function LandwithoutAtmo {
         set message3:style:textcolor to white.
 
         if ship:body:atm:sealevelpressure > 0.5 {
-            Nose:activate. Tank:activate.
+            if defined Nose {
+                Nose:activate.
+            }
+            Tank:activate.
         }
         ShutDownAllEngines().
         set TwoVacEngineLanding to false.
@@ -5497,7 +5579,9 @@ function LandwithoutAtmo {
         set message2:text to "<b>Landing Program completed..</b>".
         set message3:text to "<b>Hatches may now be opened..</b>".
         set runningprogram to "None".
-        Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+        if defined Nose {
+            Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+        }
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
         unlock steering.
         LogToFile("Self-Check Complete, Landing Program Complete.").
@@ -5909,6 +5993,20 @@ if addons:tr:available and not startup {
             }
             Watchdog:activate().
         }
+        if ShipType = "Expendable" {
+            set cargo1text:text to "Closed".
+            set Watchdog to SHIP:PARTSNAMED("SEP.23.SHIP.NOSE.EXP.KOS").
+            if Watchdog:length = 0 {
+                set Watchdog to SHIP:PARTSNAMED(("SEP.23.SHIP.NOSE.EXP.KOS (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
+            }
+            else {
+                set Watchdog to Watchdog[0]:getmodule("kOSProcessor").
+            }
+            Watchdog:activate().
+        }
+        if ShipType = "Depot" {
+            set cargo1text:text to "Closed".
+        }
     }
     else {
         set message1:text to "<b>Please upgrade your KSC facilities..</b>".
@@ -6002,7 +6100,12 @@ function Launch {
         if RSS {
             set targetap to 250000.
             set LaunchElev to altitude - 108.384.
-            set BoosterAp to 135000.
+            if ShipType = "Depot" {
+                set BoosterAp to 129500.
+            }
+            else {
+                set BoosterAp to 135000.
+            }
             if NrOfVacEngines = 6 {
                 set PitchIncrement to 3.5 + 2.6 * CargoMass / MaxCargoToOrbit.
             }
@@ -6010,12 +6113,23 @@ function Launch {
                 set PitchIncrement to 3.25 + 2.6 * CargoMass / MaxCargoToOrbit.
             }
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.01, 0, 0, -30, PitchIncrement).
-            set TimeFromLaunchToOrbit to 560.
+            if ShipType = "Depot" {
+                set TimeFromLaunchToOrbit to 530.
+            }
+            else {
+                set TimeFromLaunchToOrbit to 560.
+            }
+            set BoosterThrottleDownAlt to 1500.
         }
         else if KSRSS {
             set targetap to 125000.
             set LaunchElev to altitude - 67.74.
-            set BoosterAp to 80000.
+            if ShipType = "Depot" {
+                set BoosterAp to 72500.
+            }
+            else {
+                set BoosterAp to 80000.
+            }
             if NrOfVacEngines = 6 {
                 set PitchIncrement to 2.75 + 2.5 * CargoMass / MaxCargoToOrbit.
             }
@@ -6024,19 +6138,34 @@ function Launch {
             }
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.025, 0, 0, -30, PitchIncrement).
             set TimeFromLaunchToOrbit to 360.
+            set BoosterThrottleDownAlt to 1000.
         }
         else {
             set targetap to 75000.
             set LaunchElev to altitude - 67.74.
-            set BoosterAp to 60000.
-            if NrOfVacEngines = 6 {
+            if ShipType = "Depot" {
+                set BoosterAp to 45000.
+            }
+            else {
+                set BoosterAp to 60000.
+            }
+            if ShipType = "Depot" {
+                set PitchIncrement to 5.
+            }
+            else if NrOfVacEngines = 6 {
                 set PitchIncrement to 1.
             }
             else {
                 set PitchIncrement to 0.
             }
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.05, 0, 0, -30, PitchIncrement).
-            set TimeFromLaunchToOrbit to 260.
+            if ShipType = "Depot" {
+                set TimeFromLaunchToOrbit to 280.
+            }
+            else {
+                set TimeFromLaunchToOrbit to 260.
+            }
+            set BoosterThrottleDownAlt to 1500.
         }
         set targetincl to setting3:text:split("°")[0]:toscalar(0).
         set LaunchData to LAZcalc_init(targetap, targetincl).
@@ -6190,7 +6319,7 @@ function Launch {
                     }
                 }
                 set quickengine3:pressed to true.
-                if NrOfVacEngines = 3 {
+                if NrOfVacEngines = 3 or ShipType = "Depot" {
                     set quickengine2:pressed to true.
                 }
                 unlock throttle.
@@ -6214,7 +6343,7 @@ function Launch {
         else {
             set StageSepComplete to true.
             rcs on.
-            if NrOfVacEngines = 3 {
+            if NrOfVacEngines = 3 or ShipType = "Depot" {
                 set quickengine2:pressed to true.
             }
             set quickengine3:pressed to true.
@@ -6226,13 +6355,19 @@ function Launch {
             InhibitButtons(1, 1, 1).
         }
         when StageSepComplete then {
+            if ShipType = "Depot" {
+                set steeringmanager:yawtorquefactor to 0.1.
+            }
             if RSS {
                 when DesiredAccel / max(MaxAccel, 0.000001) < 0.6 and altitude > 100000 then {
-                    if NrOfVacEngines = 3 {
+                    if NrOfVacEngines = 3 or ShipType = "Depot" {
                         set quickengine2:pressed to false.
                     }
                     when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 0 then {
-                        if NrOfVacEngines = 6 {
+                        if ShipType = "Depot" {
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 15).
+                        }
+                        else if NrOfVacEngines = 6 {
                             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 10).
                         }
                         else {
@@ -6244,7 +6379,7 @@ function Launch {
             }
             else if KSRSS {
                 when DesiredAccel / max(MaxAccel, 0.000001) < 0.6 and altitude > 80000 or apoapsis > targetap then {
-                    if NrOfVacEngines = 3 {
+                    if NrOfVacEngines = 3 or ShipType = "Depot" {
                         set quickengine2:pressed to false.
                     }
                     when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 0 then {
@@ -6255,11 +6390,16 @@ function Launch {
             }
             else {
                 when apoapsis > targetap - 10000 then {
-                    if NrOfVacEngines = 3 {
+                    if NrOfVacEngines = 3 or ShipType = "Depot" {
                         set quickengine2:pressed to false.
                     }
                     when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 0 then {
-                        set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -7.5, 7.5).
+                        if ShipType = "Depot" {
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -7.5, 12.5).
+                        }
+                        else {
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -7.5, 7.5).
+                        }
                         set MaintainVS to true.
                     }
                 }
@@ -6336,13 +6476,28 @@ Function LaunchSteering {
     else {
         if Boosterconnected {
             if RSS {
-                set targetpitch to 90 - (7.85 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                if ShipType = "Depot" {
+                    set targetpitch to 90 - (7 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                }
+                else {
+                    set targetpitch to 90 - (7.85 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                }
             }
             else if KSRSS {
-                set targetpitch to 90 - (10.5 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                if ShipType = "Depot" {
+                    set targetpitch to 90 - (9 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                }
+                else {
+                    set targetpitch to 90 - (10.5 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                }
             }
             else {
-                set targetpitch to 90 - (10 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                if ShipType = "Depot" {
+                    set targetpitch to 90 - (8 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                }
+                else {
+                    set targetpitch to 90 - (10 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                }
             }
             if ship:q > 0.25 {
                 lock throttle to 1 - 3 * (ship:q - 0.25).
@@ -6350,17 +6505,8 @@ Function LaunchSteering {
             else {
                 lock throttle to 1.
             }
-            if Tank:hasmodule("FARPartModule") and RSS and apoapsis > BoosterAp - 1000 {
-                lock throttle to 0.25 + (1 - ((apoapsis - BoosterAp + 1000) / 1000)).
-                if not (Launch180) {
-                    set result to heading(myAzimuth, 85).
-                }
-                else {
-                    set result to heading(myAzimuth, 85) * R(0, 0, 180).
-                }
-            }
-            else if apoapsis > BoosterAp - 1500 {
-                lock throttle to 0.25 + (1 - ((apoapsis - BoosterAp + 1500) / 1500)).
+            if apoapsis > BoosterAp - BoosterThrottleDownAlt {
+                lock throttle to 0.25 + (1 - ((apoapsis - BoosterAp + BoosterThrottleDownAlt) / BoosterThrottleDownAlt)).
                 if not (Launch180) {
                     set result to heading(myAzimuth, 85).
                 }
@@ -6391,7 +6537,7 @@ Function LaunchSteering {
             }
             else if altitude > 30000 and time:seconds > StageSeparationTime + 7 {
                 set quickengine3:pressed to true.
-                if NrOfVacEngines = 3 {
+                if NrOfVacEngines = 3 or ShipType = "Depot" {
                     set quickengine2:pressed to true.
                 }
             }
@@ -6435,7 +6581,7 @@ Function LaunchSteering {
                     lock throttle to (3 * Planet1G) / max(MaxAccel, 0.000001).
                 }
                 else if MaintainVS and apoapsis < targetap + 10000 and KUniverse:activevessel = ship and periapsis < altitude - 100 {
-                    lock throttle to min((2 * Planet1G) / max(MaxAccel, 0.000001), max(deltaV / max(MaxAccel, 0.000001), 0.1)).
+                    lock throttle to min((3 * Planet1G) / max(MaxAccel, 0.000001), max(deltaV / max(MaxAccel, 0.000001), 0.1)).
                 }
                 else if periapsis < targetap - 500 and apoapsis < targetap + 10000 and periapsis < altitude - 100 {
                     lock throttle to DesiredAccel / max(MaxAccel, 0.000001).
@@ -6495,7 +6641,7 @@ function LaunchLabelData {
                             set message3:text to "<b>Booster Landing Confirmed!</b>".
                         }
                         else {
-                            set message3:text to "<b>Booster Alt / Spd:</b> " + round(Booster:altitude - 116) + "m / " + round(Booster:airspeed) + "m/s".
+                            set message3:text to "<b>Booster Alt / Spd:</b> " + round((Booster:altitude - landingzone:terrainheight) / 1000, 1) + "km / " + round(Booster:airspeed) + "m/s".
                         }
                     }
                     else {
@@ -6524,7 +6670,7 @@ function LaunchLabelData {
                                 set message3:text to "<b>Booster Landing Confirmed!</b>".
                             }
                             else {
-                                set message3:text to "<b>Booster Alt / Spd:</b>                " + round(Booster:altitude - 116) + "m / " + round(Booster:airspeed) + "m/s".
+                                set message3:text to "<b>Booster Alt / Spd:</b>                " + round((Booster:altitude - landingzone:terrainheight) / 1000, 1) + "km / " + round(Booster:airspeed) + "m/s".
                             }
                         }
                         else {
@@ -7922,22 +8068,24 @@ function LngLatError {
 
 function setflaps {
     parameter angleFwd, angleAft, deploy, authority.
+    if not (ShipType = "Expendable") and not (ShipType = "Depot") {
         if FLflap:hasmodule("ModuleSEPControlSurface") {
             FLflap:getmodule("ModuleSEPControlSurface"):SetField("Deploy", deploy).
         }
         FRflap:getmodule("ModuleSEPControlSurface"):SetField("Deploy", deploy).
         ALflap:getmodule("ModuleSEPControlSurface"):SetField("Deploy", deploy).
         ARflap:getmodule("ModuleSEPControlSurface"):SetField("Deploy", deploy).
-        
+
         FLflap:getmodule("ModuleSEPControlSurface"):SetField("Deploy Angle", angleFwd).
         FRflap:getmodule("ModuleSEPControlSurface"):SetField("Deploy Angle", angleFwd).
         ALflap:getmodule("ModuleSEPControlSurface"):SetField("Deploy Angle", angleAft).
         ARflap:getmodule("ModuleSEPControlSurface"):SetField("Deploy Angle", angleAft).
-        
+
         FLflap:getmodule("ModuleSEPControlSurface"):SetField("Authority Limiter", authority).
         FRflap:getmodule("ModuleSEPControlSurface"):SetField("Authority Limiter", authority).
         ALflap:getmodule("ModuleSEPControlSurface"):SetField("Authority Limiter", authority).
         ARflap:getmodule("ModuleSEPControlSurface"):SetField("Authority Limiter", authority).
+    }
 }
     
     
@@ -7990,7 +8138,9 @@ function ActivateEngines {
         }
         LogToFile("VAC Engine Start Successful!").
     }
-    Nose:shutdown.
+    if not (ShipType = "Expendable") and not (ShipType = "Depot") {
+        Nose:shutdown.
+    }
     Tank:shutdown.
 }
 
@@ -8393,20 +8543,26 @@ function updatestatusbar {
                 set res:enabled to true.
             }
         }
-        for res in HeaderTank:resources {
-            if res:name = "LiquidFuel" {
-                set LFShip to LFShip + res:amount.
-                set LFShipCap to LFShipCap + res:capacity.
+        if defined HeaderTank {
+            for res in HeaderTank:resources {
+                if res:name = "LiquidFuel" {
+                    set LFShip to LFShip + res:amount.
+                    set LFShipCap to LFShipCap + res:capacity.
+                }
+                if res:name = "Oxidizer" {
+                    set OxShip to OxShip + res:amount.
+                    set OxShipCap to OxShipCap + res:capacity.
+                }
+                if not (res:enabled) {
+                    set res:enabled to true.
+                }
             }
-            if res:name = "Oxidizer" {
-                set OxShip to OxShip + res:amount.
-                set OxShipCap to OxShipCap + res:capacity.
-            }
-            if not (res:enabled) {
-                set res:enabled to true.
-            }
+            set FuelMass to (Tank:mass - Tank:drymass) + (HeaderTank:mass - HeaderTank:drymass).
         }
-        set FuelMass to (Tank:mass - Tank:drymass) + (HeaderTank:mass - HeaderTank:drymass).
+        else {
+            set FuelMass to Tank:mass - Tank:drymass.
+        }
+
         if ShowSLdeltaV {
             set EngineISP to 309.
         }
@@ -8501,7 +8657,7 @@ function updatestatusbar {
             if CargoMass = 0 {
                 set message12:text to "          0 kg".
                 set message12:style:textcolor to grey.
-                if ShipType = "Tanker" {
+                if ShipType = "Tanker" or ShipType = "Depot" {
                     set message12:style:bg to "starship_img/starship_fuel_grey".
                 }
                 else {
@@ -8509,9 +8665,14 @@ function updatestatusbar {
                 }
             }
             else {
-                set message12:text to "          " + round(CargoMass) + " kg".
+                if CargoMass > 100000 {
+                    set message12:text to "          " + round(CargoMass / 1000) + " T".
+                }
+                else {
+                    set message12:text to "          " + round(CargoMass) + " kg".
+                }
                 set message12:style:textcolor to white.
-                if ShipType = "Tanker" {
+                if ShipType = "Tanker" or ShipType = "Depot" {
                     set message12:style:bg to "starship_img/starship_fuel".
                 }
                 else {
@@ -8519,20 +8680,25 @@ function updatestatusbar {
                 }
             }
         }
-        if ShipType = "Tanker" {
+        if ShipType = "Tanker" or ShipType = "Depot" or ShipType = "Expendable" {
             cargobutton:hide().
         }
         else {
             cargobutton:show().
         }
-        if Watchdog:Mode = "READY" and avionics = 3 {
-            set message22:style:bg to "starship_img/starship_chip".
-        }
-        else if avionics = 3 {
-            set message22:style:bg to "starship_img/starship_chip_grey".
+        if defined watchdog {
+            if Watchdog:Mode = "READY" and avionics = 3 {
+                set message22:style:bg to "starship_img/starship_chip".
+            }
+            else if avionics = 3 {
+                set message22:style:bg to "starship_img/starship_chip_grey".
+            }
+            else {
+                set message22:style:bg to "starship_img/starship_chip_yellow".
+            }
         }
         else {
-            set message22:style:bg to "starship_img/starship_chip_yellow".
+            set message22:style:bg to "starship_img/starship_chip_grey".
         }
         set StatusBarIsRunning to false.
     }
@@ -8542,83 +8708,96 @@ function updatestatusbar {
 function updateStatus {
     if not StatusPageIsRunning {
         set StatusPageIsRunning to true.
-        if FLflap:getmodule("ModuleSEPControlSurface"):GetField("Deploy") {
+        if not (ShipType = "Expendable") and not (ShipType = "Depot") {
+            if FLflap:getmodule("ModuleSEPControlSurface"):GetField("Deploy") {
 
-            if defined FL {}
-            else {
-                set FL to FLflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle").
-                set FR to FRflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle").
-                set AL to ALflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle").
-                set AR to ARflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle").
-                set FlapAuthority to FLflap:getmodule("ModuleSEPControlSurface"):GetField("authority limiter").
-            }
+                if defined FL {}
+                else {
+                    set FL to FLflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle").
+                    set FR to FRflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle").
+                    set AL to ALflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle").
+                    set AR to ARflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle").
+                    set FlapAuthority to FLflap:getmodule("ModuleSEPControlSurface"):GetField("authority limiter").
+                }
 
-            if defined Fpitch {
-                if SLEngines[0]:ignition {
-                    set Fpitch to SLEngines[0]:gimbal:pitchangle * FlapAuthority.
-                    set Fyaw to SLEngines[0]:gimbal:yawangle * FlapAuthority.
-                    set Froll to SLEngines[0]:gimbal:rollangle * (FlapAuthority / 3).
+                if defined Fpitch {
+                    if SLEngines[0]:ignition {
+                        set Fpitch to SLEngines[0]:gimbal:pitchangle * FlapAuthority.
+                        set Fyaw to SLEngines[0]:gimbal:yawangle * FlapAuthority.
+                        set Froll to SLEngines[0]:gimbal:rollangle * (FlapAuthority / 3).
+                    }
+                    else {
+                        set Fpitch to ship:control:pilotpitch * FlapAuthority.
+                        set Fyaw to ship:control:pilotyaw * FlapAuthority.
+                        set Froll to ship:control:pilotroll * (FlapAuthority / 3).
+                    }
                 }
                 else {
-                    set Fpitch to ship:control:pilotpitch * FlapAuthority.
-                    set Fyaw to ship:control:pilotyaw * FlapAuthority.
-                    set Froll to ship:control:pilotroll * (FlapAuthority / 3).
+                    set Fpitch to 0.000001.
+                    set Fyaw to 0.
+                    set Froll to 0.
                 }
+                if not FlapsYawEngaged {
+                    set Fyaw to 0.
+                }
+
+                set FLold to FL.
+                set FRold to FR.
+                set ALold to AL.
+                set ARold to AR.
+
+                set FLchange to - Fpitch + Fyaw - Froll.
+                set FRchange to - Fpitch - Fyaw + Froll.
+                set ALchange to Fpitch - Fyaw - Froll.
+                set ARchange to Fpitch + Fyaw + Froll.
+
+                set FLcommand to FLflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") + FLchange.
+                set FRcommand to FRflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") + FRchange.
+                set ALcommand to ALflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") + ALchange.
+                set ARcommand to ARflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") + ARchange.
+
+                set FL to FLold + ((FLcommand - FLold) / 5).
+                set FR to FRold + ((FRcommand - FRold) / 5).
+                set AL to ALold + ((ALcommand - ALold) / 5).
+                set AR to ARold + ((ARcommand - ARold) / 5).
+
+                set FWDdownlim to FLflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") - FlapAuthority.
+                set FWDuplim to FLflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") + FlapAuthority.
+                set AFTdownlim to ALflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") - FlapAuthority.
+                set AFTuplim to ALflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") + FlapAuthority.
+
+                if FL < max(FWDdownlim, 0) {set FL to max(FWDdownlim, 0).} if FL > min(FWDuplim, 78) {set FL to min(FWDuplim, 78).}
+                if FR < max(FWDdownlim, 0) {set FR to max(FWDdownlim, 0).} if FR > min(FWDuplim, 78) {set FR to min(FWDuplim, 78).}
+                if AL < max(AFTdownlim, 5) {set AL to max(AFTdownlim, 5).} if AL > min(AFTuplim, 70) {set AL to min(AFTuplim, 70).}
+                if AR < max(AFTdownlim, 5) {set AR to max(AFTdownlim, 5).} if AR > min(AFTuplim, 70) {set AR to min(AFTuplim, 70).}
+
+                set status1label1:text to round(FL):tostring + "°".
+                set status1label3:text to round(FR):tostring + "°".
+                set status3label1:text to round(AL):tostring + "°".
+                set status3label3:text to round(AR):tostring + "°".
             }
             else {
-                set Fpitch to 0.000001.
-                set Fyaw to 0.
-                set Froll to 0.
+                set status1label1:text to "0°".
+                set status1label3:text to "0°".
+                set status3label1:text to "5°".
+                set status3label3:text to "5°".
+                set status1label1:style:textcolor to white.
+                set status1label3:style:textcolor to white.
+                set status3label1:style:textcolor to white.
+                set status3label3:style:textcolor to white.
+                set status1label2:style:textcolor to white.
             }
-            if not FlapsYawEngaged {
-                set Fyaw to 0.
-            }
-
-            set FLold to FL.
-            set FRold to FR.
-            set ALold to AL.
-            set ARold to AR.
-
-            set FLchange to - Fpitch + Fyaw - Froll.
-            set FRchange to - Fpitch - Fyaw + Froll.
-            set ALchange to Fpitch - Fyaw - Froll.
-            set ARchange to Fpitch + Fyaw + Froll.
-
-            set FLcommand to FLflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") + FLchange.
-            set FRcommand to FRflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") + FRchange.
-            set ALcommand to ALflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") + ALchange.
-            set ARcommand to ARflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") + ARchange.
-
-            set FL to FLold + ((FLcommand - FLold) / 5).
-            set FR to FRold + ((FRcommand - FRold) / 5).
-            set AL to ALold + ((ALcommand - ALold) / 5).
-            set AR to ARold + ((ARcommand - ARold) / 5).
-
-            set FWDdownlim to FLflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") - FlapAuthority.
-            set FWDuplim to FLflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") + FlapAuthority.
-            set AFTdownlim to ALflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") - FlapAuthority.
-            set AFTuplim to ALflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle") + FlapAuthority.
-
-            if FL < max(FWDdownlim, 0) {set FL to max(FWDdownlim, 0).} if FL > min(FWDuplim, 78) {set FL to min(FWDuplim, 78).}
-            if FR < max(FWDdownlim, 0) {set FR to max(FWDdownlim, 0).} if FR > min(FWDuplim, 78) {set FR to min(FWDuplim, 78).}
-            if AL < max(AFTdownlim, 5) {set AL to max(AFTdownlim, 5).} if AL > min(AFTuplim, 70) {set AL to min(AFTuplim, 70).}
-            if AR < max(AFTdownlim, 5) {set AR to max(AFTdownlim, 5).} if AR > min(AFTuplim, 70) {set AR to min(AFTuplim, 70).}
-
-            set status1label1:text to round(FL):tostring + "°".
-            set status1label3:text to round(FR):tostring + "°".
-            set status3label1:text to round(AL):tostring + "°".
-            set status3label3:text to round(AR):tostring + "°".
         }
         else {
-            set status1label1:text to "0°".
-            set status1label3:text to "0°".
-            set status3label1:text to "5°".
-            set status3label3:text to "5°".
-            set status1label1:style:textcolor to white.
-            set status1label3:style:textcolor to white.
-            set status3label1:style:textcolor to white.
-            set status3label3:style:textcolor to white.
-            set status1label2:style:textcolor to white.
+            set status1label1:text to "-°".
+            set status1label3:text to "-°".
+            set status3label1:text to "-°".
+            set status3label3:text to "-°".
+            set status1label1:style:textcolor to grey.
+            set status1label3:style:textcolor to grey.
+            set status3label1:style:textcolor to grey.
+            set status3label3:style:textcolor to grey.
+            set status1label2:style:textcolor to grey.
         }
         set PrevUpdateTime to time:seconds.
 
@@ -8706,22 +8885,27 @@ function updateStatus {
 
 
 function CalculateShipTemperature {
-    if FLflap:getmodule("ModuleSEPControlSurface"):GetField("Deploy") = true {
-        if runningprogram = "De-orbit & Landing" or runningprogram = "Final Approach" or runningprogram = "Landing" or runningprogram = "After Landing" or runningprogram = "Attitude (Landing Armed)" {
-            set FlapsControl to "magenta".
-            set status1label1:style:textcolor to magenta.
-            set status1label3:style:textcolor to magenta.
-            set status3label1:style:textcolor to magenta.
-            set status3label3:style:textcolor to magenta.
-            set status1label2:style:textcolor to magenta.
+    if not (ShipType = "Expendable") and not (ShipType = "Depot") {
+        if FLflap:getmodule("ModuleSEPControlSurface"):GetField("Deploy") = true {
+            if runningprogram = "De-orbit & Landing" or runningprogram = "Final Approach" or runningprogram = "Landing" or runningprogram = "After Landing" or runningprogram = "Attitude (Landing Armed)" {
+                set FlapsControl to "magenta".
+                set status1label1:style:textcolor to magenta.
+                set status1label3:style:textcolor to magenta.
+                set status3label1:style:textcolor to magenta.
+                set status3label3:style:textcolor to magenta.
+                set status1label2:style:textcolor to magenta.
+            }
+            else {
+                set FlapsControl to "manual".
+                set status1label1:style:textcolor to cyan.
+                set status1label3:style:textcolor to cyan.
+                set status3label1:style:textcolor to cyan.
+                set status3label3:style:textcolor to cyan.
+                set status1label2:style:textcolor to cyan.
+            }
         }
         else {
-            set FlapsControl to "manual".
-            set status1label1:style:textcolor to cyan.
-            set status1label3:style:textcolor to cyan.
-            set status3label1:style:textcolor to cyan.
-            set status3label3:style:textcolor to cyan.
-            set status1label2:style:textcolor to cyan.
+            set FlapsControl to "none".
         }
     }
     else {
@@ -8751,43 +8935,50 @@ function CalculateShipTemperature {
     else {
         set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -86) + 0.1 * max(vang(facing:forevector, velocity:surface), 10) * (ship:q * (airspeed / 100)^3), 2649).
     }
-    if ShipTemperature > 1750 {
-        set status2label1:style:textcolor to red.
-        set status2label3:style:textcolor to red.
-        if FlapsControl = "magenta" {
-            set status2label2:style:bg to "starship_img/starship_symbol_flaps_magenta_hot".
-        }
-        else if FlapsControl = "manual" {
-            set status2label2:style:bg to "starship_img/starship_symbol_flaps_cyan_hot".
-        }
-        else {
-            set status2label2:style:bg to "starship_img/starship_symbol_hot".
-        }
-    }
-    else if ShipTemperature > 1500 {
-        set status2label1:style:textcolor to yellow.
-        set status2label3:style:textcolor to yellow.
-        if FlapsControl = "magenta" {
-            set status2label2:style:bg to "starship_img/starship_symbol_flaps_magenta_warm".
-        }
-        else if FlapsControl = "manual" {
-            set status2label2:style:bg to "starship_img/starship_symbol_flaps_cyan_warm".
-        }
-        else {
-            set status2label2:style:bg to "starship_img/starship_symbol_warm".
-        }
-    }
-    else {
+    if ShipType = "Depot" or ShipType = "Expendable" {
         set status2label1:style:textcolor to white.
         set status2label3:style:textcolor to white.
-        if FlapsControl = "magenta" {
-            set status2label2:style:bg to "starship_img/starship_symbol_flaps_magenta".
+        set status2label2:style:bg to "starship_img/starship_symbol_no_flaps".
+    }
+    else {
+        if ShipTemperature > 1750 {
+            set status2label1:style:textcolor to red.
+            set status2label3:style:textcolor to red.
+            if FlapsControl = "magenta" {
+                set status2label2:style:bg to "starship_img/starship_symbol_flaps_magenta_hot".
+            }
+            else if FlapsControl = "manual" {
+                set status2label2:style:bg to "starship_img/starship_symbol_flaps_cyan_hot".
+            }
+            else {
+                set status2label2:style:bg to "starship_img/starship_symbol_hot".
+            }
         }
-        else if FlapsControl = "manual" {
-            set status2label2:style:bg to "starship_img/starship_symbol_flaps_cyan".
+        else if ShipTemperature > 1500 {
+            set status2label1:style:textcolor to yellow.
+            set status2label3:style:textcolor to yellow.
+            if FlapsControl = "magenta" {
+                set status2label2:style:bg to "starship_img/starship_symbol_flaps_magenta_warm".
+            }
+            else if FlapsControl = "manual" {
+                set status2label2:style:bg to "starship_img/starship_symbol_flaps_cyan_warm".
+            }
+            else {
+                set status2label2:style:bg to "starship_img/starship_symbol_warm".
+            }
         }
         else {
-            set status2label2:style:bg to "starship_img/starship_symbol".
+            set status2label1:style:textcolor to white.
+            set status2label3:style:textcolor to white.
+            if FlapsControl = "magenta" {
+                set status2label2:style:bg to "starship_img/starship_symbol_flaps_magenta".
+            }
+            else if FlapsControl = "manual" {
+                set status2label2:style:bg to "starship_img/starship_symbol_flaps_cyan".
+            }
+            else {
+                set status2label2:style:bg to "starship_img/starship_symbol".
+            }
         }
     }
     set status2label1:text to round(ShipTemperature + 0.3) + "°C".
@@ -9668,6 +9859,12 @@ function ClearInterfaceAndSteering {
     if ShipType = "Tanker" {
         set textbox:style:bg to "starship_img/starship_main_square_bg_tanker".
     }
+    if ShipType = "Expendable" {
+        set textbox:style:bg to "starship_img/starship_main_square_bg_expendable".
+    }
+    if ShipType = "Depot" {
+        set textbox:style:bg to "starship_img/starship_main_square_bg_depot".
+    }
     set launchlabel:style:textcolor to white.
     set launchlabel:style:bg to "starship_img/starship_background_dark".
     set landlabel:style:textcolor to white.
@@ -9766,7 +9963,9 @@ function BackGroundUpdate {
 
 
 function SendPing {
-    sendMessage(Processor(volume("watchdog")), "ping").
+    if defined watchdog {
+        sendMessage(Processor(volume("watchdog")), "ping").
+    }
 }
 
 
@@ -10685,7 +10884,9 @@ function PerformBurn {
         set message3:style:textcolor to white.
         set runningprogram to "Standby for Burn".
         HideEngineToggles(1).
-        Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+        if defined Nose {
+            Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+        }
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
         sas off.
         rcs off.
@@ -11020,24 +11221,28 @@ function DisengageYawRCS {
         if tank:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
             tank:getmodule("MODULERCSFX"):doevent("show actuation toggles").
         }
-        if nose:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
-            nose:getmodule("MODULERCSFX"):doevent("show actuation toggles").
-        }
         tank:getmodule("MODULERCSFX"):setfield("yaw", false).
-        nose:getmodule("MODULERCSFX"):setfield("yaw", false).
         tank:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
-        nose:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
+        if defined nose {
+            if nose:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
+                nose:getmodule("MODULERCSFX"):doevent("show actuation toggles").
+            }
+            nose:getmodule("MODULERCSFX"):setfield("yaw", false).
+            nose:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
+        }
     }
     else {
         if tank:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
             tank:getmodule("MODULERCSFX"):doevent("show actuation toggles").
         }
-        if nose:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
-            nose:getmodule("MODULERCSFX"):doevent("show actuation toggles").
-        }
         tank:getmodule("MODULERCSFX"):setfield("yaw", true).
-        nose:getmodule("MODULERCSFX"):setfield("yaw", true).
         tank:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
-        nose:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
+        if defined nose {
+            if nose:getmodule("MODULERCSFX"):hasevent("show actuation toggles") {
+                nose:getmodule("MODULERCSFX"):doevent("show actuation toggles").
+            }
+            nose:getmodule("MODULERCSFX"):setfield("yaw", true).
+            nose:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
+        }
     }
 }

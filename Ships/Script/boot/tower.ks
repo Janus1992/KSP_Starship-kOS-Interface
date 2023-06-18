@@ -110,7 +110,7 @@ print "Stabilizers: " + NrforStabilizers.
 
 
 clearscreen.
-if ship:partstitled("Donnager MK-1 Main Body"):length = 0 {
+if ship:partstitled("Donnager MK-1 Main Body"):length = 0 and ship:partstitled("Donnager MK-1 EXP Main Body"):length = 0 and ship:partstitled("Donnager MK-1 Depot"):length = 0 {
     print "No Ship Detected..".
     for var in LaunchSites:keys {
         if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(ship:geoposition:lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(ship:geoposition:lng, 2) {

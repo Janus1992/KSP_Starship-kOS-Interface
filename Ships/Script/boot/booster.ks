@@ -389,7 +389,7 @@ function Boostback {
         lock steering to SteeringVector.
     }
 
-    until landingRatio > 1 and alt:radar < 2250 or alt:radar < 1750 {
+    until landingRatio > 1 and alt:radar < 2250 or alt:radar < 1950 {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         rcs on.
@@ -397,13 +397,13 @@ function Boostback {
         CheckFuel().
     }
     
-    HUDTEXT("Performing Landing Burn..", 3, 2, 20, green, false).
     lock throttle to (landingRatio * min(maxDecel, 44 - 9.81)) / maxDecel.
-    lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface, ApproachVector).
+    lock SteeringVector to lookdirup(-velocity:surface, ApproachVector).
     lock steering to SteeringVector.
 
     set LandingBurnAltitude to altitude.
     set LandingBurnStarted to true.
+    HUDTEXT("Performing Landing Burn..", 3, 2, 20, green, false).
 
     if abs(LngError) > 600 or abs(LatError) > 150 {
         set LandSomewhereElse to true.
@@ -448,7 +448,7 @@ function Boostback {
         lock TotalstopDist to (airspeed / 2) * TotalstopTime.
         lock landingRatio to TotalstopDist / RadarAlt.
         lock throttle to (landingRatio * min(maxDecel, 5 + 9.81)) / maxDecel.
-        if LngError > 150 or LngError < 0 or abs(LatError) > 25 {
+        if LngError > 250 or LngError < -50 or abs(LatError) > 25 {
             lock RadarAlt to alt:radar - BoosterHeight.
             set LandSomewhereElse to true.
             HUDTEXT("Mechazilla out of range..", 10, 2, 20, red, false).
@@ -643,26 +643,26 @@ FUNCTION SteeringCorrections {
 
             if RSS {
                 if BoosterCore[0]:hasmodule("FARPartModule") {
-                    set LngCtrlPID:setpoint to 160.
+                    set LngCtrlPID:setpoint to 200.
                 }
                 else {
-                    set LngCtrlPID:setpoint to 160.
+                    set LngCtrlPID:setpoint to 200.
                 }
             }
             else if KSRSS {
                 if BoosterCore[0]:hasmodule("FARPartModule") {
-                    set LngCtrlPID:setpoint to 440.
+                    set LngCtrlPID:setpoint to 475.
                 }
                 else {
-                    set LngCtrlPID:setpoint to 440.
+                    set LngCtrlPID:setpoint to 475.
                 }
             }
             else {
                 if BoosterCore[0]:hasmodule("FARPartModule") {
-                    set LngCtrlPID:setpoint to 275.
+                    set LngCtrlPID:setpoint to 300.
                 }
                 else {
-                    set LngCtrlPID:setpoint to 275.
+                    set LngCtrlPID:setpoint to 300.
                 }
             }
 
