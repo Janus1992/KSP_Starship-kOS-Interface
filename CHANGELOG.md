@@ -4,6 +4,7 @@
 - Fixed KSRSS Booster Thrust. I used the wrong value before.
 - Minor Ship fixes.
 - Ship shows guidance error during launch (yellow and red coloring as well).
+- Fix an issue where the tower would not be found when not in the list of standard launch coordinates.
 
 # V2.1.2 (2023-06-18)
 - Added .craft files for the Expendable and Depot Starship versions.

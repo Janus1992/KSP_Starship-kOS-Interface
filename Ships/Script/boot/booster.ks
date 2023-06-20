@@ -475,7 +475,20 @@ function Boostback {
                                 break.
                             }
                         }
-                        set TargetOLM to false.
+                        list targets in OLMTargets.
+                        if OLMTargets:length > 0 {
+                            for x in OLMTargets {
+                                if x:name:contains("OrbitalLaunchMount") {
+                                    if round(body:geopositionof(x:position):lat, 2) = round(landingzone:lat, 2) and round(body:geopositionof(x:position):lng, 2) = round(landingzone:lng, 2) {
+                                        set TargetOLM to x:name.
+                                        break.
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            set TargetOLM to false.
+                        }
                     }
                     if not (TargetOLM = "false") {
                         set LandHeadingVector to vxcl(up:vector, Vessel(TargetOLM):partstitled("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position).

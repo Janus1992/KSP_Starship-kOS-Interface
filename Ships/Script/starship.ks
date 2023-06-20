@@ -10525,7 +10525,20 @@ function LandAtOLM {
                         break.
                     }
                 }
-                set TargetOLM to false.
+                list targets in OLMTargets.
+                if OLMTargets:length > 0 {
+                    for x in OLMTargets {
+                        if x:name:contains("OrbitalLaunchMount") {
+                            if round(body:geopositionof(x:position):lat, 2) = round(landingzone:lat, 2) and round(body:geopositionof(x:position):lng, 2) = round(landingzone:lng, 2) {
+                                set TargetOLM to x:name.
+                                break.
+                            }
+                        }
+                    }
+                }
+                else {
+                    set TargetOLM to false.
+                }
             }
             for x in shiplist {
                 set MechaZillaExists to false.
