@@ -1,3 +1,10 @@
+# V2.1.3 (2023-06-20)
+- Booster now rotates to align itself with the tower upon landing.
+- Booster landing trajectory modified to work better accross different setups.
+- Fixed KSRSS Booster Thrust. I used the wrong value before.
+- Minor Ship fixes.
+- Ship shows guidance error during launch (yellow and red coloring as well).
+
 # V2.1.2 (2023-06-18)
 - Added .craft files for the Expendable and Depot Starship versions.
 - A minor tweak to the boosters landing burn.

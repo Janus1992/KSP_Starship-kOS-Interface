@@ -279,6 +279,7 @@ set LandAtOLMisrunning to false.
 set BoosterAlreadyExists to false.
 set OrbitBurnPitchCorrection to 0.
 set ProgradeAngle to 0.
+set SteeringError to 0.
 
 
 
@@ -6125,10 +6126,10 @@ function Launch {
             set targetap to 125000.
             set LaunchElev to altitude - 67.74.
             if ShipType = "Depot" {
-                set BoosterAp to 72500.
+                set BoosterAp to 77500.
             }
             else {
-                set BoosterAp to 80000.
+                set BoosterAp to 87000.
             }
             if NrOfVacEngines = 6 {
                 set PitchIncrement to 2.75 + 2.5 * CargoMass / MaxCargoToOrbit.
@@ -6138,7 +6139,7 @@ function Launch {
             }
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.025, 0, 0, -30, PitchIncrement).
             set TimeFromLaunchToOrbit to 360.
-            set BoosterThrottleDownAlt to 1000.
+            set BoosterThrottleDownAlt to 1250.
         }
         else {
             set targetap to 75000.
@@ -6315,7 +6316,10 @@ function Launch {
                 if not cancelconfirmed {
                     until time:seconds > StageSeparationTime + 7 {
                         SendPing().
-                        LaunchLabelData().
+                        if time:seconds > StageSeparationTime + 2.5 {
+                            LaunchLabelData().
+                        }
+                        BackGroundUpdate().
                     }
                 }
                 set quickengine3:pressed to true.
@@ -6359,7 +6363,7 @@ function Launch {
                 set steeringmanager:yawtorquefactor to 0.1.
             }
             if RSS {
-                when DesiredAccel / max(MaxAccel, 0.000001) < 0.6 and altitude > 100000 then {
+                when DesiredAccel / max(MaxAccel, 0.000001) < 0.6 and not (ShipType = "Depot") and altitude > 100000 or apoapsis > 180000 and ShipType = "Depot" and altitude > 100000 then {
                     if NrOfVacEngines = 3 or ShipType = "Depot" {
                         set quickengine2:pressed to false.
                     }
@@ -6371,7 +6375,7 @@ function Launch {
                             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 10).
                         }
                         else {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 7.5).
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 10).
                         }
                         set MaintainVS to true.
                     }
@@ -6551,6 +6555,7 @@ Function LaunchSteering {
 
             set TimeToOrbitCompletion to TimeFromLaunchToOrbit - (time:seconds - LiftOffTime).
             set DesiredAccel to max(deltaV / (TimeToOrbitCompletion), 9.81).
+            set SteeringError to vang(facing:forevector, result:vector).
             if MaintainVS {
                 if deltaV > 1000 {
                     set OrbitBurnPitchCorrectionPID:setpoint to (targetap - altitude) / 100.
@@ -6574,16 +6579,16 @@ Function LaunchSteering {
             //print "Guidance Vector: " + result:vector.
             //print "Desired Accel: " + round(DesiredAccel / 9.81, 2) + "G".
             //print "Time to Orbit: " + round(TimeToOrbitCompletion) + "s".
-            print "Steering Error: " + round(vang(facing:forevector, result:vector), 2).
+            print "Steering Error: " + round(SteeringError, 2).
 
             if quickengine3:pressed {
                 if quickengine2:pressed = true and DesiredAccel / max(MaxAccel, 0.000001) > 0.6 {
                     lock throttle to (3 * Planet1G) / max(MaxAccel, 0.000001).
                 }
-                else if MaintainVS and apoapsis < targetap + 10000 and KUniverse:activevessel = ship and periapsis < altitude - 100 {
+                else if MaintainVS and apoapsis < targetap + 15000 and KUniverse:activevessel = ship and periapsis < altitude - 100 {
                     lock throttle to min((3 * Planet1G) / max(MaxAccel, 0.000001), max(deltaV / max(MaxAccel, 0.000001), 0.1)).
                 }
-                else if periapsis < targetap - 500 and apoapsis < targetap + 10000 and periapsis < altitude - 100 {
+                else if periapsis < targetap - 500 and apoapsis < targetap + 15000 and periapsis < altitude - 100 {
                     lock throttle to DesiredAccel / max(MaxAccel, 0.000001).
                 }
                 else {
@@ -6652,18 +6657,13 @@ function LaunchLabelData {
             }
             if Boosterconnected {
                 if not ClosingIsRunning {
-                    set message2:text to "<b>Guidance (Pitch/Az.):</b>         " + round(targetpitch, 1) + "°/" + round(myAzimuth, 1) + "°".
+                    set message2:text to "<b>Guidance (Pitch/Az./Err):</b>  " + round(targetpitch, 1) + "°/" + round(myAzimuth, 1) + "°/" + round(SteeringError, 1) + "°".
                     set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
                 }
             }
             else {
                 if not ClosingIsRunning {
-                    if not hasnode {
-                        set message2:text to "<b>Guidance (Pitch/Az.):</b>         " + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/" + round(myAzimuth, 1) + "°".
-                    }
-                    else {
-                        set message2:text to "<b>Guidance Target:</b>                 Finalizing Vector".
-                    }
+                    set message2:text to "<b>Guidance (Pitch/Az./Err):</b>  " + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/" + round(myAzimuth, 1) + "°/" + round(SteeringError, 1) + "°".
                     if defined Booster {
                         if not Booster:isdead {
                             if Booster:status = "LANDED" {
@@ -6680,6 +6680,15 @@ function LaunchLabelData {
                     }
                 }
             }
+        }
+        if SteeringError < 2.5 {
+            set message2:style:textcolor to white.
+        }
+        else if SteeringError < 35 {
+            set message2:style:textcolor to yellow.
+        }
+        else {
+            set message2:style:textcolor to red.
         }
         if not (BurnComplete) {
             LogToFile("Launch Telemetry").
@@ -9080,7 +9089,10 @@ function updateEnginePage {
             set engine2label5:tooltip to "Thrust in kN of the Vacuum Raptor Engines".
             if SLEngines[0]:ignition = false and VACEngines[0]:ignition = false and not (FourVacBrakingBurn) and not (TwoVacEngineLanding) {
                 if ship:control:translation:z > 0 or ship:control:pilottranslation:z > 0 {
-                    if NrOfVacEngines = 6 {
+                    if ShipType = "Depot" or ShipType = "Expendable" {
+                        set engine2label3:style:bg to "starship_img/starship_noflaps_rcs".
+                    }
+                    else if NrOfVacEngines = 6 {
                         set engine2label3:style:bg to "starship_img/starship_9engine_rcs".
                     }
                     if NrOfVacEngines = 3 {
@@ -9088,7 +9100,10 @@ function updateEnginePage {
                     }
                 }
                 else {
-                    if NrOfVacEngines = 6 {
+                    if ShipType = "Depot" or ShipType = "Expendable" {
+                        set engine2label3:style:bg to "starship_img/starship_noflaps_none_active".
+                    }
+                    else if NrOfVacEngines = 6 {
                         set engine2label3:style:bg to "starship_img/starship_9engine_none_active".
                     }
                     if NrOfVacEngines = 3 {
@@ -9124,7 +9139,10 @@ function updateEnginePage {
             if SLEngines[0]:ignition = true and VACEngines[0]:ignition = false {
                 if SLEngines[0]:thrust > 0 {
                     if SLEngines[1]:ignition = true and SLEngines[2]:ignition = true {
-                        if NrOfVacEngines = 6 {
+                        if ShipType = "Depot" or ShipType = "Expendable" {
+                            set engine2label3:style:bg to "starship_img/starship_noflaps_sl_active".
+                        }
+                        else if NrOfVacEngines = 6 {
                             set engine2label3:style:bg to "starship_img/starship_9engine_sl_active".
                         }
                         if NrOfVacEngines = 3 {
@@ -9149,7 +9167,10 @@ function updateEnginePage {
                     }
                 }
                 else {
-                    if NrOfVacEngines = 6 {
+                    if ShipType = "Depot" or ShipType = "Expendable" {
+                        set engine2label3:style:bg to "starship_img/starship_noflaps_sl_ready".
+                    }
+                    else if NrOfVacEngines = 6 {
                         set engine2label3:style:bg to "starship_img/starship_9engine_sl_ready".
                     }
                     if NrOfVacEngines = 3 {
@@ -9192,7 +9213,10 @@ function updateEnginePage {
             }
             if SLEngines[0]:ignition = false and VACEngines[0]:ignition = true or FourVacBrakingBurn or TwoVacEngineLanding {
                 if throttle > 0 {
-                    if NrOfVacEngines = 6 {
+                    if ShipType = "Depot" or ShipType = "Expendable" {
+                        set engine2label3:style:bg to "starship_img/starship_noflaps_vac_active".
+                    }
+                    else if NrOfVacEngines = 6 {
                         if FourVacBrakingBurn {
                             set engine2label3:style:bg to "starship_img/starship_9engine_4vac_active".
                         }
@@ -9208,7 +9232,10 @@ function updateEnginePage {
                     }
                 }
                 else {
-                    if NrOfVacEngines = 6 {
+                    if ShipType = "Depot" or ShipType = "Expendable" {
+                        set engine2label3:style:bg to "starship_img/starship_noflaps_vac_ready".
+                    }
+                    else if NrOfVacEngines = 6 {
                         if FourVacBrakingBurn {
                             set engine2label3:style:bg to "starship_img/starship_9engine_4vac_ready".
                         }
@@ -9259,7 +9286,10 @@ function updateEnginePage {
             }
             if SLEngines[0]:ignition = true and VACEngines[0]:ignition = true {
                 if SLEngines[0]:thrust > 0 {
-                    if NrOfVacEngines = 6 {
+                    if ShipType = "Depot" or ShipType = "Expendable" {
+                        set engine2label3:style:bg to "starship_img/starship_noflaps_all_active".
+                    }
+                    else if NrOfVacEngines = 6 {
                         set engine2label3:style:bg to "starship_img/starship_9engine_all_active".
                     }
                     if NrOfVacEngines = 3 {
@@ -9267,7 +9297,10 @@ function updateEnginePage {
                     }
                 }
                 else {
-                    if NrOfVacEngines = 6 {
+                    if ShipType = "Depot" or ShipType = "Expendable" {
+                        set engine2label3:style:bg to "starship_img/starship_noflaps_all_ready".
+                    }
+                    else if NrOfVacEngines = 6 {
                         set engine2label3:style:bg to "starship_img/starship_9engine_all_ready".
                     }
                     if NrOfVacEngines = 3 {
@@ -10511,7 +10544,7 @@ function LandAtOLM {
                             sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,false").
                             sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
                             when RadarAlt < 300 then {
-                                set LandRollVector to Vessel(TargetOLM):partstitled("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position.
+                                set LandRollVector to vxcl(up:vector, Vessel(TargetOLM):partstitled("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position).
                                 if RSS {
                                     set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 5), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 5)).
                                 }
