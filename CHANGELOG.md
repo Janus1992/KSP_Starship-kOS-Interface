@@ -1,3 +1,6 @@
+# V2.1.4 (2023-06-21)
+- Increased booster fuel margins for depot starship.
+
 # V2.1.3 (2023-06-20)
 - Booster now rotates to align itself with the tower upon landing.
 - Booster landing trajectory modified to work better accross different setups.

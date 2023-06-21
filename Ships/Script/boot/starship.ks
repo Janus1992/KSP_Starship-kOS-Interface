@@ -6102,7 +6102,7 @@ function Launch {
             set targetap to 250000.
             set LaunchElev to altitude - 108.384.
             if ShipType = "Depot" {
-                set BoosterAp to 129500.
+                set BoosterAp to 127500.
             }
             else {
                 set BoosterAp to 135000.
@@ -6126,7 +6126,7 @@ function Launch {
             set targetap to 125000.
             set LaunchElev to altitude - 67.74.
             if ShipType = "Depot" {
-                set BoosterAp to 77500.
+                set BoosterAp to 75000.
             }
             else {
                 set BoosterAp to 87000.
@@ -6145,7 +6145,7 @@ function Launch {
             set targetap to 75000.
             set LaunchElev to altitude - 67.74.
             if ShipType = "Depot" {
-                set BoosterAp to 45000.
+                set BoosterAp to 42500.
             }
             else {
                 set BoosterAp to 60000.
@@ -10516,12 +10516,14 @@ function LandAtOLM {
                 if RSS {
                     if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 3) = round(landingzone:lat, 3) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 3) = round(landingzone:lng, 3) {
                         set TargetOLM to var + " OrbitalLaunchMount".
+                        LogToFile(("TargetOLM set to " + TargetOLM)).
                         break.
                     }
                 }
                 else {
                     if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(landingzone:lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(landingzone:lng, 2) {
                         set TargetOLM to var + " OrbitalLaunchMount".
+                        LogToFile(("TargetOLM set to " + TargetOLM)).
                         break.
                     }
                 }
@@ -10531,6 +10533,7 @@ function LandAtOLM {
                         if x:name:contains("OrbitalLaunchMount") {
                             if round(body:geopositionof(x:position):lat, 2) = round(landingzone:lat, 2) and round(body:geopositionof(x:position):lng, 2) = round(landingzone:lng, 2) {
                                 set TargetOLM to x:name.
+                                LogToFile(("TargetOLM set to " + TargetOLM)).
                                 break.
                             }
                         }
