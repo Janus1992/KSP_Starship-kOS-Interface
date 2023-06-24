@@ -277,6 +277,7 @@ set FinalDescentEngines to list().
 set result to v(0, 0, 0).
 set LandAtOLMisrunning to false.
 set BoosterAlreadyExists to false.
+set TowerAlreadyExists to false.
 set OrbitBurnPitchCorrection to 0.
 set ProgradeAngle to 0.
 set SteeringError to 0.
@@ -4337,6 +4338,17 @@ set launchbutton:ontoggle to {
                         ClearInterfaceAndSteering().
                         return.
                     }
+                    if TowerAlreadyExists {
+                        LogToFile("Launch cancelled due to other Tower found").
+                        set message1:text to "<b>Error: Recover other Towers first!</b>".
+                        set message2:text to "".
+                        set message3:text to "".
+                        set message1:style:textcolor to yellow.
+                        set textbox:style:bg to "starship_img/starship_main_square_bg".
+                        wait 3.
+                        ClearInterfaceAndSteering().
+                        return.
+                    }
                     if CargoMass < MaxCargoToOrbit + 1 and cargo1text:text = "Closed" {
                         ShowHomePage().
                         InhibitButtons(0, 0, 0).
@@ -5910,7 +5922,6 @@ if addons:tr:available and not startup {
             set addons:tr:descentangles to DescentAngles.
             ADDONS:TR:SETTARGET(landingzone).
         }
-        //LandAtOLM().
         if LIGHTS {set quickstatus2:pressed to true.}
         if GEAR {set quickstatus3:pressed to true.}
 
@@ -10593,6 +10604,17 @@ function ShipsInOrbit {
     list targets in shiplist.
     set ShipsInOrbitList to list().
     set b to 0.
+    set t to 0.
+    set OLMname to false.
+    for var in LaunchSites:keys {
+        if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(body:geopositionof(ship:position):lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(body:geopositionof(ship:position):lng, 2) {
+                set OLMname to var + " OrbitalLaunchMount".
+                break.
+        }
+    }
+    if OLMname = false {
+        set OLMname to "OrbitalLaunchMount".
+    }
     if shiplist:length > 0 {
         for x in shiplist {
             if x:name = ship:name {
@@ -10600,6 +10622,9 @@ function ShipsInOrbit {
             }
             if x:name = "Booster" {
                 set b to b + 1.
+            }
+            if x:name = OLMname {
+                set t to t + 1.
             }
             if x:status = "ORBITING" and x:body = ship:body {
                 if x:name:contains("Starship Crew") or x:name:contains("Starship Cargo") or x:name:contains("Starship Tanker") {
@@ -10621,6 +10646,12 @@ function ShipsInOrbit {
     }
     else {
         set BoosterAlreadyExists to false.
+    }
+    if t > 0 {
+        set TowerAlreadyExists to true.
+    }
+    else {
+        set TowerAlreadyExists to false.
     }
     return ShipsInOrbitList.
 }
