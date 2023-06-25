@@ -217,8 +217,15 @@ function LiftOff {
     MechazillaHeight("6.5", "0.5").
     MechazillaArms("8","10","97.5","true").
     set ship:type to "Base".
-    if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
-        ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
+    if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesFX") {
+        if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
+            ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
+        }
+    }
+    if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesRF") {
+        if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):hasevent("shutdown engine") {
+            ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
+        }
     }
 }
 
