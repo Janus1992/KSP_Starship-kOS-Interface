@@ -6210,10 +6210,18 @@ function Launch {
                     set message2:text to "<b>Stage 0/Mechazilla:    <color=yellow>Disconnecting..</color></b>".
                 }
                 else {
-                    if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("activate engine") {
-                        ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("activate engine").
+                    if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesFX") {
+                        if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("activate engine") {
+                            ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("activate engine").
+                        }
+                        set message2:text to "<b>Booster/Ship:             <color=green>Start-Up Confirmed..</color></b>".
                     }
-                    set message2:text to "<b>Booster/Ship:             <color=green>Start-Up Confirmed..</color></b>".
+                    if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesRF") {
+                        if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):hasevent("activate engine") {
+                            ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):doevent("activate engine").
+                        }
+                        set message2:text to "<b>Booster/Ship:             <color=green>Start-Up Confirmed..</color></b>".
+                    }
                 }
             }
             if cancelconfirmed {
