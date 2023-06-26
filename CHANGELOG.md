@@ -1,3 +1,6 @@
+# V2.1.6 (2023-06-25)
+- Introducing my own plumes. Fixes the macOS and linux shader problems with SEPs default waterfall plumes.
+
 # V2.1.5 (2023-06-24)
 - Launch gets cancelled when multiple towers are in use, and names collide (causing booster crash on landing).
 
