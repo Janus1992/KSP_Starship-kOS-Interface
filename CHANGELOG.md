@@ -1,3 +1,8 @@
+# V2.1.7 (2023-09-20)
+- Added RO as an incompatible mod.
+- Added a safeguard against launching with too little Cluster Thrust. Launch will now be aborted before clamp release.
+- Changed Launch Labels, azimuth and pitch are changed around. Steering errors show only the error in yellow or red now.
+
 # V2.1.6 (2023-06-25)
 - Introducing my own plumes. Fixes the macOS and linux shader problems with SEPs default waterfall plumes.
 

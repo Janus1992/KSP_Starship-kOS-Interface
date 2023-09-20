@@ -2,11 +2,6 @@
 An Interface for automating the 'Starship Expansion Project' and 'Starship Launch Expansion' mods within Kerbal Space Program.
 
 
-# IMPORTANT to users of older versions than V2.1
-- Please remove the SEP_kOS_Guidance.cfg that is located in /gamedata before installing V2.1
-- In V2.1 the structure of the mod has been changed to reduce the amount of unreliable patching.
-
-
 ![Alt text](/Infographic.png)
 
 
@@ -45,7 +40,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 # INCOMPATIBLE(!!):
 - TweakableEverything
 - Ferram AeroSpace Research (FAR)
-
+- Realism Overhaul (RO)
 
 
 # Notes:

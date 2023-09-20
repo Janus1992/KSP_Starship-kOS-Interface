@@ -441,10 +441,12 @@ function FindParts {
             set ArmsHeight to (Mechazilla:position - ship:body:position):mag - SHIP:BODY:RADIUS - ship:geoposition:terrainheight + 7.5.
         }
         SaveToSettings("ArmsHeight", ArmsHeight).
+        set StackMass to ship:mass - OLM:Mass - TowerBase:mass - TowerCore:mass - TowerTop:mass - Mechazilla:mass.
     }
     else {
         set OnOrbitalMount to False.
         set OLM to false.
+        set StackMass to ship:mass.
     }
 }
 
@@ -6210,17 +6212,18 @@ function Launch {
                     set message2:text to "<b>Stage 0/Mechazilla:    <color=yellow>Disconnecting..</color></b>".
                 }
                 else {
+                    set message2:text to "<b>Booster/Ship:             <color=green>Start-Up Confirmed..</color></b>".
+                }
+                if x - time:seconds < 2.5 {
                     if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesFX") {
                         if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("activate engine") {
                             ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("activate engine").
                         }
-                        set message2:text to "<b>Booster/Ship:             <color=green>Start-Up Confirmed..</color></b>".
                     }
                     if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesRF") {
                         if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):hasevent("activate engine") {
                             ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):doevent("activate engine").
                         }
-                        set message2:text to "<b>Booster/Ship:             <color=green>Start-Up Confirmed..</color></b>".
                     }
                 }
             }
@@ -6244,6 +6247,42 @@ function Launch {
 
         if RadarAlt < 100 {
             lock throttle to 1.
+            BoosterEngines[0]:getmodule("ModuleEnginesFX"):doaction("activate engine", true).
+            wait 2.5.
+            if BoosterEngines[0]:thrust > StackMass * Planet1G * 1.3 {}
+            else {
+                set message1:text to "<b>Launch Abort: </b>Thrust anomaly!".
+                set message2:text to "<b>Minimum Thrust: </b>" + round(StackMass * Planet1G * 1.3) + "kN".
+                set message3:text to "<b>Actual Thrust: </b>" + round(BoosterEngines[0]:thrust) + "kN".
+                lock throttle to 0.
+                set message1:style:textcolor to yellow.
+                set textbox:style:bg to "starship_img/starship_main_square_bg".
+                wait 3.
+                if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesFX") {
+                    if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
+                        ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
+                    }
+                }
+                if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesRF") {
+                    if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):hasevent("shutdown engine") {
+                        ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
+                    }
+                }
+                if RSS {
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,1.12,false").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,8.15,0.5").
+                }
+                else {
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,0.7,false").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,5,0.5").
+                }
+                ClearInterfaceAndSteering().
+                return.
+            }
             set SteeringManager:rollts to 5.
             if ShipType = "Cargo" or ShipType = "Tanker" {
                 InhibitButtons(1, 1, 1).
@@ -6252,7 +6291,6 @@ function Launch {
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "LiftOff").
             }
             OLM:getmodule("LaunchClamp"):DoAction("release clamp", true).
-            BoosterEngines[0]:getmodule("ModuleEnginesFX"):doaction("activate engine", true).
             set OnOrbitalMount to False.
             if defined LaunchTime {
                 LogToFile("Lift-Off! Time difference from Launch-to-Rendezvous-Time to Lift-off: " + timeSpanCalculator(time:seconds - LaunchTime - 16)).
@@ -6650,7 +6688,7 @@ function LaunchLabelData {
         if altitude - LaunchElev < 500 {
             if not ClosingIsRunning {
                 set message1:text to "<b>Actual/Target Apoapsis:</b>   " + round(apoapsis/1000,1) + "/" + round(targetap / 1000, 1) + "km".
-                set message2:text to "<b>Guidance (Pitch/Az.):</b>         90°/" + round(myAzimuth, 1) + "°".
+                set message2:text to "<b>Guidance (Az./Pitch):</b>         " + round(myAzimuth, 1) + "°/90°".
                 set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
             }
         }
@@ -6676,13 +6714,29 @@ function LaunchLabelData {
             }
             if Boosterconnected {
                 if not ClosingIsRunning {
-                    set message2:text to "<b>Guidance (Pitch/Az./Err):</b>  " + round(targetpitch, 1) + "°/" + round(myAzimuth, 1) + "°/" + round(SteeringError, 1) + "°".
+                    if SteeringError < 2.5 {
+                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth, 1) + "°/" + round(targetpitch, 1) + "°/" + round(SteeringError, 1) + "°".
+                    }
+                    else if SteeringError < 35 {
+                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth, 1) + "°/" + round(targetpitch, 1) + "°/<color=yellow>" + round(SteeringError, 1) + "°</color>".
+                    }
+                    else {
+                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth, 1) + "°/" + round(targetpitch, 1) + "°/<color=red>" + round(SteeringError, 1) + "°</color>".
+                    }
                     set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
                 }
             }
             else {
                 if not ClosingIsRunning {
-                    set message2:text to "<b>Guidance (Pitch/Az./Err):</b>  " + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/" + round(myAzimuth, 1) + "°/" + round(SteeringError, 1) + "°".
+                    if SteeringError < 2.5 {
+                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth, 1) + "°/" + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/" + round(SteeringError, 1) + "°".
+                    }
+                    else if SteeringError < 35 {
+                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth, 1) + "°/" + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/<color=yellow>" + round(SteeringError, 1) + "°</color>".
+                    }
+                    else {
+                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth, 1) + "°/" + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/<color=red>" + round(SteeringError, 1) + "°</color>".
+                    }
                     if defined Booster {
                         if not Booster:isdead {
                             if Booster:status = "LANDED" {
@@ -6699,15 +6753,6 @@ function LaunchLabelData {
                     }
                 }
             }
-        }
-        if SteeringError < 2.5 {
-            set message2:style:textcolor to white.
-        }
-        else if SteeringError < 35 {
-            set message2:style:textcolor to yellow.
-        }
-        else {
-            set message2:style:textcolor to red.
         }
         if not (BurnComplete) {
             LogToFile("Launch Telemetry").
