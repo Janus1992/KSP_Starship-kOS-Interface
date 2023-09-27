@@ -2,7 +2,7 @@ ship = Stock Starship Tanker
 version = 1.12.5
 description = 
 type = VAB
-size = 38.7243881,90.9978485,15.2185326
+size = 38.7243767,90.9978485,15.218523
 steamPublishedFileId = 0
 persistentId = 3588178150
 rot = 0,0,0,0
@@ -16,7 +16,7 @@ PART
 {
 	part = SEP.22.SHIP.BODY.KOS_4293769196
 	partName = Part
-	persistentId = 3025837866
+	persistentId = 2288941791
 	pos = 0,66.3623352,0
 	attPos = 0.271074533,19.6683998,0.00387334824
 	attPos0 = -0.271074533,46.6939354,-0.00387334824
@@ -86,36 +86,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -732,9 +702,9 @@ PART
 	}
 	RESOURCE
 	{
-		name = LiquidFuel
-		amount = 3000
-		maxAmount = 3000
+		name = LqdMethane
+		amount = 32978.400000000001
+		maxAmount = 32978.400000000001
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -744,8 +714,8 @@ PART
 	RESOURCE
 	{
 		name = Oxidizer
-		amount = 10800
-		maxAmount = 10800
+		amount = 10992.799999999999
+		maxAmount = 10992.799999999999
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -757,8 +727,8 @@ PART
 {
 	part = SEP.22.SHIP.AFT.LEFT.KOS_4293759344
 	partName = Part
-	persistentId = 3059495112
-	pos = -0.0170011539,61.336338,3.11576319
+	persistentId = 1929401306
+	pos = -0.0170011539,61.336338,3.11576414
 	attPos = 0,0,0
 	attPos0 = -3.11574388,-5.02599716,-0.0170013756
 	rot = -0.444996595,0.444996655,-0.549525321,0.54952538
@@ -796,38 +766,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -983,8 +921,8 @@ PART
 {
 	part = SEP.22.SHIP.AFT.RIGHT.KOS_4293752342
 	partName = Part
-	persistentId = 3517209468
-	pos = -0.0323846377,61.336338,-3.18814445
+	persistentId = 3615461042
+	pos = -0.0323846377,61.336338,-3.1881454
 	attPos = 0,0,0
 	attPos0 = 3.18812513,-5.02599621,-0.0323840082
 	rot = 0.549525142,0.549525142,0.444996864,0.444996864
@@ -1022,38 +960,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -1209,8 +1115,8 @@ PART
 {
 	part = SEP.22.RAPTOR2.SL.KOS_4293742168
 	partName = Part
-	persistentId = 814051653
-	pos = -0.585805237,59.2735405,0.00348031521
+	persistentId = 4027616546
+	pos = -0.585805357,59.2735405,0.00348031521
 	attPos = 0,0,0
 	attPos0 = -0.00348023325,-7.0887928,-0.585802794
 	rot = 0,0.707106829,0,0.707106829
@@ -1250,38 +1156,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -1584,8 +1458,8 @@ PART
 {
 	part = SEP.22.RAPTOR2.SL.KOS_4293738162
 	partName = Part
-	persistentId = 1850229279
-	pos = 0.295917481,59.2735405,0.505582929
+	persistentId = 69094202
+	pos = 0.295917541,59.2735405,0.505583048
 	attPos = 0,0,0
 	attPos0 = -0.505580485,-7.0887928,0.2959162
 	rot = 0,0.965925932,0,-0.258819133
@@ -1625,38 +1499,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -1951,8 +1793,8 @@ PART
 {
 	part = SEP.22.RAPTOR2.SL.KOS_4293736604
 	partName = Part
-	persistentId = 2293716822
-	pos = 0.289889544,59.2735405,-0.509063125
+	persistentId = 4111739253
+	pos = 0.289889604,59.2735405,-0.509063244
 	attPos = 0,0,0
 	attPos0 = 0.509060621,-7.0887928,0.289888382
 	rot = 0,0.258819014,0,-0.965925932
@@ -1992,38 +1834,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -2318,8 +2128,8 @@ PART
 {
 	part = SEP.22.RAPTOR.VAC.KOS_4293733906
 	partName = Part
-	persistentId = 2329252557
-	pos = -0.96611321,58.6319809,-1.6733495
+	persistentId = 1950986604
+	pos = -0.966113567,58.6319809,-1.6733501
 	attPos = 0,0,0
 	attPos0 = 1.67333734,-7.73035431,-0.966105342
 	rot = 0,0.965925932,0,-0.258819133
@@ -2359,38 +2169,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -2578,8 +2356,8 @@ PART
 {
 	part = SEP.22.RAPTOR.VAC.KOS_4293730358
 	partName = Part
-	persistentId = 1864300530
-	pos = -0.966106474,58.6319809,1.67335379
+	persistentId = 4218940094
+	pos = -0.966106713,58.6319809,1.67335427
 	attPos = 0,0,0
 	attPos0 = -1.67333722,-7.73035431,-0.966106117
 	rot = 0,0.258818954,0,-0.965925932
@@ -2619,38 +2397,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -2830,8 +2576,8 @@ PART
 {
 	part = SEP.22.RAPTOR.VAC.KOS_4293729646
 	partName = Part
-	persistentId = 2512496316
-	pos = 1.93221998,58.6319809,-3.93390656E-06
+	persistentId = 1060123412
+	pos = 1.93222046,58.6319809,-3.93390656E-06
 	attPos = 0,0,0
 	attPos0 = -4.991889E-07,-7.73035431,1.93220675
 	rot = 0,-0.707106948,0,-0.707106709
@@ -2871,38 +2617,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -3082,8 +2796,8 @@ PART
 {
 	part = SEP.22.SHIP.TANKER.KOS_4293898036
 	partName = Part
-	persistentId = 271897603
-	pos = -1.78814344E-06,81.9101257,1.13686838E-13
+	persistentId = 1288248363
+	pos = -1.78814389E-06,81.9101257,1.13686838E-13
 	attPos = 0,0,0
 	attPos0 = 1.49213975E-13,15.5477943,-1.78813957E-06
 	rot = 0,0.707106829,0,0.707106829
@@ -3127,36 +2841,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -3569,9 +3253,9 @@ PART
 	}
 	RESOURCE
 	{
-		name = LiquidFuel
-		amount = 3250
-		maxAmount = 3250
+		name = LqdMethane
+		amount = 35846.099999999999
+		maxAmount = 35846.099999999999
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -3581,8 +3265,8 @@ PART
 	RESOURCE
 	{
 		name = Oxidizer
-		amount = 11700
-		maxAmount = 11700
+		amount = 11948.700000000001
+		maxAmount = 11948.700000000001
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -3594,8 +3278,8 @@ PART
 {
 	part = SEP.22.SHIP.FWD.RIGHT.KOS_4293759810
 	partName = Part
-	persistentId = 1025740110
-	pos = 0.000161647811,82.6277161,-2.8104279
+	persistentId = 1839432500
+	pos = 0.000161647811,82.6277161,-2.81042838
 	attPos = 0,0,0
 	attPos0 = 2.81042385,0.717590332,0.000163674355
 	rot = 0.549525321,0.444997013,0.549525082,0.444996655
@@ -3633,38 +3317,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -3820,8 +3472,8 @@ PART
 {
 	part = SEP.22.SHIP.FWD.LEFT.KOS_4293760326
 	partName = Part
-	persistentId = 1437095818
-	pos = 0.000163078323,82.6277161,2.81042933
+	persistentId = 3610372368
+	pos = 0.000163078323,82.6277161,2.81042981
 	attPos = 0,0,0
 	attPos0 = -2.81042528,0.717590332,0.000164628029
 	rot = -0.549525201,0.444996834,-0.549525201,0.444996834
@@ -3859,38 +3511,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -4063,8 +3683,8 @@ PART
 {
 	part = SEP.22.SHIP.HEADER.KOS_4293714190
 	partName = Part
-	persistentId = 1596712258
-	pos = 2.68221593E-05,87.235672,3.18214879E-05
+	persistentId = 3915545185
+	pos = 2.68221665E-05,87.235672,3.18214952E-05
 	attPos = 0,0,0
 	attPos0 = -3.18214297E-05,5.32554245,2.86102331E-05
 	rot = 0,0,0,1.00000012
@@ -4102,36 +3722,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -4177,9 +3767,9 @@ PART
 	}
 	RESOURCE
 	{
-		name = LiquidFuel
-		amount = 375
-		maxAmount = 375
+		name = LqdMethane
+		amount = 4122.3000000000002
+		maxAmount = 4122.3000000000002
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -4189,8 +3779,8 @@ PART
 	RESOURCE
 	{
 		name = Oxidizer
-		amount = 1350
-		maxAmount = 1350
+		amount = 1374.0999999999999
+		maxAmount = 1374.0999999999999
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -4203,7 +3793,7 @@ PART
 	part = SEP.22.BOOSTER.INTER.KOS_4293833468
 	partName = Part
 	persistentId = 1470770011
-	pos = 1.34110508E-06,56.0892792,-1.13686838E-13
+	pos = 1.3411053E-06,56.0892792,-1.13686838E-13
 	attPos = 0,0,0
 	attPos0 = -8.88177064E-15,-10.273056,1.34110473E-06
 	rot = 0,0.707106829,0,0.707106829
@@ -4251,36 +3841,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -4658,7 +4218,7 @@ PART
 	part = SEP.22.BOOSTER.GRIDFIN.KOS_4293824476
 	partName = Part
 	persistentId = 3357067280
-	pos = 1.85315013,56.6478386,-3.21004033
+	pos = 1.85315061,56.6478386,-3.21004128
 	attPos = 0,0,0
 	attPos0 = 3.21003866,0.558559418,1.85314858
 	rot = 0.866025388,0,-0.50000006,0
@@ -4696,38 +4256,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -4910,7 +4438,7 @@ PART
 	part = SEP.22.BOOSTER.CORE.KOS_4293244278
 	partName = Part
 	persistentId = 2879454326
-	pos = 3.65078722E-06,34.3373299,0
+	pos = 3.65078904E-06,34.3373299,0
 	attPos = 0,0,0
 	attPos0 = -4.74287276E-13,-21.7519493,2.30968021E-06
 	rot = 0,0.707106829,0,0.707106829
@@ -4950,36 +4478,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -5244,9 +4742,9 @@ PART
 	}
 	RESOURCE
 	{
-		name = LiquidFuel
-		amount = 16000
-		maxAmount = 16000
+		name = LqdMethane
+		amount = 175885
+		maxAmount = 175885
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -5256,8 +4754,8 @@ PART
 	RESOURCE
 	{
 		name = Oxidizer
-		amount = 57600
-		maxAmount = 57600
+		amount = 58628.300000000003
+		maxAmount = 58628.300000000003
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -5270,7 +4768,7 @@ PART
 	part = SEP.22.BOOSTER.CLUSTER.KOS_4293678528
 	partName = Part
 	persistentId = 2785321018
-	pos = 6.51928258E-06,13.4815941,-4.54747351E-13
+	pos = 6.51928713E-06,13.4815941,-4.54747351E-13
 	attPos = 0,0,0
 	attPos0 = -3.35276013E-07,-20.8557358,2.235176E-06
 	rot = 0,0.707106829,0,0.707106829
@@ -5285,7 +4783,7 @@ PART
 	dstg = 0
 	sidx = 3
 	sqor = 0
-	sepI = 0
+	sepI = 1
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -5315,41 +4813,91 @@ PART
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
 		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
 	}
 	PARTDATA
 	{
+	}
+	MODULE
+	{
+		name = ModuleDockingNode
+		isEnabled = True
+		acquireForceTweak = 100
+		crossfeed = True
+		nodeIsLocked = True
+		targetAngle = 0
+		inverted = False
+		stagingEnabled = False
+		state = Ready
+		dockUId = 0
+		dockNodeIdx = 0
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+			ToggleLockedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ServoEngageLockAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ServoDisgageLockAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			UndockAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			DecoupleAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			MakeReferenceToggle
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			EnableXFeedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			DisableXFeedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ToggleXFeedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+		}
+		AXISGROUPS
+		{
+			targetAngle
+			{
+				axisGroup = None
+				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				axisSpeedMultiplier = 0
+				axisInverted = None
+				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
 	}
 	MODULE
 	{
@@ -5899,7 +5447,7 @@ PART
 	part = SEP.22.BOOSTER.GRIDFIN.KOS_4293823144
 	partName = Part
 	persistentId = 278052469
-	pos = -1.85327387,56.6478386,-3.20996761
+	pos = -1.85327458,56.6478386,-3.20996881
 	attPos = 0,0,0
 	attPos0 = 3.20996594,0.558559418,-1.85327375
 	rot = 0.5,0,-0.866025448,0
@@ -5937,38 +5485,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -6143,7 +5659,7 @@ PART
 	part = SEP.22.BOOSTER.GRIDFIN.KOS_4293822784
 	partName = Part
 	persistentId = 3686224792
-	pos = 1.8532784,56.6478386,3.20996976
+	pos = 1.85327911,56.6478386,3.20997095
 	attPos = 0,0,0
 	attPos0 = -3.20996809,0.558559418,1.85327566
 	rot = -0.866025448,0,-0.500000238,0
@@ -6181,38 +5697,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -6387,7 +5871,7 @@ PART
 	part = SEP.22.BOOSTER.GRIDFIN.KOS_4293822434
 	partName = Part
 	persistentId = 1342942924
-	pos = -1.85314763,56.6478386,3.21004152
+	pos = -1.8531481,56.6478386,3.21004248
 	attPos = 0,0,0
 	attPos0 = -3.21003985,0.558559418,-1.8531487
 	rot = -0.49999997,0,-0.866025448,0
@@ -6425,38 +5909,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -6631,7 +6083,7 @@ PART
 	part = SLE.SS.OLM.KOS_4293673216
 	partName = Part
 	persistentId = 774933407
-	pos = 6.857686E-06,9.53193665,5.66243671E-07
+	pos = 6.85769101E-06,9.53193665,5.66243671E-07
 	attPos = 0,0,0
 	attPos0 = -5.66244125E-07,-3.94965744,3.3840351E-07
 	rot = 0,1.00000012,0,0
@@ -6646,7 +6098,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -6671,36 +6123,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -7183,7 +6605,7 @@ PART
 	part = SLE.SS.OLIT.Base.KOS_4293642292
 	partName = Part
 	persistentId = 3067040734
-	pos = -20.8445759,4.21128845,-1.05908012
+	pos = -20.8445835,4.21128845,-1.05908012
 	attPos = 0,0,0
 	attPos0 = 20.8443928,-5.32064056,1.05908418
 	rot = 0,1.00000012,0,0
@@ -7198,7 +6620,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -7223,36 +6645,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -7442,7 +6834,7 @@ PART
 	part = SLE.SS.OLIT.Core.KOS_4293641890
 	partName = Part
 	persistentId = 3601698810
-	pos = -20.8445835,7.73023987,-1.05908012
+	pos = -20.8445911,7.73023987,-1.05908012
 	attPos = 0,0,0
 	attPos0 = 7.62939453E-06,3.51895142,0
 	rot = 0,1.00000012,0,0
@@ -7457,11 +6849,11 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
-	modMass = 375
+	modMass = 150
 	modSize = 0,0,0
 	link = SLE.SS.OLIT.Top.KOS_4293627142
 	link = SLE.SS.OLIT.MZ.KOS_4293624448
@@ -7485,38 +6877,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -7613,7 +6973,7 @@ PART
 	part = SLE.SS.OLIT.Top.KOS_4293627142
 	partName = Part
 	persistentId = 892675432
-	pos = -20.8445911,81.209137,-1.05908203
+	pos = -20.8445988,81.209137,-1.05908203
 	attPos = 0,0,0
 	attPos0 = 7.62939453E-06,73.4788971,1.90734863E-06
 	rot = 0,1.00000012,0,0
@@ -7628,7 +6988,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -7652,38 +7012,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False
@@ -7763,7 +7091,7 @@ PART
 	part = SLE.SS.OLIT.MZ.KOS_4293624448
 	partName = Part
 	persistentId = 3924480359
-	pos = -15.4827576,79.5440674,-0.304380417
+	pos = -15.4827652,79.5440674,-0.304380417
 	attPos = 0,0,0
 	attPos0 = -5.36181641,71.8138199,-0.754699886
 	rot = 0,1.00000012,0,0
@@ -7778,7 +7106,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -7801,38 +7129,6 @@ PART
 			wasActiveBeforePartWasAdjusted = False
 		}
 		RemoveSameVesselInteraction
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesEnableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		ResourcesDisableFlow
-		{
-			actionGroup = None
-			active = False
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutOff
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutRoot
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutHeaviest
-		{
-			actionGroup = None
-			wasActiveBeforePartWasAdjusted = False
-		}
-		AutostrutGrandparent
 		{
 			actionGroup = None
 			wasActiveBeforePartWasAdjusted = False

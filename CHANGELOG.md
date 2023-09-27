@@ -1,10 +1,15 @@
+# V2.1.8 (2023-09-27)
+- Smoother final stage of Auto-Docking, and hopefully quicker/more stable docking.
+- Major rework of the fuel system to fit more closely to SEPs goals of compatibility with standard ksp fuel ratios. Please land/retire old ships before installing this update!! With this update I'm moving from the old 1:3.6 ratio to the standard 0.9:1.1 LF to Ox ratio.
+- Reimplementing Liquid Methane Support, with the standard SEP ratio, but with different amounts to keep the same mass as while using LF/Ox. Install CommunityResourcePack to enable automatic Liquid Methane usage.
+
 # V2.1.7 (2023-09-20)
-- Added RO as an incompatible mod.
+- Added RO as an incompatible mod. This was a long time overdue.
 - Added a safeguard against launching with too little Cluster Thrust. Launch will now be aborted before clamp release.
 - Changed Launch Labels, azimuth and pitch are changed around. Steering errors show only the error in yellow or red now.
 
 # V2.1.6 (2023-06-25)
-- Introducing my own plumes. Fixes the macOS and linux shader problems with SEPs default waterfall plumes.
+- Introducing my own temporary plumes. Fixes the macOS and linux shader problems with SEPs default waterfall plumes. Will be removed once fossils plumes/clouds are completely built into SEP.
 
 # V2.1.5 (2023-06-24)
 - Launch gets cancelled when multiple towers are in use, and names collide (causing booster crash on landing).

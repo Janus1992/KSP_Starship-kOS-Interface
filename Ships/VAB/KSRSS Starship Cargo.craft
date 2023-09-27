@@ -2,7 +2,7 @@ ship = KSRSS Starship Cargo
 version = 1.12.5
 description = 
 type = VAB
-size = 36.9239845,86.3491516,15.2185268
+size = 38.7243614,90.9978409,15.218523
 steamPublishedFileId = 0
 persistentId = 3880820523
 rot = 0,0,0,0
@@ -596,69 +596,6 @@ PART
 	}
 	MODULE
 	{
-		name = JSIExternalCameraSelector
-		isEnabled = True
-		current = 1
-		showCones = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = KOSNameTag
-		isEnabled = True
-		nameTag = 
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleWaterfallFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleWaterfallFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = kOSProcessor
 		isEnabled = True
 		bootFile = /boot/starship.ks
@@ -732,6 +669,54 @@ PART
 	}
 	MODULE
 	{
+		name = ModuleWaterfallFX
+		isEnabled = True
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = JSIExternalCameraSelector
+		isEnabled = True
+		current = 1
+		showCones = True
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = KOSNameTag
+		isEnabled = True
+		nameTag = 
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = ModuleB9PartInfo
 		isEnabled = False
 		stagingEnabled = True
@@ -747,9 +732,9 @@ PART
 	}
 	RESOURCE
 	{
-		name = LiquidFuel
-		amount = 7825
-		maxAmount = 7825
+		name = LqdMethane
+		amount = 86030.699999999997
+		maxAmount = 86030.699999999997
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -759,8 +744,8 @@ PART
 	RESOURCE
 	{
 		name = Oxidizer
-		amount = 28170
-		maxAmount = 28170
+		amount = 28676.900000000001
+		maxAmount = 28676.900000000001
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -773,7 +758,7 @@ PART
 	part = SEP.22.SHIP.AFT.LEFT.KOS_4293713580
 	partName = Part
 	persistentId = 515472983
-	pos = -0.0275108851,60.824543,3.28696942
+	pos = -0.0275108851,60.824543,3.28697038
 	attPos = 0,0,0
 	attPos0 = -3.18812633,-5.02599716,-0.0323865414
 	rot = -0.444996715,0.444996715,-0.549525261,0.549525261
@@ -999,7 +984,7 @@ PART
 	part = SEP.22.SHIP.AFT.RIGHT.KOS_4293711536
 	partName = Part
 	persistentId = 1315989264
-	pos = -0.0275092162,60.824543,-3.08929539
+	pos = -0.0275092162,60.824543,-3.08929634
 	attPos = 0,0,0
 	attPos0 = 3.18812609,-5.02599621,-0.0323839188
 	rot = -0.549525201,-0.549525201,-0.444996804,-0.444996804
@@ -1225,7 +1210,7 @@ PART
 	part = SEP.22.RAPTOR2.SL.KOS_4293693306
 	partName = Part
 	persistentId = 2895899342
-	pos = -0.580928624,58.7617455,0.10231714
+	pos = -0.580928743,58.7617455,0.10231714
 	attPos = 0,0,0
 	attPos0 = -0.00348025607,-7.0887928,-0.585802913
 	rot = 0,0.707106829,0,0.707106829
@@ -1539,9 +1524,8 @@ PART
 	}
 	MODULE
 	{
-		name = KOSNameTag
+		name = ModuleWaterfallFX
 		isEnabled = True
-		nameTag = 
 		stagingEnabled = True
 		EVENTS
 		{
@@ -1555,8 +1539,9 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleWaterfallFX
+		name = KOSNameTag
 		isEnabled = True
+		nameTag = 
 		stagingEnabled = True
 		EVENTS
 		{
@@ -1600,7 +1585,7 @@ PART
 	part = SEP.22.RAPTOR2.SL.KOS_4293689322
 	partName = Part
 	persistentId = 2460835369
-	pos = 0.300791293,58.7617455,0.604417741
+	pos = 0.300791353,58.7617455,0.604417861
 	attPos = 0,0,0
 	attPos0 = -0.505580664,-7.0887928,0.295916259
 	rot = 0,0.965925932,0,-0.258819133
@@ -1906,9 +1891,8 @@ PART
 	}
 	MODULE
 	{
-		name = KOSNameTag
+		name = ModuleWaterfallFX
 		isEnabled = True
-		nameTag = 
 		stagingEnabled = True
 		EVENTS
 		{
@@ -1922,8 +1906,9 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleWaterfallFX
+		name = KOSNameTag
 		isEnabled = True
+		nameTag = 
 		stagingEnabled = True
 		EVENTS
 		{
@@ -1967,7 +1952,7 @@ PART
 	part = SEP.22.RAPTOR2.SL.KOS_4293687766
 	partName = Part
 	persistentId = 3072459237
-	pos = 0.294763118,58.7617455,-0.410224497
+	pos = 0.294763178,58.7617455,-0.410224617
 	attPos = 0,0,0
 	attPos0 = 0.50906074,-7.0887928,0.289888442
 	rot = 0,0.258819044,0,-0.965925872
@@ -2273,9 +2258,8 @@ PART
 	}
 	MODULE
 	{
-		name = KOSNameTag
+		name = ModuleWaterfallFX
 		isEnabled = True
-		nameTag = 
 		stagingEnabled = True
 		EVENTS
 		{
@@ -2289,8 +2273,9 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleWaterfallFX
+		name = KOSNameTag
 		isEnabled = True
+		nameTag = 
 		stagingEnabled = True
 		EVENTS
 		{
@@ -2334,7 +2319,7 @@ PART
 	part = SEP.22.RAPTOR.VAC.KOS_4293684968
 	partName = Part
 	persistentId = 2818932341
-	pos = 1.93708694,58.1201859,0.0988331288
+	pos = 1.93708742,58.1201859,0.0988331288
 	attPos = 0,0,0
 	attPos0 = -5.06639481E-07,-7.73035431,1.93220735
 	rot = 0,-0.707106948,0,-0.707106709
@@ -2533,9 +2518,8 @@ PART
 	}
 	MODULE
 	{
-		name = KOSNameTag
+		name = ModuleWaterfallFX
 		isEnabled = True
-		nameTag = 
 		stagingEnabled = True
 		EVENTS
 		{
@@ -2549,8 +2533,9 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleWaterfallFX
+		name = KOSNameTag
 		isEnabled = True
+		nameTag = 
 		stagingEnabled = True
 		EVENTS
 		{
@@ -2594,7 +2579,7 @@ PART
 	part = SEP.22.RAPTOR.VAC.KOS_4293672836
 	partName = Part
 	persistentId = 2891999133
-	pos = -0.961233497,58.1201859,-1.57450533
+	pos = -0.961233854,58.1201859,-1.57450593
 	attPos = 0,0,0
 	attPos0 = 1.67333782,-7.73035431,-0.9661057
 	rot = 0,0.965925932,0,-0.258819133
@@ -2785,9 +2770,8 @@ PART
 	}
 	MODULE
 	{
-		name = KOSNameTag
+		name = ModuleWaterfallFX
 		isEnabled = True
-		nameTag = 
 		stagingEnabled = True
 		EVENTS
 		{
@@ -2801,8 +2785,9 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleWaterfallFX
+		name = KOSNameTag
 		isEnabled = True
+		nameTag = 
 		stagingEnabled = True
 		EVENTS
 		{
@@ -2846,7 +2831,7 @@ PART
 	part = SEP.22.RAPTOR.VAC.KOS_4293672124
 	partName = Part
 	persistentId = 506832154
-	pos = -0.961227357,58.1201859,1.77218318
+	pos = -0.961227596,58.1201859,1.77218366
 	attPos = 0,0,0
 	attPos0 = -1.6733377,-7.73035431,-0.966106415
 	rot = 0,0.258818954,0,-0.965925932
@@ -3037,9 +3022,8 @@ PART
 	}
 	MODULE
 	{
-		name = KOSNameTag
+		name = ModuleWaterfallFX
 		isEnabled = True
-		nameTag = 
 		stagingEnabled = True
 		EVENTS
 		{
@@ -3053,8 +3037,9 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleWaterfallFX
+		name = KOSNameTag
 		isEnabled = True
+		nameTag = 
 		stagingEnabled = True
 		EVENTS
 		{
@@ -3461,52 +3446,6 @@ PART
 	}
 	MODULE
 	{
-		name = KOSNameTag
-		isEnabled = True
-		nameTag = 
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleWaterfallFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleWaterfallFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = kOSProcessor
 		isEnabled = True
 		bootFile = /boot/watchdog.ks
@@ -3558,6 +3497,52 @@ PART
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
 			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleWaterfallFX
+		isEnabled = True
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleWaterfallFX
+		isEnabled = True
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = KOSNameTag
+		isEnabled = True
+		nameTag = 
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
 		}
 		UPGRADESAPPLIED
 		{
@@ -3757,9 +3742,9 @@ PART
 	}
 	RESOURCE
 	{
-		name = LiquidFuel
-		amount = 350
-		maxAmount = 350
+		name = LqdMethane
+		amount = 3823.5999999999999
+		maxAmount = 3823.5999999999999
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -3769,8 +3754,8 @@ PART
 	RESOURCE
 	{
 		name = Oxidizer
-		amount = 1260
-		maxAmount = 1260
+		amount = 1274.5
+		maxAmount = 1274.5
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -3783,7 +3768,7 @@ PART
 	part = SEP.22.SHIP.FWD.RIGHT.KOS_4293709350
 	partName = Part
 	persistentId = 3063213978
-	pos = 0.0050368309,82.115921,-2.71158767
+	pos = 0.0050368309,82.115921,-2.71158814
 	attPos = 0,0,0
 	attPos0 = 2.81042385,0.717590332,0.000163674355
 	rot = 0.549525321,0.444997013,0.549525082,0.444996655
@@ -4009,7 +3994,7 @@ PART
 	part = SEP.22.SHIP.FWD.LEFT.KOS_4293709880
 	partName = Part
 	persistentId = 2101180378
-	pos = 0.00503826141,82.115921,2.9092629
+	pos = 0.00503826141,82.115921,2.90926337
 	attPos = 0,0,0
 	attPos0 = -2.81042528,0.717590332,0.000164628029
 	rot = -0.549525201,0.444996834,-0.549525201,0.444996834
@@ -4707,7 +4692,7 @@ PART
 	part = SEP.22.BOOSTER.GRIDFIN.KOS_4293645248
 	partName = Part
 	persistentId = 1212424424
-	pos = -1.84840274,56.1360474,-3.11113715
+	pos = -1.84840345,56.1360474,-3.11113834
 	attPos = 0,0,0
 	attPos0 = 3.20996594,0.558559418,-1.85327375
 	rot = -0.5,0,0.866025448,0
@@ -4959,7 +4944,7 @@ PART
 	part = SEP.22.BOOSTER.GRIDFIN.KOS_4293644732
 	partName = Part
 	persistentId = 4270387218
-	pos = 1.85802817,56.1360474,-3.11120892
+	pos = 1.85802865,56.1360474,-3.11120987
 	attPos = 0,0,0
 	attPos0 = 3.21003866,0.558559418,1.85314858
 	rot = -0.866025388,0,0.50000006,0
@@ -5203,7 +5188,7 @@ PART
 	part = SEP.22.BOOSTER.GRIDFIN.KOS_4293644392
 	partName = Part
 	persistentId = 2442136230
-	pos = -1.84827518,56.1360474,3.30888391
+	pos = -1.84827566,56.1360474,3.30888486
 	attPos = 0,0,0
 	attPos0 = -3.21003985,0.558559418,-1.85314858
 	rot = 0.49999997,0,0.866025448,0
@@ -5447,7 +5432,7 @@ PART
 	part = SEP.22.BOOSTER.GRIDFIN.KOS_4293644062
 	partName = Part
 	persistentId = 2564253130
-	pos = 1.85815763,56.1360474,3.3088131
+	pos = 1.85815835,56.1360474,3.30881429
 	attPos = 0,0,0
 	attPos0 = -3.20996809,0.558559418,1.85327566
 	rot = 0.866025448,0,0.500000238,0
@@ -5836,6 +5821,37 @@ PART
 	}
 	MODULE
 	{
+		name = ModuleRCSFX
+		isEnabled = True
+		rcsEnabled = True
+		thrustPercentage = 100
+		currentShowToggles = False
+		enableYaw = True
+		enablePitch = True
+		enableRoll = True
+		enableX = True
+		enableY = True
+		enableZ = True
+		useThrottle = False
+		fullThrust = False
+		stagingEnabled = False
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+			ToggleAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = ModuleEnginesFX
 		isEnabled = True
 		independentThrottle = False
@@ -5899,52 +5915,6 @@ PART
 				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = KOSNameTag
-		isEnabled = True
-		nameTag = 
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleWaterfallFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleWaterfallFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
 		}
 		UPGRADESAPPLIED
 		{
@@ -6040,6 +6010,22 @@ PART
 	}
 	MODULE
 	{
+		name = KOSNameTag
+		isEnabled = True
+		nameTag = 
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = ModuleB9PartInfo
 		isEnabled = False
 		stagingEnabled = True
@@ -6055,9 +6041,9 @@ PART
 	}
 	RESOURCE
 	{
-		name = LiquidFuel
-		amount = 38260
-		maxAmount = 38260
+		name = LqdMethane
+		amount = 420594.5
+		maxAmount = 420594.5
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -6067,8 +6053,8 @@ PART
 	RESOURCE
 	{
 		name = Oxidizer
-		amount = 137736
-		maxAmount = 137736
+		amount = 140198.20000000001
+		maxAmount = 140198.20000000001
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -6096,7 +6082,7 @@ PART
 	dstg = 0
 	sidx = 3
 	sqor = 0
-	sepI = 0
+	sepI = 1
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -6202,6 +6188,88 @@ PART
 	}
 	PARTDATA
 	{
+	}
+	MODULE
+	{
+		name = ModuleDockingNode
+		isEnabled = True
+		acquireForceTweak = 100
+		crossfeed = True
+		nodeIsLocked = True
+		targetAngle = 0
+		inverted = False
+		stagingEnabled = False
+		state = Ready
+		dockUId = 0
+		dockNodeIdx = 0
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+			ToggleLockedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ServoEngageLockAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ServoDisgageLockAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			UndockAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			DecoupleAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			MakeReferenceToggle
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			EnableXFeedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			DisableXFeedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ToggleXFeedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+		}
+		AXISGROUPS
+		{
+			targetAngle
+			{
+				axisGroup = None
+				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				axisSpeedMultiplier = 0
+				axisInverted = None
+				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
 	}
 	MODULE
 	{
@@ -6678,99 +6746,54 @@ PART
 	}
 	MODULE
 	{
+		name = ModuleWaterfallFX
+		isEnabled = True
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleWaterfallFX
+		isEnabled = True
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleWaterfallFX
+		isEnabled = True
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleWaterfallFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleWaterfallFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleWaterfallFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleWaterfallFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleWaterfallFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleWaterfallFX
-		isEnabled = True
 		stagingEnabled = True
 		EVENTS
 		{
@@ -6829,7 +6852,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -7241,22 +7264,6 @@ PART
 	}
 	MODULE
 	{
-		name = KOSNameTag
-		isEnabled = True
-		nameTag = 
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = kOSProcessor
 		isEnabled = True
 		bootFile = /boot/tower.ks
@@ -7336,6 +7343,22 @@ PART
 	}
 	MODULE
 	{
+		name = KOSNameTag
+		isEnabled = True
+		nameTag = 
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = ModuleB9PartInfo
 		isEnabled = False
 		stagingEnabled = True
@@ -7366,7 +7389,7 @@ PART
 	part = SLE.SS.OLIT.Base.KOS_4293520590
 	partName = Part
 	persistentId = 3829859604
-	pos = -20.8395519,3.69950104,-0.960243285
+	pos = -20.8395596,3.69950104,-0.960243285
 	attPos = 0,0,0
 	attPos0 = 20.8443928,-5.32064438,1.05908418
 	rot = 0,-1.00000012,0,0
@@ -7381,7 +7404,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 0
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -7546,29 +7569,6 @@ PART
 	}
 	MODULE
 	{
-		name = LaunchClamp
-		isEnabled = False
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = TrajectoriesVesselSettings
 		isEnabled = True
 		Initialized = False
@@ -7648,7 +7648,7 @@ PART
 	part = SLE.SS.OLIT.Core.KOS_4293519000
 	partName = Part
 	persistentId = 3903898400
-	pos = -20.8395596,7.21844482,-0.960243285
+	pos = -20.8395672,7.21844482,-0.960243285
 	attPos = 0,0,0
 	attPos0 = 7.62939135E-06,3.51894379,0
 	rot = 0,1.00000012,0,0
@@ -7663,11 +7663,11 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 0
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
-	modMass = 375
+	modMass = 150
 	modSize = 0,0,0
 	link = SLE.SS.OLIT.Top.KOS_4293490946
 	link = SLE.SS.OLIT.MZ.KOS_4293488272
@@ -7800,29 +7800,6 @@ PART
 	}
 	MODULE
 	{
-		name = LaunchClamp
-		isEnabled = False
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = ModuleB9PartInfo
 		isEnabled = True
 		stagingEnabled = True
@@ -7842,7 +7819,7 @@ PART
 	part = SLE.SS.OLIT.Top.KOS_4293490946
 	partName = Part
 	persistentId = 3929120927
-	pos = -20.8395672,80.6973419,-0.960245192
+	pos = -20.8395748,80.6973419,-0.960245192
 	attPos = 0,0,0
 	attPos0 = 7.62939453E-06,73.4789047,1.90734863E-06
 	rot = 0,1.00000012,0,0
@@ -7857,7 +7834,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 0
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -7973,29 +7950,6 @@ PART
 	}
 	MODULE
 	{
-		name = LaunchClamp
-		isEnabled = False
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = ModuleB9PartInfo
 		isEnabled = False
 		stagingEnabled = True
@@ -8015,7 +7969,7 @@ PART
 	part = SLE.SS.OLIT.MZ.KOS_4293488272
 	partName = Part
 	persistentId = 481109344
-	pos = -15.4777451,79.0322571,-0.205543593
+	pos = -15.4777527,79.0322571,-0.205543593
 	attPos = 0,0,0
 	attPos0 = -5.36181641,71.8138199,-0.754699945
 	rot = 0,1.00000012,0,0
@@ -8030,7 +7984,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 0
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -8589,27 +8543,6 @@ PART
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModulePhysicMaterial
-		isEnabled = True
-		bounceCombine = Average
-		bounciness = 0
-		dynamicFriction = 0.400000006
-		staticFriction = 0.400000006
-		frictionCombine = Average
-		activePhysicMaterialName = MediumGrip
 		stagingEnabled = True
 		EVENTS
 		{

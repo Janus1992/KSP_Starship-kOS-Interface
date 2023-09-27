@@ -1,4 +1,4 @@
-ship = OrbitalLaunchMount
+ship = Stock/KSRSS OrbitalLaunchMount
 version = 1.12.5
 description = 
 type = VAB

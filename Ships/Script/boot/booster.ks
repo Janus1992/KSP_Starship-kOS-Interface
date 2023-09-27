@@ -44,7 +44,7 @@ if bodyexists("Earth") {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
         }
         set LatCtrlPID to PIDLOOP(0.04, 0.0025, 0.0025, -2, 2).
-        set LFBoosterFuelCutOff to 2000.
+        set LFBoosterFuelCutOff to 4140.
         set LandHeadingVector to heading(270,0):vector.
         set BoosterLandingFactor to 0.825.
         set BoosterGlideDistance to 8000.
@@ -62,7 +62,7 @@ if bodyexists("Earth") {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
         }
         set LatCtrlPID to PIDLOOP(0.04, 0.0025, 0.0025, -2, 2).
-        set LFBoosterFuelCutOff to 1500.
+        set LFBoosterFuelCutOff to 3105.
         set LandHeadingVector to heading(242,0):vector.
         set BoosterLandingFactor to 1.15.
         set BoosterGlideDistance to 4000.
@@ -82,7 +82,7 @@ else {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
         }
         set LatCtrlPID to PIDLOOP(0.04, 0.0025, 0.0025, -2, 2).
-        set LFBoosterFuelCutOff to 1500.
+        set LFBoosterFuelCutOff to 3105.
         set LandHeadingVector to heading(242,0):vector.
         set BoosterLandingFactor to 1.15.
         set BoosterGlideDistance to 4000.
@@ -95,11 +95,17 @@ else {
         set BoosterHeight to 44.2.
         set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
         set LatCtrlPID to PIDLOOP(0.05, 0.0005, 0.0005, -2, 2).
-        set LFBoosterFuelCutOff to 1500.
+        set LFBoosterFuelCutOff to 3105.
         set LandHeadingVector to heading(270,0):vector.
         set BoosterLandingFactor to 1.025.
         set BoosterGlideDistance to 5000.
         set Scale to 1.
+    }
+}
+
+for res in BoosterCore[0]:resources {
+    if res:name = "LqdMethane" {
+        set LFBoosterFuelCutOff to LFBoosterFuelCutOff * 5.310536.
     }
 }
 
@@ -891,6 +897,13 @@ function SetLoadDistances {
 function CheckFuel {
     for res in BoosterCore[0]:resources {
         if res:name = "LiquidFuel" {
+            set LFBooster to res:amount.
+            print "LFOB: " + round(LFBooster).
+            if LFBooster < LFBoosterFuelCutOff {
+                BoosterCore[0]:shutdown.
+            }
+        }
+        if res:name = "LqdMethane" {
             set LFBooster to res:amount.
             print "LFOB: " + round(LFBooster).
             if LFBooster < LFBoosterFuelCutOff {

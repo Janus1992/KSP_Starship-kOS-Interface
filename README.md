@@ -25,12 +25,13 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Stock KSP, RSS or KSRSS (no other planet changing mods), and the language has to be set to "english" (important).
 - Starship Expansion Project - github repository version and its requirements (!!)
     https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
+    Github version: https://github.com/Kari1407/Starship-Expansion-Project
 - Starship Launch Expansion - the DEV version(!!)
     https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229
     Dev Version: https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev
 - kOS
     https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/
-- Trajectories
+- Trajectories, and its requirements
     https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/
 - TundraExploration (actually only TundraExploration.dll)
     https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/
@@ -73,6 +74,8 @@ To Load Cargo in the Cargo Ship (due to the vehicle not fitting in the VAB):
 - Being in IVA during Booster Separation can cause problems with returning back into the IVA later on, and break the camera. A reload after launch completion fixes everything.
 
 - Enabling logging of data can seldomly cause a crash when it attempts to write and it loses the connection before/during the writing. Logging is therefore disabled by default.
+
+- The Depot versions get into an oscillation in the lateral axis, not sure what causes this.
 
 
 

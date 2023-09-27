@@ -2,7 +2,7 @@ ship = KSRSS Expendable Starship
 version = 1.12.5
 description = 
 type = VAB
-size = 38.7243729,90.9978409,15.2185268
+size = 38.7243652,90.9978409,15.218523
 steamPublishedFileId = 0
 persistentId = 1673854928
 rot = 0,0,0,0
@@ -544,9 +544,9 @@ PART
 	}
 	RESOURCE
 	{
-		name = LiquidFuel
-		amount = 7825
-		maxAmount = 7825
+		name = LqdMethane
+		amount = 86030.699999999997
+		maxAmount = 86030.699999999997
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -556,8 +556,8 @@ PART
 	RESOURCE
 	{
 		name = Oxidizer
-		amount = 28170
-		maxAmount = 28170
+		amount = 28676.900000000001
+		maxAmount = 28676.900000000001
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -937,7 +937,7 @@ PART
 	part = SEP.22.RAPTOR2.SL.KOS_4293629984
 	partName = Part
 	persistentId = 3100634144
-	pos = -0.580914915,59.0225067,0.102299646
+	pos = -0.580915034,59.0225067,0.102299646
 	attPos = 0,0,0
 	attPos0 = -0.00348019553,-7.08879089,-0.585802913
 	rot = 0,0.707106829,0,0.707106829
@@ -1312,7 +1312,7 @@ PART
 	part = SEP.22.RAPTOR2.SL.KOS_4293626058
 	partName = Part
 	persistentId = 1557490648
-	pos = 0.300804168,59.0225067,0.60439992
+	pos = 0.300804228,59.0225067,0.604400039
 	attPos = 0,0,0
 	attPos0 = -0.505580664,-7.08879089,0.295916259
 	rot = 0,0.965925932,0,-0.258819133
@@ -1679,7 +1679,7 @@ PART
 	part = SEP.22.RAPTOR2.SL.KOS_4293624502
 	partName = Part
 	persistentId = 1609060358
-	pos = 0.294776142,59.0225067,-0.410241485
+	pos = 0.294776201,59.0225067,-0.410241604
 	attPos = 0,0,0
 	attPos0 = 0.50906074,-7.08879089,0.289888442
 	rot = 0,0.258819044,0,-0.965925872
@@ -2046,10 +2046,10 @@ PART
 	part = SEP.22.RAPTOR.VAC.KOS_4293620188
 	partName = Part
 	persistentId = 458044752
-	pos = -1.66845596,58.3809433,1.0649215
+	pos = -1.66845644,58.3809433,1.06492174
 	attPos = 0,0,0
 	attPos0 = -0.966106653,-7.73035431,-1.67333651
-	rot = 0,-0.499999911,0,0.866025567
+	rot = 0,-0.499999881,0,0.866025567
 	attRot = 0,0,0,1
 	attRot0 = 0,-0.707106829,0,0.707106829
 	mir = 1,1,1
@@ -2306,7 +2306,7 @@ PART
 	part = SEP.22.RAPTOR.VAC.KOS_4293616364
 	partName = Part
 	persistentId = 1678658008
-	pos = 1.67822886,58.3809433,1.06492674
+	pos = 1.67822945,58.3809433,1.0649271
 	attPos = 0,0,0
 	attPos0 = -0.966106415,-7.73035431,1.67333853
 	rot = 0,-0.50000006,0,-0.866025388
@@ -2558,7 +2558,7 @@ PART
 	part = SEP.22.RAPTOR.VAC.KOS_4293615652
 	partName = Part
 	persistentId = 3924256300
-	pos = 0.00489151478,58.3809433,-1.83339024
+	pos = 0.00489151478,58.3809433,-1.83339071
 	attPos = 0,0,0
 	attPos0 = 1.93220675,-7.73035431,-1.19209261E-07
 	rot = 0,-1.00000012,0,1.1920929E-07
@@ -2810,10 +2810,10 @@ PART
 	part = SEP.22.RAPTOR.VAC.KOS_4293613702
 	partName = Part
 	persistentId = 915269176
-	pos = -1.66845441,58.3809433,-0.867284417
+	pos = -1.66845477,58.3809433,-0.867284775
 	attPos = 0,0,0
 	attPos0 = 0.966106653,-7.73035431,-1.6733371
-	rot = 0,-0.866025388,0,0.500000179
+	rot = 0,-0.866025448,0,0.500000238
 	attRot = 0,0,0,1
 	attRot0 = 0,-0.707106829,0,0.707106829
 	mir = 1,1,1
@@ -3062,7 +3062,7 @@ PART
 	part = SEP.22.RAPTOR.VAC.KOS_4293612694
 	partName = Part
 	persistentId = 2466272074
-	pos = 0.0048892498,58.3809433,2.03102803
+	pos = 0.0048892498,58.3809433,2.03102851
 	attPos = 0,0,0
 	attPos0 = -1.93220675,-7.73035431,7.15255567E-07
 	rot = 0,-1.1920929E-07,0,-1.00000012
@@ -3314,10 +3314,10 @@ PART
 	part = SEP.22.RAPTOR.VAC.KOS_4293611982
 	partName = Part
 	persistentId = 1773178480
-	pos = 1.67823029,58.3809433,-0.867286146
+	pos = 1.67823076,58.3809433,-0.867286384
 	attPos = 0,0,0
 	attPos0 = 0.966106296,-7.73035431,1.67333758
-	rot = 0,-0.866025567,0,-0.499999911
+	rot = 0,-0.866025567,0,-0.499999881
 	attRot = 0,0,0,1
 	attRot0 = 0,0.965925813,0,0.258818984
 	mir = 1,1,1
@@ -4021,7 +4021,7 @@ PART
 	part = SEP.22.BOOSTER.GRIDFIN.KOS_4293645248
 	partName = Part
 	persistentId = 1293269809
-	pos = -1.84839475,56.3968048,-3.11116266
+	pos = -1.84839547,56.3968048,-3.11116385
 	attPos = 0,0,0
 	attPos0 = 3.20996594,0.558559418,-1.85327375
 	rot = -0.5,0,0.866025448,0
@@ -4273,7 +4273,7 @@ PART
 	part = SEP.22.BOOSTER.GRIDFIN.KOS_4293644732
 	partName = Part
 	persistentId = 845219472
-	pos = 1.85804522,56.3968048,-3.11123347
+	pos = 1.8580457,56.3968048,-3.11123443
 	attPos = 0,0,0
 	attPos0 = 3.21003866,0.558559418,1.85314858
 	rot = -0.866025388,0,0.50000006,0
@@ -4517,7 +4517,7 @@ PART
 	part = SEP.22.BOOSTER.GRIDFIN.KOS_4293644392
 	partName = Part
 	persistentId = 2840909334
-	pos = -1.84826577,56.3968048,3.30887365
+	pos = -1.84826624,56.3968048,3.30887461
 	attPos = 0,0,0
 	attPos0 = -3.21003985,0.558559418,-1.85314858
 	rot = 0.49999997,0,0.866025448,0
@@ -4761,7 +4761,7 @@ PART
 	part = SEP.22.BOOSTER.GRIDFIN.KOS_4293644062
 	partName = Part
 	persistentId = 2915512178
-	pos = 1.85817611,56.3968048,3.3088038
+	pos = 1.85817683,56.3968048,3.30880499
 	attPos = 0,0,0
 	attPos0 = -3.20996809,0.558559418,1.85327566
 	rot = 0.866025448,0,0.500000238,0
@@ -5370,9 +5370,9 @@ PART
 	}
 	RESOURCE
 	{
-		name = LiquidFuel
-		amount = 38260
-		maxAmount = 38260
+		name = LqdMethane
+		amount = 420594.5
+		maxAmount = 420594.5
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -5382,8 +5382,8 @@ PART
 	RESOURCE
 	{
 		name = Oxidizer
-		amount = 137736
-		maxAmount = 137736
+		amount = 140198.20000000001
+		maxAmount = 140198.20000000001
 		flowState = True
 		isTweakable = True
 		hideFlow = False
@@ -5411,7 +5411,7 @@ PART
 	dstg = 0
 	sidx = 4
 	sqor = 0
-	sepI = 0
+	sepI = 1
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -5517,6 +5517,88 @@ PART
 	}
 	PARTDATA
 	{
+	}
+	MODULE
+	{
+		name = ModuleDockingNode
+		isEnabled = True
+		acquireForceTweak = 100
+		crossfeed = True
+		nodeIsLocked = True
+		targetAngle = 0
+		inverted = False
+		stagingEnabled = False
+		state = Ready
+		dockUId = 0
+		dockNodeIdx = 0
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+			ToggleLockedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ServoEngageLockAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ServoDisgageLockAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			UndockAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			DecoupleAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			MakeReferenceToggle
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			EnableXFeedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			DisableXFeedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ToggleXFeedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+		}
+		AXISGROUPS
+		{
+			targetAngle
+			{
+				axisGroup = None
+				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				axisSpeedMultiplier = 0
+				axisInverted = None
+				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
 	}
 	MODULE
 	{
@@ -6099,7 +6181,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -6636,7 +6718,7 @@ PART
 	part = SLE.SS.OLIT.Base.KOS_4293520590
 	partName = Part
 	persistentId = 2224375923
-	pos = -20.8396015,3.96025848,-0.960260749
+	pos = -20.8396091,3.96025848,-0.960260749
 	attPos = 0,0,0
 	attPos0 = 20.8443928,-5.32064438,1.05908418
 	rot = 0,-1.00000012,0,0
@@ -6651,7 +6733,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -6895,7 +6977,7 @@ PART
 	part = SLE.SS.OLIT.Core.KOS_4293519000
 	partName = Part
 	persistentId = 136488779
-	pos = -20.8396091,7.47920227,-0.960260749
+	pos = -20.8396168,7.47920227,-0.960260749
 	attPos = 0,0,0
 	attPos0 = 7.62939135E-06,3.51894379,0
 	rot = 0,1.00000012,0,0
@@ -6910,11 +6992,11 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
-	modMass = 375
+	modMass = 150
 	modSize = 0,0,0
 	link = SLE.SS.OLIT.Top.KOS_4293490946
 	link = SLE.SS.OLIT.MZ.KOS_4293488272
@@ -7066,7 +7148,7 @@ PART
 	part = SLE.SS.OLIT.Top.KOS_4293490946
 	partName = Part
 	persistentId = 120235869
-	pos = -20.8396168,80.9580994,-0.960262656
+	pos = -20.8396244,80.9580994,-0.960262656
 	attPos = 0,0,0
 	attPos0 = 7.62939453E-06,73.4789047,1.90734863E-06
 	rot = 0,1.00000012,0,0
@@ -7081,7 +7163,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -7216,7 +7298,7 @@ PART
 	part = SLE.SS.OLIT.MZ.KOS_4293488272
 	partName = Part
 	persistentId = 3049219991
-	pos = -15.4777889,79.2930145,-0.205562934
+	pos = -15.4777966,79.2930145,-0.205562934
 	attPos = 0,0,0
 	attPos0 = -5.36181641,71.8138199,-0.754699945
 	rot = 0,1.00000012,0,0
@@ -7231,7 +7313,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0

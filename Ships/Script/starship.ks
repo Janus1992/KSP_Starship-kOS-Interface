@@ -14,6 +14,7 @@ clearscreen.
 set RSS to false.
 set KSRSS to false.
 set STOCK to false.
+set Methane to false.
 if bodyexists("Earth") {
     if body("Earth"):radius > 1600000 {
         set RSS to true.
@@ -28,6 +29,14 @@ else {
     }
     else {
         set STOCK to true.
+    }
+}
+
+set FuelUnitsToKg to 11 + (1/9).
+for res in Core:part:resources {
+    if res:name = "LqdMethane" {
+        set Methane to true.
+        set FuelUnitsToKg to 2.09227666666667.
     }
 }
 
@@ -94,14 +103,20 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set towerhgt to 96.
     set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
     set DefaultLaunchSite to "28.6084,-80.59975".
-    set FuelVentCutOffValue to 1200.
+    set FuelVentCutOffValue to 2484.
     set FuelBalanceSpeed to 100.
     set LandRollVector to heading(270,0):vector.
     set SafeAltOverLZ to 10000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
     set targetap to 250000.
     set RCSThrust to 100.
     set RCSBurnTimeLimit to 240.
-    set VentRate to 88.67.
+    if Methane {
+        set VentRate to 974.75.
+        set FuelVentCutOffValue to FuelVentCutOffValue * 5.310536.
+    }
+    else {
+        set VentRate to 183.55.
+    }
     set ArmsHeight to 138.16.
 }
 else if KSRSS {
@@ -117,14 +132,20 @@ else if KSRSS {
     set towerhgt to 60.
     set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
     set DefaultLaunchSite to "28.5166,-81.2062".
-    set FuelVentCutOffValue to 550.
+    set FuelVentCutOffValue to 1138.5.
     set FuelBalanceSpeed to 40.
     set LandRollVector to heading(242,0):vector.
     set SafeAltOverLZ to 5000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
     set targetap to 125000.
     set RCSThrust to 70.
     set RCSBurnTimeLimit to 180.
-    set VentRate to 17.73.
+    if Methane {
+        set VentRate to 194.95.
+        set FuelVentCutOffValue to FuelVentCutOffValue * 5.310536.
+    }
+    else {
+        set VentRate to 36.71.
+    }
     set ArmsHeight to 86.35.
 }
 else {  // Set of variables when Real Solar System has NOT been installed
@@ -140,14 +161,20 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set towerhgt to 60.
     set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
     set DefaultLaunchSite to "-0.0972,-74.5577".
-    set FuelVentCutOffValue to 450.
+    set FuelVentCutOffValue to 931.5.
     set FuelBalanceSpeed to 40.
     set LandRollVector to heading(270,0):vector.
     set SafeAltOverLZ to 2500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
     set targetap to 75000.
     set RCSThrust to 40.
     set RCSBurnTimeLimit to 120.
-    set VentRate to 17.73.
+    if Methane {
+        set VentRate to 194.95.
+        set FuelVentCutOffValue to FuelVentCutOffValue * 5.310536.
+    }
+    else {
+        set VentRate to 36.71.
+    }
     set ArmsHeight to 86.35.
 }
 set SNStart to 30.  // Defines the first Serial Number when multiple ships are found and renaming is necessary.
@@ -404,6 +431,9 @@ function FindParts {
 
     for res in ship:resources {
         if res:name = "LiquidFuel" {
+            set LFcap to res:capacity.
+        }
+        if res:name = "LqdMethane" {
             set LFcap to res:capacity.
         }
         if res:name = "Oxidizer" {
@@ -4069,7 +4099,7 @@ function AutoDocking {
     //print "Initial Facing error: " + vang(target:facing:topvector, PortDistanceVector) + " degrees".
     //set VectorDraw to vecdraw(target:dockingports[0]:nodeposition, 5 * target:facing:topvector, magenta, "", 20, true, 0.005, true, true).
 
-    if vang(target:facing:topvector, PortDistanceVector) < 135 {
+    if vang(target:facing:topvector, PortDistanceVector) < 135 and PortDistanceVector:mag > 100 {
         print "Maneuvring to Intermediate Safe Point..".
         set dockingmode to "SAFE".
         DetermineSafeVector().
@@ -4200,10 +4230,10 @@ function AutoDockSteering {
             print "X: " + (RelDistX + RelVelX).
             print "Y: " + (RelDistY + RelVelY).
             print "Z: " + (RelDistZ + RelVelZ).
-            set ship:control:translation to v(RelDistY/10 + RelVelY, RelDistZ/10 + RelVelZ, RelDistX/10 + RelVelX).
+            set ship:control:translation to v(RelDistY/5 + RelVelY, RelDistZ/20 + RelVelZ, RelDistX/5 + RelVelX).
         }
         else {
-            set ship:control:translation to v(RelVelY/2, RelVelZ/2, RelVelX/2).
+            set ship:control:translation to v(RelVelY/5, RelVelZ/10, RelVelX/5).
         }
         return lookdirup(target:facing:forevector, target:dockingports[0]:portfacing:vector).
     }
@@ -4615,7 +4645,7 @@ set landbutton:ontoggle to {
             if ship:body:atm:exists {
                 ShowHomePage().
                 SetPlanetData().
-                if CargoMass > MaxReEntryCargoThickAtmo and CargoCG < MaxIU and ship:body:atm:sealevelpressure > 0.5 or CargoMass > MaxReEntryCargoThinAtmo and ship:body:atm:sealevelpressure < 0.5 {
+                if CargoMass > MaxReEntryCargoThickAtmo and CargoCG < MaxIU and ship:body:atm:sealevelpressure > 0.5 and not (ShipType = "Tanker") or CargoMass > MaxReEntryCargoThinAtmo and ship:body:atm:sealevelpressure < 0.5 and not (ShipType = "Tanker") {
                     ShowHomePage().
                     set textbox:style:bg to "starship_img/starship_main_square_bg".
                     LogToFile("De-Orbit cancelled due to Cargo Overload").
@@ -4653,7 +4683,6 @@ set landbutton:ontoggle to {
                     wait 3.
                     ClearInterfaceAndSteering().
                 }
-
                 else if CargoCG > MaxIU and CargoMass < MaxReEntryCargoThinAtmo and ship:body:atm:sealevelpressure < 0.5 {
                     ShowHomePage().
                     set textbox:style:bg to "starship_img/starship_main_square_bg".
@@ -4676,7 +4705,6 @@ set landbutton:ontoggle to {
                     wait 3.
                     ClearInterfaceAndSteering().
                 }
-
                 else if cargo1text:text = "Open" {
                     ShowHomePage().
                     set textbox:style:bg to "starship_img/starship_main_square_bg".
@@ -4691,6 +4719,43 @@ set landbutton:ontoggle to {
                     ClearInterfaceAndSteering().
                 }
                 else {
+                    if ShipType = "Tanker" and CargoMass > MaxReEntryCargoThickAtmo and ship:body:atm:sealevelpressure > 0.5 or ShipType = "Tanker" and CargoMass > MaxReEntryCargoThinAtmo and ship:body:atm:sealevelpressure < 0.5 {
+                        for res in tank:resources {
+                            if res:name = "LiquidFuel" {
+                                set RepositionLF to TRANSFERALL("LiquidFuel", Nose, Tank).
+                                set RepositionLF:ACTIVE to TRUE.
+                            }
+                            if res:name = "LqdMethane" {
+                                set RepositionLF to TRANSFERALL("LqdMethane", Nose, Tank).
+                                set RepositionLF:ACTIVE to TRUE.
+                            }
+                            if res:name = "Oxidizer" {
+                                set RepositionOxidizer to TRANSFERALL("Oxidizer", Nose, Tank).
+                                set RepositionOxidizer:ACTIVE to TRUE.
+                            }
+                        }
+                        until Nose:mass = Nose:drymass or CargoMass < MaxReEntryCargoThickAtmo and ship:body:atm:sealevelpressure > 0.5 or CargoMass < MaxReEntryCargoThinAtmo and ship:body:atm:sealevelpressure < 0.5 or RepositionOxidizer:STATUS = "Failed" or RepositionOxidizer:STATUS = "Finished" {
+                            set message1:text to "<b>Transferring Fuel..</b>".
+                            BackGroundUpdate().
+                        }
+                        set message1:text to "".
+                        if ShipType = "Tanker" and CargoMass > MaxReEntryCargoThickAtmo and ship:body:atm:sealevelpressure > 0.5 or ShipType = "Tanker" and CargoMass > MaxReEntryCargoThinAtmo and ship:body:atm:sealevelpressure < 0.5 {
+                            ShowHomePage().
+                            set textbox:style:bg to "starship_img/starship_main_square_bg".
+                            LogToFile("De-Orbit cancelled due to Fuel Overload").
+                            set message1:text to "<b>Error: Too much Fuel onboard!</b>".
+                            set message2:text to "<b>Current Cargo Mass: </b><color=yellow>" + round(CargoMass) + " kg</color>".
+                            if ship:body:atm:sealevelpressure > 0.5 {
+                                set message3:text to "<b>Max. Re-Entry Cargo Mass: </b><color=yellow>" + MaxReEntryCargoThickAtmo + "kg</color>".
+                            }
+                            if ship:body:atm:sealevelpressure < 0.5 {
+                                set message3:text to "<b>Max. Re-Entry Cargo Mass: </b><color=yellow>" + MaxReEntryCargoThinAtmo + "kg</color>".
+                            }
+                            set message1:style:textcolor to yellow.
+                            wait 3.
+                            ClearInterfaceAndSteering().
+                        }
+                    }
                     set landlabel:style:textcolor to green.
                     set launchlabel:style:textcolor to grey.
                     set launchlabel:style:bg to "starship_img/starship_background".
@@ -4879,12 +4944,12 @@ set landbutton:ontoggle to {
                                 }
                                 print "Min Fuel for safe re-entry: " + round(MinFuel).
                                 print "Max Fuel for safe re-entry: " + round(MaxFuel).
-                                print "Fuel on board: " + round(LFShip * 4.6 * 5).
-                                if LFShip * 4.6 * 5 < MinFuel {
+                                print "Fuel on board: " + round(LFShip * FuelUnitsToKg).
+                                if LFShip * FuelUnitsToKg < MinFuel {
                                     LogToFile("Automatic De-Orbit burn not possible, not enough fuel for a safe re-entry..").
                                     set message1:text to "<b>Error: Not enough Fuel on Board..</b>".
                                     set message1:style:textcolor to yellow.
-                                    set message2:text to "<b>Min. Fuel: </b>" + round(MinFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * 4.6 * 5) / 1000, 1) + "t)".
+                                    set message2:text to "<b>Min. Fuel: </b>" + round(MinFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * FuelUnitsToKg) / 1000, 1) + "t)".
                                     set message2:style:textcolor to yellow.
                                     set message3:text to "".
                                     set textbox:style:bg to "starship_img/starship_main_square_bg".
@@ -4894,17 +4959,17 @@ set landbutton:ontoggle to {
                                 }
                             }
 
-                            if LFShip > FuelVentCutOffValue and ship:body:atm:sealevelpressure > 0.5 or LFShip * 4.6 * 5 > MaxFuel and ship:body:atm:sealevelpressure < 0.5 {
+                            if LFShip > FuelVentCutOffValue and ship:body:atm:sealevelpressure > 0.5 or LFShip * FuelUnitsToKg > MaxFuel and ship:body:atm:sealevelpressure < 0.5 {
                                 ShowHomePage().
                                 set drainBegin to LFShip.
                                 set landlabel:style:textcolor to white.
                                 if ship:body:atm:sealevelpressure > 0.5 {
                                     set message1:text to "<b>Required Fuel Venting:</b>  " + timeSpanCalculator((LFShip - FuelVentCutOffValue) / VentRate).
-                                    set message2:text to "<b>Max. Fuel Mass: </b>" + round((FuelVentCutOffValue * 4.6 * 5) / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * 4.6 * 5) / 1000, 1) + "t)".
+                                    set message2:text to "<b>Max. Fuel Mass: </b>" + round((FuelVentCutOffValue * FuelUnitsToKg) / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * FuelUnitsToKg) / 1000, 1) + "t)".
                                 }
                                 else {
                                     set message1:text to "<b>Required Fuel Venting:</b>  " + timeSpanCalculator((LFShip - MaxFuel / 4.6 / 5) / VentRate).
-                                    set message2:text to "<b>Max. Fuel Mass: </b>" + round(MaxFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * 4.6 * 5) / 1000, 1) + "t)".
+                                    set message2:text to "<b>Max. Fuel Mass: </b>" + round(MaxFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * FuelUnitsToKg) / 1000, 1) + "t)".
                                 }
                                 if quicksetting1:pressed {
                                     set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
@@ -4933,7 +4998,7 @@ set landbutton:ontoggle to {
                                     set message2:text to "".
                                     set message3:text to "".
                                     set message3:style:textcolor to white.
-                                    until cancelconfirmed or LFShip < FuelVentCutOffValue and ship:body:atm:sealevelpressure > 0.5 or LFShip * 4.6 * 5 < MaxFuel and ship:body:atm:sealevelpressure < 0.5 or runningprogram = "Input" {
+                                    until cancelconfirmed or LFShip < FuelVentCutOffValue and ship:body:atm:sealevelpressure > 0.5 or LFShip * FuelUnitsToKg < MaxFuel and ship:body:atm:sealevelpressure < 0.5 or runningprogram = "Input" {
                                         if not cancelconfirmed {
                                             if KUniverse:activevessel = vessel(ship:name) {}
                                             else {
@@ -4958,6 +5023,7 @@ set landbutton:ontoggle to {
                                     LogToFile("Stop Venting").
                                     if kuniverse:timewarp:warp > 0 {
                                         set kuniverse:timewarp:warp to 0.
+                                        until kuniverse:timewarp:warp = 0 {}
                                         wait 1.
                                     }
                                     HideEngineToggles(0).
@@ -4979,7 +5045,7 @@ set landbutton:ontoggle to {
                                     ClearInterfaceAndSteering().
                                 }
                             }
-                            if LFShip < FuelVentCutOffValue + 0.01 and ship:body:atm:sealevelpressure > 0.5 or LFShip * 4.6 * 5 < MaxFuel + 0.01 and ship:body:atm:sealevelpressure < 0.5 {
+                            if LFShip < FuelVentCutOffValue + 0.01 and ship:body:atm:sealevelpressure > 0.5 or LFShip * FuelUnitsToKg < MaxFuel + 0.01 and ship:body:atm:sealevelpressure < 0.5 {
                                 set runningprogram to "Input".
                                 wait 0.1.
                                 if KUniverse:activevessel = vessel(ship:name) {}
@@ -5061,32 +5127,32 @@ set landbutton:ontoggle to {
                 if RSS {
                     set MinFuel to 135000 + (CargoMass / 150000 * 95000).
                     set MaxFuel to 900000.
-                    if LFShip * 4.6 * 5 > 600000 {
+                    if LFShip * FuelUnitsToKg > 600000 {
                         set SafeAltOverLZ to 10000 + (MaxFuel - 600000) / 1000 * 30.
                     }
                 }
                 else if KSRSS {
                     set MinFuel to 35000 + (CargoMass / 100000 * 40000).
                     set MaxFuel to 135000.
-                    if LFShip * 4.6 * 5 > 90000 {
+                    if LFShip * FuelUnitsToKg > 90000 {
                         set SafeAltOverLZ to 5000 + (MaxFuel - 90000) / 1000 * 30.
                     }
                 }
                 else {
                     set MinFuel to 20000 + (CargoMass / 75000 * 42500)..
                     set MaxFuel to 69000.
-                    if LFShip * 4.6 * 5 > 34500 {
+                    if LFShip * FuelUnitsToKg > 34500 {
                         set SafeAltOverLZ to 2500 + (MaxFuel - 34500) / 1000 * 30.
                     }
                 }
                 print "Min Fuel for safe landing: " + round(MinFuel).
                 print "Max Fuel for safe landing: " + round(MaxFuel).
-                print "Fuel on board: " + round(LFShip * 4.6 * 5).
-                if LFShip * 4.6 * 5 < MinFuel {
+                print "Fuel on board: " + round(LFShip * FuelUnitsToKg).
+                if LFShip * FuelUnitsToKg < MinFuel {
                     LogToFile("Automatic De-Orbit burn not possible, not enough fuel for a safe landing..").
                     set message1:text to "<b>Error: Not enough Fuel on Board..</b>".
                     set message1:style:textcolor to yellow.
-                    set message2:text to "<b>Min. Fuel: </b>" + round(MinFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * 4.6 * 5) / 1000, 1) + "t)".
+                    set message2:text to "<b>Min. Fuel: </b>" + round(MinFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * FuelUnitsToKg) / 1000, 1) + "t)".
                     set message2:style:textcolor to yellow.
                     set message3:text to "".
                     set textbox:style:bg to "starship_img/starship_main_square_bg".
@@ -5095,12 +5161,12 @@ set landbutton:ontoggle to {
                     return.
                 }
 
-                if LFShip * 4.6 * 5 > MaxFuel {
+                if LFShip * FuelUnitsToKg > MaxFuel {
                     ShowHomePage().
                     set drainBegin to LFShip.
                     set landlabel:style:textcolor to white.
                     set message1:text to "<b>Required Fuel Venting:</b>  " + timeSpanCalculator((LFShip - MaxFuel / 4.6 / 5) / VentRate).
-                    set message2:text to "<b>Max. Fuel Mass: </b>" + round(MaxFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * 4.6 * 5) / 1000, 1) + "t)".
+                    set message2:text to "<b>Max. Fuel Mass: </b>" + round(MaxFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * FuelUnitsToKg) / 1000, 1) + "t)".
                     if quicksetting1:pressed {
                         set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
                     }
@@ -5128,7 +5194,7 @@ set landbutton:ontoggle to {
                         set message2:text to "".
                         set message3:text to "".
                         set message3:style:textcolor to white.
-                        until cancelconfirmed or LFShip * 4.6 * 5 < MaxFuel or runningprogram = "Input" {
+                        until cancelconfirmed or LFShip * FuelUnitsToKg < MaxFuel or runningprogram = "Input" {
                             if not cancelconfirmed {
                                 if KUniverse:activevessel = vessel(ship:name) {}
                                 else {
@@ -5177,7 +5243,7 @@ set landbutton:ontoggle to {
                     wait 3.
                     ClearInterfaceAndSteering().
                 }
-                else if LFShip * 4.6 * 5 < MaxFuel {
+                else if LFShip * FuelUnitsToKg < MaxFuel {
                     set landlabel:style:textcolor to green.
                     set launchlabel:style:textcolor to grey.
                     set launchlabel:style:bg to "starship_img/starship_background".
@@ -5421,6 +5487,10 @@ function LandwithoutAtmo {
             }
             if res:name = "LiquidFuel" {
                 set RepositionLF to TRANSFERALL("LiquidFuel", Tank, HeaderTank).
+                set RepositionLF:ACTIVE to TRUE.
+            }
+            if res:name = "LqdMethane" {
+                set RepositionLF to TRANSFERALL("LqdMethane", Tank, HeaderTank).
                 set RepositionLF:ACTIVE to TRUE.
             }
         }
@@ -7114,6 +7184,10 @@ function ReEntryAndLand {
                     set RepositionLF to TRANSFERALL("LiquidFuel", Tank, HeaderTank).
                     set RepositionLF:ACTIVE to TRUE.
                 }
+                if res:name = "LqdMethane" {
+                    set RepositionLM to TRANSFERALL("LqdMethane", Tank, HeaderTank).
+                    set RepositionLM:ACTIVE to TRUE.
+                }
             }
         }
         set RebalanceCoGox to TRANSFER("OXIDIZER", HeaderTank, Tank, 0).
@@ -7416,12 +7490,23 @@ function ReEntryData {
                         }
                     }
                     else if res:name = "LiquidFuel" {
-                        if res:amount < abs(FuelBalanceSpeed/3.6 * PitchInput) {}
+                        if res:amount < abs(FuelBalanceSpeed/(11/9) * PitchInput) {}
                         for res in Tank:resources {
                             if res:name = "LiquidFuel" {
-                                if res:amount > res:capacity - abs(FuelBalanceSpeed/3.6 * PitchInput) {}
+                                if res:amount > res:capacity - abs(FuelBalanceSpeed/(11/9) * PitchInput) {}
                                 else {
-                                    set RebalanceCoGlf to TRANSFER("LiquidFuel", HeaderTank, Tank, abs(FuelBalanceSpeed/3.6 * PitchInput)).
+                                    set RebalanceCoGlf to TRANSFER("LiquidFuel", HeaderTank, Tank, abs(FuelBalanceSpeed/(11/9) * PitchInput)).
+                                }
+                            }
+                        }
+                    }
+                    else if res:name = "LqdMethane" {
+                        if res:amount < abs(FuelBalanceSpeed/(1/3) * PitchInput) {}
+                        for res in Tank:resources {
+                            if res:name = "LqdMethane" {
+                                if res:amount > res:capacity - abs(FuelBalanceSpeed/(1/3) * PitchInput) {}
+                                else {
+                                    set RebalanceCoGlf to TRANSFER("LqdMethane", HeaderTank, Tank, abs(FuelBalanceSpeed/(1/3) * PitchInput)).
                                 }
                             }
                         }
@@ -7442,12 +7527,23 @@ function ReEntryData {
                         }
                     }
                     else if res:name = "LiquidFuel" {
-                        if res:amount < abs(FuelBalanceSpeed/3.6 * PitchInput) {}
+                        if res:amount < abs(FuelBalanceSpeed/(11/9) * PitchInput) {}
                         for res in HeaderTank:resources {
                             if res:name = "LiquidFuel" {
-                                if res:amount > res:capacity - abs(FuelBalanceSpeed/3.6 * PitchInput) {}
+                                if res:amount > res:capacity - abs(FuelBalanceSpeed/(11/9) * PitchInput) {}
                                 else {
-                                    set RebalanceCoGlf to TRANSFER("LiquidFuel", Tank, HeaderTank, abs(FuelBalanceSpeed/3.6 * PitchInput)).
+                                    set RebalanceCoGlf to TRANSFER("LiquidFuel", Tank, HeaderTank, abs(FuelBalanceSpeed/(11/9) * PitchInput)).
+                                }
+                            }
+                        }
+                    }
+                    else if res:name = "LqdMethane" {
+                        if res:amount < abs(FuelBalanceSpeed/(1/3) * PitchInput) {}
+                        for res in HeaderTank:resources {
+                            if res:name = "LqdMethane" {
+                                if res:amount > res:capacity - abs(FuelBalanceSpeed/(1/3) * PitchInput) {}
+                                else {
+                                    set RebalanceCoGlf to TRANSFER("LqdMethane", Tank, HeaderTank, abs(FuelBalanceSpeed/(1/3) * PitchInput)).
                                 }
                             }
                         }
@@ -7546,8 +7642,10 @@ function ReEntryData {
             setflaps(0, 80, 1, 0).
             set RepositionOxidizer to TRANSFERALL("Oxidizer", HeaderTank, Tank).
             set RepositionLF to TRANSFERALL("LiquidFuel", HeaderTank, Tank).
+            set RepositionLM to TRANSFERALL("LqdMethane", HeaderTank, Tank).
             set RepositionOxidizer:ACTIVE to TRUE.
             set RepositionLF:ACTIVE to TRUE.
+            set RepositionLM:ACTIVE to TRUE.
             Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             LogToFile("Landing Procedure started. Starting Landing Flip Now!").
@@ -8608,6 +8706,10 @@ function updatestatusbar {
                 set LFShip to res:amount.
                 set LFShipCap to res:capacity.
             }
+            if res:name = "LqdMethane" {
+                set LFShip to res:amount.
+                set LFShipCap to res:capacity.
+            }
             if res:name = "Oxidizer" {
                 set OxShip to res:amount.
                 set OxShipCap to res:capacity.
@@ -8619,6 +8721,10 @@ function updatestatusbar {
         if defined HeaderTank {
             for res in HeaderTank:resources {
                 if res:name = "LiquidFuel" {
+                    set LFShip to LFShip + res:amount.
+                    set LFShipCap to LFShipCap + res:capacity.
+                }
+                if res:name = "LqdMethane" {
                     set LFShip to LFShip + res:amount.
                     set LFShipCap to LFShipCap + res:capacity.
                 }
