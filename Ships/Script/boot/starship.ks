@@ -308,6 +308,9 @@ set TowerAlreadyExists to false.
 set OrbitBurnPitchCorrection to 0.
 set ProgradeAngle to 0.
 set SteeringError to 0.
+set RelVelX to 0.
+set RelVelY to 0.
+set RelVelZ to 0.
 
 
 
@@ -505,6 +508,8 @@ if OnOrbitalMount {
 }
 set ship:type to "Ship".
 ShipsInOrbit().
+
+//FuelQuantitySelfCheck().
 
 print "Starship Interface startup complete!".
 
@@ -3720,7 +3725,7 @@ local maneuver2label2 is maneuverstackvlayout2:addlabel("").
     set maneuver2label2:tooltip to "".
 local TargetPicker is maneuverstackvlayout2:addpopupmenu().
     set TargetPicker:style:textcolor to white.
-    set TargetPicker:style:fontsize to 18.
+    set TargetPicker:style:fontsize to 12.
     set TargetPicker:style:width to 175.
     set TargetPicker:style:height to 30.
     set TargetPicker:style:border:v to 10.
@@ -4200,21 +4205,21 @@ function AutoDockSteering {
             set ship:control:translation to v(RelVelY/2, RelVelZ/2, (5 + SafeVector:mag / 400) + RelVelX).
         }
         else {
-            set ship:control:translation to v(RelVelY/2, RelVelZ/2, (5 + SafeVector:mag / 400) + RelVelX).
+            set ship:control:translation to v(RelVelY, RelVelZ, RelVelX).
         }
         return lookdirup(SafeVector, facing:topvector).
     }
     if dockingmode = "APPR" {
         set message2:text to "<b>Target:</b>  Docking Port  (" + round(PortDistanceVector:mag, 1) + "m)".
         set message3:text to "<b>Relative Velocity (m/s):   </b><size=14>X: " + round(RelVelX, 2) + "   Y: " + round(RelVelY,2) + "   Z: " + round(RelVelZ,2) + "</size>".
-
-        if vang(PortDistanceVector, facing:forevector) < 5 and abs(RelVelY) < 0.1 and abs(RelVelZ) < 0.1 {
+        set PortApproachVector to target:dockingports[0]:nodeposition + 15 * target:facing:topvector + 20 * target:facing:forevector - ship:dockingports[0]:nodeposition.
+        if vang(PortApproachVector, facing:forevector) < 5 and abs(RelVelY) < 0.15 and abs(RelVelZ) < 0.15 {
             set ship:control:translation to v(RelVelY/2, RelVelZ/2, 2.5 + RelVelX).
         }
         else {
-            set ship:control:translation to v(RelVelY/2, RelVelZ/2, 2.5 + RelVelX).
+            set ship:control:translation to v(RelVelY, RelVelZ, RelVelX).
         }
-        return lookdirup(PortDistanceVector, facing:topvector).
+        return lookdirup(PortApproachVector, facing:topvector).
     }
     if dockingmode = "DOCK" {
         set message2:text to "<b>Target:</b>  Docking Port  (" + round(PortDistanceVector:mag, 1) + "m)".
@@ -4233,7 +4238,7 @@ function AutoDockSteering {
             set ship:control:translation to v(RelDistY/5 + RelVelY, RelDistZ/20 + RelVelZ, RelDistX/5 + RelVelX).
         }
         else {
-            set ship:control:translation to v(RelVelY/5, RelVelZ/10, RelVelX/5).
+            set ship:control:translation to v(RelVelY, RelVelZ, RelVelX).
         }
         return lookdirup(target:facing:forevector, target:dockingports[0]:portfacing:vector).
     }
@@ -6318,7 +6323,36 @@ function Launch {
         if RadarAlt < 100 {
             lock throttle to 1.
             BoosterEngines[0]:getmodule("ModuleEnginesFX"):doaction("activate engine", true).
-            wait 2.5.
+            set EngineStartTime to time:seconds.
+            until time:seconds - EngineStartTime > 2.5 or cancelconfirmed {
+                BackGroundUpdate().
+            }
+            if cancelconfirmed {
+                if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesFX") {
+                    if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
+                        ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
+                    }
+                }
+                if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesRF") {
+                    if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):hasevent("shutdown engine") {
+                        ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
+                    }
+                }
+                if RSS {
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,1.12,false").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,8.15,0.5").
+                }
+                else {
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,0.7,false").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,5,0.5").
+                }
+                ClearInterfaceAndSteering().
+                return.
+            }
             if BoosterEngines[0]:thrust > StackMass * Planet1G * 1.3 {}
             else {
                 set message1:text to "<b>Launch Abort: </b>Thrust anomaly!".
@@ -11483,5 +11517,220 @@ function DisengageYawRCS {
             nose:getmodule("MODULERCSFX"):setfield("yaw", true).
             nose:getmodule("MODULERCSFX"):doevent("hide actuation toggles").
         }
+    }
+}
+
+
+function FuelQuantitySelfCheck {
+    set FuelFail to false.
+    if STOCK {
+
+        if ShipType = "Tanker" {
+            for res in Nose:resources {
+                if Methane {
+                    if res:name = "LqdMethane" {
+                        if res:capacity = 35846.1 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if res:capacity = 11948.7 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                else {
+                    if res:name = "Liquid Fuel" {
+                        if res:capacity = 6750 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if res:capacity = 8250 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+        }
+        if not (ShipType = "Depot") and not (ShipType = "Expendable") {
+            for res in HeaderTank:resources {
+                if Methane {
+                    if res:name = "LqdMethane" and res:amount < res:capacity + 1 {
+                        if res:capacity = 0 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" and res:amount < res:capacity + 1 {
+                        if res:capacity = 0 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                else {
+                    if res:name = "Liquid Fuel" {
+                        if res:capacity = 776 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if res:capacity = 948.75 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+        }
+        for res in Tank:resources {
+            if Methane {
+                if res:name = "LqdMethane" {
+                    if ShipType = "Depot" {
+                        if res:capacity = 0 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    else {
+                        if res:capacity = 0 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                if res:name = "Oxidizer" {
+                    if ShipType = "Depot" {
+                        if res:capacity = 0 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    else {
+                        if res:capacity = 0 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+            else {
+                if res:name = "Liquid Fuel" {
+                    if ShipType = "Depot" {
+                        if res:capacity = 22500 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    else {
+                        if res:capacity = 6210 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                if res:name = "Oxidizer" {
+                    if ShipType = "Depot" {
+                        if res:capacity = 27500 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    else {
+                        if res:capacity = 7590 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+        }
+        if SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS"):length > 0 {
+            for res in BoosterCore[0]:resources {
+                if Methane {
+                    if res:name = "LqdMethane" {
+                        if res:capacity = 0 and res:amount < res:capacity + 1 {}
+                         else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if res:capacity = 0 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                else {
+                    if res:name = "Liquid Fuel" {
+                        if res:capacity = 33120 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if res:capacity = 40480 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if KSRSS {
+
+    }
+    if RSS {
+
+    }
+    if FuelFail {
+        print FuelFail.
     }
 }

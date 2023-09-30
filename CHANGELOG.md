@@ -1,3 +1,9 @@
+# V2.1.9 (2023-09-28)
+- Fixed the OLM refueling function for Liquid Methane (CRP).
+- Enabled background updates and launch abort in the moment between engine start-up and clamp release/lift off.
+- Minor fixes for auto-docking.
+- Fixed .craft files for normal LF/OX. They sometimes were overloaded. Implementing a feature that checks the tanks capacity for correctness.
+
 # V2.1.8 (2023-09-27)
 - Smoother final stage of Auto-Docking, and hopefully quicker/more stable docking.
 - Major rework of the fuel system to fit more closely to SEPs goals of compatibility with standard ksp fuel ratios. Please land/retire old ships before installing this update!! With this update I'm moving from the old 1:3.6 ratio to the standard 0.9:1.1 LF to Ox ratio.

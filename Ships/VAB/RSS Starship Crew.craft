@@ -730,28 +730,6 @@ PART
 		{
 		}
 	}
-	RESOURCE
-	{
-		name = LqdMethane
-		amount = 573537.90000000002
-		maxAmount = 573537.90000000002
-		flowState = True
-		isTweakable = True
-		hideFlow = False
-		isVisible = True
-		flowMode = Both
-	}
-	RESOURCE
-	{
-		name = Oxidizer
-		amount = 191179.29999999999
-		maxAmount = 191179.29999999999
-		flowState = True
-		isTweakable = True
-		hideFlow = False
-		isVisible = True
-		flowMode = Both
-	}
 }
 PART
 {
@@ -4388,28 +4366,6 @@ PART
 		{
 		}
 	}
-	RESOURCE
-	{
-		name = LqdMethane
-		amount = 9893.5
-		maxAmount = 9893.5
-		flowState = True
-		isTweakable = True
-		hideFlow = False
-		isVisible = True
-		flowMode = Both
-	}
-	RESOURCE
-	{
-		name = Oxidizer
-		amount = 3297.8000000000002
-		maxAmount = 3297.8000000000002
-		flowState = True
-		isTweakable = True
-		hideFlow = False
-		isVisible = True
-		flowMode = Both
-	}
 }
 PART
 {
@@ -5202,28 +5158,6 @@ PART
 		UPGRADESAPPLIED
 		{
 		}
-	}
-	RESOURCE
-	{
-		name = LqdMethane
-		amount = 1625024.1000000001
-		maxAmount = 1625024.1000000001
-		flowState = True
-		isTweakable = True
-		hideFlow = False
-		isVisible = True
-		flowMode = Both
-	}
-	RESOURCE
-	{
-		name = Oxidizer
-		amount = 541674.69999999995
-		maxAmount = 541674.69999999995
-		flowState = True
-		isTweakable = True
-		hideFlow = False
-		isVisible = True
-		flowMode = Both
 	}
 }
 PART
