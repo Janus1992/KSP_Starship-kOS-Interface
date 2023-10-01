@@ -1,4 +1,7 @@
-# V2.1.9 (2023-09-28)
+# V2.1.10 (2023-10-01)
+- Quick fix for LF/Ox where the landing fails because of a bug.
+
+# V2.1.9 (2023-09-30)
 - Fixed the OLM refueling function for Liquid Methane (CRP).
 - Enabled background updates and launch abort in the moment between engine start-up and clamp release/lift off.
 - Minor fixes for auto-docking.

@@ -509,7 +509,7 @@ if OnOrbitalMount {
 set ship:type to "Ship".
 ShipsInOrbit().
 
-//FuelQuantitySelfCheck().
+FuelQuantitySelfCheck().
 
 print "Starship Interface startup complete!".
 
@@ -7675,15 +7675,18 @@ function ReEntryData {
             set config:ipu to 2000.
             setflaps(0, 80, 1, 0).
             set RepositionOxidizer to TRANSFERALL("Oxidizer", HeaderTank, Tank).
-            set RepositionLF to TRANSFERALL("LiquidFuel", HeaderTank, Tank).
-            set RepositionLM to TRANSFERALL("LqdMethane", HeaderTank, Tank).
             set RepositionOxidizer:ACTIVE to TRUE.
-            set RepositionLF:ACTIVE to TRUE.
-            set RepositionLM:ACTIVE to TRUE.
+            if Methane {
+                set RepositionLM to TRANSFERALL("LqdMethane", HeaderTank, Tank).
+                set RepositionLM:ACTIVE to TRUE.
+            }
+            else {
+                set RepositionLF to TRANSFERALL("LiquidFuel", HeaderTank, Tank).
+                set RepositionLF:ACTIVE to TRUE.
+            }
             Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             LogToFile("Landing Procedure started. Starting Landing Flip Now!").
-
 
             if ship:body:atm:sealevelpressure > 0.5 {
                 ShutDownAllEngines().
