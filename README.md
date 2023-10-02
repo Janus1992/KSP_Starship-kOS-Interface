@@ -45,6 +45,8 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 
 # Notes:
+- The recommended way of loading a craft is from the stock craft category in the VAB. If you can't find this category, you need to enter settings from the KSC default view and enable 'Include Stock Vessels'.
+
 - Automatic re-stacking/refueling is currently impossible because the Booster lacks the ability to dock to the tower.
 
 - When using multiple ships of the same name, they might get renamed by my scripts to avoid Interface crashes.

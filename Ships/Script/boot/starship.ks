@@ -509,8 +509,6 @@ if OnOrbitalMount {
 set ship:type to "Ship".
 ShipsInOrbit().
 
-FuelQuantitySelfCheck().
-
 print "Starship Interface startup complete!".
 
 
@@ -6098,13 +6096,21 @@ if addons:tr:available and not startup {
         }
     }
     else {
+        print "Upgrade of KSC facilities required!".
+        print "Interface Disabled..".
+        LogToFile("Upgrade of KSC facilities required! Interface Disabled..").
+        InhibitButtons(1, 1, 1).
+        ShowButtons(0).
+        ShowHomePage().
         set message1:text to "<b>Please upgrade your KSC facilities..</b>".
-        set message1:style:textcolor to red.
         set message2:text to "<b>needs: makenodes, candoactions & patchlimit > 0</b>".
-        set message2:style:textcolor to red.
-        set message3:text to "<b>1 or more capabilities are not available..</b>".
-        set message3:style:textcolor to red.
+        set message3:text to "<b>Interface has been disabled!</b>".
+        set message1:style:textcolor to red.
+        set message2:style:textcolor to yellow.
+        set message3:style:textcolor to grey.
+        set textbox:style:bg to "starship_img/starship_main_square_bg".
         set runningprogram to "<b>Self-Test Failed</b>".
+        updatestatusbar().
     }
     set avionics to 0.
     if Career():canmakenodes = true {set avionics to avionics + 1.}
@@ -6134,11 +6140,23 @@ if addons:tr:available and not startup {
             LandwithoutAtmo().
         }
     }
+    VehicleSelfCheck().
     set startup to true.
 }
 else if not startup {
-    set message1:text to "<b>Trajectories mod not found..</b>".
+    print "Trajectories mod required!".
+    print "Interface Disabled..".
+    LogToFile("Trajectories mod required! Interface Disabled..").
+    InhibitButtons(1, 1, 1).
+    ShowButtons(0).
+    ShowHomePage().
+    set message1:text to "<b>Trajectories Mod not found!</b>".
+    set message2:text to "<b>Trajectories is a requirement..</b>".
+    set message3:text to "<b>Interface has been disabled!</b>".
     set message1:style:textcolor to red.
+    set message2:style:textcolor to yellow.
+    set message3:style:textcolor to grey.
+    set textbox:style:bg to "starship_img/starship_main_square_bg".
     set runningprogram to "<b>Self-Test Failed</b>".
     updatestatusbar().
     set startup to true.
@@ -8731,7 +8749,7 @@ function updatestatusbar {
             else if runningprogram = "Input" or runningprogram = "Override" {
                 set status1:style:textcolor to cyan.
             }
-            else if runningprogram = "AbortLaunch!" {
+            else if runningprogram = "AbortLaunch!" or "<b>Self-Test Failed</b>"{
                 set status1:style:textcolor to red.
             }
             else {
@@ -11524,55 +11542,14 @@ function DisengageYawRCS {
 }
 
 
-function FuelQuantitySelfCheck {
+function VehicleSelfCheck {
     set FuelFail to false.
     if STOCK {
-
-        if ShipType = "Tanker" {
-            for res in Nose:resources {
-                if Methane {
-                    if res:name = "LqdMethane" {
-                        if res:capacity = 35846.1 and res:amount < res:capacity + 1 {}
-                        else {
-                            set FuelFail to true.
-                            print res:amount.
-                            print res:capacity.
-                        }
-                    }
-                    if res:name = "Oxidizer" {
-                        if res:capacity = 11948.7 and res:amount < res:capacity + 1 {}
-                        else {
-                            set FuelFail to true.
-                            print res:amount.
-                            print res:capacity.
-                        }
-                    }
-                }
-                else {
-                    if res:name = "Liquid Fuel" {
-                        if res:capacity = 6750 and res:amount < res:capacity + 1 {}
-                        else {
-                            set FuelFail to true.
-                            print res:amount.
-                            print res:capacity.
-                        }
-                    }
-                    if res:name = "Oxidizer" {
-                        if res:capacity = 8250 and res:amount < res:capacity + 1 {}
-                        else {
-                            set FuelFail to true.
-                            print res:amount.
-                            print res:capacity.
-                        }
-                    }
-                }
-            }
-        }
         if not (ShipType = "Depot") and not (ShipType = "Expendable") {
             for res in HeaderTank:resources {
                 if Methane {
                     if res:name = "LqdMethane" and res:amount < res:capacity + 1 {
-                        if res:capacity = 0 {}
+                        if round(res:capacity) = 4122 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -11580,7 +11557,7 @@ function FuelQuantitySelfCheck {
                         }
                     }
                     if res:name = "Oxidizer" and res:amount < res:capacity + 1 {
-                        if res:capacity = 0 {}
+                        if round(res:capacity) = 1374 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -11608,11 +11585,51 @@ function FuelQuantitySelfCheck {
                 }
             }
         }
+        if ShipType = "Tanker" {
+            for res in Nose:resources {
+                if Methane {
+                    if res:name = "LqdMethane" {
+                        if round(res:capacity) = 35846 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if round(res:capacity) = 11949 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                else {
+                    if res:name = "Liquid Fuel" {
+                        if res:capacity = 6750 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if res:capacity = 8250 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+        }
         for res in Tank:resources {
             if Methane {
                 if res:name = "LqdMethane" {
                     if ShipType = "Depot" {
-                        if res:capacity = 0 and res:amount < res:capacity + 1 {}
+                        if round(res:capacity) = 119487 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -11620,7 +11637,7 @@ function FuelQuantitySelfCheck {
                         }
                     }
                     else {
-                        if res:capacity = 0 and res:amount < res:capacity + 1 {}
+                        if round(res:capacity) = 32978 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -11630,7 +11647,7 @@ function FuelQuantitySelfCheck {
                 }
                 if res:name = "Oxidizer" {
                     if ShipType = "Depot" {
-                        if res:capacity = 0 and res:amount < res:capacity + 1 {}
+                        if round(res:capacity) = 39829 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -11638,7 +11655,7 @@ function FuelQuantitySelfCheck {
                         }
                     }
                     else {
-                        if res:capacity = 0 and res:amount < res:capacity + 1 {}
+                        if round(res:capacity) = 10993 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -11690,7 +11707,7 @@ function FuelQuantitySelfCheck {
             for res in BoosterCore[0]:resources {
                 if Methane {
                     if res:name = "LqdMethane" {
-                        if res:capacity = 0 and res:amount < res:capacity + 1 {}
+                        if round(res:capacity) = 175885 and res:amount < res:capacity + 1 {}
                          else {
                             set FuelFail to true.
                             print res:amount.
@@ -11698,7 +11715,7 @@ function FuelQuantitySelfCheck {
                         }
                     }
                     if res:name = "Oxidizer" {
-                        if res:capacity = 0 and res:amount < res:capacity + 1 {}
+                        if round(res:capacity) = 58628 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -11728,12 +11745,445 @@ function FuelQuantitySelfCheck {
         }
     }
     if KSRSS {
-
+        if not (ShipType = "Depot") and not (ShipType = "Expendable") {
+            for res in HeaderTank:resources {
+                if Methane {
+                    if res:name = "LqdMethane" and res:amount < res:capacity + 1 {
+                        if round(res:capacity) = 3824 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" and res:amount < res:capacity + 1 {
+                        if round(res:capacity) = 1275 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                else {
+                    if res:name = "Liquid Fuel" {
+                        if res:capacity = 720 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if res:capacity = 880 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+        }
+        if ShipType = "Tanker" {
+            for res in Nose:resources {
+                if Methane {
+                    if res:name = "LqdMethane" {
+                        if round(res:capacity) = 36706 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if round(res:capacity) = 12235 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                else {
+                    if res:name = "Liquid Fuel" {
+                        if res:capacity = 6912 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if res:capacity = 8448 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+        }
+        for res in Tank:resources {
+            if Methane {
+                if res:name = "LqdMethane" {
+                    if ShipType = "Depot" {
+                        if round(res:capacity) = 133825 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    else {
+                        if round(res:capacity) = 86031 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                if res:name = "Oxidizer" {
+                    if ShipType = "Depot" {
+                        if round(res:capacity) = 44608 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    else {
+                        if round(res:capacity) = 28677 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+            else {
+                if res:name = "Liquid Fuel" {
+                    if ShipType = "Depot" {
+                        if res:capacity = 25200 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    else {
+                        if res:capacity = 16200 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                if res:name = "Oxidizer" {
+                    if ShipType = "Depot" {
+                        if res:capacity = 30800 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    else {
+                        if res:capacity = 19800 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+        }
+        if SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS"):length > 0 {
+            for res in BoosterCore[0]:resources {
+                if Methane {
+                    if res:name = "LqdMethane" {
+                        if round(res:capacity) = 420594 and res:amount < res:capacity + 1 {}
+                         else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if round(res:capacity) = 140198 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                else {
+                    if res:name = "Liquid Fuel" {
+                        if res:capacity = 79200 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if res:capacity = 96800 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+        }
     }
     if RSS {
-
+        if not (ShipType = "Depot") and not (ShipType = "Expendable") {
+            for res in HeaderTank:resources {
+                if Methane {
+                    if res:name = "LqdMethane" and res:amount < res:capacity + 1 {
+                        if round(res:capacity) = 9894 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" and res:amount < res:capacity + 1 {
+                        if round(res:capacity) = 3298 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                else {
+                    if res:name = "Liquid Fuel" {
+                        if res:capacity = 1863 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if res:capacity = 2277 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+        }
+        if ShipType = "Tanker" {
+            for res in Nose:resources {
+                if Methane {
+                    if res:name = "LqdMethane" {
+                        if round(res:capacity) = 71692 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if round(res:capacity) = 23897 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                else {
+                    if res:name = "Liquid Fuel" {
+                        if res:capacity = 13500 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if res:capacity = 16500 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+        }
+        for res in Tank:resources {
+            if Methane {
+                if res:name = "LqdMethane" {
+                    if ShipType = "Depot" {
+                        if round(res:capacity) = 812512 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    else {
+                        if round(res:capacity) = 573538 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                if res:name = "Oxidizer" {
+                    if ShipType = "Depot" {
+                        if round(res:capacity) = 270837 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    else {
+                        if round(res:capacity) = 191179 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+            else {
+                if res:name = "Liquid Fuel" {
+                    if ShipType = "Depot" {
+                        if res:capacity = 153000 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    else {
+                        if res:capacity = 108000 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                if res:name = "Oxidizer" {
+                    if ShipType = "Depot" {
+                        if res:capacity = 187000 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    else {
+                        if res:capacity = 132000 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+        }
+        if SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS"):length > 0 {
+            for res in BoosterCore[0]:resources {
+                if Methane {
+                    if res:name = "LqdMethane" {
+                        if round(res:capacity) = 1625023 and res:amount < res:capacity + 1 {}
+                         else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if round(res:capacity) = 541674 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+                else {
+                    if res:name = "Liquid Fuel" {
+                        if res:capacity = 306000 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                    if res:name = "Oxidizer" {
+                        if res:capacity = 374000 and res:amount < res:capacity + 1 {}
+                        else {
+                            set FuelFail to true.
+                            print res:amount.
+                            print res:capacity.
+                        }
+                    }
+                }
+            }
+        }
     }
     if FuelFail {
-        print FuelFail.
+        print "Overfilled Fuel Tanks/Mismatch detected!".
+        print "Interface Disabled..".
+        LogToFile("Overfilled Fuel Tanks/Mismatch detected! Interface Disabled..").
+        InhibitButtons(1, 1, 1).
+        ShowButtons(0).
+        ShowHomePage().
+        set message1:text to "<b>Fuel Amount vs. Capacity mismatch!</b>".
+        set message2:text to "<b>Reset overfilled Fuel Tanks in the VAB..</b>".
+        set message3:text to "<b>Interface has been disabled!</b>".
+        set message1:style:textcolor to red.
+        set message2:style:textcolor to yellow.
+        set message3:style:textcolor to grey.
+        set textbox:style:bg to "starship_img/starship_main_square_bg".
+        set runningprogram to "<b>Self-Test Failed</b>".
+        updatestatusbar().
+    }
+    if ship:name:contains("Stock") and not (STOCK) or ship:name:contains("KSRSS") and not (KSRSS) or ship:name:contains("RSS") and not (RSS) and not (ship:name:contains("KSRSS")) {
+        print "Wrong Craft detected!".
+        print "Interface Disabled..".
+        LogToFile("Wrong Craft detected! Interface Disabled..").
+        InhibitButtons(1, 1, 1).
+        ShowButtons(0).
+        ShowHomePage().
+        set message1:text to "<b>You are using the wrong craft!</b>".
+        if STOCK {
+            set message2:text to "<b>Use 'Stock Starship..' craft..</b>".
+        }
+        else if KSRSS {
+            set message2:text to "<b>Use 'KSRSS Starship..' craft..</b>".
+        }
+        else if RSS {
+            set message2:text to "<b>Use 'RSS Starship..' craft..</b>".
+        }
+        set message3:text to "<b>Interface has been disabled!</b>".
+        set message1:style:textcolor to red.
+        set message2:style:textcolor to yellow.
+        set message3:style:textcolor to grey.
+        set textbox:style:bg to "starship_img/starship_main_square_bg".
+        set runningprogram to "<b>Self-Test Failed</b>".
+        updatestatusbar().
     }
 }
