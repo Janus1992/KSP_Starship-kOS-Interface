@@ -6109,7 +6109,7 @@ if addons:tr:available and not startup {
         set message2:style:textcolor to yellow.
         set message3:style:textcolor to grey.
         set textbox:style:bg to "starship_img/starship_main_square_bg".
-        set runningprogram to "<b>Self-Test Failed</b>".
+        set runningprogram to "Self-Test Failed".
         updatestatusbar().
     }
     set avionics to 0.
@@ -6157,7 +6157,7 @@ else if not startup {
     set message2:style:textcolor to yellow.
     set message3:style:textcolor to grey.
     set textbox:style:bg to "starship_img/starship_main_square_bg".
-    set runningprogram to "<b>Self-Test Failed</b>".
+    set runningprogram to "Self-Test Failed".
     updatestatusbar().
     set startup to true.
 }
@@ -7011,7 +7011,7 @@ Function AbortLaunch {
             //}
             set Boosterconnected to false.
         }
-        set runningprogram to "AbortLaunch!".
+        set runningprogram to "Launch Abort!".
         set cancelconfirmed to false.
         LogToFile("AbortLaunching!!").
         set message1:text to "Emergency Escape from Booster!".
@@ -8749,7 +8749,7 @@ function updatestatusbar {
             else if runningprogram = "Input" or runningprogram = "Override" {
                 set status1:style:textcolor to cyan.
             }
-            else if runningprogram = "AbortLaunch!" or "<b>Self-Test Failed</b>"{
+            else if runningprogram = "Launch Abort!" or runningprogram = "Self-Test Failed"{
                 set status1:style:textcolor to red.
             }
             else {
@@ -11184,7 +11184,12 @@ function PerformBurn {
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
         sas off.
         rcs off.
-        lock steering to lookdirup(nextnode:burnvector, ship:facing:topvector).
+        if BurnType = "DeOrbit" and UseRCSforBurn {
+            lock steering to lookdirup(-nextnode:burnvector, up:vector).
+        }
+        else {
+            lock steering to lookdirup(nextnode:burnvector, ship:facing:topvector).
+        }
         if RSS {
             if quicksetting1:pressed and nextnode:eta - 0.5 * BurnDuration > 240 {
                 set kuniverse:timewarp:warp to 3.
@@ -11241,23 +11246,33 @@ function PerformBurn {
             }
 
             set message1:text to "<b>Starting Burn in:</b>  " + timeSpanCalculator(nextnode:eta - 0.5 * BurnDuration).
-            set message2:text to "<b>Target Attitude:</b>    Burnvector".
+            if BurnType = "DeOrbit" and UseRCSforBurn {
+                set message2:text to "<b>Target Attitude:</b>    -Burnvector <size=15>(retrograde RCS)</size>".
+            }
+            else {
+                set message2:text to "<b>Target Attitude:</b>    Burnvector".
+            }
             set message3:text to "<b>Burn Duration:</b>      " + round(BurnDuration) + "s".
         }
         if hasnode {
-            if vang(nextnode:burnvector, ship:facing:forevector) < 15 and cancelconfirmed = false {
+            if vang(nextnode:burnvector, ship:facing:forevector) < 15 and cancelconfirmed = false or vang(-nextnode:burnvector, ship:facing:forevector) < 15 and cancelconfirmed = false and BurnType = "DeOrbit" and UseRCSforBurn {
                 LogToFile("Starting Burn").
                 set runningprogram to "Performing Burn".
                 if UseRCSforBurn {}
                 else {
                     set quickengine3:pressed to true.
                 }
-                until vdot(facing:forevector, nextnode:deltav) < 0 or cancelconfirmed = true and not ClosingIsRunning {
+                until vdot(facing:forevector, nextnode:deltav) < 0 and not (BurnType = "DeOrbit" and UseRCSforBurn) or vdot(-facing:forevector, nextnode:deltav) < 0 and BurnType = "DeOrbit" and UseRCSforBurn or cancelconfirmed = true and not ClosingIsRunning {
                     BackGroundUpdate().
-                    if vang(facing:forevector, nextnode:burnvector) < 10 {
+                    if vang(facing:forevector, nextnode:burnvector) < 10 or vang(facing:forevector, -nextnode:burnvector) < 10 and BurnType = "DeOrbit" and UseRCSforBurn {
                         if UseRCSforBurn {
                             rcs on.
-                            set ship:control:translation to v(0, 0, 1).
+                            if BurnType = "DeOrbit" and UseRCSforBurn {
+                                set ship:control:translation to v(0, 0, -1).
+                            }
+                            else {
+                                set ship:control:translation to v(0, 0, 1).
+                            }
                             set ship:control:rotation to v(0, 0, 0).
                         }
                         else {
@@ -11265,7 +11280,12 @@ function PerformBurn {
                         }
                     }
                     if nextnode:deltav:mag > 5 {
-                        lock steering to lookdirup(nextnode:burnvector, ship:facing:topvector).
+                        if BurnType = "DeOrbit" and UseRCSforBurn {
+                            lock steering to lookdirup(-nextnode:burnvector, up:vector).
+                        }
+                        else {
+                            lock steering to lookdirup(nextnode:burnvector, ship:facing:topvector).
+                        }
                     }
                     if kuniverse:timewarp:warp > 0 {
                         set kuniverse:timewarp:warp to 0.
@@ -12158,7 +12178,7 @@ function VehicleSelfCheck {
         set message2:style:textcolor to yellow.
         set message3:style:textcolor to grey.
         set textbox:style:bg to "starship_img/starship_main_square_bg".
-        set runningprogram to "<b>Self-Test Failed</b>".
+        set runningprogram to "Self-Test Failed".
         updatestatusbar().
     }
     if ship:name:contains("Stock") and not (STOCK) or ship:name:contains("KSRSS") and not (KSRSS) or ship:name:contains("RSS") and not (RSS) and not (ship:name:contains("KSRSS")) {
@@ -12183,7 +12203,7 @@ function VehicleSelfCheck {
         set message2:style:textcolor to yellow.
         set message3:style:textcolor to grey.
         set textbox:style:bg to "starship_img/starship_main_square_bg".
-        set runningprogram to "<b>Self-Test Failed</b>".
+        set runningprogram to "Self-Test Failed".
         updatestatusbar().
     }
 }

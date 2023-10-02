@@ -1,5 +1,6 @@
 # V2.1.11 (2023-10-02)
 - Fully implementing a vehicle self check that checks fuel tank sizes and correct craft according to stock, KSRSS or RSS and show messages in the Interface when errors have been detected.
+- De-orbit burn with rcs is now facing prograde instead of retrograde.
 
 # V2.1.10 (2023-10-01)
 - Quick fix for LF/Ox where ship landing/catch fails because of a bug.
