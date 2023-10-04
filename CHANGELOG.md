@@ -1,3 +1,6 @@
+# V2.1.12 (2023-10-03)
+- Remove fixed fuel quantities from cfgs. I forgot about those and they caused issues.
+
 # V2.1.11 (2023-10-02)
 - Fully implementing a vehicle self check that checks fuel tank sizes and correct craft according to stock, KSRSS or RSS and show messages in the Interface when errors have been detected.
 - De-orbit burn with rcs is now facing prograde instead of retrograde.
