@@ -14,6 +14,7 @@ set ErrorVector to V(0, 0, 0).
 set BoosterEngines to SHIP:PARTSNAMED("SEP.22.BOOSTER.CLUSTER.KOS").
 set GridFins to SHIP:PARTSNAMED("SEP.22.BOOSTER.GRIDFIN.KOS").
 set BoosterCore to SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS").
+set BoosterInter to SHIP:PARTSNAMED("SEP.22.BOOSTER.INTER.KOS").
 set InitialError to -9999.
 set maxDecel to 0.
 set TotalstopTime to 0.
@@ -540,6 +541,9 @@ function Boostback {
     wait 0.001.
     unlock throttle.
     BoosterEngines[0]:shutdown.
+    if BoosterInter[0]:getmodule("ModuleSepPartSwitchAction"):getfield("current decouple system") = "Decoupler" {
+        BoosterInter[0]:getmodule("ModuleSepPartSwitchAction"):DoAction("next decouple system", true).
+    }
 
     if not (LandSomewhereElse) {
         print "capture at: " + RadarAlt + "m RA".

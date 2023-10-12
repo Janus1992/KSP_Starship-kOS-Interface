@@ -1,3 +1,8 @@
+# V2.1.13 (2023-10-12)
+- Script now warns of too high inclination to do an automatic de-orbit burn before suggesting fuel venting.
+- Winch/LR Antenna buttons greyed out to highlight that they are not yet implemented.
+- Booster switches to docking mode after landing.
+
 # V2.1.12 (2023-10-03)
 - Remove fixed fuel quantities from cfgs. I forgot about those and they caused issues.
 

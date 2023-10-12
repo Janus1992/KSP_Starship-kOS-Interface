@@ -14,6 +14,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
         Kerbal Space Program/GameData/StarshipInterface
         Kerbal Space Program/Ships/Script
         Kerbal Space Program/Ships/VAB
+(To Update do the same, but OVERWRITE everything!!)
 
 
 # IMPORTANT!:

@@ -1469,19 +1469,19 @@ local cargo1label2 is cargostackvlayout5:addlabel("<b>Cargo:</b>").
     set cargo1label2:style:align to "CENTER".
     set cargo1label2:style:margin:top to 7.
     set cargo1label2:tooltip to "Cargo found onboard will be shown here".
-local cargo2label is cargostackvlayout1:addlabel("<b>Winch:</b>").
+local cargo2label is cargostackvlayout1:addlabel("<b><color=grey>Winch:</color></b>").
     set cargo2label:style:align to "CENTER".
     set cargo2label:style:margin:top to 25.
     set cargo2label:style:fontsize to 20.
     set cargo2label:tooltip to "not yet implemented".
-local cargo2extend is cargostackvlayout2:addbutton("<").
+local cargo2extend is cargostackvlayout2:addbutton("<color=grey><</color>").
     set cargo2extend:style:margin:top to 10.
     set cargo2extend:style:margin:right to 10.
     set cargo2extend:style:width to 25.
     set cargo2extend:style:height to 25.
     set cargo2extend:style:fontsize to 20.
     set cargo2extend:tooltip to "not yet implemented".
-local cargo2retract is cargostackvlayout3:addbutton(">").
+local cargo2retract is cargostackvlayout3:addbutton("<color=grey>></color>").
     set cargo2retract:style:margin:top to 10.
     set cargo2retract:style:width to 25.
     set cargo2retract:style:height to 25.
@@ -1495,14 +1495,14 @@ local cargo2label2 is cargostackvlayout5:addlabel("-").
     set cargo2label2:style:margin:top to 7.
     set cargo2label2:style:textcolor to grey.
     set cargo2label2:tooltip to "Cargo Mass in kg".
-local cargo3lower is cargostackvlayout2:addbutton("v").
+local cargo3lower is cargostackvlayout2:addbutton("<color=grey>v</color>").
     set cargo3lower:style:margin:top to 10.
     set cargo3lower:style:margin:right to 10.
     set cargo3lower:style:width to 25.
     set cargo3lower:style:height to 25.
     set cargo3lower:style:fontsize to 20.
     set cargo3lower:tooltip to "not yet implemented".
-local cargo3raise is cargostackvlayout3:addbutton("^").
+local cargo3raise is cargostackvlayout3:addbutton("<color=grey>^</color>").
     set cargo3raise:style:margin:top to 10.
     set cargo3raise:style:width to 25.
     set cargo3raise:style:height to 25.
@@ -1542,7 +1542,7 @@ local quickcargo2 is cargocheckboxes:addcheckbox("<b>Solar Panels</b>").
     set quickcargo2:style:overflow:top to -4.
     set quickcargo2:style:overflow:bottom to -9.
     set quickcargo2:tooltip to "Toggle Solar Panels".
-local quickcargo3 is cargocheckboxes:addcheckbox("<b>LR Antenna</b>").
+local quickcargo3 is cargocheckboxes:addcheckbox("<b><color=grey>LR Antenna</color></b>").
     set quickcargo3:style:margin:left to 10.
     set quickcargo3:style:fontsize to 18.
     set quickcargo3:style:width to 150.
@@ -4406,7 +4406,7 @@ set launchbutton:ontoggle to {
                             set execute:text to "<b>LAUNCH</b>".
                         }
                         set IntendedInc to setting3:text:split("°")[0]:toscalar(0).
-                        set data to LAZcalc_init(75000, setting3:text:split("°")[0]:toscalar(0)).
+                        set data to LAZcalc_init(targetap, setting3:text:split("°")[0]:toscalar(0)).
                         if data[0] = IntendedInc {}
                         else {
                             set message1:text to "<b><color=yellow>Inclination impossible from current latitude..</color></b>".
@@ -4450,17 +4450,14 @@ set launchbutton:ontoggle to {
                                 if RSS {
                                     set LaunchTimeSpanInSeconds to 540.
                                     set LaunchDistance to 1460000.
-                                    set targetap to 250000.
                                 }
                                 else if KSRSS {
                                     set LaunchTimeSpanInSeconds to 390.
                                     set LaunchDistance to 700000.
-                                    set targetap to 125000.
                                 }
                                 else {
                                     set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
                                     set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
-                                    set targetap to 75000.
                                 }
                                 if NrOfVacEngines = 3 {
                                     set LaunchTimeSpanInSeconds to LaunchTimeSpanInSeconds + 3.
@@ -4869,6 +4866,19 @@ set landbutton:ontoggle to {
                             LogToFile("Land Function cancelled due to ship:status").
                             ClearInterfaceAndSteering().
                         }
+                        else if ship:orbit:inclination > 60 and ship:orbit:inclination < 120 or ship:orbit:inclination < -60 and ship:orbit:inclination > -120 {
+                            ShowHomePage().
+                            LogToFile("Automatic De-Orbit burn not possible, inclination too high. Please de-orbit manually..").
+                            set message1:text to "<b>Error: Inclination out of limits.. (> ±60°)</b>".
+                            set message1:style:textcolor to yellow.
+                            set message2:text to "<b>Please perform De-Orbit Burn manually!</b>".
+                            set message2:style:textcolor to yellow.
+                            set message3:text to "<b>Tip: </b>use Trajectories..".
+                            set textbox:style:bg to "starship_img/starship_main_square_bg".
+                            wait 3.
+                            ClearInterfaceAndSteering().
+                            return.
+                        }
                         else if RSS and apoapsis > 500000 and ship:body:atm:sealevelpressure > 0.5 or not (RSS) and apoapsis > 250000 and ship:body:atm:sealevelpressure > 0.5 or RSS and apoapsis > 300000 and ship:body:atm:sealevelpressure < 0.5 or not (RSS) and apoapsis > 100000 and ship:body:atm:sealevelpressure < 0.5 or periapsis < ship:body:atm:height or abs(ship:orbit:inclination) + 2.5 < abs(setting1:text:split(",")[0]:toscalar(0)) {
                             ShowHomePage().
                             LogToFile("De-Orbit cancelled due to orbit requirements not fulfilled").
@@ -5070,18 +5080,6 @@ set landbutton:ontoggle to {
                                 set message3:text to "".
                                 set message1:style:textcolor to white.
                                 set message2:style:textcolor to white.
-                                if ship:orbit:inclination > 60 and ship:orbit:inclination < 120 or ship:orbit:inclination < -60 and ship:orbit:inclination > -120 {
-                                    LogToFile("Automatic De-Orbit burn not possible, inclination too high. Please de-orbit manually..").
-                                    set message1:text to "<b>Error: Inclination too high.. (> ±60°)</b>".
-                                    set message1:style:textcolor to yellow.
-                                    set message2:text to "<b>Please De-orbit manually..</b>".
-                                    set message2:style:textcolor to yellow.
-                                    set message3:text to "".
-                                    set textbox:style:bg to "starship_img/starship_main_square_bg".
-                                    wait 3.
-                                    ClearInterfaceAndSteering().
-                                    return.
-                                }
                                 set TimeToBurn to CalculateDeOrbitBurn(10).
                                 if TimeToBurn = 0 {
                                     ClearInterfaceAndSteering().
@@ -6205,7 +6203,6 @@ function Launch {
         SaveToSettings("Ship Name", ship:name).
 
         if RSS {
-            set targetap to 250000.
             set LaunchElev to altitude - 108.384.
             if ShipType = "Depot" {
                 set BoosterAp to 127500.
@@ -6229,7 +6226,6 @@ function Launch {
             set BoosterThrottleDownAlt to 1500.
         }
         else if KSRSS {
-            set targetap to 125000.
             set LaunchElev to altitude - 67.74.
             if ShipType = "Depot" {
                 set BoosterAp to 75000.
@@ -6248,7 +6244,6 @@ function Launch {
             set BoosterThrottleDownAlt to 1250.
         }
         else {
-            set targetap to 75000.
             set LaunchElev to altitude - 67.74.
             if ShipType = "Depot" {
                 set BoosterAp to 42500.
@@ -6342,7 +6337,10 @@ function Launch {
             lock throttle to 1.
             BoosterEngines[0]:getmodule("ModuleEnginesFX"):doaction("activate engine", true).
             set EngineStartTime to time:seconds.
+            set message1:text to "<b>Holding down vehicle..</b>".
+            set message3:text to "".
             until time:seconds - EngineStartTime > 2.5 or cancelconfirmed {
+                set message2:text to "<b>Clamp Release in:  </b>" + round(2.5 - time:seconds + EngineStartTime, 1) + "<b> seconds</b>".
                 BackGroundUpdate().
             }
             if cancelconfirmed {
