@@ -4,26 +4,27 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 ![Alt text](/Infographic.png)
 
+# IF YOU HAVE AN OLD VERSION previously installed, make sure to delete the 'StarshipInterface' folder in /gamedata before installing the updated version of the Interface!
 
-# INSTALL INSTRUCTIONS (NO CKAN):
+# INSTALL INSTRUCTIONS (NO CKAN SUPPORT!):
 - Download and install all requirements listed below (SLE needs the DEV version, not available on CKAN).
 - Download the zip file.
 - Extract the contents to a folder.
-- Copy the 'GameData' and 'Ships' folders into your /Kerbal Space Program folder.
+- Copy the contents of the /Kerbal Space Program folder ('GameData' and 'Ships' folders) into your /Kerbal Space Program folder.
     - It should look like this:
         Kerbal Space Program/GameData/StarshipInterface
-        Kerbal Space Program/Ships/Script
+        Kerbal Space Program/Ships/Script  (here the scripts are saved)
         Kerbal Space Program/Ships/VAB
-(To Update do the same, but OVERWRITE everything!!)
+(To Update do the same, but first delete the 'StarshipInterface' folder and overwrite anything else!)
 
 
 # IMPORTANT!:
 - Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker"). These can be found if you enable stock vehicles in your savegame, or you copy them manually to your savegame.
-- If the Interface or ship doesn't show up, check again that you fulfill all the requirements listed below!
+- If the Interface or ship doesn't show up, check again that you fulfill all the requirements listed below or try reinstalling!
 - Before filing a bug, read the "Bug support guide" at the bottom of this page.
 
 # REQUIRES:
-- Stock KSP, RSS or KSRSS (no other planet changing mods), and the language has to be set to "english" (important).
+- Stock KSP, RSS or KSRSS (no other planet changing mods, and don´t change the default scale!), and the language has to be set to "english" (important).
 - Starship Expansion Project - github repository version and its requirements (!!)
     https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
     Github version: https://github.com/Kari1407/Starship-Expansion-Project
@@ -32,12 +33,16 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
     Dev Version: https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev
 - kOS
     https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/
-- Trajectories, and its requirements
+- Trajectories, and its requirements!`
     https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/
 - TundraExploration (actually only TundraExploration.dll)
     https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/
 - Kerbal Joint Reinforcement Continued
     https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued
+
+# RECOMMENDED:
+- HangarExtender (Recommended for being able to load cargo)
+    https://spacedock.info/mod/1428/HangerExtender#stats
 
 # INCOMPATIBLE(!!):
 - TweakableEverything
@@ -59,26 +64,16 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - The KSP delta-V calculations are not correct, so trust the Interface instead! :)
 
 
-
-# Tips & Tricks:
-To Load Cargo in the Cargo Ship (due to the vehicle not fitting in the VAB):
-
-- Drag the whole ship down to access the cargo-bay (root: Ships tank section).
-- Insert your payload.
-- Drage the whole ship up so far that the Tower is completely above ground (or the OLM will explode on booster return).
-
-
-
 # Known Issues:
 - Your KSP should be set to english for the scripts to work.
 
-- In RSS on booster catch the tower may be glitching due to Kraken.
+- RSS issues:
+    - On booster catch the tower may be glitching due to Kraken, and if catch succeeds the booster is probably not recoverable (looking for a fix).
+    - Booster/Ship control gets wonky with big ship distances. May cause Ship to fully lose control during booster catching.
 
 - Being in IVA during Booster Separation can cause problems with returning back into the IVA later on, and break the camera. A reload after launch completion fixes everything.
 
 - Enabling logging of data can seldomly cause a crash when it attempts to write and it loses the connection before/during the writing. Logging is therefore disabled by default.
-
-- The Depot versions get into an oscillation in the lateral axis, not sure what causes this.
 
 
 
@@ -97,4 +92,4 @@ To Load Cargo in the Cargo Ship (due to the vehicle not fitting in the VAB):
 
 
 # By the author:
-This has been a pet project of mine since around May 2021, and I had a lot of fun making and using this Interface. I hope you will too! Let me know what you think! I thank all the mod makers whose work I have been able to rely on, and without whom none of this would have been possible. Especially I want to thank the makers of SEP: Kari, Sofie, etc.. and SAMCG14 for his work on the Launch Tower, both of whose CFGs I'm modifying for better stability across different peoples use cases.
+This has been a pet project of mine since around May 2021, and I had a lot of fun making and using this Interface. I hope you will too! Let me know what you think! I thank all the mod makers whose work I have been able to rely on, and without whom none of this would have been possible. Especially I want to thank the makers of SEP: Kari, Sofie, etc.. and SAMCG14 for his work on the Launch Tower, both of whose CFGs I'm modifying.

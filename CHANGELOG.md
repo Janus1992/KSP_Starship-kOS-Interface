@@ -1,3 +1,17 @@
+# V2.2.0 (2023-10-18)
+- Major rework of the patch-system, to align with SEPs modular patches. Requires deleting the old StarshipInterface folder!!
+- Lowered the Boosters CoM by 2.5m for better control authority during re-entry.
+- Weakened Booster RCS and Roll Reaction Wheels to SEP standard, and modified all Booster control functions.
+- Provide support for Fossils custom plumes for SEP.
+- If Booster control gets inaccurate (KSRSS & RSS), it will switch back to the booster to correct the error and then switch back to the ship.
+- Simple Hotstaging implemented and all launch trajectories modified accordingly.
+- Fix for Booster overshooting the tower when too low on fuel. Booster will still crash if it has too little fuel already.
+- Abort procedure added in case of clamp failure (accidental self docking again on clamp release due to ksp..).
+- Reworked clamp release (undock) and refueling procedure.
+- Booster engines throttle up before clamp release.
+- The launch procedure uses less CPU time now, improving performance on slow computers.
+- Further bug fixes.
+
 # V2.1.13 (2023-10-12)
 - Script now warns of too high inclination to do an automatic de-orbit burn before suggesting fuel venting.
 - Winch/LR Antenna buttons greyed out to highlight that they are not yet implemented.
