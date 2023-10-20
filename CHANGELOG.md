@@ -1,7 +1,11 @@
-# V2.2.0 (2023-10-18)
+# V2.2.1 (2023-10-20)
+- Fix for default SEP plumes, which were invisible due to a wrong dependency check.
+- Latest version of script.
+
+# V2.2.0 (2023-10-19)
 - Major rework of the patch-system, to align with SEPs modular patches. Requires deleting the old StarshipInterface folder!!
 - Lowered the Boosters CoM by 2.5m for better control authority during re-entry.
-- Weakened Booster RCS and Roll Reaction Wheels to SEP standard, and modified all Booster control functions.
+- Set Booster RCS and Roll Reaction Wheels to SEP standard, and modified all Booster control functions.
 - Provide support for Fossils custom plumes for SEP.
 - If Booster control gets inaccurate (KSRSS & RSS), it will switch back to the booster to correct the error and then switch back to the ship.
 - Simple Hotstaging implemented and all launch trajectories modified accordingly.

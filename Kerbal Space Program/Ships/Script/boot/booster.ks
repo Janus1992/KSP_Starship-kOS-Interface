@@ -31,6 +31,7 @@ set LandingBurnStarted to false.
 lock RadarAlt to alt:radar - BoosterHeight.
 set stopTime9 to 0.
 set TimeStabilized to 0.
+set LFBooster to 0.
 
 set RSS to false.
 set KSRSS to false.
@@ -47,11 +48,11 @@ if bodyexists("Earth") {
         else {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
         }
-        set LatCtrlPID to PIDLOOP(0.05, 0.0025, 0.0025, -2, 2).
+        set LatCtrlPID to PIDLOOP(0.02, 0.0025, 0.0025, -2, 2).
         set LFBoosterFuelCutOff to 3600.
         set LandHeadingVector to heading(270,0):vector.
-        set BoosterLandingFactor to 0.825.
-        set BoosterGlideDistance to 8000.
+        set BoosterLandingFactor to 0.9.
+        set BoosterGlideDistance to 12000.
         set Scale to 1.6.
     }
     else {
@@ -267,7 +268,7 @@ function Boostback {
         }
     }
 
-    until vang(facing:forevector, vxcl(up:vector, -ErrorVector)) < 35 or vang(facing:forevector, vxcl(up:vector, -ErrorVector)) < angularvel:y * 100 or verticalspeed < 0 {
+    until vang(facing:forevector, vxcl(up:vector, -ErrorVector)) < 15 or vang(facing:forevector, vxcl(up:vector, -ErrorVector)) < angularvel:y * 100 or verticalspeed < 0 {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         SetBoosterActive().
@@ -361,7 +362,14 @@ function Boostback {
         CheckFuel().
     }
 
-    BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 10).
+    //if not (STOCK) {
+    //    BoosterInter[0]:getmodule("ModuleReactionWheel"):setfield("wheel authority", 0).
+    //    BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 0).
+    //}
+    //else {
+        BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 10).
+    //}
+
     KUniverse:forceactive(vessel(starship)).
 
     until altitude < 30000 and not (RSS) or altitude < 50000 and RSS {
@@ -390,6 +398,7 @@ function Boostback {
     }
 
     BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+    //BoosterInter[0]:getmodule("ModuleReactionWheel"):setfield("wheel authority", 100).
     lock SteeringVector to lookdirup(-velocity:surface * AngleAxis(-LngCtrl, lookdirup(-velocity:surface, up:vector):starvector) * AngleAxis(LatCtrl, up:vector), up:vector * AngleAxis(-2 * LatCtrl, ApproachVector)).
     lock steering to SteeringVector.
 
@@ -524,7 +533,7 @@ function Boostback {
                         set LandHeadingVector to vxcl(up:vector, Vessel(TargetOLM):partstitled("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position).
                     }
                     if RSS {
-                        lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.035 * ErrorVector, LandHeadingVector).
+                        lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.03 * ErrorVector, LandHeadingVector).
                     }
                     else if KSRSS {
                         lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.035 * ErrorVector, LandHeadingVector).
@@ -791,10 +800,6 @@ FUNCTION SteeringCorrections {
         //print "ErrorVector: " + ErrorVector.
         //print "ApproachVector: " + ApproachVector.
         print " ".
-        print "Steering Pitch  Error: " + round(SteeringManager:pitcherror, 2).
-        print "Steering Yaw    Error: " + round(SteeringManager:yawerror, 2).
-        print "Steering Roll   Error: " + round(SteeringManager:rollerror, 2).
-        //print "Steering Total  Error: " + round(SteeringManager:angleerror, 2).
 
         if addons:tr:hasimpact {
             //print "Total Error: " + round((ADDONS:TR:IMPACTPOS:POSITION - landingzone:POSITION):mag).
@@ -833,12 +838,12 @@ FUNCTION SteeringCorrections {
         if ShipExists {
             print "Ship Distance: " + (round(vessel(starship):distance) / 1000) + "km".
         }
-        //print "Steering Target: " + steeringmanager:target.
-        //print "Steering Direction: " + facing:forevector.
-        print "Steering Pitch  Error: " + round(SteeringManager:pitcherror, 2).
-        print "Steering Yaw    Error: " + round(SteeringManager:yawerror, 2).
-        print "Steering Roll   Error: " + round(SteeringManager:rollerror, 2).
-        //print "Steering Total  Error: " + round(SteeringManager:angleerror, 2).
+    }
+    print "Steering Pitch  Error: " + round(SteeringManager:pitcherror, 2).
+    print "Steering Yaw    Error: " + round(SteeringManager:yawerror, 2).
+    print "Steering Roll   Error: " + round(SteeringManager:rollerror, 2).
+    if not (LFBooster = 0) {
+        print "LF on Board: " + round(LFBooster).
     }
     LogBoosterFlightData().
 }
@@ -950,14 +955,12 @@ function CheckFuel {
     for res in BoosterCore[0]:resources {
         if res:name = "LiquidFuel" {
             set LFBooster to res:amount.
-            print "LFOB: " + round(LFBooster).
             if LFBooster < LFBoosterFuelCutOff {
                 BoosterCore[0]:shutdown.
             }
         }
         if res:name = "LqdMethane" {
             set LFBooster to res:amount.
-            print "LFOB: " + round(LFBooster).
             if LFBooster < LFBoosterFuelCutOff {
                 BoosterCore[0]:shutdown.
             }

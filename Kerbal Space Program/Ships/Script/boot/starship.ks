@@ -313,6 +313,7 @@ set RelVelY to 0.
 set RelVelZ to 0.
 set TimeSinceDock to 0.
 set TimeSinceLastSteering to 0.
+set TimeToOrbitCompletion to 0.
 
 
 
@@ -2138,7 +2139,7 @@ local status4label4 is statusstackvlayout4:addlabel().
     set status4label4:style:wordwrap to false.
     set status4label4:style:width to 110.
     set status4label4:style:height to 19.
-    set status4label4:tooltip to "Mach Nr (MACH 1 = 1x speed of sound) or Groundspeed (SPD)".
+    set status4label4:tooltip to "Mach Nr. / Ground Speed / Orbital Speed".
 local status4label5 is statusstackvlayout5:addlabel().
     set status4label5:style:margin:left to 20.
     set status4label5:style:fontsize to 16.
@@ -6215,36 +6216,38 @@ function Launch {
         setflaps(0, 0, 0, 20).
         SaveToSettings("Ship Name", ship:name).
 
+        set targetincl to setting3:text:split("°")[0]:toscalar(0).
+        set LaunchData to LAZcalc_init(targetap, targetincl).
         if RSS {
             set LaunchElev to altitude - 108.384.
             if ShipType = "Depot" {
-                set BoosterAp to 127500.
+                set BoosterAp to 134000 + (cos(targetincl) * 3000).
             }
             else {
-                set BoosterAp to 135000.
+                set BoosterAp to 141500 + (cos(targetincl) * 3000).
             }
             if NrOfVacEngines = 6 {
-                set PitchIncrement to 1.5 + 2.6 * CargoMass / MaxCargoToOrbit.
+                set PitchIncrement to -1.0 + 2.6 * CargoMass / MaxCargoToOrbit.
             }
             else {
-                set PitchIncrement to 1.25 + 2.6 * CargoMass / MaxCargoToOrbit.
+                set PitchIncrement to -1.25 + 2.6 * CargoMass / MaxCargoToOrbit.
             }
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.01, 0, 0, -30, PitchIncrement).
             if ShipType = "Depot" {
-                set TimeFromLaunchToOrbit to 530.
+                set TimeFromLaunchToOrbit to 500.
             }
             else {
-                set TimeFromLaunchToOrbit to 560.
+                set TimeFromLaunchToOrbit to 530.
             }
             set BoosterThrottleDownAlt to 1500.
         }
         else if KSRSS {
             set LaunchElev to altitude - 67.74.
             if ShipType = "Depot" {
-                set BoosterAp to 76000.
+                set BoosterAp to 74500 + (cos(targetincl) * 1500).
             }
             else {
-                set BoosterAp to 85000.
+                set BoosterAp to 83500 + (cos(targetincl) * 1500).
             }
             if NrOfVacEngines = 6 {
                 set PitchIncrement to -2.25 + 2.5 * CargoMass / MaxCargoToOrbit.
@@ -6264,10 +6267,10 @@ function Launch {
         else {
             set LaunchElev to altitude - 67.74.
             if ShipType = "Depot" {
-                set BoosterAp to 40000.
+                set BoosterAp to 39000 + (cos(targetincl) * 1000).
             }
             else {
-                set BoosterAp to 55000.
+                set BoosterAp to 54000 + (cos(targetincl) * 1000).
             }
             if ShipType = "Depot" {
                 set PitchIncrement to 5.
@@ -6287,8 +6290,6 @@ function Launch {
             }
             set BoosterThrottleDownAlt to 1500.
         }
-        set targetincl to setting3:text:split("°")[0]:toscalar(0).
-        set LaunchData to LAZcalc_init(targetap, targetincl).
         set OrbitBurnPitchCorrectionPID:setpoint to targetap.
 
         if OnOrbitalMount {
@@ -6573,7 +6574,7 @@ function Launch {
                     SetLoadDistances(500000).
                 }
                 LogToFile("Stage-separation Complete").
-                //set config:ipu to 2000.
+                set config:ipu to 2000.
             }
         }
         else {
@@ -6596,23 +6597,23 @@ function Launch {
             if ShipType = "Depot" {
                 set steeringmanager:yawtorquefactor to 0.1.
             }
-            set steeringmanager:pitchtorqueadjust to 15.
-            set steeringmanager:yawtorqueadjust to 15.
-            set steeringmanager:rolltorqueadjust to 15.
+            set steeringmanager:pitchpid:ki to 0.
+            set steeringmanager:yawpid:ki to 0.
+            set steeringmanager:rollpid:ki to 0.
             if RSS {
-                when DesiredAccel / MaxAccel < 0.6 and not (ShipType = "Depot") and altitude > 100000 or apoapsis > 180000 and ShipType = "Depot" and altitude > 100000 then {
+                when DesiredAccel / MaxAccel < 0.6 and not (ShipType = "Depot") and altitude > 100000 or apoapsis > 180000 and ShipType = "Depot" and altitude > 100000 or verticalspeed < 0 or apoapsis > targetap then {
                     if NrOfVacEngines = 3 or ShipType = "Depot" {
                         set quickengine2:pressed to false.
                     }
-                    when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 0 or deltav < 500 then {
+                    when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 15 or deltav < 500 then {
                         if ShipType = "Depot" {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 15).
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 20).
                         }
                         else if NrOfVacEngines = 6 {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 10).
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 15).
                         }
                         else {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 10).
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 15).
                         }
                         set MaintainVS to true.
                     }
@@ -6620,21 +6621,21 @@ function Launch {
             }
             else if KSRSS {
                 when DesiredAccel / MaxAccel < 0.6 and altitude > 80000 or apoapsis > targetap then {
-                    if NrOfVacEngines = 3 or ShipType = "Depot" {
+                    if NrOfVacEngines = 3 or ShipType = "Depot" or verticalspeed < 0 {
                         set quickengine2:pressed to false.
                     }
-                    when altitude > targetap - 100 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 0 or deltav < 250 then {
+                    when altitude > targetap - 100 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 15 or deltav < 250 then {
                         set OrbitBurnPitchCorrectionPID to PIDLOOP(1.5, 0, 0, -7.5, 17.5).
                         set MaintainVS to true.
                     }
                 }
             }
             else {
-                when apoapsis > targetap - 10000 then {
+                when apoapsis > targetap - 10000 or verticalspeed < 0 then {
                     if NrOfVacEngines = 3 or ShipType = "Depot" {
                         set quickengine2:pressed to false.
                     }
-                    when altitude > targetap - 400 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 0 or deltav < 100 then {
+                    when altitude > targetap - 400 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 15 or deltav < 100 then {
                         if ShipType = "Depot" {
                             set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -7.5, 12.5).
                         }
@@ -6651,7 +6652,7 @@ function Launch {
             SendPing().
             BackGroundUpdate().
             LaunchLabelData().
-            wait 0.25.
+            wait 0.001.
         }
 
         unlock steering.
@@ -6722,9 +6723,15 @@ function LaunchThrottle {
         }
     }
     else {
-        set OrbitalVelocity to ship:body:radius * sqrt(9.81 / (ship:body:radius + targetap)).
         set ApoapsisVelocity to sqrt(ship:body:mu * ((2 / (ship:body:radius + APOAPSIS)) - (1 / ship:obt:semimajoraxis))).
-        set deltaV to (OrbitalVelocity - ApoapsisVelocity).
+        if MaintainVS {
+            set OrbitalVelocity to ship:body:radius * sqrt(9.81 / (ship:body:radius + altitude)).
+            set deltaV to (OrbitalVelocity - ship:velocity:orbit:mag).
+        }
+        else {
+            set OrbitalVelocity to ship:body:radius * sqrt(9.81 / (ship:body:radius + targetap)).
+            set deltaV to (OrbitalVelocity - ApoapsisVelocity).
+        }
         set BurnDuration to deltaV / MaxAccel.
         set TimeToOrbitCompletion to TimeFromLaunchToOrbit - (time:seconds - LiftOffTime).
         set DesiredAccel to max(deltaV / (TimeToOrbitCompletion), 0.75 * 9.81).
@@ -6764,10 +6771,10 @@ Function LaunchSteering {
     else if Boosterconnected {
         if RSS {
             if ShipType = "Depot" {
-                set targetpitch to 90 - (7 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                set targetpitch to 90 - (6.65 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
             }
             else {
-                set targetpitch to 90 - (7.85 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                set targetpitch to 90 - (7.5 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
             }
         }
         else if KSRSS {
@@ -6814,13 +6821,14 @@ Function LaunchSteering {
         //print "Azimuth: " + myAzimuth.
         //print "Facing Vector: " + facing:forevector.
         //print "Guidance Vector: " + result:vector.
-        //print "Desired Accel: " + round(DesiredAccel / 9.81, 2) + "G".
-        //print "Time to Orbit: " + round(TimeToOrbitCompletion) + "s".
+        print "Desired Accel: " + round(DesiredAccel / 9.81, 2) + "G".
+        print "Ratio: " + round(DesiredAccel / MaxAccel, 2).
+        print "Time to Orbit Completion: " + round(TimeToOrbitCompletion) + "s".
         //print " ".
         //print "Pitch   Ctl: " + round(SLEngines[0]:gimbal:pitchangle, 2).
         //print "Yaw     Ctl: " + round(SLEngines[0]:gimbal:yawangle, 2).
         //print "Roll    Ctl: " + round(SLEngines[0]:gimbal:rollangle, 2).
-        //print " ".
+        print " ".
         print "Pitch Error: " + round(steeringmanager:pitcherror, 2).
         print "Yaw   Error: " + round(steeringmanager:yawerror, 2).
         print "Roll  Error: " + round(steeringmanager:rollerror, 2).
@@ -9094,8 +9102,8 @@ function updateStatus {
                 set status4label4:text to "<b>GSPD:</b>  " + round(groundspeed) + "m/s".
             }
         }
-        if altitude > body:atm:height {
-            set status4label4:text to "<b>GSPD:</b>  " + round(groundspeed) + "m/s".
+        if altitude > 0.75 * body:atm:height {
+            set status4label4:text to "<b>OSPD:</b>  " + round(ship:velocity:orbit:mag) + "m/s".
         }
         
         set currVel to SHIP:VELOCITY:ORBIT.
