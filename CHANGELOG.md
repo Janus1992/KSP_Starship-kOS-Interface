@@ -1,3 +1,6 @@
+# V2.2.2 (2023-10-21)
+- fossil plume fix.
+
 # V2.2.1 (2023-10-20)
 - Fix for default SEP plumes, which were invisible due to a wrong dependency check.
 - Latest version of script.
