@@ -63,6 +63,8 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 - The KSP delta-V calculations are not correct, so trust the Interface instead! :)
 
+- If you have anything installed by Fossil Industries then also install the plume, because if you don't the plume will not show up. This is a patch limitation at this point. If you want to have default SEP plumes, you'll need to delete the entire Fossil Industries folder from /gamedata, as that is what the patch checks for.
+
 
 # Known Issues:
 - Your KSP should be set to english for the scripts to work.

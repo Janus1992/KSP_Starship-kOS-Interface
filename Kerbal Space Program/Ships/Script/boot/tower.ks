@@ -1,4 +1,3 @@
-set config:ipu to 500.
 set RSS to false.
 set KSRSS to false.
 set STOCK to false.

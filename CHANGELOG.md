@@ -1,5 +1,18 @@
+# V2.2.4 (2023-10-24)
+- Fossil plume fix didn't work, so from now on: If you have any mod of Fossil (like the QD), you'll need to install the plumes also, or you'll have no plume. If you want default plumes you'll need to delete the whole Fossil Industries folder from /gamedata.
+- Reworked the Launch-to-Rendezvous/Target Orbit procedure, re-enabled for RSS.
+- Fix vent rates.
+- Enabled Launch to Depot.
+- Fix for KSRSS tanker running Lqdmethane. The amount of the tanks was not set correctly after I changed it.
+
+# V2.2.3 (2023-10-23)
+- Booster got its own optimised .ksm file that auto-updates.
+- Booster code flow optimized for controlling electricity use and cpu load.
+- Tower doesn't set cpu speed to 500/s anymore. It caused slow updating of the Interface upon booster landing/tower unpack.
+- Launch Interface update locked to a maximum of 10x per second.
+
 # V2.2.2 (2023-10-21)
-- fossil plume fix.
+- fossil plume fix (didn't work)
 
 # V2.2.1 (2023-10-20)
 - Fix for default SEP plumes, which were invisible due to a wrong dependency check.

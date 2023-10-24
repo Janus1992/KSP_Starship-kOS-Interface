@@ -1,7 +1,7 @@
 //
 // SEP Starship kOS Script
 //
-// Version 2.1 - GNUGPL3
+// Version 2.2 - GNUGPL3
 // Janus92
 //
 //
@@ -11,34 +11,6 @@ unlock steering.
 clearguis().
 clearscreen.
 
-set RSS to false.
-set KSRSS to false.
-set STOCK to false.
-set Methane to false.
-if bodyexists("Earth") {
-    if body("Earth"):radius > 1600000 {
-        set RSS to true.
-    }
-    else {
-        set KSRSS to true.
-    }
-}
-else {
-    if body("Kerbin"):radius > 1000000 {
-        set KSRSS to true.
-    }
-    else {
-        set STOCK to true.
-    }
-}
-
-set FuelUnitsToKg to 11 + (1/9).
-for res in Core:part:resources {
-    if res:name = "LqdMethane" {
-        set Methane to true.
-        set FuelUnitsToKg to 2.09227666666667.
-    }
-}
 
 
 //--------------Self-Update-------------//
@@ -73,7 +45,6 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
             HUDTEXT("First Time Boot detected! Initializing Ship Interface..", 10, 2, 20, green, false).
             print "starship.ksm doesn't yet exist in boot.. creating..".
             compile starship.
-            switch to 0.
             copypath("0:starship.ks", "1:/boot/").
             copypath("starship.ksm", "1:").
             set core:BOOTFILENAME to "starship.ksm".
@@ -85,6 +56,42 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
         HUDTEXT("Starting Interface..", 5, 2, 20, green, false).
     }
 }
+
+
+
+//------------Initial Setup-------------//
+
+
+
+set RSS to false.
+set KSRSS to false.
+set STOCK to false.
+set Methane to false.
+if bodyexists("Earth") {
+    if body("Earth"):radius > 1600000 {
+        set RSS to true.
+    }
+    else {
+        set KSRSS to true.
+    }
+}
+else {
+    if body("Kerbin"):radius > 1000000 {
+        set KSRSS to true.
+    }
+    else {
+        set STOCK to true.
+    }
+}
+
+set FuelUnitsToKg to 11 + (1/9).
+for res in Core:part:resources {
+    if res:name = "LqdMethane" {
+        set Methane to true.
+        set FuelUnitsToKg to 2.09227666666667.
+    }
+}
+
 
 
 //------------Configurables-------------//
@@ -107,17 +114,19 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set FuelBalanceSpeed to 100.
     set LandRollVector to heading(270,0):vector.
     set SafeAltOverLZ to 10000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
-    set targetap to 250000.
+    set OriginalTargetAp to 250000.
     set RCSThrust to 100.
     set RCSBurnTimeLimit to 240.
     if Methane {
-        set VentRate to 974.75.
+        set VentRate to 9747.43.
         set FuelVentCutOffValue to FuelVentCutOffValue * 5.310536.
     }
     else {
-        set VentRate to 183.55.
+        set VentRate to 1835.49.
     }
     set ArmsHeight to 138.16.
+    set OrbitPrecision to 250.
+    set RendezvousOrbitLeadFactor to 0.6.
 }
 else if KSRSS {
     set aoa to 60.
@@ -136,17 +145,19 @@ else if KSRSS {
     set FuelBalanceSpeed to 40.
     set LandRollVector to heading(242,0):vector.
     set SafeAltOverLZ to 5000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
-    set targetap to 125000.
+    set OriginalTargetAp to 125000.
     set RCSThrust to 70.
     set RCSBurnTimeLimit to 180.
     if Methane {
-        set VentRate to 194.95.
+        set VentRate to 1949.49.
         set FuelVentCutOffValue to FuelVentCutOffValue * 5.310536.
     }
     else {
-        set VentRate to 36.71.
+        set VentRate to 367.1.
     }
     set ArmsHeight to 86.35.
+    set OrbitPrecision to 150.
+    set RendezvousOrbitLeadFactor to 0.6.
 }
 else {  // Set of variables when Real Solar System has NOT been installed
     set aoa to 60.
@@ -165,7 +176,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set FuelBalanceSpeed to 40.
     set LandRollVector to heading(270,0):vector.
     set SafeAltOverLZ to 2500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
-    set targetap to 75000.
+    set OriginalTargetAp to 75000.
     set RCSThrust to 40.
     set RCSBurnTimeLimit to 120.
     if Methane {
@@ -176,6 +187,8 @@ else {  // Set of variables when Real Solar System has NOT been installed
         set VentRate to 36.71.
     }
     set ArmsHeight to 86.35.
+    set OrbitPrecision to 100.
+    set RendezvousOrbitLeadFactor to 0.5.
 }
 set SNStart to 30.  // Defines the first Serial Number when multiple ships are found and renaming is necessary.
 set MaxTilt to 2.5.  // Defines maximum allowed slope for the Landing Zone Search Function
@@ -456,7 +469,9 @@ function FindParts {
         set GridFins to SHIP:PARTSNAMED("SEP.22.BOOSTER.GRIDFIN.KOS").
         set BoosterInterstage to SHIP:PARTSNAMED("SEP.22.BOOSTER.INTER.KOS").
         set BoosterCore to SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS").
-        set BoosterCore[0]:getmodule("kOSProcessor"):volume:name to "Booster".
+        if BoosterCore:length > 0 {
+            set BoosterCore[0]:getmodule("kOSProcessor"):volume:name to "Booster".
+        }
     }
     else {
         set Boosterconnected to false.
@@ -4368,6 +4383,7 @@ set launchbutton:ontoggle to {
         if click {
             if ship:body:atm:exists and Boosterconnected {
                 set runningprogram to "Input".
+                set targetap to OriginalTargetAp.
                 if alt:radar < 110 {
                     if vang(ship:facing:topvector, heading(90,0):vector) < 30 or ShipType = "Crew" {
                         set Launch180 to true.
@@ -4401,12 +4417,20 @@ set launchbutton:ontoggle to {
                     if CargoMass < MaxCargoToOrbit + 1 and cargo1text:text = "Closed" {
                         ShowHomePage().
                         InhibitButtons(0, 0, 0).
-                        if ShipsInOrbit():length > 0 and not (RSS) {
+                        if ShipsInOrbit():length > 0 {
                             set TargetShip to false.
                             until false {
                                 for tship in ShipsInOrbit {
-                                    set message1:text to "<b>Launch to Intercept Orbit</b>  (± " + (targetap / 1000) + "km, " + round(tship:orbit:inclination, 2) + "°)".
-                                    set message2:text to "<b>Rendezvous Target:  <color=green>" + tship:name + "</color></b>".
+                                    if RSS {
+                                        set message1:text to "<b>Launch to Intercept Orbit</b>  (± " + ((targetap - 10000) / 1000) + "km, " + round(tship:orbit:inclination, 2) + "°)".
+                                    }
+                                    else if KSRSS {
+                                        set message1:text to "<b>Launch to Intercept Orbit</b>  (± " + ((targetap - 5000) / 1000) + "km, " + round(tship:orbit:inclination, 2) + "°)".
+                                    }
+                                    else {
+                                        set message1:text to "<b>Launch to Intercept Orbit</b>  (± " + ((targetap - 2500) / 1000) + "km, " + round(tship:orbit:inclination, 2) + "°)".
+                                    }
+                                    set message2:text to "<b>Rendezvous Target:  <size=17><color=green>" + tship:name + "</color></size></b>".
                                     set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
                                     set message3:style:textcolor to cyan.
                                     set execute:text to "<b>CONFIRM</b>".
@@ -4442,6 +4466,15 @@ set launchbutton:ontoggle to {
                             set message2:text to "<b>Booster Return to Launch Site</b>".
                         }
                         else {
+                            if RSS {
+                                set targetap to targetap - 10000.
+                            }
+                            else if KSRSS {
+                                set targetap to targetap - 5000.
+                            }
+                            else {
+                                set targetap to targetap - 2500.
+                            }
                             set message1:text to "<b>Launch to Intercept Orbit</b>  (± " + (targetap / 1000) + "km, " + round(TargetShip:orbit:inclination, 2) + "°)".
                             set message2:text to "<b>Target Ship:  <color=green>" + TargetShip:name + "</color></b>".
                         }
@@ -4463,21 +4496,21 @@ set launchbutton:ontoggle to {
                             else {
                                 if RSS {
                                     set LaunchTimeSpanInSeconds to 540.
-                                    set LaunchDistance to 1460000.
+                                    set LaunchDistance to 1500000.
                                 }
                                 else if KSRSS {
-                                    set LaunchTimeSpanInSeconds to 390.
-                                    set LaunchDistance to 700000.
+                                    set LaunchTimeSpanInSeconds to 340.
+                                    set LaunchDistance to 750000.
                                 }
                                 else {
-                                    set LaunchTimeSpanInSeconds to 244 + (CargoMass / MaxCargoToOrbit) * 17.
-                                    set LaunchDistance to 197000 + (CargoMass / MaxCargoToOrbit) * 15000.
+                                    set LaunchTimeSpanInSeconds to 285.
+                                    set LaunchDistance to 225000.
                                 }
                                 if NrOfVacEngines = 3 {
                                     set LaunchTimeSpanInSeconds to LaunchTimeSpanInSeconds + 3.
                                 }
-
-                                if abs(TargetShip:orbit:inclination) < 0.5 {
+                                set target to TargetShip.
+                                if abs(TargetShip:orbit:inclination) < 0.5 and stock {
                                     set LongitudeToRendezvous to 360 * (LaunchTimeSpanInSeconds / TargetShip:orbit:period).
                                     set OrbitalCircumferenceDelta to (((LongitudeToRendezvous / 360) * 471239) / 4241150) * 360 * 0.5.
                                     set LongitudeToRendezvous to LongitudeToRendezvous - OrbitalCircumferenceDelta.
@@ -4495,33 +4528,28 @@ set launchbutton:ontoggle to {
                                     set LaunchToRendezvousTime to (LaunchToRendezvousLng / 360) * TargetShip:orbit:period.
                                     set LaunchToRendezvousTime to LaunchToRendezvousTime + (LaunchToRendezvousTime + LaunchTimeSpanInSeconds) / body:rotationperiod * TargetShip:orbit:period.
 
-                                    set LaunchTime to time:seconds + LaunchToRendezvousTime - 16.
+                                    set LaunchTime to time:seconds + LaunchToRendezvousTime - 19.
                                 }
                                 else {
                                     launchWindow(TargetShip, 0).
-
                                     if launchWindowList[0] = -1 {
                                         ShowHomePage().
-                                        set message1:text to "<b>No close encounters found (10 days)..</b>".
+                                        set message1:text to "<b>No close encounters found (31 days)..</b>".
                                         set message2:text to "<b>Try again later..</b>".
                                         set message3:text to "".
                                         set message1:style:textcolor to yellow.
                                         set message2:style:textcolor to yellow.
                                         set message3:style:textcolor to yellow.
                                         set textbox:style:bg to "starship_img/starship_main_square_bg".
+                                        InhibitButtons(0, 1, 1).
                                         wait 3.
                                         ClearInterfaceAndSteering().
                                         return.
                                     }
-                                    set LaunchToRendezvousTime to launchWindowList[0] - 16.
-                                    set LaunchTime to launchWindowList[1] - 16.
-                                    set targetincl to launchWindowList[2].
+                                    set LaunchTime to time:seconds + launchWindowList[0] - 19.
+                                    set targetincl to launchWindowList[1].
                                     set setting3:text to (round(targetincl, 2) + "°").
-
-                                    print "Launch To Rendezvous time: " + LaunchToRendezvousTime.
-                                    print "Launch on Node: " + LaunchTime.
-
-                                    set LaunchTime to time:seconds + LaunchToRendezvousTime.
+                                    //print "Launch Time: " + LaunchTime.
                                 }
 
                                 InhibitButtons(1, 1, 0).
@@ -4530,17 +4558,9 @@ set launchbutton:ontoggle to {
                                 set message3:style:textcolor to white.
                                 set runningprogram to "Countdown".
                                 until time:seconds > LaunchTime or cancelconfirmed {
-                                    if kuniverse:timewarp:warp > 5 {
-                                        set kuniverse:timewarp:warp to 5.
-                                    }
-                                    if LaunchTime - time:seconds < 900 and kuniverse:timewarp:warp > 4 {
-                                        set kuniverse:timewarp:warp to 4.
-                                    }
-                                    if LaunchTime - time:seconds < 60 and kuniverse:timewarp:warp > 0 {
-                                        set kuniverse:timewarp:warp to 0.
-                                    }
+                                    TimeWarp(LaunchTime, 0).
                                     set message1:text to "<b>All Systems:              <color=green>GO</color></b>".
-                                    set message2:text to "<b>Launch to:                 <color=green>" + TargetShip:name + "</color></b>".
+                                    set message2:text to "<b>Launch to:                 <size=17><color=green>" + TargetShip:name + "</color></size></b>".
                                     set message3:text to "<b>Launch Countdown:</b>  " + timeSpanCalculator(LaunchTime - time:seconds + 16).
                                     BackGroundUpdate().
                                 }
@@ -6193,7 +6213,7 @@ shutdown.
 function Launch {
     if not AbortLaunchInProgress and not LaunchComplete {
         set LaunchButtonIsRunning to true.
-        clearscreen.
+        //clearscreen.
         mainbox:showonly(flightstack).
         if hasnode {
             remove nextnode.
@@ -6218,6 +6238,20 @@ function Launch {
 
         set targetincl to setting3:text:split("°")[0]:toscalar(0).
         set LaunchData to LAZcalc_init(targetap, targetincl).
+
+        if not (TargetShip = 0) {
+            set target to TargetShip.
+            local testHeading to heading(LAZcalc(LaunchData), 0):vector.
+            local targetHeading to vxcl(up:vector, target:velocity:orbit).
+            print "Heading difference: " + vang(testHeading, targetHeading).
+            if vang(testHeading, targetHeading) > 45 {
+                set targetincl to -targetincl.
+                set LaunchData to LAZcalc_init(targetap, targetincl).
+                print "Changing Launch Inclination to depart southbound!".
+                print " ".
+            }
+        }
+
         if RSS {
             set LaunchElev to altitude - 108.384.
             if ShipType = "Depot" {
@@ -6353,6 +6387,12 @@ function Launch {
         }
 
         if RadarAlt < 100 {
+            if hastarget {
+                print " ".
+                print "Target LNG at Launch: " + round(target:geoposition:lng, 1).
+                print "Time at Launch: " + timestamp(time:seconds + 2.5):full.
+                print "Actual Distance: " + round((target:position - ship:position):mag / 1000, 1).
+            }
             lock throttle to 0.33.
             BoosterEngines[0]:getmodule("ModuleEnginesFX"):doaction("activate engine", true).
             set EngineStartTime to time:seconds.
@@ -6367,6 +6407,7 @@ function Launch {
             set message2:text to "<b>Clamps Releasing..</b>".
             lock throttle to 1.
             if cancelconfirmed {
+                BoosterEngines[0]:shutdown.
                 if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesFX") {
                     if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
                         ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
@@ -6398,6 +6439,7 @@ function Launch {
                 set message2:text to "<b>Minimum Thrust: </b>" + round(StackMass * Planet1G * 1.3) + "kN".
                 set message3:text to "<b>Actual Thrust: </b>" + round(BoosterEngines[0]:thrust) + "kN".
                 lock throttle to 0.
+                BoosterEngines[0]:shutdown.
                 set message1:style:textcolor to yellow.
                 set textbox:style:bg to "starship_img/starship_main_square_bg".
                 wait 3.
@@ -6565,7 +6607,7 @@ function Launch {
                 }
                 set StageSepComplete to true.
                 if RSS {
-                    SetLoadDistances(1750000).
+                    SetLoadDistances(1650000).
                 }
                 else if KSRSS {
                     SetLoadDistances(1000000).
@@ -6574,7 +6616,9 @@ function Launch {
                     SetLoadDistances(500000).
                 }
                 LogToFile("Stage-separation Complete").
-                set config:ipu to 2000.
+                if CPUSPEED < 1000 {
+                    set config:ipu to 1000.
+                }
             }
         }
         else {
@@ -6597,15 +6641,15 @@ function Launch {
             if ShipType = "Depot" {
                 set steeringmanager:yawtorquefactor to 0.1.
             }
-            set steeringmanager:pitchpid:ki to 0.
-            set steeringmanager:yawpid:ki to 0.
-            set steeringmanager:rollpid:ki to 0.
+            if not STOCK {
+
+            }
             if RSS {
                 when DesiredAccel / MaxAccel < 0.6 and not (ShipType = "Depot") and altitude > 100000 or apoapsis > 180000 and ShipType = "Depot" and altitude > 100000 or verticalspeed < 0 or apoapsis > targetap then {
                     if NrOfVacEngines = 3 or ShipType = "Depot" {
                         set quickengine2:pressed to false.
                     }
-                    when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 15 or deltav < 500 then {
+                    when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 5 or deltav < 500 then {
                         if ShipType = "Depot" {
                             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 20).
                         }
@@ -6624,7 +6668,7 @@ function Launch {
                     if NrOfVacEngines = 3 or ShipType = "Depot" or verticalspeed < 0 {
                         set quickengine2:pressed to false.
                     }
-                    when altitude > targetap - 100 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 15 or deltav < 250 then {
+                    when altitude > targetap - 100 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 5 or deltav < 250 then {
                         set OrbitBurnPitchCorrectionPID to PIDLOOP(1.5, 0, 0, -7.5, 17.5).
                         set MaintainVS to true.
                     }
@@ -6635,7 +6679,7 @@ function Launch {
                     if NrOfVacEngines = 3 or ShipType = "Depot" {
                         set quickengine2:pressed to false.
                     }
-                    when altitude > targetap - 400 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 15 or deltav < 100 then {
+                    when altitude > targetap - 400 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 5 or deltav < 100 then {
                         if ShipType = "Depot" {
                             set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -7.5, 12.5).
                         }
@@ -6649,10 +6693,12 @@ function Launch {
         }
 
         until BurnComplete or AbortLaunchInProgress {
+            clearscreen.
             SendPing().
             BackGroundUpdate().
             LaunchLabelData().
-            wait 0.001.
+            //print "OPCodes left    until: " + opcodesleft.
+            wait 0.1.
         }
 
         unlock steering.
@@ -6700,6 +6746,7 @@ function Launch {
             }
         }
         set textbox:style:bg to "starship_img/starship_main_square_bg".
+        ShowHomePage().
         LogToFile("Launch Complete").
         wait 3.
         LogToFile("Launch Program Ended").
@@ -6711,6 +6758,7 @@ function Launch {
 
 function LaunchThrottle {
     local thr is 0.
+    SendPing().
     if Boosterconnected {
         if ship:q > 0.25 {
             set thr to 1 - 3 * (ship:q - 0.25).
@@ -6726,15 +6774,14 @@ function LaunchThrottle {
         set ApoapsisVelocity to sqrt(ship:body:mu * ((2 / (ship:body:radius + APOAPSIS)) - (1 / ship:obt:semimajoraxis))).
         if MaintainVS {
             set OrbitalVelocity to ship:body:radius * sqrt(9.81 / (ship:body:radius + altitude)).
-            set deltaV to (OrbitalVelocity - ship:velocity:orbit:mag).
+            set deltaV to OrbitalVelocity - velocity:orbit:mag.
         }
         else {
             set OrbitalVelocity to ship:body:radius * sqrt(9.81 / (ship:body:radius + targetap)).
-            set deltaV to (OrbitalVelocity - ApoapsisVelocity).
+            set deltaV to OrbitalVelocity - ApoapsisVelocity.
         }
-        set BurnDuration to deltaV / MaxAccel.
         set TimeToOrbitCompletion to TimeFromLaunchToOrbit - (time:seconds - LiftOffTime).
-        set DesiredAccel to max(deltaV / (TimeToOrbitCompletion), 0.75 * 9.81).
+        set DesiredAccel to max(deltaV / (TimeToOrbitCompletion), 0.25 * MaxAccel).
         set MaxAccel to 10.
         if quickengine3:pressed {
             if defined CargoBeforeSeparation and defined CargoAfterSeparation {
@@ -6743,14 +6790,18 @@ function LaunchThrottle {
             else {
                 set MaxAccel to max(ship:availablethrust / (ship:mass), 0.000001).
             }
-            if quickengine2:pressed = true and DesiredAccel / MaxAccel > 0.6 {
-                set thr to (3 * Planet1G) / MaxAccel.
-            }
-            else if MaintainVS and KUniverse:activevessel = ship and periapsis < altitude - 100 {
-                set thr to min((3 * Planet1G) / MaxAccel, max(deltaV / MaxAccel, 0.1)).
-            }
-            else if periapsis < targetap - 500 and periapsis < altitude - 100 {
-                set thr to DesiredAccel / MaxAccel.
+            if periapsis < altitude - OrbitPrecision {
+                if apoapsis < targetap + 7500 {
+                    if apoapsis < targetap or MaintainVS and verticalspeed < 5 {
+                        set thr to (3 * Planet1G) / MaxAccel.
+                    }
+                    else {
+                        set thr to min(DesiredAccel / MaxAccel, max(deltaV / MaxAccel, 0.1)).
+                    }
+                }
+                else if MaintainVS {
+                    set thr to min(DesiredAccel / MaxAccel, max(deltaV / MaxAccel, 0.1)).
+                }
             }
             else {
                 set thr to 0.
@@ -6816,29 +6867,29 @@ Function LaunchSteering {
         }
 
         clearscreen.
-        //print " ".
-        //print "Prograde Angle: " + ProgradeAngle.
-        //print "Azimuth: " + myAzimuth.
-        //print "Facing Vector: " + facing:forevector.
-        //print "Guidance Vector: " + result:vector.
-        print "Desired Accel: " + round(DesiredAccel / 9.81, 2) + "G".
-        print "Ratio: " + round(DesiredAccel / MaxAccel, 2).
-        print "Time to Orbit Completion: " + round(TimeToOrbitCompletion) + "s".
-        //print " ".
-        //print "Pitch   Ctl: " + round(SLEngines[0]:gimbal:pitchangle, 2).
-        //print "Yaw     Ctl: " + round(SLEngines[0]:gimbal:yawangle, 2).
-        //print "Roll    Ctl: " + round(SLEngines[0]:gimbal:rollangle, 2).
+        //print "Desired Accel: " + round(DesiredAccel / 9.81, 2) + "G".
+        //print "Ratio: " + round(DesiredAccel / MaxAccel, 2).
+        //print "Time to Orbit Completion: " + round(TimeToOrbitCompletion) + "s".
+        print "Steering Error: " + round(SteeringManager:angleerror, 2).
         print " ".
-        print "Pitch Error: " + round(steeringmanager:pitcherror, 2).
-        print "Yaw   Error: " + round(steeringmanager:yawerror, 2).
-        print "Roll  Error: " + round(steeringmanager:rollerror, 2).
 
+        if TargetShip = 0 {}
+        else if hastarget {
+        //    set InclinationError to vdot(normal(target:orbit), facing:starvector).
+        //    local TargetVector to target:velocity:orbit.
+        //    local ShipVector to velocity:orbit.
+        //    set InclinationError to
+        //    print "Incl Error: " + round(InclinationError, 2).
+        }
+        else {
+            set target to TargetShip.
+        }
+
+        rcs on.
         if not (Launch180) {
-            rcs on.
             set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, up:vector).
         }
         else {
-            rcs on.
             set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, -up:vector).
         }
     }
@@ -7327,6 +7378,8 @@ function ReEntryAndLand {
         if RSS {
             set PitchPID to PIDLOOP(0.00005, 0, 0, -25, 30).
             set YawPID to PIDLOOP(0.0005, 0, 0, -50, 50).
+            Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 0).
+            Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 0).
             when airspeed < 7000 and ship:body:atm:sealevelpressure > 0.5 or airspeed < 3000 and ship:body:atm:sealevelpressure < 0.5 then {
                 set PitchPID to PIDLOOP(0.0001, 0, 0, -25, 30).
                 set YawPID to PIDLOOP(0.005, 0, 0, -50, 50).
@@ -7748,7 +7801,7 @@ function ReEntryData {
 
 
         if LandButtonIsRunning and not LaunchButtonIsRunning and not cancelconfirmed {
-            set config:ipu to 2000.
+            set config:ipu to 1000.
             setflaps(0, 80, 1, 0).
             set RepositionOxidizer to TRANSFERALL("Oxidizer", HeaderTank, Tank).
             set RepositionOxidizer:ACTIVE to TRUE.
@@ -7912,21 +7965,24 @@ function ReEntryData {
             }
 
             until verticalspeed > -0.02 and RadarAlt < 1.25 and ship:status = "LANDED" or verticalspeed > 0.75 and RadarAlt < 5 {
-                if MechaZillaExists and TargetOLM {
-                    if RadarAlt < 4 * ShipHeight and RadarAlt > 3.5 * ShipHeight {
-                        sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,60,true").
-                        sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
-                    }
-                    else if RadarAlt < 1.125 * ShipHeight and RadarAlt > 0.875 * ShipHeight {
-                        sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,30,true").
-                    }
-                    else if RadarAlt < (0.5 * DesiredDecel * 1.5 * 1.5) + 2 and RadarAlt > (0.5 * DesiredDecel * 1.5 * 1.5) - 2.5 {
-                        sendMessage(Vessel(TargetOLM), ("MechazillaArms,8,10,30,false")).
+                if ship:body:atm:sealevelpressure > 0.5 {
+                    if ErrorVector:MAG > (RadarAlt + 25) and RadarAlt > 5 and not (LandSomewhereElse) or RadarAlt < -5 and not (LandSomewhereElse) {
+                        set LandSomewhereElse to true.
+                        set MechaZillaExists to false.
+                        SetRadarAltitude().
+                        LogToFile("Uh oh... Landing Off-Target").
                     }
                 }
-                //print "CancelDist: " + round(CancelDist).
-                //print "Dist: " + round(vxcl(up:vector, ship:position - landingzone:position):mag).
-                wait 0.001.
+                else {
+                    if ErrorVector:MAG > 2 * RadarAlt + 10 and not LandSomewhereElse and RadarAlt < 250 {
+                        set LandSomewhereElse to true.
+                        set MechaZillaExists to false.
+                        LogToFile("Uh oh... Landing Off-Target").
+                    }
+                }
+                LogToFile("Re-Entry Telemetry").
+                BackGroundUpdate().
+                wait 0.1.
             }
             if (MechaZillaExists) and (TargetOLM) {
                 print "capture at: " + RadarAlt + "m RA".
@@ -7943,22 +7999,8 @@ function LandingVector {
     rcs on.
     if addons:tr:hasimpact {
         set LngLatErrorList to LngLatError().
-
-        if ship:body:atm:sealevelpressure > 0.5 {
-            if ErrorVector:MAG > (RadarAlt + 25) and RadarAlt > 5 and not (LandSomewhereElse) or RadarAlt < -5 and not (LandSomewhereElse) {
-                set LandSomewhereElse to true.
-                set MechaZillaExists to false.
-                SetRadarAltitude().
-                LogToFile("Uh oh... Landing Off-Target").
-            }
-        }
-        if ship:body:atm:sealevelpressure < 0.5 {
-            if ErrorVector:MAG > 2 * RadarAlt + 10 and not LandSomewhereElse and RadarAlt < 250 {
-                set LandSomewhereElse to true.
-                set MechaZillaExists to false.
-                LogToFile("Uh oh... Landing Off-Target").
-            }
-        }
+        set LngError to vdot(LandingForwardDirection, ErrorVector).
+        set LatError to vdot(LandingLateralDirection, ErrorVector).
 
         if LandingBurnStarted and verticalspeed > 0 {
             lock throttle to ThrottleMin.
@@ -7968,9 +8010,6 @@ function LandingVector {
                 set LandingBurnStarted to true.
             }
         }
-
-        set LngError to vdot(LandingForwardDirection, ErrorVector).
-        set LatError to vdot(LandingLateralDirection, ErrorVector).
 
         if abs(LngError) > 35 and RadarAlt < 200 or abs(LatError) > 12.5 and RadarAlt < 200 or vxcl(up:vector, ship:position - landingzone:position):mag > 5 and RadarAlt < 75 {
             if ship:body:atm:sealevelpressure > 0.5 {
@@ -8069,20 +8108,31 @@ function LandingVector {
         //set LdgVectorDraw to vecdraw(v(0, 0, 0), 2 * result, green, "Landing Vector", 20, true, 0.005, true, true).
 
         clearscreen.
-        print "RA:" + round(RadarAlt,2).
-        print "Landing Ratio: " + round(landingRatio,2).
-        print "desired decel: " + round(DesiredDecel,2).
-        print "max decel: " + round(maxDecel,2) + "m/s2".
+        print "RA:" + round(RadarAlt, 2).
+        print "Landing Ratio: " + round(landingRatio, 2).
+        print "desired decel: " + round(DesiredDecel, 2).
+        print "max decel: " + round(maxDecel, 2) + "m/s2".
         //if not maxDecel = 0 {
         //    print "current decel: " + round(throttle * maxDecel, 2) + "m/s2".
         //    print "vs: " + round(verticalspeed,2).
         //    print "close arms at: " + round((0.5 * DesiredDecel * 3 * 3), 2) + "m RA".
         //}
-        LogToFile("Re-Entry Telemetry").
         set message3:text to "<b>Radar Altimeter:</b>        " + round(RadarAlt) + "m".
-        
-        BackGroundUpdate().
     }
+
+    if MechaZillaExists and TargetOLM {
+        if RadarAlt < 4 * ShipHeight and RadarAlt > 3.5 * ShipHeight {
+            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,60,true").
+            sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
+        }
+        else if RadarAlt < 1.125 * ShipHeight and RadarAlt > 0.875 * ShipHeight {
+            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,30,true").
+        }
+        else if RadarAlt < (0.5 * DesiredDecel * 1.5 * 1.5) + 2 and RadarAlt > (0.5 * DesiredDecel * 1.5 * 1.5) - 2.5 {
+            sendMessage(Vessel(TargetOLM), ("MechazillaArms,8,10,30,false")).
+        }
+    }
+
     if MechaZillaExists and TargetOLM and verticalspeed > -25 {
         return lookDirUp(result, LandRollVector).
     }
@@ -8979,16 +9029,20 @@ function updatestatusbar {
         if defined watchdog {
             if Watchdog:Mode = "READY" and avionics = 3 {
                 set message22:style:bg to "starship_img/starship_chip".
+                set message22:style:textcolor to white.
             }
             else if avionics = 3 {
                 set message22:style:bg to "starship_img/starship_chip_grey".
+                set message22:style:textcolor to grey.
             }
             else {
                 set message22:style:bg to "starship_img/starship_chip_yellow".
+                set message22:style:textcolor to yellow.
             }
         }
         else {
             set message22:style:bg to "starship_img/starship_chip_grey".
+            set message22:style:textcolor to white.
         }
         set StatusBarIsRunning to false.
     }
@@ -10901,7 +10955,7 @@ function ShipsInOrbit {
                 set t to t + 1.
             }
             if x:status = "ORBITING" and x:body = ship:body {
-                if x:name:contains("Starship Crew") or x:name:contains("Starship Cargo") or x:name:contains("Starship Tanker") {
+                if x:name:contains("Crew") or x:name:contains("Cargo") or x:name:contains("Tanker") or x:name:contains("Depot") or x:name:contains("Starship") {
                     if RSS and x:orbit:apoapsis < 500000 and x:orbit:periapsis > 140000 {
                         ShipsInOrbitList:add(Vessel(x:name)).
                     }
@@ -11448,77 +11502,66 @@ function BoosterExists {
 
 
 FUNCTION launchWindow {
-    PARAMETER tgt.
-    parameter NrOfBodyRotations.
+    PARAMETER target.
+    parameter iteration.
 
-    LOCAL lat IS SHIP:LATITUDE.
-    LOCAL eclipticNormal IS VCRS(tgt:OBT:VELOCITY:ORBIT,tgt:BODY:POSITION-tgt:POSITION):NORMALIZED.
-    LOCAL planetNormal IS HEADING(0,lat):VECTOR.
-    LOCAL bodyInc IS VANG(planetNormal, eclipticNormal).
-    LOCAL beta IS ARCCOS(MAX(-1,MIN(1,COS(bodyInc) * SIN(lat) / SIN(bodyInc)))).
-    LOCAL intersectdir IS VCRS(planetNormal, eclipticNormal):NORMALIZED.
-    LOCAL intersectpos IS -VXCL(planetNormal, eclipticNormal):NORMALIZED.
-    LOCAL launchtimedir IS (intersectdir * SIN(beta) + intersectpos * COS(beta)) * COS(lat) + SIN(lat) * planetNormal.
-    LOCAL launchANtime IS VANG(launchtimedir, SHIP:POSITION - BODY:POSITION) / 360 * BODY:ROTATIONPERIOD.
-    if VCRS(launchtimedir, SHIP:POSITION - BODY:POSITION) * planetNormal < 0 {
-        SET launchANtime TO BODY:ROTATIONPERIOD - launchANtime.
-    }
-    local launchDNtime is launchANtime - 0.5 * body:rotationperiod.
-    if launchDNtime < 0 {
-        set launchDNtime to launchANtime + 0.5 * body:rotationperiod.
-    }
-    set launchANtime to launchANtime + NrOfBodyRotations * body:rotationperiod - 0.6 * LaunchTimeSpanInSeconds - 16.
-    set launchDNtime to launchDNtime + NrOfBodyRotations * body:rotationperiod - 0.6 * LaunchTimeSpanInSeconds - 16.
-
-    set DegreesToRendezvous to 360 * (LaunchTimeSpanInSeconds / TargetShip:orbit:period).
-    set IdealLaunchTargetShipsLongitude to ship:geoposition:lng + (cos(TargetShip:orbit:inclination) * ((LaunchDistance / (1000 * Planet1Degree)) - DegreesToRendezvous)).
-
-    print "Ideal Degrees: " + DegreesToRendezvous.
-    print "Launch when Target passes Longitude: " + IdealLaunchTargetShipsLongitude.
-
-    set ANangle to IdealLaunchTargetShipsLongitude - mod(body:geopositionof(positionat(TargetShip, time:seconds + launchANtime)):lng - CorrectBodyRotation(launchANtime), 360).
-    set LaunchToANRendezvousTime to launchANtime + ANangle / 360 * TargetShip:orbit:period.
-
-    set DNangle to IdealLaunchTargetShipsLongitude - mod(body:geopositionof(positionat(TargetShip, time:seconds + launchDNtime)):lng - CorrectBodyRotation(launchDNtime), 360).
-    set LaunchToDNRendezvousTime to launchDNtime + DNangle / 360 * TargetShip:orbit:period.
-
-
-    if NrOfBodyRotations > 10 {
-        print "failed to find launch window in next 10 days".
+    clearscreen.
+    if iteration > 31 {
         set launchWindowList to list(-1,0,0).
         return.
     }
 
-    print "Iteration: " + NrOfBodyRotations.
-    print "Launch on AN: " + launchANtime.
-    //print "lng at AN: " + mod(body:geopositionof(positionat(TargetShip, time:seconds + launchANtime)):lng - CorrectBodyRotation(launchANtime), 360).
-    print "AN Angle: " + ANangle.
-    print "Launch on DN: " + launchDNtime.
-    //print "lng at DN: " + mod(body:geopositionof(positionat(TargetShip, time:seconds + launchDNtime)):lng - CorrectBodyRotation(launchDNtime), 360).
-    print "DN Angle: " + DNangle.
-
-    if abs(ANangle) < 15 and LaunchToANRendezvousTime > 20 {
-        local targetincl is tgt:orbit:inclination.
-        set launchWindowList to list(LaunchToANRendezvousTime, launchANtime, targetincl).
-        print "Launch Inclination: " + round(targetincl, 2).
-        print "Target Inclination: " + round(tgt:orbit:inclination, 2).
-    }
-    else if abs(DNangle) < 15 and LaunchToDNRendezvousTime > 20 {
-        local targetincl is -tgt:orbit:inclination.
-        set launchWindowList to list(LaunchToDNRendezvousTime, launchDNtime, targetincl).
-        print "Launch Inclination: " + round(targetincl, 2).
-        print "Target Inclination: " + round(tgt:orbit:inclination, 2).
-    }
-    else {
-        launchWindow(tgt, NrOfBodyRotations + 1).
+    LOCAL Nt IS VCRS(TARGET:VELOCITY:OBT, TARGET:POSITION-BODY:POSITION):NORMALIZED.
+    LOCAL R0 IS SHIP:POSITION-BODY:POSITION.
+    LOCAL Rh IS VXCL(BODY:ANGULARVEL, R0).
+    LOCAL Rv IS R0-Rh.
+    LOCAL Ph IS VCRS(BODY:ANGULARVEL:NORMALIZED, Rh).
+    LOCAL A  IS Nt * Rh.
+    LOCAL B  IS Nt * Ph.
+    LOCAL C  IS -Nt * Rv.
+    LOCAL ARG IS C/SQRT(A^2+B^2).
+    IF ABS(ARG) > 1 {
+        print "no match possible".
+        set launchWindowList to list(-1,0,0).
         return.
     }
-}
+    LOCAL phi IS ARCTAN2(B,A).
+    LOCAL theta1 IS MOD(360+ARCCOS(ARG)+PHI,360).
+    LOCAL theta2 IS MOD(360-ARCCOS(ARG)+PHI,360).
+    LOCAL next_launch_angle IS MIN(theta1,theta2).
+    LOCAL time_to_next_launch IS next_launch_angle/(BODY:ANGULARVEL:MAG * CONSTANT:RADTODEG) + iteration * body:rotationperiod - RendezvousOrbitLeadFactor * abs(target:orbit:inclination / 90) * LaunchTimeSpanInSeconds.
 
+    local DegreesToRendezvous to 360 * cos(TargetShip:orbit:inclination) * 0.5 * LaunchTimeSpanInSeconds / TargetShip:orbit:period.
+    local IdealLaunchTargetShipsLongitude to mod(ship:geoposition:lng - DegreesToRendezvous, 360).
 
-function CorrectBodyRotation {
-    parameter rottime.
-    return rottime * 360 / body:rotationperiod.
+    local LngAtNode to mod(body:geopositionof(positionat(target, time:seconds + time_to_next_launch)):lng - time_to_next_launch / body:rotationperiod * 360, 360).
+
+    if LngAtNode > 180 {
+        set LngAtNode to LngAtNode - 360.
+    }
+    if LngAtNode < -180 {
+        set LngAtNode to LngAtNode + 360.
+    }
+
+    local NodeAngle to mod(IdealLaunchTargetShipsLongitude - LngAtNode, 360).
+
+    print "Iteration: " + iteration.
+    print "Ideal Degrees: " + round(DegreesToRendezvous, 1).
+    print "Target LNG at Launch: " + round(IdealLaunchTargetShipsLongitude, 1) + "  --->  " + round(IdealLaunchTargetShipsLongitude + 2 * DegreesToRendezvous, 1).
+    print "Predicted LNG at Launch: " + round(LngAtNode, 1).
+    print "Launch Lead Angle: " + round(-NodeAngle, 1).
+    print "Launch on Node: " + round(time_to_next_launch) + "s".
+    print "Node Time: " + timestamp(time:seconds + time_to_next_launch):full.
+    print " ".
+    set DegreesToRendezvous to -DegreesToRendezvous.
+
+    if NodeAngle < -0.5 and NodeAngle > 2 * DegreesToRendezvous and time_to_next_launch > 20 {
+        set launchWindowList to list(time_to_next_launch, target:orbit:inclination).
+    }
+    else {
+        launchWindow(target, iteration + 1).
+        return.
+    }
 }
 
 
@@ -11869,7 +11912,7 @@ function VehicleSelfCheck {
             for res in Nose:resources {
                 if Methane {
                     if res:name = "LqdMethane" {
-                        if round(res:capacity) = 36706 and res:amount < res:capacity + 1 {}
+                        if round(res:capacity) = 59744 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -11877,7 +11920,7 @@ function VehicleSelfCheck {
                         }
                     }
                     if res:name = "Oxidizer" {
-                        if round(res:capacity) = 12235 and res:amount < res:capacity + 1 {}
+                        if round(res:capacity) = 19914 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -12267,5 +12310,66 @@ function VehicleSelfCheck {
         set textbox:style:bg to "starship_img/starship_main_square_bg".
         set runningprogram to "Self-Test Failed".
         updatestatusbar().
+    }
+}
+
+
+function Timewarp {
+    parameter GoalTime.
+    parameter BufferTime.
+
+    if STOCK {
+        if GoalTime - time:seconds < 3600 * 24 and kuniverse:timewarp:warp = 7 {
+            set kuniverse:timewarp:warp to 6.
+        }
+        if GoalTime - time:seconds < 3600 * 6 and kuniverse:timewarp:warp > 6 {
+            set kuniverse:timewarp:warp to 6.
+        }
+        if GoalTime - time:seconds < 3600 * 3 and kuniverse:timewarp:warp > 5 {
+            set kuniverse:timewarp:warp to 5.
+        }
+        if GoalTime - time:seconds < 3600 * 0.25 and kuniverse:timewarp:warp > 4 {
+            set kuniverse:timewarp:warp to 4.
+        }
+        if GoalTime - time:seconds < 60 + BufferTime and kuniverse:timewarp:warp > 0 {
+            set kuniverse:timewarp:warp to 0.
+        }
+    }
+    else if KSRSS {
+        if GoalTime - time:seconds < 3600 * 24 and kuniverse:timewarp:warp = 7 {
+            set kuniverse:timewarp:warp to 6.
+        }
+        if GoalTime - time:seconds < 3600 * 6 and kuniverse:timewarp:warp > 6 {
+            set kuniverse:timewarp:warp to 6.
+        }
+        if GoalTime - time:seconds < 3600 * 3 and kuniverse:timewarp:warp > 5 {
+            set kuniverse:timewarp:warp to 5.
+        }
+        if GoalTime - time:seconds < 3600 * 0.25 and kuniverse:timewarp:warp > 4 {
+            set kuniverse:timewarp:warp to 4.
+        }
+        if GoalTime - time:seconds < 60 + BufferTime and kuniverse:timewarp:warp > 0 {
+            set kuniverse:timewarp:warp to 0.
+        }
+    }
+    else {
+        if kuniverse:timewarp:warp > 5 {
+            set kuniverse:timewarp:warp to 5.
+        }
+        if GoalTime - time:seconds < 3600 * 24 * 1.5 and kuniverse:timewarp:warp > 4 {
+            set kuniverse:timewarp:warp to 4.
+        }
+        if GoalTime - time:seconds < 3600 * 3 and kuniverse:timewarp:warp > 3 {
+            set kuniverse:timewarp:warp to 3.
+        }
+        if GoalTime - time:seconds < 3600 * 0.25 and kuniverse:timewarp:warp > 2 {
+            set kuniverse:timewarp:warp to 2.
+        }
+        if GoalTime - time:seconds < 90 and kuniverse:timewarp:warp > 1 {
+            set kuniverse:timewarp:warp to 1.
+        }
+        if GoalTime - time:seconds < 60 + BufferTime and kuniverse:timewarp:warp > 0 {
+            set kuniverse:timewarp:warp to 0.
+        }
     }
 }
