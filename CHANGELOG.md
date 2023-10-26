@@ -1,3 +1,9 @@
+# V2.2.5 (2023-10-26)
+- Reduced vent rates, as I got them way too powerful during my rework of the patches.
+- Timewarp overhaul for performing burns or waiting for launch.
+- Auto-docking fixes.
+- Reworked De-Orbit-Burn planning for planets with atmosphere.
+
 # V2.2.4 (2023-10-24)
 - Fossil plume fix didn't work, so from now on: If you have any mod of Fossil (like the QD), you'll need to install the plumes also, or you'll have no plume. If you want default plumes you'll need to delete the whole Fossil Industries folder from /gamedata.
 - Reworked the Launch-to-Rendezvous/Target Orbit procedure, re-enabled for RSS.
@@ -12,7 +18,7 @@
 - Launch Interface update locked to a maximum of 10x per second.
 
 # V2.2.2 (2023-10-21)
-- fossil plume fix (didn't work)
+- fossil plume fix (didn't work - 2023-10-24)
 
 # V2.2.1 (2023-10-20)
 - Fix for default SEP plumes, which were invisible due to a wrong dependency check.

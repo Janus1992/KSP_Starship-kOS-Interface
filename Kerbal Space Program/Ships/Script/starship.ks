@@ -97,6 +97,7 @@ for res in Core:part:resources {
 //------------Configurables-------------//
 
 
+
 if RSS {    // Set of variables when Real Solar System has been installed
     set aoa to 60.
     set MaxCargoToOrbit to 150000.
@@ -118,11 +119,11 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set RCSThrust to 100.
     set RCSBurnTimeLimit to 240.
     if Methane {
-        set VentRate to 9747.43.
+        set VentRate to 974.745.
         set FuelVentCutOffValue to FuelVentCutOffValue * 5.310536.
     }
     else {
-        set VentRate to 1835.49.
+        set VentRate to 183.55.
     }
     set ArmsHeight to 138.16.
     set OrbitPrecision to 250.
@@ -149,11 +150,11 @@ else if KSRSS {
     set RCSThrust to 70.
     set RCSBurnTimeLimit to 180.
     if Methane {
-        set VentRate to 1949.49.
+        set VentRate to 487.3725.
         set FuelVentCutOffValue to FuelVentCutOffValue * 5.310536.
     }
     else {
-        set VentRate to 367.1.
+        set VentRate to 91.775.
     }
     set ArmsHeight to 86.35.
     set OrbitPrecision to 150.
@@ -180,7 +181,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set RCSThrust to 40.
     set RCSBurnTimeLimit to 120.
     if Methane {
-        set VentRate to 194.95.
+        set VentRate to 194.949.
         set FuelVentCutOffValue to FuelVentCutOffValue * 5.310536.
     }
     else {
@@ -188,7 +189,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     }
     set ArmsHeight to 86.35.
     set OrbitPrecision to 100.
-    set RendezvousOrbitLeadFactor to 0.5.
+    set RendezvousOrbitLeadFactor to 0.525.
 }
 set SNStart to 30.  // Defines the first Serial Number when multiple ships are found and renaming is necessary.
 set MaxTilt to 2.5.  // Defines maximum allowed slope for the Landing Zone Search Function
@@ -4127,14 +4128,14 @@ function AutoDocking {
 
     if vang(target:facing:topvector, PortDistanceVector) < 135 and PortDistanceVector:mag > 100 {
         print "Maneuvring to Intermediate Safe Point..".
-        set dockingmode to "SAFE".
+        set dockingmode to "INTMD".
         DetermineSafeVector().
         lock steering to AutoDockSteering().
         until SafeVector:mag < 25 or cancelconfirmed {
             BackGroundUpdate().
         }
     }
-    if PortDistanceVector:mag > 100 or dockingmode = "SAFE" {
+    if PortDistanceVector:mag > 100 or dockingmode = "INTMD" {
         print "Approaching Docking Port..".
         set dockingmode to "APPR".
         lock steering to AutoDockSteering().
@@ -4217,16 +4218,19 @@ function AutoDockSteering {
     set RelVelY to vdot(facing:starvector, RelativeVelocityVector).
     set RelVelZ to vdot(facing:topvector, RelativeVelocityVector).
 
-    if dockingmode = "SAFE" {
+    if dockingmode = "INTMD" {
         DetermineSafeVector().
         set message2:text to "<b>Target:</b>  Intermediate Safe Point  (" + round(SafeVector:mag, 1) + "m)".
         set message3:text to "<b>Relative Velocity (m/s):   </b><size=14>X: " + round(RelVelX, 2) + "   Y: " + round(RelVelY,2) + "   Z: " + round(RelVelZ,2) + "</size>".
 
-        if vang(SafeVector, facing:forevector) < 5 and abs(RelVelY) < 0.25 and abs(RelVelZ) < 0.25 {
+        if vang(SafeVector, facing:forevector) < 5 and abs(RelVelY) < 0.5 and abs(RelVelZ) < 0.5 {
             set ship:control:translation to v(RelVelY/2, RelVelZ/2, (5 + SafeVector:mag / 400) + RelVelX).
         }
+        else if vang(SafeVector, facing:forevector) < 5 {
+            set ship:control:translation to v(RelVelY, RelVelZ, 0).
+        }
         else {
-            set ship:control:translation to v(RelVelY, RelVelZ, RelVelX).
+            set ship:control:translation to v(0, 0, 0).
         }
         return lookdirup(SafeVector, facing:topvector).
     }
@@ -4253,15 +4257,10 @@ function AutoDockSteering {
 
         if vang(target:facing:forevector, facing:forevector) < 5 and vang(facing:topvector, -target:facing:topvector) < 5 {
             clearscreen.
-            print "X: " + (RelDistX + RelVelX).
-            print "Y: " + (RelDistY + RelVelY).
-            print "Z: " + (RelDistZ + RelVelZ).
-            if RSS {
-                set ship:control:translation to v(RelDistY/10 + RelVelY, RelDistZ/20 + RelVelZ, RelDistX/10 + RelVelX).
-            }
-            else {
-                set ship:control:translation to v(RelDistY/5 + RelVelY, RelDistZ/20 + RelVelZ, RelDistX/5 + RelVelX).
-            }
+            print "Distance X: " + round(RelDistX + RelVelX, 2).
+            print "Distance Y: " + round(RelDistY + RelVelY, 2).
+            print "Distance Z: " + round(RelDistZ + RelVelZ, 2).
+            set ship:control:translation to v(min(max(RelDistY, -0.5), 0.5) + RelVelY, min(max(RelDistZ, -0.25), 0.25) + RelVelZ, min(max(RelDistX, -0.5), 0.5) + RelVelX).
         }
         else {
             set ship:control:translation to v(RelVelY, RelVelZ, RelVelX).
@@ -4788,6 +4787,7 @@ set landbutton:ontoggle to {
                             set message1:style:textcolor to yellow.
                             wait 3.
                             ClearInterfaceAndSteering().
+                            return.
                         }
                     }
                     set landlabel:style:textcolor to green.
@@ -4800,7 +4800,7 @@ set landbutton:ontoggle to {
                     if hasnode {
                         LogToFile("Existing Node removed").
                         remove nextnode.
-                        wait 0.1.
+                        wait until not (addons:tr:hasimpact).
                     }
                     if addons:tr:hasimpact {
                         set ErrorVector to ADDONS:TR:IMPACTPOS:POSITION - landingzone:POSITION.
@@ -4810,27 +4810,7 @@ set landbutton:ontoggle to {
                             return.
                         }
                         set LngLatErrorList to LngLatError().
-                        if ship:body:atm:sealevelpressure > 0.5 {
-                            if RSS {
-                                set LongitudinalAcceptanceLimit to 500000.
-                                set LatitudinalAcceptanceLimit to 200000.
-                            }
-                            else {
-                                set LongitudinalAcceptanceLimit to 50000.
-                                set LatitudinalAcceptanceLimit to 20000.
-                            }
-                        }
-                        if ship:body:atm:sealevelpressure < 0.5 {
-                            if RSS {
-                                set LongitudinalAcceptanceLimit to 150000.
-                                set LatitudinalAcceptanceLimit to 50000.
-                            }
-                            else {
-                                set LongitudinalAcceptanceLimit to 25000.
-                                set LatitudinalAcceptanceLimit to 15000.
-                            }
-                        }
-                        if abs(LngLatErrorList[0]) > LongitudinalAcceptanceLimit or abs(LngLatErrorList[1]) > LatitudinalAcceptanceLimit {
+                        if abs(LngLatErrorList[0]) > LongitudinalAcceptanceLimit or abs(LngLatErrorList[1]) > LateralAcceptanceLimit {
                             ShowHomePage().
                             set message1:text to "<b>Landingzone out of Range..   Slope:  </b>" + round(AvailableLandingSpots[3], 1) + "°".
                             set message2:text to "<b>Override Re-Entry?</b> (" + round(LngLatErrorList[0] / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km)".
@@ -5116,6 +5096,13 @@ set landbutton:ontoggle to {
                                 set message2:style:textcolor to white.
                                 set TimeToBurn to CalculateDeOrbitBurn(10).
                                 if TimeToBurn = 0 {
+                                    set message1:text to "<b>Error: No burn found in the next 31 days..</b>".
+                                    set message1:style:textcolor to yellow.
+                                    set message2:text to "<b>Try again later..</b>".
+                                    set message2:style:textcolor to yellow.
+                                    set message3:text to "".
+                                    set textbox:style:bg to "starship_img/starship_main_square_bg".
+                                    wait 3.
                                     ClearInterfaceAndSteering().
                                     return.
                                 }
@@ -5133,7 +5120,7 @@ set landbutton:ontoggle to {
                                     return.
                                 }
                                 ShowHomePage().
-                                if (landingzone:position - addons:tr:impactpos:position):mag > ErrorTolerance {
+                                if (landingzone:position - addons:tr:impactpos:position):mag > LateralAcceptanceLimit {
                                     LogToFile("Automatic De-Orbit burn not possible, target too far away from estimated impact").
                                     set message1:text to "<b>Error: Impact Position out of tolerances..</b>".
                                     set message1:style:textcolor to yellow.
@@ -5301,13 +5288,13 @@ set landbutton:ontoggle to {
                         set LngLatErrorList to LngLatError().
                         if RSS {
                             set LongitudinalAcceptanceLimit to 350000.
-                            set LatitudinalAcceptanceLimit to 10000.
+                            set LateralAcceptanceLimit to 10000.
                         }
                         else {
                             set LongitudinalAcceptanceLimit to 100000.
-                            set LatitudinalAcceptanceLimit to 5000.
+                            set LateralAcceptanceLimit to 5000.
                         }
-                        if abs(LngLatErrorList[0]) > LongitudinalAcceptanceLimit or abs(LngLatErrorList[1]) > LatitudinalAcceptanceLimit {
+                        if abs(LngLatErrorList[0]) > LongitudinalAcceptanceLimit or abs(LngLatErrorList[1]) > LateralAcceptanceLimit {
                             ShowHomePage().
                             set message1:text to "<b>Landingzone out of Range..   Slope:  </b>" + round(AvailableLandingSpots[3], 1) + "°".
                             set message2:text to "<b>Override Re-Entry?</b> (" + round(LngLatErrorList[0] / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km)".
@@ -8503,8 +8490,14 @@ function confirm {
 function CalculateDeOrbitBurn {
     parameter x.
     set config:ipu to 2000.
-    set correctedIdealLng to 0.
+    set idealLng to 0.
     set lngPredict to 9999.
+    set AngleAccuracy to 10.
+
+    if kuniverse:timewarp:warp > 0 {
+        set kuniverse:timewarp:warp to 0.
+    }
+
     if ship:body:atm:exists {
         if RSS {
             if ship:body:atm:sealevelpressure > 0.5 {
@@ -8527,29 +8520,66 @@ function CalculateDeOrbitBurn {
     if abs(ship:orbit:inclination) > 90 {
         set DegreestoLDGzone to -DegreestoLDGzone.
     }
-    set idealLng to landingzone:lng - DegreestoLDGzone.
+
+    set idealLng to mod(landingzone:lng - DegreestoLDGzone, 360).
+    if idealLng > 180 {
+        set idealLng to idealLng - 360.
+    }
     if idealLng < -180 {
-        set correctedIdealLng to idealLng + 360.
+        set idealLng to idealLng + 360.
     }
-    else if idealLng > 180 {
-        set correctedIdealLng to idealLng - 360.
-    }
-    else {
-        set correctedIdealLng to idealLng.
-    }
-    until lngPredict > correctedIdealLng - 2 and lngPredict < correctedIdealLng + 2 {
+
+    until lngPredict > idealLng - 2 and lngPredict < idealLng + 2 {
         SendPing().
-        set lngPredict to body:geopositionof(positionat(ship, time:seconds + x)):lng.
-        set x to x + 10.
-        if x > 2 * ship:orbit:period {
-            return 0.
+
+        set lngPredict to mod(body:geopositionof(positionat(ship, time:seconds + x)):lng - x / body:rotationperiod * 360, 360).
+        if lngPredict > 180 {
+            set lngPredict to lngPredict - 360.
         }
-        if lngPredict > correctedIdealLng - 2 and lngPredict < correctedIdealLng + 2 {
+        if lngPredict < -180 {
+            set lngPredict to lngPredict + 360.
+        }
+
+        set x to x + 10.
+        if lngPredict > idealLng - 2 and lngPredict < idealLng + 2 {
             break.
         }
     }
-    if x < 120 {
-        return CalculateDeOrbitBurn(300).
+
+    if ship:body:atm:exists {
+        local LZPos to -angleaxis((x + DegreestoLDGzone / 360 * ship:orbit:period) / body:rotationperiod * 360, latlng(90,0):position - body:position) * (landingzone:position - body:position).
+
+        local normalvec to normal(ship:orbit).
+        local NormalVdot to vdot(normalvec, (ship:position - LZPos)).
+
+        //clearvecdraws().
+        //vecdraw(body:position, 1.25 * LZPos, white, "LZPos", 1, true).
+
+        set message2:text to "<b>Day:  </b>" + round(x / body:rotationperiod) + " / 31     (" + round(100 * x / (body:rotationperiod * 31), 1) + "%)".
+
+        if x > 31 * body:rotationperiod {
+            return 0.
+        }
+        else if x < 120 {
+            print "Progress: " + round(100 * x / (body:rotationperiod * 31), 1) + "%".
+            print "looking 1 orbit further along..".
+            return CalculateDeOrbitBurn(0.5 * ship:orbit:period - 120).
+        }
+        else if abs(NormalVdot) < LateralAcceptanceLimit {
+            clearscreen.
+            print "x: " + round(x).
+            print "Progress: " + round(100 * x / (body:rotationperiod * 31), 1) + "%".
+            //print "angle : " + round(VecAngle, 2).
+            print "Lat. Error: " + abs(round(NormalVdot / 1000, 1)) + "km / " + (LateralAcceptanceLimit / 1000) + "km".
+            return x.
+        }
+        else {
+            print "x: " + round(x).
+            print "Progress: " + round(100 * x / (body:rotationperiod * 31), 1) + "%".
+            //print "angle : " + round(VecAngle, 2).
+            print "Lat. Error: " + abs(round(NormalVdot / 1000, 1)) + "km / " + (LateralAcceptanceLimit / 1000) + "km".
+            return CalculateDeOrbitBurn(x + ship:orbit:period).
+        }
     }
     else {
         return x.
@@ -8561,31 +8591,26 @@ function DeOrbitVelocity {
     set Error to 999999.
     set PrevError to Error.
     set message3:style:textcolor to white.
+    set message2:text to "".
     if ship:body:atm:sealevelpressure > 0.5 {
         if RSS {
-            set ErrorTolerance to 300000.
             set StartPoint to -altitude / 4000.
         }
         else if KSRSS {
-            set ErrorTolerance to 100000.
-            set StartPoint to -altitude / 2000.
+            set StartPoint to -altitude / 1250.
         }
         else {
-            set ErrorTolerance to 50000.
             set StartPoint to -altitude / 1000.
         }
     }
     else if ship:body:atm:sealevelpressure < 0.5 {
         if RSS {
-            set ErrorTolerance to 100000.
             set StartPoint to -altitude / 2000.
         }
         else if KSRSS {
-            set ErrorTolerance to 40000.
             set StartPoint to -altitude / 2000.
         }
         else {
-            set ErrorTolerance to 20000.
             set StartPoint to -altitude / 1000.
         }
     }
@@ -8593,68 +8618,83 @@ function DeOrbitVelocity {
         set StartPoint to 0.
     }
     set ProgradeVelocity to StartPoint.
-    set NormalVelocity to 0.
+    //print "Prograde before correction: " + round(ProgradeVelocity, 1).
+
     if ship:body:atm:exists {
-        until Error < ErrorTolerance {
+        set LngError to 9999.
+        //clearvecdraws().
+
+        local RotationTime to (TimeToBurn + DegreestoLDGzone / 360 * ship:orbit:period).
+        local BodyRotation to mod(RotationTime / body:rotationperiod * 360, 360).
+        local OrbitRotation to mod(RotationTime / ship:orbit:period, 360).
+
+        local LZPos to -angleaxis(BodyRotation, latlng(90,0):position - body:position) * (landingzone:position - body:position).
+        set ApproachUPVector to LZPos:normalized.
+        set ApproachVector to velocityat(ship, time:seconds + RotationTime):orbit:normalized.
+
+        //local NewPos to positionat(ship, time:seconds + RotationTime).
+        //set apprvec to vecdraw(NewPos, 2500000 * ApproachVector, green, "Approach Vector", 1, true).
+        //set apprupvec to vecdraw(NewPos, 2500000 * ApproachUpVector, cyan, "Approach Up Vector", 1, true).
+
+        until abs(LngError) < 1000 {
             SendPing().
             set burn to node(deorbitburnstarttime, 0, 0, ProgradeVelocity).
             add burn.
             set calcTime to time:seconds.
-            wait 0.001.
+
             until addons:tr:hasimpact {
                 if time:seconds > calcTime + 0.25 {
                     set config:ipu to CPUSPEED.
                     return 0.
                 }
             }
-            wait 0.001.
-            if not (addons:tr:hasimpact) {
+
+            if addons:tr:hasimpact {
+                set ErrorVector to -angleaxis(BodyRotation, latlng(90,0):position - body:position) * (ADDONS:TR:IMPACTPOS:POSITION - landingzone:POSITION).
+                //set errvec to vecdraw(NewPos, 2 * ErrorVector, Blue, "Error Vector", 1, true).
+                wait 0.001.
+
+                set LngError to vdot(ApproachVector, vxcl(ApproachUPVector, ErrorVector)).
+                //set message2:text to "<b>Longitudinal Error: </b>" + round(LngError / 1000, 1) + "km".
+                print "Lng Error: " + round(LngError).
+
+                if abs(LngError) < 1000 {
+                    break.
+                }
+
+                if RSS {
+                    set ProgradeVelocity to ProgradeVelocity - LngError / 500000.
+                }
+                else if KSRSS {
+                    set ProgradeVelocity to ProgradeVelocity - LngError / 35000.
+                }
+                else {
+                    set ProgradeVelocity to ProgradeVelocity - LngError / 10000.
+                }
+            }
+            else {
                 set config:ipu to CPUSPEED.
                 return 0.
             }
-            set Error to (landingzone:position - addons:tr:impactpos:position):mag.
-            set message2:text to "<b>Error: </b>" + round(Error / 1000) + "km".
-            set Step to 0.25.
-            set ProgradeVelocity to ProgradeVelocity + Step.
-            if Error < ErrorTolerance {
-                remove burn.
-                break.
+            if abs(ProgradeVelocity) > 250 {
+                set config:ipu to CPUSPEED.
+                return 0.
             }
             remove burn.
+            wait until not (addons:tr:hasimpact).
         }
-        set LngError to 9999.
-        set ApproachUPVector to (landingzone:position - body:position):normalized.
-        set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, time:seconds + addons:tr:TIMETILLIMPACT - 120):surface):normalized.
-        //set apprvec to vecdraw(ship:position, 25 * ApproachVector, green, "Approach Vector", 1, true).
-        until LngError < 500 and LngError > -500 {
-            SendPing().
-            set burn to node(deorbitburnstarttime, 0, 0, ProgradeVelocity).
-            add burn.
-            set calcTime to time:seconds.
-            wait 0.001.
-            until addons:tr:hasimpact {
-                if time:seconds > calcTime + 0.25 {
-                    set config:ipu to CPUSPEED.
-                    return 0.
-                }
-            }
-            wait 0.1.
-            set ErrorVector to ADDONS:TR:IMPACTPOS:POSITION - landingzone:POSITION.
-            set LngError to (vdot(ApproachVector, ErrorVector)).
-            set message2:text to "<b>Longitude Error: </b>" + round(LngError / 1000, 1) + "km".
-            if RSS {
-                set ProgradeVelocity to ProgradeVelocity - LngError / 600000.
-            }
-            else if KSRSS {
-                set ProgradeVelocity to ProgradeVelocity - LngError / 100000.
-            }
-            else {
-                set ProgradeVelocity to ProgradeVelocity - LngError / 50000.
-            }
+        if (landingzone:position - addons:tr:impactpos:position):mag > LateralAcceptanceLimit {
+            //wait 3.
             remove burn.
+            print TimeToBurn.
+            set TimeToBurn to CalculateDeOrbitBurn(TimeToBurn + 0.9 * ship:orbit:period).
+            set deorbitburnstarttime to timestamp(time:seconds + TimeToBurn).
+            print TimeToBurn.
+            return DeOrbitVelocity().
         }
     }
     else {
+        set NormalVelocity to 0.
         set GoalAltOverLZ to landingzone:terrainheight + SafeAltOverLZ.
         set x to (deorbitburnstarttime + 0.24 * ship:orbit:period):seconds - time:seconds.
         set OVHDlng to -9999.
@@ -10692,6 +10732,30 @@ function SetPlanetData {
             }
         }
     }
+    if ship:body:atm:sealevelpressure > 0.5 {
+        if RSS {
+            set LongitudinalAcceptanceLimit to 500000.
+            set LateralAcceptanceLimit to 200000.
+        }
+        else if KSRSS {
+            set LongitudinalAcceptanceLimit to 75000.
+            set LateralAcceptanceLimit to 50000.
+        }
+        else {
+            set LongitudinalAcceptanceLimit to 50000.
+            set LateralAcceptanceLimit to 40000.
+        }
+    }
+    if ship:body:atm:sealevelpressure < 0.5 {
+        if RSS {
+            set LongitudinalAcceptanceLimit to 150000.
+            set LateralAcceptanceLimit to 50000.
+        }
+        else {
+            set LongitudinalAcceptanceLimit to 25000.
+            set LateralAcceptanceLimit to 15000.
+        }
+    }
 }
 
 
@@ -10732,15 +10796,15 @@ function CheckSlope {
             break.
         }
         SendPing().
-        set heightWest to latlng(landingzone:lat + OffsetTargetLat, landingzone:lng + OffsetTargetLng - StepDistance):terrainheight.
-        set heightEast to latlng(landingzone:lat + OffsetTargetLat, landingzone:lng + OffsetTargetLng + StepDistance):terrainheight.
-        set heightNorth to latlng(landingzone:lat + OffsetTargetLat + StepDistance, landingzone:lng + OffsetTargetLng):terrainheight.
-        set heightSouth to latlng(landingzone:lat + OffsetTargetLat - StepDistance, landingzone:lng + OffsetTargetLng):terrainheight.
+        set heightWest to latlng(landingzone:lat + OffsetTargetLat, landingzone:lng + OffsetTargetLng - 0.125 * StepDistance):terrainheight.
+        set heightEast to latlng(landingzone:lat + OffsetTargetLat, landingzone:lng + OffsetTargetLng + 0.125 * StepDistance):terrainheight.
+        set heightNorth to latlng(landingzone:lat + OffsetTargetLat + 0.125 * StepDistance, landingzone:lng + OffsetTargetLng):terrainheight.
+        set heightSouth to latlng(landingzone:lat + OffsetTargetLat - 0.125 * StepDistance, landingzone:lng + OffsetTargetLng):terrainheight.
         set targetLZheight to latlng(landingzone:lat + OffsetTargetLat, landingzone:lng + OffsetTargetLng):terrainheight.
-        set SlopeWest to arctan((heightWest - targetLZheight) / (StepDistance * 1000 * Planet1Degree)).
-        set SlopeEast to arctan((heightEast - targetLZheight) / (StepDistance * 1000 * Planet1Degree)).
-        set SlopeNorth to arctan((heightNorth - targetLZheight) / (StepDistance * 1000 * Planet1Degree)).
-        set SlopeSouth to arctan((heightSouth - targetLZheight) / (StepDistance * 1000 * Planet1Degree)).
+        set SlopeWest to arctan((heightWest - targetLZheight) / (0.125 * StepDistance * 1000 * Planet1Degree)).
+        set SlopeEast to arctan((heightEast - targetLZheight) / (0.125 * StepDistance * 1000 * Planet1Degree)).
+        set SlopeNorth to arctan((heightNorth - targetLZheight) / (0.125 * StepDistance * 1000 * Planet1Degree)).
+        set SlopeSouth to arctan((heightSouth - targetLZheight) / (0.125 * StepDistance * 1000 * Planet1Degree)).
         //clearscreen.
         //print "iteration: " + iteration.
         //print "number: " + number.
@@ -11304,61 +11368,15 @@ function PerformBurn {
         else {
             lock steering to lookdirup(nextnode:burnvector, ship:facing:topvector).
         }
-        if RSS {
-            if quicksetting1:pressed and nextnode:eta - 0.5 * BurnDuration > 240 {
-                set kuniverse:timewarp:warp to 3.
-            }
-            if quicksetting1:pressed and nextnode:eta - 0.5 * BurnDuration > 1800 {
-                set kuniverse:timewarp:warp to 4.
-            }
-        }
-        else {
-            if quicksetting1:pressed and nextnode:eta - 0.5 * BurnDuration > 120 {
-                set kuniverse:timewarp:warp to 4.
-            }
-            if quicksetting1:pressed and nextnode:eta - 0.5 * BurnDuration > 900 {
-                set kuniverse:timewarp:warp to 5.
-            }
-        }
-        until nextnode:eta < 0.5 * BurnDuration or cancelconfirmed and not ClosingIsRunning {
-            BackGroundUpdate().
-            if RSS {
-                if nextnode:eta - 0.5 * BurnDuration < 10800 and kuniverse:timewarp:warp > 3 {
-                    set kuniverse:timewarp:warp to 3.
-                }
-                if nextnode:eta - 0.5 * BurnDuration < 1800 and kuniverse:timewarp:warp > 2 {
-                    set kuniverse:timewarp:warp to 2.
-                }
-                if nextnode:eta - 0.5 * BurnDuration < 180 and kuniverse:timewarp:warp > 1 {
-                    set kuniverse:timewarp:warp to 1.
-                }
-                if nextnode:eta - 0.5 * BurnDuration < 60 {
-                    if kuniverse:timewarp:warp > 0 {
-                        set kuniverse:timewarp:warp to 0.
-                    }
-                    rcs on.
-                }
-                else {rcs off.}
+        set bTime to time:seconds + 9999.
+        until time:seconds > bTime or cancelconfirmed and not ClosingIsRunning {
+            if hasnode {
+                set bTime to time:seconds + nextnode:eta - 0.5 * BurnDuration.
             }
             else {
-                if nextnode:eta - 0.5 * BurnDuration < 900 and kuniverse:timewarp:warp = 5 {
-                    set kuniverse:timewarp:warp to 4.
-                }
-                if nextnode:eta - 0.5 * BurnDuration < 5400 and kuniverse:timewarp:warp = 6 {
-                    set kuniverse:timewarp:warp to 5.
-                }
-                if nextnode:eta - 0.5 * BurnDuration < 150 and kuniverse:timewarp:warp > 1 {
-                    set kuniverse:timewarp:warp to 1.
-                }
-                if nextnode:eta - 0.5 * BurnDuration < 60 {
-                    if kuniverse:timewarp:warp > 0 {
-                        set kuniverse:timewarp:warp to 0.
-                    }
-                    rcs on.
-                }
-                else {rcs off.}
+                set cancelconfirmed to true.
             }
-
+            TimeWarp(bTime, 0).
             set message1:text to "<b>Starting Burn in:</b>  " + timeSpanCalculator(nextnode:eta - 0.5 * BurnDuration).
             if BurnType = "DeOrbit" and UseRCSforBurn {
                 set message2:text to "<b>Target Attitude:</b>    -Burnvector <size=15>(retrograde RCS)</size>".
@@ -11367,6 +11385,7 @@ function PerformBurn {
                 set message2:text to "<b>Target Attitude:</b>    Burnvector".
             }
             set message3:text to "<b>Burn Duration:</b>      " + round(BurnDuration) + "s".
+            BackGroundUpdate().
         }
         if hasnode {
             if vang(nextnode:burnvector, ship:facing:forevector) < 15 and cancelconfirmed = false or vang(-nextnode:burnvector, ship:facing:forevector) < 15 and cancelconfirmed = false and BurnType = "DeOrbit" and UseRCSforBurn {
@@ -11445,6 +11464,7 @@ function PerformBurn {
             else {
                 HideEngineToggles(0).
                 lock throttle to 0.
+                set kuniverse:timewarp:warp to 0.
                 rcs off.
                 sas on.
                 LogToFile("Stopping Burn due to user cancellation").
@@ -12317,6 +12337,71 @@ function VehicleSelfCheck {
 function Timewarp {
     parameter GoalTime.
     parameter BufferTime.
+    //clearscreen.
+    //print "countdown: " + round(GoalTime - time:seconds).
+
+    if quicksetting1:pressed {
+        if STOCK {
+            if GoalTime - time:seconds > 90 and kuniverse:timewarp:warp < 1 {
+                set kuniverse:timewarp:warp to 1.
+            }
+            if GoalTime - time:seconds > 180 and kuniverse:timewarp:warp < 2 {
+                set kuniverse:timewarp:warp to 2.
+            }
+            if GoalTime - time:seconds > 3600 * 0.5 and kuniverse:timewarp:warp < 4 {
+                set kuniverse:timewarp:warp to 4.
+            }
+            if GoalTime - time:seconds > 3600 and kuniverse:timewarp:warp < 5 {
+                set kuniverse:timewarp:warp to 5.
+            }
+            if GoalTime - time:seconds > 3600 * 9 and kuniverse:timewarp:warp < 6 {
+                set kuniverse:timewarp:warp to 6.
+            }
+            if GoalTime - time:seconds > 3600 * 24 * 1.5 and kuniverse:timewarp:warp < 7 {
+                set kuniverse:timewarp:warp to 7.
+            }
+        }
+        else if KSRSS {
+            if GoalTime - time:seconds > 90 and kuniverse:timewarp:warp < 1 {
+                set kuniverse:timewarp:warp to 1.
+            }
+            if GoalTime - time:seconds > 120 and kuniverse:timewarp:warp < 2 {
+                set kuniverse:timewarp:warp to 2.
+            }
+            if GoalTime - time:seconds > 3600 * 0.5 and kuniverse:timewarp:warp < 4 {
+                set kuniverse:timewarp:warp to 4.
+            }
+            if GoalTime - time:seconds > 3600 and kuniverse:timewarp:warp < 5 {
+                set kuniverse:timewarp:warp to 5.
+            }
+            if GoalTime - time:seconds > 3600 * 9 and kuniverse:timewarp:warp < 6 {
+                set kuniverse:timewarp:warp to 6.
+            }
+            if GoalTime - time:seconds > 3600 * 24 * 1.5 and kuniverse:timewarp:warp < 7 {
+                set kuniverse:timewarp:warp to 7.
+            }
+        }
+        else {
+            if GoalTime - time:seconds > 90 and kuniverse:timewarp:warp < 1 {
+                set kuniverse:timewarp:warp to 1.
+            }
+            if GoalTime - time:seconds > 3600 * 0.25 and kuniverse:timewarp:warp < 2 {
+                set kuniverse:timewarp:warp to 2.
+            }
+            if GoalTime - time:seconds > 3600 * 4.5 and kuniverse:timewarp:warp < 3 {
+                set kuniverse:timewarp:warp to 3.
+            }
+            if GoalTime - time:seconds > 3600 * 24 * 2 and kuniverse:timewarp:warp < 4 {
+                set kuniverse:timewarp:warp to 4.
+            }
+            if GoalTime - time:seconds > 3600 * 24 * 5 and kuniverse:timewarp:warp < 5 {
+                set kuniverse:timewarp:warp to 5.
+            }
+            if GoalTime - time:seconds > 3600 * 24 * 25 and kuniverse:timewarp:warp < 6 {
+                set kuniverse:timewarp:warp to 6.
+            }
+        }
+    }
 
     if STOCK {
         if GoalTime - time:seconds < 3600 * 24 and kuniverse:timewarp:warp = 7 {
@@ -12331,8 +12416,22 @@ function Timewarp {
         if GoalTime - time:seconds < 3600 * 0.25 and kuniverse:timewarp:warp > 4 {
             set kuniverse:timewarp:warp to 4.
         }
-        if GoalTime - time:seconds < 60 + BufferTime and kuniverse:timewarp:warp > 0 {
-            set kuniverse:timewarp:warp to 0.
+        if GoalTime - time:seconds < 180 and kuniverse:timewarp:warp > 2 {
+            set kuniverse:timewarp:warp to 2.
+        }
+        if GoalTime - time:seconds < 90 and kuniverse:timewarp:warp > 1 {
+            set kuniverse:timewarp:warp to 1.
+        }
+        if GoalTime - time:seconds < 60 + BufferTime {
+            if kuniverse:timewarp:warp > 0 {
+                set kuniverse:timewarp:warp to 0.
+            }
+            if not (ship:status = "PRELAUNCH") {
+                rcs on.
+            }
+        }
+        else {
+            rcs off.
         }
     }
     else if KSRSS {
@@ -12348,12 +12447,29 @@ function Timewarp {
         if GoalTime - time:seconds < 3600 * 0.25 and kuniverse:timewarp:warp > 4 {
             set kuniverse:timewarp:warp to 4.
         }
-        if GoalTime - time:seconds < 60 + BufferTime and kuniverse:timewarp:warp > 0 {
-            set kuniverse:timewarp:warp to 0.
+        if GoalTime - time:seconds < 120 and kuniverse:timewarp:warp > 2 {
+            set kuniverse:timewarp:warp to 2.
+        }
+        if GoalTime - time:seconds < 90 and kuniverse:timewarp:warp > 1 {
+            set kuniverse:timewarp:warp to 1.
+        }
+        if GoalTime - time:seconds < 60 + BufferTime {
+            if kuniverse:timewarp:warp > 0 {
+                set kuniverse:timewarp:warp to 0.
+            }
+            if not (ship:status = "PRELAUNCH") {
+                rcs on.
+            }
+        }
+        else {
+            rcs off.
         }
     }
     else {
-        if kuniverse:timewarp:warp > 5 {
+        if kuniverse:timewarp:warp > 6 {
+            set kuniverse:timewarp:warp to 6.
+        }
+        if GoalTime - time:seconds < 3600 * 24 * 12.5 and kuniverse:timewarp:warp > 5 {
             set kuniverse:timewarp:warp to 5.
         }
         if GoalTime - time:seconds < 3600 * 24 * 1.5 and kuniverse:timewarp:warp > 4 {
@@ -12368,8 +12484,16 @@ function Timewarp {
         if GoalTime - time:seconds < 90 and kuniverse:timewarp:warp > 1 {
             set kuniverse:timewarp:warp to 1.
         }
-        if GoalTime - time:seconds < 60 + BufferTime and kuniverse:timewarp:warp > 0 {
-            set kuniverse:timewarp:warp to 0.
+        if GoalTime - time:seconds < 60 + BufferTime {
+            if kuniverse:timewarp:warp > 0 {
+                set kuniverse:timewarp:warp to 0.
+            }
+            if not (ship:status = "PRELAUNCH") {
+                rcs on.
+            }
+        }
+        else {
+            rcs off.
         }
     }
 }
