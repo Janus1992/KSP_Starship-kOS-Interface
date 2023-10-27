@@ -16,6 +16,7 @@ clearscreen.
 //--------------Self-Update-------------//
 
 
+
 if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
     if homeconnection:isconnected {
         switch to 0.
@@ -610,16 +611,6 @@ set g:skin:label:textcolor to white.
 local box_all is g:addvlayout().
 
 local topbuttonbar is box_all:addhlayout().
-local launchbutton to topbuttonbar:addbutton("<size=16>LAUNCH</size>").
-    set launchbutton:toggle to true.
-    set launchbutton:style:width to 80.
-    set launchbutton:style:height to 35.
-    set launchbutton:tooltip to "Prepare the Ship for Launch (with the option to cancel)".
-local landbutton to topbuttonbar:addbutton("<size=16>DE-ORBIT & LAND</size>").
-    set landbutton:toggle to true.
-    set landbutton:style:width to 155.
-    set landbutton:style:height to 35.
-    set landbutton:tooltip to "Prepare the Ship for Re-Entry and Landing (with the option to cancel)".
 local launchlabel to topbuttonbar:addlabel("<size=16><b>LAUNCH</b></size>").
     set launchlabel:style:width to 80.
     set launchlabel:style:height to 35.
@@ -629,6 +620,11 @@ local launchlabel to topbuttonbar:addlabel("<size=16><b>LAUNCH</b></size>").
     set launchlabel:style:bg to "starship_img/starship_background_dark".
     set launchlabel:tooltip to "Launch Button Inhibited".
     launchlabel:hide().
+local launchbutton to topbuttonbar:addbutton("<size=16>LAUNCH</size>").
+    set launchbutton:toggle to true.
+    set launchbutton:style:width to 80.
+    set launchbutton:style:height to 35.
+    set launchbutton:tooltip to "Prepare the Ship for Launch (with the option to cancel)".
 local landlabel to topbuttonbar:addlabel("<size=16><b>DE-ORBIT & LAND</b></size>").
     set landlabel:style:width to 155.
     set landlabel:style:height to 35.
@@ -638,6 +634,11 @@ local landlabel to topbuttonbar:addlabel("<size=16><b>DE-ORBIT & LAND</b></size>
     set landlabel:style:bg to "starship_img/starship_background_dark".
     set landlabel:tooltip to "De-orbit Button Inhibited".
     landlabel:hide().
+local landbutton to topbuttonbar:addbutton("<size=16>DE-ORBIT & LAND</size>").
+    set landbutton:toggle to true.
+    set landbutton:style:width to 155.
+    set landbutton:style:height to 35.
+    set landbutton:tooltip to "Prepare the Ship for Re-Entry and Landing (with the option to cancel)".
 local statuslabel to topbuttonbar:addlabel("").
     set statuslabel:style:height to 35.
     set statuslabel:style:fontsize to 16.
@@ -5621,7 +5622,8 @@ function LandwithoutAtmo {
         }
 
         when verticalspeed > -10 and LandingBurnStarted then {
-            GEAR on.
+            //GEAR on.
+            set quickstatus3:pressed to true.
             LogToFile("Extending Landing Gear").
         }
 
@@ -6302,7 +6304,7 @@ function Launch {
             else {
                 set PitchIncrement to 0.
             }
-            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.025, 0, 0, -35, PitchIncrement).
+            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.025, 0, 0, -30, PitchIncrement).
             if ShipType = "Depot" {
                 set TimeFromLaunchToOrbit to 285.
             }
@@ -6575,7 +6577,9 @@ function Launch {
                 }
                 set quickengine3:pressed to true.
                 if NrOfVacEngines = 3 or ShipType = "Depot" {
-                    set quickengine2:pressed to true.
+                    if not (STOCK) {
+                        set quickengine2:pressed to true.
+                    }
                 }
                 BoosterInterstage[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
                 Tank:getmodule("ModuleDockingNode"):doaction("undock node", true).
@@ -6628,9 +6632,6 @@ function Launch {
             if ShipType = "Depot" {
                 set steeringmanager:yawtorquefactor to 0.1.
             }
-            if not STOCK {
-
-            }
             if RSS {
                 when DesiredAccel / MaxAccel < 0.6 and not (ShipType = "Depot") and altitude > 100000 or apoapsis > 180000 and ShipType = "Depot" and altitude > 100000 or verticalspeed < 0 or apoapsis > targetap then {
                     if NrOfVacEngines = 3 or ShipType = "Depot" {
@@ -6666,12 +6667,12 @@ function Launch {
                     if NrOfVacEngines = 3 or ShipType = "Depot" {
                         set quickengine2:pressed to false.
                     }
-                    when altitude > targetap - 400 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 5 or deltav < 100 then {
+                    when altitude > targetap - 1000 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 5 or deltav < 100 then {
                         if ShipType = "Depot" {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -7.5, 12.5).
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -10, 12.5).
                         }
                         else {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -7.5, 7.5).
+                            set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -10, 7.5).
                         }
                         set MaintainVS to true.
                     }
@@ -6780,7 +6781,7 @@ function LaunchThrottle {
             if periapsis < altitude - OrbitPrecision {
                 if apoapsis < targetap + 7500 {
                     if apoapsis < targetap or MaintainVS and verticalspeed < 5 {
-                        set thr to (3 * Planet1G) / MaxAccel.
+                        set thr to min((3 * Planet1G) / MaxAccel, max(deltaV / MaxAccel, 0.1)).
                     }
                     else {
                         set thr to min(DesiredAccel / MaxAccel, max(deltaV / MaxAccel, 0.1)).
@@ -7946,7 +7947,8 @@ function ReEntryData {
                         setflaps(0, 85, 1, 0).
                     }
                     else {
-                        gear on.
+                        set quickstatus3:pressed to true.
+                        //gear on.
                     }
                 }
             }
@@ -10219,7 +10221,7 @@ function ClearInterfaceAndSteering {
     ShowHomePage().
     wait 0.001.
     lock throttle to 0.
-    unlock throttle.
+    set ship:control:pilotmainthrottle to 0.
     set ApproachVector to v(0,0,0).
     ShutDownAllEngines().
     set ship:control:translation to v(0, 0, 0).
@@ -10248,6 +10250,7 @@ function ClearInterfaceAndSteering {
     set landbutton:pressed to false.
     set launchbutton:pressed to false.
     wait 0.001.
+    unlock throttle.
     set LandButtonIsRunning to false.
     set LaunchButtonIsRunning to false.
     wait 0.001.
@@ -10277,7 +10280,6 @@ function ClearInterfaceAndSteering {
     set launchlabel:style:bg to "starship_img/starship_background_dark".
     set landlabel:style:textcolor to white.
     set landlabel:style:bg to "starship_img/starship_background_dark".
-    ShowButtons(1).
     if defined AltitudeOverLZ {
         unset AltitudeOverLZ.
     }
@@ -10331,30 +10333,51 @@ function BackGroundUpdate {
                 crewbutton:hide().
                 set crewbutton:pressed to false.
             }
-            if ship:status = "PRELAUNCH" or ship:status = "LANDED" {
-                list targets in tlist.
-                for tgt in tlist {
-                    if tgt:name:contains("OrbitalLaunchMount") and tgt:distance < 500 and not LaunchButtonIsRunning and not LandButtonIsRunning or ship:partstitled("Starship Orbital Launch Mount"):length > 0 {
-                        towerbutton:show().
-                        set TargetOLM to tgt:name.
-                    }
-                    else {
-                        towerbutton:hide().
-                    }
-                }
-            }
             if LaunchButtonIsRunning or LandButtonIsRunning or AttitudeIsRunning {
                 maneuverbutton:hide().
+                towerbutton:hide().
             }
             else {
+                if ship:status = "PRELAUNCH" or ship:status = "LANDED" {
+                    if landbutton:visible {
+                        landbutton:hide().
+                        //set landlabel:style:textcolor to grey.
+                        landlabel:show().
+                    }
+                    list targets in tlist.
+                    for tgt in tlist {
+                        if tgt:name:contains("OrbitalLaunchMount") and tgt:distance < 500 and not LaunchButtonIsRunning and not LandButtonIsRunning or ship:partstitled("Starship Orbital Launch Mount"):length > 0 {
+                            towerbutton:show().
+                            set TargetOLM to tgt:name.
+                        }
+                        else {
+                            towerbutton:hide().
+                        }
+                    }
+                }
+                else if landlabel:visible {
+                    landlabel:hide().
+                    //set landlabel:style:textcolor to white.
+                    landbutton:show().
+                }
                 if ship:status = "ORBITING" or ship:status = "ESCAPING" or ship:status = "SUB_ORBITAL" and apoapsis > 10000 or ship:status = "FLYING" and apoapsis > 50000 {
                     maneuverbutton:show().
+                    if launchbutton:visible {
+                        launchbutton:hide().
+                        //set launchlabel:style:textcolor to grey.
+                        launchlabel:show().
+                    }
                 }
                 else {
                     maneuverbutton:hide().
+                    if launchlabel:visible {
+                        launchlabel:hide().
+                        //set launchlabel:style:textcolor to white.
+                        launchbutton:show().
+                    }
                 }
             }
-            if ship:body:atm:exists {
+            if ship:body:atm:exists and not (ship:status = "PRELAUNCH") and not (ship:status = "LANDED") {
                 attitudebutton:show().
             }
             else {
@@ -10386,14 +10409,14 @@ function ShowButtons {
     if show = 0 {
         launchbutton:hide().
         landbutton:hide().
-        wait 0.1.
+        wait until not (launchbutton:visible) and not (landbutton:visible).
         launchlabel:show().
         landlabel:show().
     }
     if show = 1 {
         launchlabel:hide().
         landlabel:hide().
-        wait 0.1.
+        wait until not (launchlabel:visible) and not (landlabel:visible).
         launchbutton:show().
         landbutton:show().
     }
@@ -11409,7 +11432,7 @@ function PerformBurn {
                             set ship:control:rotation to v(0, 0, 0).
                         }
                         else {
-                            lock throttle to min(nextnode:deltav:mag / MaxAccel, BurnAccel / MaxAccel).
+                            lock throttle to max(min(nextnode:deltav:mag / MaxAccel, BurnAccel / MaxAccel), 0.1).
                         }
                     }
                     if nextnode:deltav:mag > 5 {

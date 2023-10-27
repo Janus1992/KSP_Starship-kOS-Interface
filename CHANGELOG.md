@@ -1,3 +1,15 @@
+# V2.2.6 (2023-10-27)
+- Quality of life improvements:
+    - when the script extends the gear, the button is also set to pressed.
+    - Throttle is now fully set to 0 upon clearing the Interface (initiated after many a procedure).
+    - When performing a burn, minimum throttle is now 10% in order to not start flipping when doing the last 1 m/s of delta-v.
+    - Automatic inhibiting of the Launch and Land buttons depending on ship status (e.g. orbiting, landed, sub-orbital).
+    - maneuver button is hidden when landed or prelaunch.
+    - tower button is already hidden when pressing launch.
+- Fixed oversteering on empty ships in stock.
+- Booster core vent is now stronger than the vent of the other parts.
+- Smoother final orbit circularization.
+
 # V2.2.5 (2023-10-26)
 - Reduced vent rates, as I got them way too powerful during my rework of the patches.
 - Timewarp overhaul for performing burns or waiting for launch.
