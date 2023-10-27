@@ -10336,12 +10336,17 @@ function BackGroundUpdate {
             if LaunchButtonIsRunning or LandButtonIsRunning or AttitudeIsRunning {
                 maneuverbutton:hide().
                 towerbutton:hide().
+                if AttitudeIsRunning {
+                    if landbutton:visible {
+                        landbutton:hide().
+                        landlabel:show().
+                    }
+                }
             }
             else {
                 if ship:status = "PRELAUNCH" or ship:status = "LANDED" {
                     if landbutton:visible {
                         landbutton:hide().
-                        //set landlabel:style:textcolor to grey.
                         landlabel:show().
                     }
                     list targets in tlist.
@@ -10357,7 +10362,6 @@ function BackGroundUpdate {
                 }
                 else if landlabel:visible {
                     landlabel:hide().
-                    //set landlabel:style:textcolor to white.
                     landbutton:show().
                 }
                 if ship:status = "ORBITING" or ship:status = "ESCAPING" or ship:status = "SUB_ORBITAL" and apoapsis > 10000 or ship:status = "FLYING" and apoapsis > 50000 {

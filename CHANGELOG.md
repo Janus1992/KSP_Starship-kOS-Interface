@@ -6,6 +6,7 @@
     - Automatic inhibiting of the Launch and Land buttons depending on ship status (e.g. orbiting, landed, sub-orbital).
     - maneuver button is hidden when landed or prelaunch.
     - tower button is already hidden when pressing launch.
+    - while using the manual attitude control, land button is inhibited.
 - Fixed oversteering on empty ships in stock.
 - Booster core vent is now stronger than the vent of the other parts.
 - Smoother final orbit circularization.
