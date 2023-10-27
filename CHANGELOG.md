@@ -10,6 +10,7 @@
 - Fixed oversteering on empty ships in stock.
 - Booster core vent is now stronger than the vent of the other parts.
 - Smoother final orbit circularization.
+- Attempt to fix wrong fuel settings for B9 tanks (using CRP).
 
 # V2.2.5 (2023-10-26)
 - Reduced vent rates, as I got them way too powerful during my rework of the patches.

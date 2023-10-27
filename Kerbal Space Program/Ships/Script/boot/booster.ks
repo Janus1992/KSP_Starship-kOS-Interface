@@ -315,17 +315,17 @@ function Boostback {
 
     BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("previous engine mode", true).
     if RSS {
-        lock throttle to min(-(LngError + BoosterGlideDistance - 1000) / 20000 + 0.01, 7.5 * 9.81 / (ship:availablethrust / ship:mass)).
+        lock throttle to min(-(LngError + BoosterGlideDistance - 1000) / 20000 + 0.01, 7.5 * 9.81 / (max(ship:availablethrust, 0.000001) / ship:mass)).
         lock SteeringVector to lookdirup(vxcl(up:vector, -ErrorVector), -up:vector).
         lock steering to SteeringVector.
     }
     else {
-        lock throttle to min(-(LngError + BoosterGlideDistance - 1000) / 10000 + 0.01, 7.5 * 9.81 / (ship:availablethrust / ship:mass)).
+        lock throttle to min(-(LngError + BoosterGlideDistance - 1000) / 10000 + 0.01, 7.5 * 9.81 / (max(ship:availablethrust, 0.000001) / ship:mass)).
         lock SteeringVector to lookdirup(vxcl(up:vector, -ErrorVector), -up:vector).
         lock steering to SteeringVector.
     }
 
-    print "Available Thrust: " + round(ship:availablethrust) + "kN".
+    print "Available Thrust: " + round(max(ship:availablethrust, 0.000001)) + "kN".
     wait 0.1.
 
     until ErrorVector:mag < BoosterGlideDistance + 5000 {
