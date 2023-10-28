@@ -4486,26 +4486,28 @@ set launchbutton:ontoggle to {
                         if confirm() {
                             set execute:text to "<b>EXECUTE</b>".
                             LogToFile("Starting Launch Function").
-                            if target = BODY("Minmus") or target = BODY("Mun") or target = BODY("Moon") {
-                                launchWindow(target, 0).
-                                if launchWindowList[0] = -1 {
-                                    ShowHomePage().
-                                    set message1:text to "<b>No close encounters found (31 days)..</b>".
-                                    set message2:text to "<b>Try again later..</b>".
-                                    set message3:text to "".
-                                    set message1:style:textcolor to yellow.
-                                    set message2:style:textcolor to yellow.
-                                    set message3:style:textcolor to yellow.
-                                    set textbox:style:bg to "starship_img/starship_main_square_bg".
-                                    InhibitButtons(0, 1, 1).
-                                    wait 3.
-                                    ClearInterfaceAndSteering().
-                                    return.
+                            if hastarget {
+                                if target = BODY("Minmus") or target = BODY("Mun") or target = BODY("Moon") {
+                                    launchWindow(target, 0).
+                                    if launchWindowList[0] = -1 {
+                                        ShowHomePage().
+                                        set message1:text to "<b>No close encounters found (31 days)..</b>".
+                                        set message2:text to "<b>Try again later..</b>".
+                                        set message3:text to "".
+                                        set message1:style:textcolor to yellow.
+                                        set message2:style:textcolor to yellow.
+                                        set message3:style:textcolor to yellow.
+                                        set textbox:style:bg to "starship_img/starship_main_square_bg".
+                                        InhibitButtons(0, 1, 1).
+                                        wait 3.
+                                        ClearInterfaceAndSteering().
+                                        return.
+                                    }
+                                    set LaunchTime to time:seconds + launchWindowList[0] - 19.
+                                    set targetincl to launchWindowList[1].
+                                    set setting3:text to (round(targetincl, 2) + "°").
+                                    //print "Launch Time: " + LaunchTime.
                                 }
-                                set LaunchTime to time:seconds + launchWindowList[0] - 19.
-                                set targetincl to launchWindowList[1].
-                                set setting3:text to (round(targetincl, 2) + "°").
-                                //print "Launch Time: " + LaunchTime.
                             }
                             else if TargetShip = 0 {}
                             else {
