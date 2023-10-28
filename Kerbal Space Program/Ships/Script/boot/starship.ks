@@ -4431,6 +4431,22 @@ set launchbutton:ontoggle to {
                             }
                             set execute:text to "<b>LAUNCH</b>".
                         }
+                        if hastarget and TargetShip = 0 {
+                            if target:name = "Minmus" or target:name = "Mun" or target:name = "Moon" {
+                                set message1:text to "<b>Launch to coplanar Orbit</b>  (± " + (targetap / 1000) + "km, " + round(target:orbit:inclination, 2) + "°)".
+                                set message2:text to "<b>Target: </b>" + target:name.
+                            }
+                            else {
+                                set target to "".
+                            }
+                            set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
+                            set message3:style:textcolor to cyan.
+                            set execute:text to "<b>CONFIRM</b>".
+                            if confirm() {}
+                            else {
+                                set target to "".
+                            }
+                        }
                         set IntendedInc to setting3:text:split("°")[0]:toscalar(0).
                         set data to LAZcalc_init(targetap, setting3:text:split("°")[0]:toscalar(0)).
                         if data[0] = IntendedInc {}
@@ -4449,17 +4465,7 @@ set launchbutton:ontoggle to {
                                 return.
                             }
                         }
-                        if hastarget {
-                            if target = BODY("Minmus") or target = BODY("Mun") or target = BODY("Moon") {
-                                set message1:text to "<b>Launch to coplanar Orbit</b>  (± " + (targetap / 1000) + "km, " + round(target:orbit:inclination, 2) + "°)".
-                                set message2:text to "<b>Target: </b>" + target:name.
-                            }
-                        }
-                        else if TargetShip = 0 {
-                            set message1:text to "<b>Launch to Parking Orbit</b>  (± " + (targetap / 1000) + "km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
-                            set message2:text to "<b>Booster Return to Launch Site</b>".
-                        }
-                        else {
+                        if not (TargetShip = 0) {
                             if RSS {
                                 set targetap to targetap - 10000.
                             }
@@ -4471,6 +4477,14 @@ set launchbutton:ontoggle to {
                             }
                             set message1:text to "<b>Launch to Intercept Orbit</b>  (± " + (targetap / 1000) + "km, " + round(TargetShip:orbit:inclination, 2) + "°)".
                             set message2:text to "<b>Target Ship:  <color=green>" + TargetShip:name + "</color></b>".
+                        }
+                        else if hastarget {
+                            set message1:text to "<b>Launch to Parking Orbit</b>  (± " + (targetap / 1000) + "km, " + round(target:orbit:inclination, 2) + "°)".
+                            set message2:text to "<b>Booster Return to Launch Site</b>".
+                        }
+                        else {
+                            set message1:text to "<b>Launch to Parking Orbit</b>  (± " + (targetap / 1000) + "km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
+                            set message2:text to "<b>Booster Return to Launch Site</b>".
                         }
                         if quicksetting1:pressed {
                             set message3:text to "<b>Launch <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
@@ -4486,30 +4500,7 @@ set launchbutton:ontoggle to {
                         if confirm() {
                             set execute:text to "<b>EXECUTE</b>".
                             LogToFile("Starting Launch Function").
-                            if hastarget {
-                                if target = BODY("Minmus") or target = BODY("Mun") or target = BODY("Moon") {
-                                    launchWindow(target, 0).
-                                    if launchWindowList[0] = -1 {
-                                        ShowHomePage().
-                                        set message1:text to "<b>No close encounters found (31 days)..</b>".
-                                        set message2:text to "<b>Try again later..</b>".
-                                        set message3:text to "".
-                                        set message1:style:textcolor to yellow.
-                                        set message2:style:textcolor to yellow.
-                                        set message3:style:textcolor to yellow.
-                                        set textbox:style:bg to "starship_img/starship_main_square_bg".
-                                        InhibitButtons(0, 1, 1).
-                                        wait 3.
-                                        ClearInterfaceAndSteering().
-                                        return.
-                                    }
-                                    set LaunchTime to time:seconds + launchWindowList[0] - 19.
-                                    set targetincl to launchWindowList[1].
-                                    set setting3:text to (round(targetincl, 2) + "°").
-                                    //print "Launch Time: " + LaunchTime.
-                                }
-                            }
-                            else if TargetShip = 0 {}
+                            if TargetShip = 0 {}
                             else {
                                 if RSS {
                                     set LaunchTimeSpanInSeconds to 540.
@@ -4584,6 +4575,29 @@ set launchbutton:ontoggle to {
                                 if cancelconfirmed or time:seconds > LaunchTime + 5 {
                                     ClearInterfaceAndSteering().
                                     return.
+                                }
+                            }
+                            if hastarget and TargetShip = 0 {
+                                if target:name = "Minmus" or target:name = "Mun" or target:name = "Moon" {
+                                    launchWindow(target, 0).
+                                    if launchWindowList[0] = -1 {
+                                        ShowHomePage().
+                                        set message1:text to "<b>No close encounters found (31 days)..</b>".
+                                        set message2:text to "<b>Try again later..</b>".
+                                        set message3:text to "".
+                                        set message1:style:textcolor to yellow.
+                                        set message2:style:textcolor to yellow.
+                                        set message3:style:textcolor to yellow.
+                                        set textbox:style:bg to "starship_img/starship_main_square_bg".
+                                        InhibitButtons(0, 1, 1).
+                                        wait 3.
+                                        ClearInterfaceAndSteering().
+                                        return.
+                                    }
+                                    set LaunchTime to time:seconds + launchWindowList[0] - 19.
+                                    set targetincl to launchWindowList[1].
+                                    set setting3:text to (round(targetincl, 2) + "°").
+                                    //print "Launch Time: " + LaunchTime.
                                 }
                             }
                             if cancelconfirmed {
@@ -6375,6 +6389,9 @@ function Launch {
                 }
             }
             if cancelconfirmed {
+                if hastarget {
+                    set target to "".
+                }
                 if RSS {
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,1.12,false").
@@ -6413,6 +6430,9 @@ function Launch {
             set message2:text to "<b>Clamps Releasing..</b>".
             lock throttle to 1.
             if cancelconfirmed {
+                if hastarget {
+                    set target to "".
+                }
                 BoosterEngines[0]:shutdown.
                 if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesFX") {
                     if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
@@ -11622,7 +11642,10 @@ FUNCTION launchWindow {
     print " ".
     set DegreesToRendezvous to -DegreesToRendezvous.
 
-    if NodeAngle < -0.5 and NodeAngle > 2 * DegreesToRendezvous and time_to_next_launch > 20 {
+    if target:name = "Minmus" or target:name = "Mun" or target:name = "Moon" {
+        set launchWindowList to list(time_to_next_launch, target:orbit:inclination).
+    }
+    else if NodeAngle < -0.5 and NodeAngle > 2 * DegreesToRendezvous and time_to_next_launch > 20 {
         set launchWindowList to list(time_to_next_launch, target:orbit:inclination).
     }
     else {
