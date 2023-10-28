@@ -1,3 +1,6 @@
+# V2.2.7 (2023-10-28)
+- Implemented a check for tanks that are not full before launch, and automatic refuel until it is.
+
 # V2.2.6 (2023-10-27)
 - Quality of life improvements:
     - when the script extends the gear, the button is also set to pressed.

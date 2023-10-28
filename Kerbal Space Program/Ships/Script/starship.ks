@@ -329,6 +329,7 @@ set RelVelZ to 0.
 set TimeSinceDock to 0.
 set TimeSinceLastSteering to 0.
 set TimeToOrbitCompletion to 0.
+set FullTanks to true.
 
 
 
@@ -3177,7 +3178,7 @@ local tower7label4 is towerstackvlayout7:addlabel("<b>OTHR</b>").
     set tower7label4:style:overflow:right to 110.
     set tower7label4:style:overflow:left to -100.
 
-local tower8button2 is towerstackvlayout8:addbutton("<b>BOOS</b>").
+local tower8button2 is towerstackvlayout8:addbutton("<b>BO</b>").
     set tower8button2:style:margin:top to 8.
     set tower8button2:style:margin:left to 0.
     set tower8button2:style:width to 35.
@@ -3651,24 +3652,7 @@ set tower13button3:onclick to {
 }.
 
 set tower11button4:onclick to {
-    if OnOrbitalMount {
-        if not Refueling {
-            set Refueling to true.
-            sendMessage(Processor(volume("OrbitalLaunchMount")), "ToggleReFueling,true").
-            set tower11button4:text to "<b><color=cyan>FUEL</color></b>".
-            if BoosterInterstage:length > 0 {
-                BoosterInterstage[0]:getmodule("ModuleToggleCrossfeed"):DoAction("enable crossfeed", true).
-            }
-        }
-        else {
-            set Refueling to false.
-            sendMessage(Processor(volume("OrbitalLaunchMount")), "ToggleReFueling,false").
-            set tower11button4:text to "<b>FUEL</b>".
-            if BoosterInterstage:length > 0 {
-                BoosterInterstage[0]:getmodule("ModuleToggleCrossfeed"):DoAction("disable crossfeed", true).
-            }
-        }
-    }
+    Refuel().
 }.
 
 set tower13button4:onclick to {
@@ -4382,6 +4366,10 @@ set launchbutton:ontoggle to {
         set textbox:style:bg to "starship_img/starship_main_square_bg".
         if click {
             if ship:body:atm:exists and Boosterconnected {
+                if not (CheckFullTanks()) {
+                    ShowHomePage().
+                    Refuel().
+                }
                 set runningprogram to "Input".
                 set targetap to OriginalTargetAp.
                 if alt:radar < 110 {
@@ -12521,6 +12509,64 @@ function Timewarp {
         }
         else {
             rcs off.
+        }
+    }
+}
+
+
+function CheckFullTanks {
+    if Boosterconnected {
+        set FullTanks to true.
+        local amount to 0.
+        local cap to 0.
+        for res in ship:resources {
+            if res:amount < res:capacity and not (res:name = "ElectricCharge") {
+                set FullTanks to false.
+                set amount to amount + res:amount.
+                set cap to cap + res:capacity.
+            }
+        }
+        set totalfuel to amount.
+        set totalcap to cap.
+        return FullTanks.
+    }
+}
+
+
+function Refuel {
+    if OnOrbitalMount {
+        if not (Refueling) and not (CheckFullTanks) {
+            set Refueling to true.
+            Droppriority().
+            sendMessage(Processor(volume("OrbitalLaunchMount")), "ToggleReFueling,true").
+            set tower11button4:text to "<b><color=cyan>FUEL</color></b>".
+            if BoosterInterstage:length > 0 {
+                BoosterInterstage[0]:getmodule("ModuleToggleCrossfeed"):DoAction("enable crossfeed", true).
+            }
+            Until CheckFullTanks() or not (Refueling) {
+                set message1:text to "<b>Loading LqdMethane and Lqd Oxygen..</b>".
+                set message2:text to "<b>Progress: </b>" + round(100 * (totalfuel / totalcap), 1) + "%".
+                BackGroundUpdate().
+            }
+            set Refueling to false.
+            sendMessage(Processor(volume("OrbitalLaunchMount")), "ToggleReFueling,false").
+            set message1:text to "".
+            set message2:text to "".
+            set tower11button4:text to "<b>FUEL</b>".
+            if BoosterInterstage:length > 0 {
+                BoosterInterstage[0]:getmodule("ModuleToggleCrossfeed"):DoAction("disable crossfeed", true).
+            }
+        }
+        else {
+            set Refueling to false.
+            sendMessage(Processor(volume("OrbitalLaunchMount")), "ToggleReFueling,false").
+            set message1:text to "".
+            set message2:text to "".
+            set Refueling to false.
+            set tower11button4:text to "<b>FUEL</b>".
+            if BoosterInterstage:length > 0 {
+                BoosterInterstage[0]:getmodule("ModuleToggleCrossfeed"):DoAction("disable crossfeed", true).
+            }
         }
     }
 }

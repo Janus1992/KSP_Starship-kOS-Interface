@@ -304,12 +304,20 @@ function EmergencyStop {
 function ToggleReFueling {
     parameter ReFueling.
     if Refueling = "true" {
-        OLM:getmodulebyindex(NrforFueling):DoEvent("start fueling").
-        OLM:getmodulebyindex(NrforDelugeRefill):DoEvent("reload water").
+        if OLM:getmodulebyindex(NrforFueling):HasEvent("start fueling") {
+            OLM:getmodulebyindex(NrforFueling):DoEvent("start fueling").
+        }
+        if OLM:getmodulebyindex(NrforDelugeRefill):HasEvent("reload water") {
+            OLM:getmodulebyindex(NrforDelugeRefill):DoEvent("reload water").
+        }
     }
     else {
-        OLM:getmodulebyindex(NrforFueling):DoEvent("stop fueling").
-        OLM:getmodulebyindex(NrforDelugeRefill):DoEvent("stop reloading water").
+        if OLM:getmodulebyindex(NrforFueling):HasEvent("stop fueling") {
+            OLM:getmodulebyindex(NrforFueling):DoEvent("stop fueling").
+        }
+        if OLM:getmodulebyindex(NrforDelugeRefill):HasEvent("stop reloading water") {
+            OLM:getmodulebyindex(NrforDelugeRefill):DoEvent("stop reloading water").
+        }
     }
 }
 
