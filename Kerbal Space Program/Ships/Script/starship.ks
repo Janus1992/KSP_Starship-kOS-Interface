@@ -4449,9 +4449,11 @@ set launchbutton:ontoggle to {
                                 return.
                             }
                         }
-                        if target = BODY("Minmus") or target = BODY("Mun") or target = BODY("Moon") {
-                            set message1:text to "<b>Launch to coplanar Orbit</b>  (± " + (targetap / 1000) + "km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
-                            set message2:text to "<b>Target: </b>" + target:name.
+                        if hastarget {
+                            if target = BODY("Minmus") or target = BODY("Mun") or target = BODY("Moon") {
+                                set message1:text to "<b>Launch to coplanar Orbit</b>  (± " + (targetap / 1000) + "km, " + round(target:orbit:inclination, 2) + "°)".
+                                set message2:text to "<b>Target: </b>" + target:name.
+                            }
                         }
                         else if TargetShip = 0 {
                             set message1:text to "<b>Launch to Parking Orbit</b>  (± " + (targetap / 1000) + "km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
@@ -4484,7 +4486,28 @@ set launchbutton:ontoggle to {
                         if confirm() {
                             set execute:text to "<b>EXECUTE</b>".
                             LogToFile("Starting Launch Function").
-                            if TargetShip = 0 {}
+                            if target = BODY("Minmus") or target = BODY("Mun") or target = BODY("Moon") {
+                                launchWindow(target, 0).
+                                if launchWindowList[0] = -1 {
+                                    ShowHomePage().
+                                    set message1:text to "<b>No close encounters found (31 days)..</b>".
+                                    set message2:text to "<b>Try again later..</b>".
+                                    set message3:text to "".
+                                    set message1:style:textcolor to yellow.
+                                    set message2:style:textcolor to yellow.
+                                    set message3:style:textcolor to yellow.
+                                    set textbox:style:bg to "starship_img/starship_main_square_bg".
+                                    InhibitButtons(0, 1, 1).
+                                    wait 3.
+                                    ClearInterfaceAndSteering().
+                                    return.
+                                }
+                                set LaunchTime to time:seconds + launchWindowList[0] - 19.
+                                set targetincl to launchWindowList[1].
+                                set setting3:text to (round(targetincl, 2) + "°").
+                                //print "Launch Time: " + LaunchTime.
+                            }
+                            else if TargetShip = 0 {}
                             else {
                                 if RSS {
                                     set LaunchTimeSpanInSeconds to 540.
@@ -11573,7 +11596,7 @@ FUNCTION launchWindow {
     LOCAL next_launch_angle IS MIN(theta1,theta2).
     LOCAL time_to_next_launch IS next_launch_angle/(BODY:ANGULARVEL:MAG * CONSTANT:RADTODEG) + iteration * body:rotationperiod - RendezvousOrbitLeadFactor * abs(target:orbit:inclination / 90) * LaunchTimeSpanInSeconds.
 
-    local DegreesToRendezvous to 360 * cos(TargetShip:orbit:inclination) * 0.5 * LaunchTimeSpanInSeconds / TargetShip:orbit:period.
+    local DegreesToRendezvous to 360 * cos(target:orbit:inclination) * 0.5 * LaunchTimeSpanInSeconds / target:orbit:period.
     local IdealLaunchTargetShipsLongitude to mod(ship:geoposition:lng - DegreesToRendezvous, 360).
 
     local LngAtNode to mod(body:geopositionof(positionat(target, time:seconds + time_to_next_launch)):lng - time_to_next_launch / body:rotationperiod * 360, 360).
