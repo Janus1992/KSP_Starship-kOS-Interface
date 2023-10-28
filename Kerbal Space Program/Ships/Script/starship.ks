@@ -4449,7 +4449,11 @@ set launchbutton:ontoggle to {
                                 return.
                             }
                         }
-                        if TargetShip = 0 {
+                        if target = BODY("Minmus") or target = BODY("Mun") or target = BODY("Moon") {
+                            set message1:text to "<b>Launch to coplanar Orbit</b>  (± " + (targetap / 1000) + "km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
+                            set message2:text to "<b>Target: </b>" + target:name.
+                        }
+                        else if TargetShip = 0 {
                             set message1:text to "<b>Launch to Parking Orbit</b>  (± " + (targetap / 1000) + "km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
                             set message2:text to "<b>Booster Return to Launch Site</b>".
                         }
@@ -7586,6 +7590,9 @@ function ReEntryData {
         set status1:style:textcolor to green.
     }
 
+    if result = V(0,0,0) {
+        set result to lookdirup(facing:forevector, facing:topvector).
+    }
     if vang(facing:forevector, result:vector) > 10 and ship:body:atm:sealevelpressure > 0.5 {
         Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
