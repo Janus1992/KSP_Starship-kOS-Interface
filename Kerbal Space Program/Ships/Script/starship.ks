@@ -12574,11 +12574,38 @@ function CheckFullTanks {
         set FullTanks to true.
         local amount to 0.
         local cap to 0.
-        for res in ship:resources {
+        if not (ShipType = "Depot") and not (ShipType = "Expendable") {
+            for res in HeaderTank:resources {
+                if res:amount < res:capacity and not (res:name = "ElectricCharge") {
+                    set FullTanks to false.
+                    set amount to amount + res:amount.
+                    set cap to cap + res:capacity.
+                }
+            }
+        }
+        if ShipType = "Tanker" {
+            for res in Nose:resources {
+                if res:amount < res:capacity and not (res:name = "ElectricCharge") {
+                    set FullTanks to false.
+                    set amount to amount + res:amount.
+                    set cap to cap + res:capacity.
+                }
+            }
+        }
+        for res in Tank:resources {
             if res:amount < res:capacity and not (res:name = "ElectricCharge") {
                 set FullTanks to false.
                 set amount to amount + res:amount.
                 set cap to cap + res:capacity.
+            }
+        }
+        if SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS"):length > 0 {
+            for res in BoosterCore[0]:resources {
+                if res:amount < res:capacity and not (res:name = "ElectricCharge") {
+                    set FullTanks to false.
+                    set amount to amount + res:amount.
+                    set cap to cap + res:capacity.
+                }
             }
         }
         set totalfuel to amount.
