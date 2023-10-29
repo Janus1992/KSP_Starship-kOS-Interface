@@ -4364,7 +4364,6 @@ set launchbutton:ontoggle to {
         set landlabel:style:textcolor to grey.
         set landlabel:style:bg to "starship_img/starship_background".
         set textbox:style:bg to "starship_img/starship_main_square_bg".
-        set LaunchToPlanetOrbit to false.
         if click {
             if ship:body:atm:exists and Boosterconnected {
                 if not (CheckFullTanks()) {
@@ -4406,6 +4405,8 @@ set launchbutton:ontoggle to {
                     if CargoMass < MaxCargoToOrbit + 1 and cargo1text:text = "Closed" {
                         ShowHomePage().
                         InhibitButtons(0, 0, 0).
+                        set LaunchToTargetOrbit to false.
+                        set LaunchIntoLAN to false.
                         if ShipsInOrbit():length > 0 {
                             set TargetShip to false.
                             until false {
@@ -4433,18 +4434,18 @@ set launchbutton:ontoggle to {
                             set execute:text to "<b>LAUNCH</b>".
                         }
                         if hastarget and TargetShip = 0 {
-                            if target:name = "Minmus" or target:name = "Mun" or target:name = "Moon" {
-                                set message1:text to "<b>Launch to coplanar Orbit</b>  (± " + (targetap / 1000) + "km, " + round(target:orbit:inclination, 2) + "°)".
-                                set message2:text to "<b>Target: </b>" + target:name.
-                                set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
-                                set message3:style:textcolor to cyan.
-                                set execute:text to "<b>CONFIRM</b>".
-                                if confirm() {
-                                    set LaunchToPlanetOrbit to true.
-                                }
+                            set message1:text to "<b>Launch to coplanar orbit</b>  (± " + (targetap / 1000) + "km, " + round(target:orbit:inclination, 2) + "°)".
+                            if ship:geoposition:lat > min(target:orbit:inclination, 180 - target:orbit:inclination) {
+                                set message2:text to "<b>Target: </b>" + target:name + "   <color=yellow><b>ΔPlane: </b>" + round(ship:geoposition:lat - min(target:orbit:inclination, 180 - target:orbit:inclination), 2) + "°</color>".
                             }
                             else {
-                                set target to "".
+                                set message2:text to "<b>Target: </b>" + target:name.
+                            }
+                            set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
+                            set message3:style:textcolor to cyan.
+                            set execute:text to "<b>CONFIRM</b>".
+                            if confirm() {
+                                set LaunchToTargetOrbit to true.
                             }
                         }
                         set IntendedInc to setting3:text:split("°")[0]:toscalar(0).
@@ -4478,8 +4479,13 @@ set launchbutton:ontoggle to {
                             set message1:text to "<b>Launch to Intercept Orbit</b>  (± " + (targetap / 1000) + "km, " + round(TargetShip:orbit:inclination, 2) + "°)".
                             set message2:text to "<b>Target Ship:  <color=green>" + TargetShip:name + "</color></b>".
                         }
-                        else if hastarget and LaunchToPlanetOrbit {
-                            set message1:text to "<b>Launch to Parking Orbit</b>  (± " + (targetap / 1000) + "km, " + round(target:orbit:inclination, 2) + "°)".
+                        else if hastarget and LaunchToTargetOrbit {
+                            if ship:geoposition:lat > min(target:orbit:inclination, 180 - target:orbit:inclination) {
+                                set message1:text to "<b>Launch to Parking Orbit</b>  (± " + (targetap / 1000) + "km, " + round(ship:geoposition:lat, 2) + "°)".
+                            }
+                            else {
+                                set message1:text to "<b>Launch to Parking Orbit</b>  (± " + (targetap / 1000) + "km, " + round(target:orbit:inclination, 2) + "°)".
+                            }
                             set message2:text to "<b>Booster Return to Launch Site</b>".
                         }
                         else {
@@ -4582,7 +4588,7 @@ set launchbutton:ontoggle to {
                                     return.
                                 }
                             }
-                            if hastarget and TargetShip = 0 and LaunchToPlanetOrbit {
+                            if hastarget and TargetShip = 0 and LaunchToTargetOrbit {
                                 launchWindow(target, 0).
                                 if launchWindowList[0] = -1 or launchWindowList[0] = -2 {
                                     ShowHomePage().
@@ -8753,15 +8759,18 @@ function DeOrbitVelocity {
         if (landingzone:position - addons:tr:impactpos:position):mag > LateralAcceptanceLimit {
             //wait 3.
             remove burn.
-            print TimeToBurn.
+            //print TimeToBurn.
             set TimeToBurn to CalculateDeOrbitBurn(TimeToBurn + 0.9 * ship:orbit:period).
             set deorbitburnstarttime to timestamp(time:seconds + TimeToBurn).
-            print TimeToBurn.
+            //print TimeToBurn.
             return DeOrbitVelocity().
         }
     }
     else {
         set NormalVelocity to 0.
+        if ship:body:name = "Minmus" or ship:body:name = "Gilly" or ship:body:name = "Ike" {
+            set SafeAltOverLZ to 500.
+        }
         set GoalAltOverLZ to landingzone:terrainheight + SafeAltOverLZ.
         set x to (deorbitburnstarttime + 0.24 * ship:orbit:period):seconds - time:seconds.
         set OVHDlng to -9999.
@@ -10357,6 +10366,9 @@ function ClearInterfaceAndSteering {
     set ApproachVector to v(0,0,0).
     set LZFinderCancelled to false.
     set config:ipu to CPUSPEED.
+    if kuniverse:timewarp:warp > 0 {
+        set kuniverse:timewarp:warp to 0.
+    }
     LogToFile("Interface cleared").
 }
 
@@ -11632,7 +11644,15 @@ FUNCTION launchWindow {
         return.
     }
 
-    LOCAL Nt IS VCRS(TARGET:VELOCITY:OBT, TARGET:POSITION-BODY:POSITION):NORMALIZED.
+    if LaunchIntoLAN {
+        set SimOrbit to createorbit(max(ship:geoposition:lat + 0.001, target:orbit:inclination), target:orbit:eccentricity, target:orbit:semimajoraxis, target:orbit:lan, target:orbit:argumentofperiapsis, target:orbit:meananomalyatepoch, target:orbit:epoch, ship:body).
+        local INC is SimOrbit:inclination.
+        local LAN is SimOrbit:lan.
+        set Nt to V(0,1,0) * ANGLEAXIS(-INC, ANGLEAXIS(-LAN, V(0,1,0)) * SOLARPRIMEVECTOR).
+    }
+    else {
+        set Nt to VCRS(TARGET:VELOCITY:OBT, TARGET:POSITION-BODY:POSITION):NORMALIZED.
+    }
     LOCAL R0 IS SHIP:POSITION-BODY:POSITION.
     LOCAL Rh IS VXCL(BODY:ANGULARVEL, R0).
     LOCAL Rv IS R0-Rh.
@@ -11643,8 +11663,12 @@ FUNCTION launchWindow {
     LOCAL ARG IS C/SQRT(A^2+B^2).
     IF ABS(ARG) > 1 {
         print "no match possible".
-        set launchWindowList to list(-2,0,0).
-        return.
+        if LaunchIntoLAN {
+            set launchWindowList to list(-2,0,0).
+            return.
+        }
+        set LaunchIntoLAN to true.
+        return launchWindow(target, 0).
     }
     LOCAL phi IS ARCTAN2(B,A).
     LOCAL theta1 IS MOD(360+ARCCOS(ARG)+PHI,360).
@@ -11655,8 +11679,13 @@ FUNCTION launchWindow {
     local DegreesToRendezvous to 360 * cos(target:orbit:inclination) * 0.5 * LaunchTimeSpanInSeconds / target:orbit:period.
     local IdealLaunchTargetShipsLongitude to mod(ship:geoposition:lng - DegreesToRendezvous, 360).
 
-    if target:name = "Minmus" or target:name = "Mun" or target:name = "Moon" {
-        set launchWindowList to list(time_to_next_launch, target:orbit:inclination).
+    if hastarget and TargetShip = 0 {
+        if LaunchIntoLAN {
+            set launchWindowList to list(time_to_next_launch, SimOrbit:inclination).
+        }
+        else {
+            set launchWindowList to list(time_to_next_launch, target:orbit:inclination).
+        }
     }
     else {
         local LngAtNode to mod(body:geopositionof(positionat(target, time:seconds + time_to_next_launch)):lng - time_to_next_launch / body:rotationperiod * 360, 360).
