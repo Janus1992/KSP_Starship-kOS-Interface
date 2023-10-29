@@ -105,7 +105,7 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set MaxReEntryCargoThickAtmo to 30000.
     set MaxIU to 400.
     set MaxReEntryCargoThinAtmo to 150000.
-    set LaunchTimeSpanInSeconds to 246.     // To be determined..
+    set LaunchTimeSpanInSeconds to 540.     // To be determined..
     set ShipHeight to 49.8.
     set BoosterMinPusherDistance to 0.48.
     set ShipMinPusherDistance to 1.12.
@@ -136,7 +136,7 @@ else if KSRSS {
     set MaxReEntryCargoThickAtmo to 15000.
     set MaxIU to 300.
     set MaxReEntryCargoThinAtmo to 100000.
-    set LaunchTimeSpanInSeconds to 246.
+    set LaunchTimeSpanInSeconds to 340.
     set ShipHeight to 31.1.
     set BoosterMinPusherDistance to 0.3.
     set ShipMinPusherDistance to 0.7.
@@ -167,7 +167,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set MaxReEntryCargoThickAtmo to 15000.
     set MaxIU to 260.
     set MaxReEntryCargoThinAtmo to 75000.
-    set LaunchTimeSpanInSeconds to 246.
+    set LaunchTimeSpanInSeconds to 255.
     set ShipHeight to 31.1.
     set BoosterMinPusherDistance to 0.3.
     set ShipMinPusherDistance to 0.7.
@@ -190,7 +190,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     }
     set ArmsHeight to 86.35.
     set OrbitPrecision to 100.
-    set RendezvousOrbitLeadFactor to 0.525.
+    set RendezvousOrbitLeadFactor to 0.6.
 }
 set SNStart to 30.  // Defines the first Serial Number when multiple ships are found and renaming is necessary.
 set MaxTilt to 2.5.  // Defines maximum allowed slope for the Landing Zone Search Function
@@ -4510,22 +4510,19 @@ set launchbutton:ontoggle to {
                             else if not (TargetShip = 0) {
                                 if RSS {
                                     set LaunchTimeSpanInSeconds to 540.
-                                    set LaunchDistance to 1500000.
+                                    set LaunchDistance to 1450000.
                                 }
                                 else if KSRSS {
                                     set LaunchTimeSpanInSeconds to 340.
-                                    set LaunchDistance to 750000.
+                                    set LaunchDistance to 700000.
                                 }
                                 else {
-                                    set LaunchTimeSpanInSeconds to 285.
-                                    set LaunchDistance to 225000.
-                                }
-                                if NrOfVacEngines = 3 {
-                                    set LaunchTimeSpanInSeconds to LaunchTimeSpanInSeconds + 3.
+                                    set LaunchTimeSpanInSeconds to 255.
+                                    set LaunchDistance to 200000.
                                 }
                                 set target to TargetShip.
                                 if abs(TargetShip:orbit:inclination) < 0.5 and stock {
-                                    set LongitudeToRendezvous to 360 * (LaunchTimeSpanInSeconds / TargetShip:orbit:period).
+                                    set LongitudeToRendezvous to 360 * (LaunchTimeSpanInSeconds / TargetShip:orbit:period) - 5.
                                     set OrbitalCircumferenceDelta to (((LongitudeToRendezvous / 360) * 471239) / 4241150) * 360 * 0.5.
                                     set LongitudeToRendezvous to LongitudeToRendezvous - OrbitalCircumferenceDelta.
 
@@ -11486,7 +11483,7 @@ function PerformBurn {
             else {
                 set cancelconfirmed to true.
             }
-            TimeWarp(bTime, 0).
+            TimeWarp(bTime, 45).
             set message1:text to "<b>Starting Burn in:</b>  " + timeSpanCalculator(nextnode:eta - 0.5 * BurnDuration).
             if BurnType = "DeOrbit" and UseRCSforBurn {
                 set message2:text to "<b>Target Attitude:</b>    -Burnvector <size=15>(retrograde RCS)</size>".
@@ -12554,10 +12551,10 @@ function Timewarp {
         if GoalTime - time:seconds < 180 and kuniverse:timewarp:warp > 2 {
             set kuniverse:timewarp:warp to 2.
         }
-        if GoalTime - time:seconds < 90 and kuniverse:timewarp:warp > 1 {
+        if GoalTime - time:seconds < 60 and kuniverse:timewarp:warp > 1 {
             set kuniverse:timewarp:warp to 1.
         }
-        if GoalTime - time:seconds < 60 + BufferTime {
+        if GoalTime - time:seconds < 15 + BufferTime {
             if kuniverse:timewarp:warp > 0 {
                 set kuniverse:timewarp:warp to 0.
             }
@@ -12585,10 +12582,10 @@ function Timewarp {
         if GoalTime - time:seconds < 120 and kuniverse:timewarp:warp > 2 {
             set kuniverse:timewarp:warp to 2.
         }
-        if GoalTime - time:seconds < 90 and kuniverse:timewarp:warp > 1 {
+        if GoalTime - time:seconds < 60 and kuniverse:timewarp:warp > 1 {
             set kuniverse:timewarp:warp to 1.
         }
-        if GoalTime - time:seconds < 60 + BufferTime {
+        if GoalTime - time:seconds < 15 + BufferTime {
             if kuniverse:timewarp:warp > 0 {
                 set kuniverse:timewarp:warp to 0.
             }
@@ -12619,7 +12616,7 @@ function Timewarp {
         if GoalTime - time:seconds < 90 and kuniverse:timewarp:warp > 1 {
             set kuniverse:timewarp:warp to 1.
         }
-        if GoalTime - time:seconds < 60 + BufferTime {
+        if GoalTime - time:seconds < 15 + BufferTime {
             if kuniverse:timewarp:warp > 0 {
                 set kuniverse:timewarp:warp to 0.
             }

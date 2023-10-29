@@ -1,7 +1,9 @@
 # V2.2.8 (2023-10-29)
-- Enable launch to coplanar orbit of Mun/Minmus and Moon.
+- Enable launch to coplanar orbit of Mun/Minmus, Moon and other targets.
 - Custom Burn holds vector better now, without wiggling or rotating during the final m/s delta-v.
 - Fix for no-atmo landing program.
+- Timewarp continues down to 30 secs from a launch, or 60 secs for performing a burn.
+- Launch to rendezvous for stock fixed.
 
 # V2.2.7 (2023-10-28)
 - Implemented a check for tanks that are not full before launch, and automatic refuel until it is.

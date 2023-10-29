@@ -221,8 +221,8 @@ function Boostback {
                 set landingzone to latlng(-000.0972,-074.5577).
             }
             if L:haskey("Ship Name") {
+                set starship to L["Ship Name"].
                 until ShipFound {
-                    set starship to L["Ship Name"].
                     list targets in tgtlist.
                     for tgt in tgtlist {
                         if (tgt:name) = (starship) {
@@ -409,7 +409,9 @@ function Boostback {
 
     BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 5).
 
-    KUniverse:forceactive(vessel(starship)).
+    if not (starship = false) {
+        KUniverse:forceactive(vessel(starship)).
+    }
 
     until altitude < 30000 and not (RSS) or altitude < 50000 and RSS {
         SteeringCorrections().
