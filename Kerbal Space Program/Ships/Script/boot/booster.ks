@@ -608,6 +608,7 @@ function Boostback {
     set ship:control:translation to v(0, 0, 0).
     unlock steering.
     lock throttle to 0.
+    set ship:control:pilotmainthrottle to 0.
     rcs off.
     clearscreen.
     print "Booster Landed!".

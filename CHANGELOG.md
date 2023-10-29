@@ -1,3 +1,8 @@
+# V2.2.8 (2023-10-29)
+- Enable launch to coplanar orbit of Mun/Minmus and Moon.
+- Custom Burn holds vector better now, without wiggling or rotating during the final m/s delta-v.
+- Fix for no-atmo landing program.
+
 # V2.2.7 (2023-10-28)
 - Implemented a check for tanks that are not full before launch, and automatic refuel until it is.
 
@@ -5,7 +10,6 @@
 - Quality of life improvements:
     - when the script extends the gear, the button is also set to pressed.
     - Throttle is now fully set to 0 upon clearing the Interface (initiated after many a procedure).
-    - When performing a burn, minimum throttle is now 10% in order to not start flipping when doing the last 1 m/s of delta-v.
     - Automatic inhibiting of the Launch and Land buttons depending on ship status (e.g. orbiting, landed, sub-orbital).
     - maneuver button is hidden when landed or prelaunch.
     - tower button is already hidden when pressing launch.
