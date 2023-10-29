@@ -4,6 +4,7 @@
 - Fix for no-atmo landing program.
 - Timewarp continues down to 30 secs from a launch, or 60 secs for performing a burn.
 - Launch to rendezvous for stock fixed.
+- Autodocking doesn't enter intermediate stage so quickly. Angle increased.
 
 # V2.2.7 (2023-10-28)
 - Implemented a check for tanks that are not full before launch, and automatic refuel until it is.

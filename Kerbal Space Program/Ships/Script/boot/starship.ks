@@ -4111,7 +4111,7 @@ function AutoDocking {
     //print "Initial Facing error: " + vang(target:facing:topvector, PortDistanceVector) + " degrees".
     //set VectorDraw to vecdraw(target:dockingports[0]:nodeposition, 5 * target:facing:topvector, magenta, "", 20, true, 0.005, true, true).
 
-    if vang(target:facing:topvector, PortDistanceVector) < 135 and PortDistanceVector:mag > 100 {
+    if vang(target:facing:topvector, PortDistanceVector) < 105 and PortDistanceVector:mag > 100 {
         print "Maneuvring to Intermediate Safe Point..".
         set dockingmode to "INTMD".
         DetermineSafeVector().
