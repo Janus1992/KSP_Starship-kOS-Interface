@@ -5555,7 +5555,7 @@ function LandwithoutAtmo {
         set LandButtonIsRunning to true.
         set SteeringManager:ROLLCONTROLANGLERANGE to 10.
         set TimeToOVHD to 90.
-        set config:ipu to CPUSPEED.
+        set config:ipu to max(CPUSPEED, 600).
         set textbox:style:bg to "starship_img/starship_main_square_bg".
         set LandingFacingVector to v(0, 0, 0).
         set CosAngle to 1.
@@ -5707,6 +5707,7 @@ function LandwithoutAtmo {
             if defined horStopDist {
                 LandwithoutAtmoLabels().
                 BackGroundUpdate().
+                wait 0.001.
             }
         }
 
@@ -5781,6 +5782,7 @@ function LandwithoutAtmo {
 
 
 function LandwithoutAtmoSteering {
+    SendPing().
     set LngLatErrorList to LngLatError().
     set MaxAccel to max(ship:availablethrust / ship:mass, 0.000001).
     set BurnAccel to min(29.43, MaxAccel).
@@ -5788,19 +5790,18 @@ function LandwithoutAtmoSteering {
     set stopTime to airspeed / (DesiredDecel - Planet1G).
     set stopDist to 0.5 * airspeed * stopTime.
     set landingRatio to stopDist / RadarAlt.
+    local lng to ship:geoposition:lng.
+    local lat to ship:geoposition:lat.
 
-    if (landingzone:lng - ship:geoposition:lng) < -180 {
-        set LngDistanceToTarget to ((landingzone:lng - ship:geoposition:lng + 360) * Planet1Degree).
-        set LatDistanceToTarget to max(landingzone:lat - ship:geoposition:lat, ship:geoposition:lat - landingzone:lat) * Planet1Degree.
-        if LatDistanceToTarget < 0 {set LatDistanceToTarget to -1 * LatDistanceToTarget.}
-        set DistanceToTarget to sqrt(LngDistanceToTarget * LngDistanceToTarget + LatDistanceToTarget * LatDistanceToTarget).
+    if (landingzone:lng - lng) < -180 {
+        set LngDistanceToTarget to ((landingzone:lng - lng + 360) * Planet1Degree).
     }
     else {
-        set LngDistanceToTarget to ((landingzone:lng - ship:geoposition:lng) * Planet1Degree).
-        set LatDistanceToTarget to max(landingzone:lat - ship:geoposition:lat, ship:geoposition:lat - landingzone:lat) * Planet1Degree.
-        if LatDistanceToTarget < 0 {set LatDistanceToTarget to -1 * LatDistanceToTarget.}
-        set DistanceToTarget to sqrt(LngDistanceToTarget * LngDistanceToTarget + LatDistanceToTarget * LatDistanceToTarget).
+        set LngDistanceToTarget to ((landingzone:lng - lng) * Planet1Degree).
     }
+    local LatDistanceToTarget to max(landingzone:lat - lat, lat - landingzone:lat) * Planet1Degree.
+    if LatDistanceToTarget < 0 {set LatDistanceToTarget to -1 * LatDistanceToTarget.}
+    set DistanceToTarget to sqrt(LngDistanceToTarget * LngDistanceToTarget + LatDistanceToTarget * LatDistanceToTarget).
 
     if not (CancelVelocityHasStarted) {
         set CosAngle to cos(vang(velocityat(ship, time:seconds + TimeToOVHD):surface, vxcl(ApproachUPVector, velocityat(ship, time:seconds + TimeToOVHD):surface))).
@@ -5809,13 +5810,12 @@ function LandwithoutAtmoSteering {
     if horDist < stopDist + 10000 {
         set horDist to min(horDist, vdot(vxcl(up:vector, Landingzone:position - ship:position), ApproachVector)).
     }
-    set horStopTime to groundspeed / BurnAccel.
+    local horStopTime to groundspeed / BurnAccel.
     set horStopDist to (0.5 * BurnAccel * horStopTime * horStopTime) / CosAngle + 100.
     set CancelHorVelRatio to horStopDist / horDist.
 
     if RadarAlt < 1000 and ErrorVector:MAG > (RadarAlt + 15) and groundspeed < 75 and not LandSomewhereElse {
         set LandSomewhereElse to true.
-        LogToFile("Uh oh... Landing Off-Target").
     }
     if LandingBurnStarted and verticalspeed > 0 {
         lock throttle to 0.
@@ -5828,13 +5828,19 @@ function LandwithoutAtmoSteering {
 
     if not (CancelVelocityHasStarted) {
         set SecondsToCancelHorVelocity to (horDist - horStopDist) / groundspeed.
-        set x to SecondsToCancelHorVelocity.
+        set x to SecondsToCancelHorVelocity + horStopTime.
         set OVHDlng to -9999.
-        until OVHDlng > landingzone:lng + x / ship:body:rotationperiod * 360 {
-            set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng.
+        until OVHDlng > landingzone:lng {
+            set OVHDlng to ship:body:geopositionof(positionat(ship, time:seconds + x)):lng - x / ship:body:rotationperiod * 360.
             set x to x + 1.
         }
         set TimeToOVHD to x.
+
+        //set TimeToOVHD to SecondsToCancelHorVelocity + (velocityat(ship, time:seconds + SecondsToCancelHorVelocity + stopTime):surface:mag / BurnAccel) + (x / ship:body:rotationperiod * ship:orbit:period).
+
+        //local LZPos to -angleaxis((((SecondsToCancelHorVelocity + horStopTime) / ship:orbit:period) / 360 * ship:orbit:period) / body:rotationperiod * 360, latlng(90,0):position - body:position) * (landingzone:position - body:position).
+        //set TimeToOVHD to vang(ship:position - body:position, LZpos) / 360 * ship:orbit:period.
+
         set ApproachAltitude to ship:body:altitudeof(positionat(ship, time:seconds + TimeToOVHD)).
     }
 
@@ -5894,7 +5900,7 @@ function LandwithoutAtmoSteering {
     }
 
     if RadarAlt > SafeAltOverLZ - 100 {
-        set result to -velocity:surface.
+        set result to -velocity:surface:normalized.
     }
     else if not (LandSomewhereElse) and verticalspeed < -10 {
         set result to ship:up:vector - 0.15 * velocity:surface - 0.015 * ErrorVector.
@@ -6224,6 +6230,8 @@ if addons:tr:available and not startup {
         set message22:style:bg to "starship_img/starship_chip".
     }
     updatestatusbar().
+    SteeringManager:RESETTODEFAULT().
+    clearvecdraws().
     if ship:status = "FLYING" and eta:apoapsis < eta:periapsis and altitude < body:atm:height - 5000 or ship:status = "SUB_ORBITAL" and eta:apoapsis < eta:periapsis and altitude < body:atm:height - 5000 {
         if ship:body:atm:exists {
             Launch().
@@ -7795,16 +7803,13 @@ function ReEntryData {
 
     if (landingzone:lng - ship:geoposition:lng) < -180 {
         set LngDistanceToTarget to ((landingzone:lng - ship:geoposition:lng + 360) * Planet1Degree).
-        set LatDistanceToTarget to max(landingzone:lat - ship:geoposition:lat, ship:geoposition:lat - landingzone:lat) * Planet1Degree.
-        if LatDistanceToTarget < 0 {set LatDistanceToTarget to -1 * LatDistanceToTarget.}
-        set DistanceToTarget to sqrt(LngDistanceToTarget * LngDistanceToTarget + LatDistanceToTarget * LatDistanceToTarget).
     }
     else {
         set LngDistanceToTarget to ((landingzone:lng - ship:geoposition:lng) * Planet1Degree).
-        set LatDistanceToTarget to max(landingzone:lat - ship:geoposition:lat, ship:geoposition:lat - landingzone:lat) * Planet1Degree.
-        if LatDistanceToTarget < 0 {set LatDistanceToTarget to -1 * LatDistanceToTarget.}
-        set DistanceToTarget to sqrt(LngDistanceToTarget * LngDistanceToTarget + LatDistanceToTarget * LatDistanceToTarget).
     }
+    set LatDistanceToTarget to max(landingzone:lat - ship:geoposition:lat, ship:geoposition:lat - landingzone:lat) * Planet1Degree.
+    if LatDistanceToTarget < 0 {set LatDistanceToTarget to -1 * LatDistanceToTarget.}
+    set DistanceToTarget to sqrt(LngDistanceToTarget * LngDistanceToTarget + LatDistanceToTarget * LatDistanceToTarget).
 
     if not ClosingIsRunning {
         if FindNewTarget {

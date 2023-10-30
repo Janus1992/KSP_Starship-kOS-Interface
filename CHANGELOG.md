@@ -2,6 +2,7 @@
 - Added DRE and Lifesupport CFGs.
 - Provide the option to refuel or not if empty ship tanks are detected before launch.
 - Fix for stock ship oscillations during launch (kOS overestimates available torque).
+- Landing without atmo procedure gets a bit more cpu time and doesn´t fail due to constant time-out anymore.
 
 # V2.2.8 (2023-10-29)
 - Enable launch to coplanar orbit of Mun/Minmus, Moon and other targets.
