@@ -167,7 +167,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set MaxReEntryCargoThickAtmo to 15000.
     set MaxIU to 260.
     set MaxReEntryCargoThinAtmo to 75000.
-    set LaunchTimeSpanInSeconds to 255.
+    set LaunchTimeSpanInSeconds to 265.
     set ShipHeight to 31.1.
     set BoosterMinPusherDistance to 0.3.
     set ShipMinPusherDistance to 0.7.
@@ -4368,7 +4368,23 @@ set launchbutton:ontoggle to {
             if ship:body:atm:exists and Boosterconnected {
                 if not (CheckFullTanks()) {
                     ShowHomePage().
-                    Refuel().
+                    InhibitButtons(0, 0, 0).
+                    set message1:text to "<b><color=red>Error: Not all tanks are full!</color></b> <color=yellow>(launch may fail)</color>".
+                    set message2:text to "<b>Refuel before proceeding?</b>".
+                    set message3:text to "<b>Start refuelling <color=white>or</color> cancel refuelling?</b>".
+                    set message3:style:textcolor to cyan.
+                    set execute:text to "<b>REFUEL</b>".
+                    if confirm {
+                        set message3:style:textcolor to white.
+                        set message3:text to "".
+                        set execute:text to "<b>EXECUTE</b>".
+                        InhibitButtons(0, 1, 1).
+                        Refuel().
+                    }
+                    else {
+                        set message3:style:textcolor to white.
+                        set execute:text to "<b>EXECUTE</b>".
+                    }
                 }
                 set runningprogram to "Input".
                 set targetap to OriginalTargetAp.
@@ -6309,18 +6325,18 @@ function Launch {
             else {
                 set BoosterAp to 141500 + (cos(targetincl) * 3000).
             }
-            if NrOfVacEngines = 6 {
-                set PitchIncrement to -1.0 + 2.6 * CargoMass / MaxCargoToOrbit.
-            }
-            else {
+            //if NrOfVacEngines = 6 {
+            //    set PitchIncrement to -1.0 + 2.6 * CargoMass / MaxCargoToOrbit.
+            //}
+            //else {
                 set PitchIncrement to -1.25 + 2.6 * CargoMass / MaxCargoToOrbit.
-            }
+            //}
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.01, 0, 0, -30, PitchIncrement).
             if ShipType = "Depot" {
                 set TimeFromLaunchToOrbit to 500.
             }
             else {
-                set TimeFromLaunchToOrbit to 530.
+                set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 10.
             }
             set BoosterThrottleDownAlt to 1500.
         }
@@ -6332,18 +6348,18 @@ function Launch {
             else {
                 set BoosterAp to 83500 + (cos(targetincl) * 1500).
             }
-            if NrOfVacEngines = 6 {
-                set PitchIncrement to -2.25 + 2.5 * CargoMass / MaxCargoToOrbit.
-            }
-            else {
+            //if NrOfVacEngines = 6 {
+            //    set PitchIncrement to -2.25 + 2.5 * CargoMass / MaxCargoToOrbit.
+            //}
+            //else {
                 set PitchIncrement to -2.5 + 2.5 * CargoMass / MaxCargoToOrbit.
-            }
+            //}
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.025, 0, 0, -30, PitchIncrement).
             if ShipType = "Depot" {
                 set TimeFromLaunchToOrbit to 360.
             }
             else {
-                set TimeFromLaunchToOrbit to 340.
+                set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 10.
             }
             set BoosterThrottleDownAlt to 1250.
         }
@@ -6358,18 +6374,18 @@ function Launch {
             if ShipType = "Depot" {
                 set PitchIncrement to 5.
             }
-            else if NrOfVacEngines = 6 {
+            //else if NrOfVacEngines = 6 {
+            //    set PitchIncrement to 0.
+            //}
+            //else {
                 set PitchIncrement to 0.
-            }
-            else {
-                set PitchIncrement to 0.
-            }
+            //}
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.025, 0, 0, -30, PitchIncrement).
             if ShipType = "Depot" {
                 set TimeFromLaunchToOrbit to 285.
             }
             else {
-                set TimeFromLaunchToOrbit to 265.
+                set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 10.
             }
             set BoosterThrottleDownAlt to 1500.
         }
@@ -6692,6 +6708,9 @@ function Launch {
             if ShipType = "Depot" {
                 set steeringmanager:yawtorquefactor to 0.1.
             }
+            if STOCK {
+                set steeringmanager:pitchtorquefactor to 0.5.
+            }
             if RSS {
                 when DesiredAccel / MaxAccel < 0.6 and not (ShipType = "Depot") and altitude > 100000 or apoapsis > 180000 and ShipType = "Depot" and altitude > 100000 or verticalspeed < 0 or apoapsis > targetap then {
                     if NrOfVacEngines = 3 or ShipType = "Depot" {
@@ -6840,8 +6859,13 @@ function LaunchThrottle {
             }
             if periapsis < altitude - OrbitPrecision {
                 if apoapsis < targetap + 7500 {
-                    if apoapsis < targetap or MaintainVS and verticalspeed < 5 {
-                        set thr to min((3 * Planet1G) / MaxAccel, max(deltaV / MaxAccel, 0.1)).
+                    if apoapsis < targetap or MaintainVS and verticalspeed < 0 {
+                        if STOCK {
+                            set thr to min((1 * Planet1G) / MaxAccel, max(deltaV / MaxAccel, 0.1)).
+                        }
+                        else {
+                            set thr to min((3 * Planet1G) / MaxAccel, max(deltaV / MaxAccel, 0.1)).
+                        }
                     }
                     else {
                         set thr to min(DesiredAccel / MaxAccel, max(deltaV / MaxAccel, 0.1)).

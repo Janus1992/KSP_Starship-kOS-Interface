@@ -1,3 +1,8 @@
+# V2.2.9 (2023-10-30)
+- Added DRE and Lifesupport CFGs.
+- Provide the option to refuel or not if empty ship tanks are detected before launch.
+- Fix for stock ship oscillations during launch (kOS overestimates available torque).
+
 # V2.2.8 (2023-10-29)
 - Enable launch to coplanar orbit of Mun/Minmus, Moon and other targets.
 - Custom Burn holds vector better now, without wiggling or rotating during the final m/s delta-v.
