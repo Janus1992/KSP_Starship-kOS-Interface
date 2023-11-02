@@ -7,7 +7,7 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
             if homeconnection:isconnected {
                 if open("0:booster.ks"):readall:string = open("1:/boot/booster.ks"):readall:string {}
                 else {
-                    compile booster.
+                    COMPILE "0:/booster.ks" TO "0:/booster.ksm".
                     if homeconnection:isconnected {
                         copypath("0:booster.ks", "1:/boot/").
                         copypath("booster.ksm", "1:").
@@ -19,7 +19,7 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
         }
         else {
             print "booster.ksm doesn't yet exist in boot.. creating..".
-            compile booster.
+            COMPILE "0:/booster.ks" TO "0:/booster.ksm".
             copypath("0:booster.ks", "1:/boot/").
             copypath("booster.ksm", "1:").
             set core:BOOTFILENAME to "booster.ksm".

@@ -26,7 +26,7 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
                 if open("0:starship.ks"):readall:string = open("1:/boot/starship.ks"):readall:string {}
                 else {
                     HUDTEXT("Performing Update..", 5, 2, 20, yellow, false).
-                    compile starship.
+                    COMPILE "0:/starship.ks" TO "0:/starship.ksm".
                     if homeconnection:isconnected {
                         copypath("0:starship.ks", "1:/boot/").
                         copypath("starship.ksm", "1:").
@@ -45,7 +45,7 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
         else {
             HUDTEXT("First Time Boot detected! Initializing Ship Interface..", 10, 2, 20, green, false).
             print "starship.ksm doesn't yet exist in boot.. creating..".
-            compile starship.
+            COMPILE "0:/starship.ks" TO "0:/starship.ksm".
             copypath("0:starship.ks", "1:/boot/").
             copypath("starship.ksm", "1:").
             set core:BOOTFILENAME to "starship.ksm".

@@ -1,3 +1,7 @@
+# V2.2.10 (2023-11-02)
+- Fix for kOS-for-all Mod.
+- Fix for having a folder called "Starship" inside the /Script folder.
+
 # V2.2.9 (2023-10-30)
 - Added DRE and Lifesupport CFGs.
 - Provide the option to refuel or not if empty ship tanks are detected before launch.
