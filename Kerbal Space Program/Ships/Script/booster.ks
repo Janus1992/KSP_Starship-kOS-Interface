@@ -1,5 +1,7 @@
 wait until ship:unpacked.
 
+
+
 if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
     if homeconnection:isconnected {
         switch to 0.
@@ -31,7 +33,7 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
 
 
 set LogData to false.
-set starship to false.
+set starship to "xxx".
 set ShipFound to false.
 set LandSomewhereElse to false.
 set idealVS to 0.
@@ -227,6 +229,8 @@ function Boostback {
                     for tgt in tgtlist {
                         if (tgt:name) = (starship) {
                             set ShipFound to true.
+                            print tgt:name.
+                            wait 1.
                         }
                     }
                 }

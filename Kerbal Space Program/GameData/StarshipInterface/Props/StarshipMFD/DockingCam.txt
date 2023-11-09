@@ -1,0 +1,22 @@
+  [hw] [sub]{0,-21} {1:KDTyy:ddd:hh:mm:ss.f}[/hw]              [hw] {2,6:SIP6.1}m/s       {3,-6:SIP6.1}m        [#{7:FFFFFF;00000000}]{4,-6:SIP6.1}m        {5,-6:SIP6.1}m           {6,-6:0.0°} $&$ SITUATION METSECS ORBTSPEED ALTITUDE APOAPSIS PERIAPSIS INCLINATION ORBITMAKESSENSE
+
+                                                                [sub][hw] {0:"[#00FF00ff]SAS";0;"[#ffffff88]SAS"}    {1:"[#00FF00ff]GEAR";0;"[#ffffff88]GEAR"} $&$ SAS GEAR
+             [hw] [sub][#bfdefb]ACCELERATION[#ffffff][/sub][/hw]                                   [#bfdefb][sub][hw]FUEL QTY[/hw][/sub]      [sup][hw]{0:"[#00FF00ff]RCS";0;"[#ffffff88]RCS"}    {1:"[#00FF00ff]LIGHTS";0;"[#ffffff88]LIGHTS"} $&$ RCS LIGHTS
+              [#{1:FFFFFF;FF0000;FFFF00}]{0,-3:0.00}G                                   [#{1:FFFFFF;;FF0000}]{1,5:0.0%} $&$ GFORCE SYSR_OXIDIZERPERCENT
+                                [#00FF00]{0,7:#####0.0°} $&$ ROLL
+                                   [sup][hw] [#00FFffff]{0,5:###0.0°} $&$ ROLLRATE
+                 [#{0:FFFFFF;00000000;00000000}]            [hw][sub]ETA[/sub][/hw]            [hw][sub]ΔV[/sub][/hw]                  $&$ MNODEEXISTS
+                 [#{0:FF00FF;00000000}]         {1,-6:KDTS.f}s     {2,6:SIP6.1}m/s $&$ MNODEEXISTS MNODETIMESECS MNODEDV
+          [#{2:00FFFF;00000000;00FFFF}]       [sub][hw]{0,8:SIP8.3}m/s      [#{2:FFFFFF;00000000;FFFFFF}]{1,-6:SIP6.3}m[/hw][/sub] $&$ TGTRELX TARGETDISTANCEX TARGETEXISTS
+          [#{3:00FFFF;00000000;00FFFF}]       [sub][hw]{0,8:SIP8.3}m/s      [#{3:FFFFFF;00000000;FFFFFF}]{1,-6:SIP6.3}m[/hw][/sub]             [#00FF00ff]{2,7:####0.0°} $&$ TGTRELY TARGETDISTANCEY PITCH TARGETEXISTS
+          [#{3:00FFFF;00000000;00FFFF}]       [sub][hw]{0,8:SIP8.3}m/s      [#{3:FFFFFF;00000000;FFFFFF}]{1,-6:SIP6.3}m[/hw][/sub]                [sup][hw] [#00FFffff]{2,5:###0.0°}[/hw][/sup] $&$ TGTRELZ TARGETDISTANCEZ PITCHRATE TARGETEXISTS
+                      [#{0:FFFFFF;00000000;FFFFFF}]       [hw][sub]RANGE[/sub][/hw]           [hw][sub]RATE[/sub][/hw] $&$ TARGETEXISTS
+                      [#{0:00FF00;00000000;00FF00}]    {1,-6:SIP6.1}m      [#{0:00FFff;00000000;00FFff}]{2,5:SIP5.1}m/s $&$ TARGETEXISTS TARGETDISTANCE APPROACHSPEED
+
+
+                                   [sub][hw][#00FFffff]{0,6:###0.0°}[/hw][/sub] $&$ YAWRATE
+             [hw][#bfdefb][sub]RADAR ALTITUDE[/hw]                                 [hw][#bfdefb][sub]VERTICAL SPEED[/sub][/hw] $&$ YAWRATE
+            [hw] [/hw]{0,6:SIP6.1}m              [#FF00FF]{1,6:###0.0°}           [#FFFFFF]{2,-6:SIP6.0}m/s $&$ RADARALT HEADING VERTSPEED
+
+
+                            [#{2:FFFFFF;FFFF00;00FF00}][hw][sub]{2:ORB;TGT;SRF} [/hw][/sub] [#ffffff][hw][sub]DOCKING FLIGHT DISPLAY[/sub][/hw] [#{0:FFFF00;00000000;00000000}][hw] [sub]Target:{1}[/sub][/hw]     $&$ TARGETEXISTS TARGETNAME SPEEDDISPLAYMODE

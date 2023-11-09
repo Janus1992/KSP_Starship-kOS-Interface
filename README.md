@@ -80,7 +80,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 
 # Bug support guide:
-- check first that you fulfill the requirements above (check Incompatible Mods!!) and carefully (!!) read this whole page.
+- check first that you fulfill the requirements above (check Incompatible Mods!!) and carefully (!!) read this whole page. Mods like FAR or RO can also leave CFGs behind that make KSP think you have them installed, and you'll notice this when you find no kOS CPUs on the ship when you load the ships from the VAB.
 - If you have many mods installed, try moving unnecessary mods away from /gamedata temporarily. The less mods, the better (Only SEPs requirements and those of this mod).
 - If you still get script crashes that don't recover themselves: congratulations, you may have found a bug!
 - Keep the kOS CPUs open (right hand side) and screenshot any errors or problems.

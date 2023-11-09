@@ -193,7 +193,7 @@ function Boostback {
     lock throttle to 1.
     sas off.
     set SteeringManager:ROLLCONTROLANGLERANGE to 10.
-    wait 0.01.
+    wait 0.1.
     HUDTEXT("Performing Boostback Burn..", 30, 2, 20, green, false).
     clearscreen.
     print "Starting Boostback".

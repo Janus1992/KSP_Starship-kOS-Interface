@@ -1,0 +1,22 @@
+     [#bfdefb]{0,-17}    ALT: {1,-6:SIP6.1}m  [#{4:"bfdefb";"ffffff00"}]  Ap: {2,-6:SIP6.1}m    Pe: {3,-6:SIP6.1}m $&$ SITUATION ALTITUDE APOAPSIS PERIAPSIS ORBITMAKESSENSE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            [#{2:FFFFFF;FFFF00;00FF00}][hw][sub]{2:ORB;TGT;SRF}[/hw][/sub]   [#ffffff][hw][sub]    SCANsat      [/sub][/hw]  [#{0:FFFF00;00000000;00000000}][hw] [sub]Target:{1}[/sub][/hw]     $&$ TARGETEXISTS TARGETNAME SPEEDDISPLAYMODE

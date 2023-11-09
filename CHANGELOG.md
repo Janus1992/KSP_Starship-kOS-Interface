@@ -1,3 +1,13 @@
+# V2.2.11 (2023-11-09)
+- Reworked the IVA:
+    - The IVA now has touchscreen interfaces, with self-made RPM pages! Until SEP updates they will only be available in my parts.
+        - known issues:
+            - PFD nr. 3 needs a good camera-transform, the current one is just grey (inside vehicle).
+            - Docking Camera needs its own camera-transform that is at the docking port, the current one is behind the docking hatch on the Crew part. It will show stuff when you open the docking hatch.
+            - PFD navballs are not round, issue has been reported to RPM mod maker. Will hopefully be fixed in the next few months.
+    - New wall texture with bumpmap!
+    - Turned around the big interior hatch between floors, so it doesn't clip into the wall so much as before.
+
 # V2.2.10 (2023-11-02)
 - Fix for kOS-for-all Mod.
 - Fix for having a folder called "Starship" inside the /Script folder.
