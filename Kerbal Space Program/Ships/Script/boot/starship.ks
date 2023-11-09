@@ -8040,7 +8040,6 @@ function ReEntryData {
                     }
                     else {
                         set quickstatus3:pressed to true.
-                        //gear on.
                     }
                 }
             }

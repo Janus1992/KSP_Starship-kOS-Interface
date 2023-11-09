@@ -195,7 +195,7 @@ function Boostback {
     lock throttle to 1.
     sas off.
     set SteeringManager:ROLLCONTROLANGLERANGE to 10.
-    wait 0.01.
+    wait 0.1.
     HUDTEXT("Performing Boostback Burn..", 30, 2, 20, green, false).
     clearscreen.
     print "Starting Boostback".
@@ -413,8 +413,23 @@ function Boostback {
 
     BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 5).
 
-    if not (starship = false) {
+    if not (starship = "xxx") {
         KUniverse:forceactive(vessel(starship)).
+    }
+    else {
+        if homeconnection:isconnected {
+            if exists("0:/settings.json") {
+                set L to readjson("0:/settings.json").
+                set starship to L["Ship Name"].
+                if not (starship = "xxx") {
+                    KUniverse:forceactive(vessel(starship)).
+                }
+                else {
+                    print "Couldn't find vessel".
+                    wait 2.5.
+                }
+            }
+        }
     }
 
     until altitude < 30000 and not (RSS) or altitude < 50000 and RSS {

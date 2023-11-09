@@ -1,5 +1,7 @@
 wait until ship:unpacked.
 
+
+
 if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
     if homeconnection:isconnected {
         switch to 0.
@@ -31,7 +33,7 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
 
 
 set LogData to false.
-set starship to false.
+set starship to "xxx".
 set ShipFound to false.
 set LandSomewhereElse to false.
 set idealVS to 0.
@@ -227,6 +229,8 @@ function Boostback {
                     for tgt in tgtlist {
                         if (tgt:name) = (starship) {
                             set ShipFound to true.
+                            print tgt:name.
+                            wait 1.
                         }
                     }
                 }
@@ -409,8 +413,23 @@ function Boostback {
 
     BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 5).
 
-    if not (starship = false) {
+    if not (starship = "xxx") {
         KUniverse:forceactive(vessel(starship)).
+    }
+    else {
+        if homeconnection:isconnected {
+            if exists("0:/settings.json") {
+                set L to readjson("0:/settings.json").
+                set starship to L["Ship Name"].
+                if not (starship = "xxx") {
+                    KUniverse:forceactive(vessel(starship)).
+                }
+                else {
+                    print "Couldn't find vessel".
+                    wait 2.5.
+                }
+            }
+        }
     }
 
     until altitude < 30000 and not (RSS) or altitude < 50000 and RSS {
