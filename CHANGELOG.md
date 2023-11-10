@@ -1,3 +1,6 @@
+# V2.2.12 (2023-11-10)
+- Fix for displaced text on the Ship Info page of the MFD.
+
 # V2.2.11 (2023-11-09)
 - Reworked the IVA:
     - The IVA now has touchscreen interfaces, with self-made RPM pages! Until SEP updates they will only be available in my parts.
