@@ -1,3 +1,7 @@
+# V2.2.13 (2023-11-11)
+- FreeIVA is not a required mod for the IVA anymore. Very much recommended though.
+- Navball fixed by latest RPM release. Download it!
+
 # V2.2.12 (2023-11-10)
 - Fix for displaced text on the Ship Info page of the MFD.
 
