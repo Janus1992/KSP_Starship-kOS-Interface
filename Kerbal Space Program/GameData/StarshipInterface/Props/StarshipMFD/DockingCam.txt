@@ -9,7 +9,7 @@
                  [#{0:FF00FF;00000000}]         {1,-6:KDTS.f}s     {2,6:SIP6.1}m/s                 [#{3:"FF0000";"00000000";"00000000"}][hw] [sup][@y-28]CHECK GEAR $&$ MNODEEXISTS MNODETIMESECS MNODEDV CUSTOM_STARSHIP_GEAR_WARNING
           [@y26][#{2:00FFFF;00000000;00FFFF}]       [sub][hw]{0,8:SIP8.3}m/s      [#{2:FFFFFF;00000000;FFFFFF}]{1,-6:SIP6.3}m[/hw][/sub][#{3:"FF0000";"00000000";"00000000"}][@y-40]COLLISION DANGER! $&$ TGTRELX TARGETDISTANCEX TARGETEXISTS DOCKINGSPEEDALARM
           [@y11][#{3:00FFFF;00000000;00FFFF}]       [sub][hw]{0,8:SIP8.3}m/s      [#{3:FFFFFF;00000000;FFFFFF}]{1,-6:SIP6.3}m[/hw][/sub]             [@x-15][@y10][#00FF00ff]{2,7:####0.0°}                [#{4:"FF0000";"00000000";"00000000"}][hw][sup][@y-56]IMPACT $&$ TGTRELY TARGETDISTANCEY PITCH TARGETEXISTS CUSTOM_STARSHIP_IMPACT_WARNING
-          [@y-2][#{3:00FFFF;00000000;00FFFF}]       [sub][hw]{0,8:SIP8.3}m/s      [#{3:FFFFFF;00000000;FFFFFF}]{1,-6:SIP6.3}m[/hw][/sub]                [@x-15][@y10][sup][hw] [#00FFffff]{2,5:###0.0°}[/hw][/sup] $&$ TGTRELZ TARGETDISTANCEZ PITCHRATE TARGETEXISTS
+          [@y-2][#{3:00FFFF;00000000;00FFFF}]       [sub][hw]{0,8:SIP8.3}m/s      [#{3:FFFFFF;00000000;FFFFFF}]{1,-6:SIP6.3}m[/hw][/sub]                [@x-15][@y10][sup][hw] [#00FFffff]{2,5:###0.0°}[/hw][/sup]                 [#{4:"FF0000";"00000000";"00000000"}][@y-76][hw] [sup]BAT LO $&$ TGTRELZ TARGETDISTANCEZ PITCHRATE TARGETEXISTS CUSTOM_STARSHIP_BAT_LOW_WARNING
                       [#{0:FFFFFF;00000000;FFFFFF}]       [hw][sub]RANGE[/sub][/hw]           [hw][sub]RATE[/sub][/hw] $&$ TARGETEXISTS
                       [#{0:00FF00;00000000;00FF00}]    {1,-6:SIP6.1}m      [#{0:00FFff;00000000;00FFff}]{2,5:SIP5.1}m/s $&$ TARGETEXISTS TARGETDISTANCE APPROACHSPEED
 
