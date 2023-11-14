@@ -1,3 +1,10 @@
+# v2.2.14 (2023-11-14)
+- Fixed SCANsat page top text.
+- Added "electrical humming" background noise to IVA.
+- Fixed Radar Altitude in IVA, using a custom variable, correcting also for the ocean.
+- Added Alerts to PFDs (temperature, slope, engine failure, gear warning, docking collision danger, impact warning).
+- Reworked Resources and Crew Pages.
+
 # V2.2.13 (2023-11-11)
 - FreeIVA is not a required mod for the IVA anymore. Very much recommended though.
 - Navball fixed by latest RPM release. Download it!

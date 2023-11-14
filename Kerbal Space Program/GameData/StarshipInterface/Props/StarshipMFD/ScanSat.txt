@@ -1,4 +1,4 @@
-     [#bfdefb]{0,-17}    ALT: {1,-6:SIP6.1}m  [#{4:"bfdefb";"ffffff00"}]  Ap: {2,-6:SIP6.1}m    Pe: {3,-6:SIP6.1}m $&$ SITUATION ALTITUDE APOAPSIS PERIAPSIS ORBITMAKESSENSE
+  [hw] [sub]{0,-21} {1:KDTyy:ddd:hh:mm:ss.f}[/hw]              [hw] {2,6:SIP6.1}m/s       {3,-6:SIP6.1}m        [#{7:FFFFFF;00000000}]{4,-6:SIP6.1}m        {5,-6:SIP6.1}m           {6,-6:0.0°} $&$ SITUATION METSECS ORBTSPEED ALTITUDE APOAPSIS PERIAPSIS INCLINATION ORBITMAKESSENSE
 
 
 
