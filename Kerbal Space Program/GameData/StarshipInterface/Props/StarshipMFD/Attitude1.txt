@@ -10,7 +10,7 @@
                                                                 [#{0:"FF0000";"00000000";"00000000"}][hw] [sup][@y-40]COLLISION $&$ DOCKINGSPEEDALARM
             [#bfdefb]{1:" ORB  SPD";" TGT  SPD";"SURF  SPD"}[#ffffff]                     [#00FF00ff][@x-15][@y10]{0,7:####0.0°}   [@x0][@y0][#bfdefb]Altitude    [#{2:"FF0000";"00000000";"00000000"}][hw] [sup][@y-56]IMPACT $&$ PITCH SPEEDDISPLAYMODE CUSTOM_STARSHIP_IMPACT_WARNING
             [#FFFFFF]{0,6:SIP6.1}m/s                        [@x-15][@y10][sup][hw] [#00FFffff]{1,5:###0.0°} [/hw][/sup]    [@x0][@y0][#FFFFFF]{2,6:SIP6.3}m     [#{3:"FF0000";"00000000";"00000000"}][@y-76][hw][sup]BAT LO $&$ SELECTEDSPEED PITCHRATE ALTITUDE CUSTOM_STARSHIP_BAT_LOW_WARNING
-                      [#{0:FFFFFF;00000000;FFFFFF}]       [hw][sub]RANGE[/sub][/hw]           [hw][sub]RATE[/sub][/hw]        [#ffffff][hw][sub]R. ALT: {1,6:SIP6.1}m $&$ TARGETEXISTS MATH_STARSHIP_RADARALT
+                      [#{0:FFFFFF;00000000;FFFFFF}]       [hw][sub]RANGE[/sub][/hw]           [hw][sub]RATE[/sub][/hw]        [#ffffff][hw][sub]R. ALT: {1,6:SIP6.1}m $&$ TARGETEXISTS ALTITUDEBOTTOM
                       [#{0:00FF00;00000000;00FF00}]    {1,-6:SIP6.1}m      [#{0:00FFff;00000000;00FFff}]{2,5:SIP5.1}m/s $&$ TARGETEXISTS TARGETDISTANCE APPROACHSPEED
 
 

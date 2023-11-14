@@ -16,7 +16,7 @@
 
                                    [@x-5][@y-3][sub][hw][#00FFffff]{0,6:###0.0°}[/hw][/sub] $&$ YAWRATE
              [@y-10][hw][#bfdefb][sub]RADAR ALTITUDE[/hw]                                 [hw][#bfdefb][sub]VERTICAL SPEED[/sub][/hw] $&$ YAWRATE
-            [@y-10][hw] [/hw]{0,6:SIP6.1}m             [@y-20][#FF00FF]{1,7:###0.0°}           [@y-10][#FFFFFF]{2,-6:SIP6.0}m/s $&$ MATH_STARSHIP_RADARALT HEADING VERTSPEED
+            [@y-10][hw] [/hw]{0,6:SIP6.1}m             [@y-20][#FF00FF]{1,7:###0.0°}           [@y-10][#FFFFFF]{2,-6:SIP6.0}m/s $&$ ALTITUDEBOTTOM HEADING VERTSPEED
 
 
                             [#{2:FFFFFF;FFFF00;00FF00}][hw][sub]{2:ORB;TGT;SRF} [/hw][/sub] [#ffffff][hw][sub]PRIMARY FLIGHT DISPLAY[/sub][/hw] [#{0:FFFF00;00000000;00000000}][hw] [sub]Target:{1}[/sub][/hw]     $&$ TARGETEXISTS TARGETNAME SPEEDDISPLAYMODE

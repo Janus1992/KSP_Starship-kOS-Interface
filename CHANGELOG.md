@@ -14,6 +14,8 @@
 - Fixed an issue where the booster would float when it can't land at the tower.
 - Initial Rescale 2.5x support! Make sure you have the "Rescale 2.5x" Folder in your /GameData!!
 - Removed camera from PFD3, as the camera-transform of JSIHeadsUpDisplay was causing visual glitches.
+- Fixed Radar Altitude on the PFD again.
+- Forgot a camera.
 
 # V2.2.13 (2023-11-11)
 - FreeIVA is not a required mod for the IVA anymore. Very much recommended though.
