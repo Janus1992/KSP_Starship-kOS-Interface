@@ -147,9 +147,9 @@ else if KSRSS {
     set BoosterMinPusherDistance to 0.3.
     set ShipMinPusherDistance to 0.7.
     set towerhgt to 60.
-    if RESCALE {
-        set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
-        set DefaultLaunchSite to "-0.0972,-74.5577".
+    if RESCALE and bodyexists("Kerbin") {
+        set LaunchSites to lexicon("KSC", "-0.0970,-74.5833", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
+        set DefaultLaunchSite to "-0.0970,-74.5833".
     }
     else {
         set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
@@ -1304,11 +1304,11 @@ set TargetLZPicker:onchange to {
             }
         }
         else if KSRSS {
-            if RESCALE {
-                set setting1:text to "-0.0972,-74.5577".
-                set landingzone to latlng(-0.0972,-74.5577).
+            if RESCALE and bodyexists("Kerbin") {
+                set setting1:text to "-0.0970,-74.5833".
+                set landingzone to latlng(-0.0970,-74.5833).
                 if homeconnection:isconnected {
-                    SaveToSettings("Landing Coordinates", "-0.0972,-74.5577").
+                    SaveToSettings("Landing Coordinates", "-0.0970,-74.5833").
                 }
             }
             else {
