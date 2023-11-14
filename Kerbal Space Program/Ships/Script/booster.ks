@@ -196,7 +196,7 @@ function Boostback {
     lock throttle to 1.
     sas off.
     set SteeringManager:ROLLCONTROLANGLERANGE to 10.
-    wait 0.01.
+    wait 0.1.
     HUDTEXT("Performing Boostback Burn..", 30, 2, 20, green, false).
     clearscreen.
     print "Starting Boostback".
@@ -297,16 +297,18 @@ function Boostback {
         }
     }
 
-    wait 0.1.
-    if L:haskey("Ship Name") {
-        set starship to L["Ship Name"].
-        until ShipFound {
-            list targets in tgtlist.
-            for tgt in tgtlist {
-                if (tgt:name) = (starship) {
-                    set ShipFound to true.
-                    print tgt:name.
-                    wait 0.001.
+    wait 0.001.
+    if defined L {
+        if L:haskey("Ship Name") {
+            set starship to L["Ship Name"].
+            until ShipFound {
+                list targets in tgtlist.
+                for tgt in tgtlist {
+                    if (tgt:name) = (starship) {
+                        set ShipFound to true.
+                        print tgt:name.
+                        wait 0.001.
+                    }
                 }
             }
         }
