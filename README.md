@@ -24,7 +24,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Before filing a bug, read the "Bug support guide" at the bottom of this page.
 
 # REQUIRES:
-- Stock KSP, RSS or KSRSS (no other planet changing mods, and don´t change the default scale!), and the language has to be set to "english" (important).
+- Stock-size Kerbin, RSS, KSRSS (default size) or ReScale 2.5x (with a Folder called "ReScale 2.5x" in /gamedata), and the language has to be set to "english" (important).
 - Starship Expansion Project - github repository version and its requirements (!!)
     https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
     Github version: https://github.com/Kari1407/Starship-Expansion-Project

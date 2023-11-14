@@ -74,11 +74,17 @@ if bodyexists("Earth") {
     }
     else {
         set KSRSS to true.
+        if body("Earth"):radius < 1500001 {
+            set RESCALE to true.
+        }
     }
 }
 else {
     if body("Kerbin"):radius > 1000000 {
         set KSRSS to true.
+        if body("Kerbin"):radius < 1500001 {
+            set RESCALE to true.
+        }
     }
     else {
         set STOCK to true.
@@ -106,7 +112,7 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set MaxIU to 400.
     set MaxReEntryCargoThinAtmo to 150000.
     set LaunchTimeSpanInSeconds to 540.     // To be determined..
-    set ShipHeight to 49.8.
+    set ShipHeight to 49.7.
     set BoosterMinPusherDistance to 0.48.
     set ShipMinPusherDistance to 1.12.
     set towerhgt to 96.
@@ -137,12 +143,18 @@ else if KSRSS {
     set MaxIU to 300.
     set MaxReEntryCargoThinAtmo to 100000.
     set LaunchTimeSpanInSeconds to 340.
-    set ShipHeight to 31.1.
+    set ShipHeight to 31.0.
     set BoosterMinPusherDistance to 0.3.
     set ShipMinPusherDistance to 0.7.
     set towerhgt to 60.
-    set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
-    set DefaultLaunchSite to "28.5166,-81.2062".
+    if RESCALE {
+        set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
+        set DefaultLaunchSite to "-0.0972,-74.5577".
+    }
+    else {
+        set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
+        set DefaultLaunchSite to "28.5166,-81.2062".
+    }
     set FuelVentCutOffValue to 1138.5.
     set FuelBalanceSpeed to 40.
     set LandRollVector to heading(242,0):vector.
@@ -168,7 +180,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set MaxIU to 260.
     set MaxReEntryCargoThinAtmo to 75000.
     set LaunchTimeSpanInSeconds to 265.
-    set ShipHeight to 31.1.
+    set ShipHeight to 31.0.
     set BoosterMinPusherDistance to 0.3.
     set ShipMinPusherDistance to 0.7.
     set towerhgt to 60.
@@ -1292,10 +1304,19 @@ set TargetLZPicker:onchange to {
             }
         }
         else if KSRSS {
-            set setting1:text to "28.5166,-81.2062".
-            set landingzone to latlng(28.5166,-81.2062).
-            if homeconnection:isconnected {
-                SaveToSettings("Landing Coordinates", "28.5166,-81.2062").
+            if RESCALE {
+                set setting1:text to "-0.0972,-74.5577".
+                set landingzone to latlng(-0.0972,-74.5577).
+                if homeconnection:isconnected {
+                    SaveToSettings("Landing Coordinates", "-0.0972,-74.5577").
+                }
+            }
+            else {
+                set setting1:text to "28.5166,-81.2062".
+                set landingzone to latlng(28.5166,-81.2062).
+                if homeconnection:isconnected {
+                    SaveToSettings("Landing Coordinates", "28.5166,-81.2062").
+                }
             }
         }
         else {
@@ -6350,12 +6371,23 @@ function Launch {
         }
         else if KSRSS {
             set LaunchElev to altitude - 67.74.
-            if ShipType = "Depot" {
-                set BoosterAp to 74500 + (cos(targetincl) * 1500).
+            if RESCALE {
+                if ShipType = "Depot" {
+                    set BoosterAp to 72500 + (cos(targetincl) * 1500).
+                }
+                else {
+                    set BoosterAp to 81500 + (cos(targetincl) * 1500).
+                }
             }
             else {
-                set BoosterAp to 83500 + (cos(targetincl) * 1500).
+                if ShipType = "Depot" {
+                    set BoosterAp to 74500 + (cos(targetincl) * 1500).
+                }
+                else {
+                    set BoosterAp to 83500 + (cos(targetincl) * 1500).
+                }
             }
+
             //if NrOfVacEngines = 6 {
             //    set PitchIncrement to -2.25 + 2.5 * CargoMass / MaxCargoToOrbit.
             //}
@@ -6909,11 +6941,21 @@ Function LaunchSteering {
             }
         }
         else if KSRSS {
-            if ShipType = "Depot" {
-                set targetpitch to 90 - (9.35 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+            if RESCALE {
+                if ShipType = "Depot" {
+                    set targetpitch to 90 - (9.05 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                }
+                else {
+                    set targetpitch to 90 - (10.5 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                }
             }
             else {
-                set targetpitch to 90 - (10.85 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                if ShipType = "Depot" {
+                    set targetpitch to 90 - (9.35 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                }
+                else {
+                    set targetpitch to 90 - (10.85 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                }
             }
         }
         else {

@@ -2,8 +2,18 @@
 - Fixed SCANsat page top text.
 - Added "electrical humming" background noise to IVA.
 - Fixed Radar Altitude in IVA, using a custom variable, correcting also for the ocean.
-- Added Alerts to PFDs (temperature, slope, engine failure, gear warning, docking collision danger, impact warning).
+- Added Alerts to PFDs:
+    - temperature/overheat
+    - slope (>2.5%)
+    - engine failure (engine flame-out due to lack of fuel)
+    - gear warning (not deployed shortly before touchdown)
+    - docking collision danger (when approaching way too fast)
+    - impact warning (when descending way too fast)
+    - Battery low (<15%)
 - Reworked Resources and Crew Pages.
+- Fixed an issue where the booster would float when it can't land at the tower.
+- Initial Rescale 2.5x support! Make sure you have the "Rescale 2.5x" Folder in your /GameData!!
+- Removed camera from PFD3, as the camera-transform of JSIHeadsUpDisplay was causing visual glitches.
 
 # V2.2.13 (2023-11-11)
 - FreeIVA is not a required mod for the IVA anymore. Very much recommended though.

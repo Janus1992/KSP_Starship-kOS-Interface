@@ -57,7 +57,7 @@ set GS to 0.
 set BoostBackComplete to false.
 set lastVesselChange to time:seconds.
 set LandingBurnStarted to false.
-lock RadarAlt to alt:radar - BoosterHeight.
+set BoosterHeight to 0.
 set stopTime9 to 0.
 set TimeStabilized to 0.
 set LFBooster to 0.
@@ -72,7 +72,7 @@ if bodyexists("Earth") {
         set Planet to "Earth".
         set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
 
-        set BoosterHeight to 71.04396.
+        set BoosterHeight to 71.0.
         if BoosterCore[0]:hasmodule("FARPartModule") {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
         }
@@ -92,7 +92,7 @@ if bodyexists("Earth") {
         set KSRSS to true.
         set Planet to "Earth".
         set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
-        set BoosterHeight to 71.04396.
+        set BoosterHeight to 44.2.
         if BoosterCore[0]:hasmodule("FARPartModule") {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
         }
@@ -114,7 +114,7 @@ else {
         set KSRSS to true.
         set Planet to "Kerbin".
         set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
-        set BoosterHeight to 71.04396.
+        set BoosterHeight to 44.2.
         if BoosterCore[0]:hasmodule("FARPartModule") {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
         }
@@ -146,6 +146,7 @@ else {
         set Scale to 1.
     }
 }
+lock RadarAlt to alt:radar - BoosterHeight.
 
 for res in BoosterCore[0]:resources {
     if res:name = "LqdMethane" {
@@ -195,7 +196,7 @@ function Boostback {
     lock throttle to 1.
     sas off.
     set SteeringManager:ROLLCONTROLANGLERANGE to 10.
-    wait 0.1.
+    wait 0.01.
     HUDTEXT("Performing Boostback Burn..", 30, 2, 20, green, false).
     clearscreen.
     print "Starting Boostback".
@@ -221,19 +222,6 @@ function Boostback {
             }
             else {
                 set landingzone to latlng(-000.0972,-074.5577).
-            }
-            if L:haskey("Ship Name") {
-                set starship to L["Ship Name"].
-                until ShipFound {
-                    list targets in tgtlist.
-                    for tgt in tgtlist {
-                        if (tgt:name) = (starship) {
-                            set ShipFound to true.
-                            print tgt:name.
-                            wait 1.
-                        }
-                    }
-                }
             }
         }
     }
@@ -304,6 +292,21 @@ function Boostback {
                     fin:getmodule("SyncModuleControlSurface"):DoAction("activate pitch controls", true).
                     fin:getmodule("SyncModuleControlSurface"):DoAction("activate yaw control", true).
                     fin:getmodule("SyncModuleControlSurface"):DoAction("activate roll control", true).
+                }
+            }
+        }
+    }
+
+    wait 0.1.
+    if L:haskey("Ship Name") {
+        set starship to L["Ship Name"].
+        until ShipFound {
+            list targets in tgtlist.
+            for tgt in tgtlist {
+                if (tgt:name) = (starship) {
+                    set ShipFound to true.
+                    print tgt:name.
+                    wait 0.001.
                 }
             }
         }
@@ -601,6 +604,7 @@ function Boostback {
                     lock steering to SteeringVector.
                     if abs(LngError) > 10 and not (RSS) or abs(LatError) > 10 and not (RSS) or abs(LngError) > 20 and RSS or abs(LatError) > 20 and RSS {
                         set LandSomewhereElse to true.
+                        lock RadarAlt to alt:radar - BoosterHeight.
                         lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface, LandHeadingVector).
                         lock steering to SteeringVector.
                         HUDTEXT("Mechazilla out of range..", 10, 2, 20, red, false).
