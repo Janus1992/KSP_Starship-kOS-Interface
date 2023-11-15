@@ -7486,11 +7486,13 @@ function ReEntryAndLand {
             setflaps(FWDFlapDefault, AFTFlapDefault, 1, 20).
         }
 
-        if LFShip > FuelVentCutOffValue and ship:body:atm:sealevelpressure > 0.5 {
+        if LFShip > max(FuelVentCutOffValue, MaxFuel) and ship:body:atm:sealevelpressure > 0.5 {
             Nose:activate.
             Tank:activate.
-            when LFShip < FuelVentCutOffValue then {
+            when LFShip < max(FuelVentCutOffValue, MaxFuel) then {
                 ShutDownAllEngines().
+                wait 0.001.
+                ActivateEngines(0).
             }
         }
 
@@ -8172,7 +8174,7 @@ function LandingVector {
         else {
             if LandSomewhereElse {
                 if ship:body:atm:sealevelpressure > 0.5 {
-                    if ErrorVector:MAG < (RadarAlt + 10) {
+                    if ErrorVector:MAG < (RadarAlt + 10) and abs(LngError) < 15 and abs(LatError) < 15 {
                         set LandSomewhereElse to false.
                         set message1:text to "<b>Target Re-acquired..</b>".
                         SetRadarAltitude().

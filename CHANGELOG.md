@@ -1,3 +1,7 @@
+# V2.2.15 (2023-11-15)
+- Possible fix for faulty LZ reacquire even though the LZ is out of limits.
+- Other minor fixes.
+
 # v2.2.14 (2023-11-14)
 - Fixed SCANsat page top text.
 - Added "electrical humming" background noise to IVA.
