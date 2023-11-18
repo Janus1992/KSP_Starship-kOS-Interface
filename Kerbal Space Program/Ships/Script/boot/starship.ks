@@ -67,6 +67,7 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
 set RSS to false.
 set KSRSS to false.
 set STOCK to false.
+set RESCALE to false.
 set Methane to false.
 if bodyexists("Earth") {
     if body("Earth"):radius > 1600000 {

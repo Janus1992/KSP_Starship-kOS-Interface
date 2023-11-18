@@ -1,3 +1,6 @@
+# V2.2.16 (2023-11-18)
+- fix for Interface failing to start. Cause was a variable for Rescale 2.5x.
+
 # V2.2.15 (2023-11-15)
 - Possible fix for faulty LZ reacquire even though the LZ is out of limits.
 - Other minor fixes.
