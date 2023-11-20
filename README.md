@@ -4,23 +4,29 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 ![Alt text](/Infographic.png)
 
-# IF YOU HAVE AN OLD VERSION previously installed, make sure to delete the 'StarshipInterface' folder in /gamedata before installing the updated version of the Interface!
 
 # INSTALL INSTRUCTIONS (NO CKAN SUPPORT!):
-- Download and install all requirements listed below (SLE needs the DEV version, not available on CKAN).
+- Download and install all requirements listed below (pay attention: SLE needs the DEV version, not available on CKAN. SEP requires the github green button download-all, not the releases).
+
+- If you update: first delete the 'StarshipInterface' folder!
+
 - Download the zip file.
+
 - Extract the contents to a folder.
-- Copy the contents of the /Kerbal Space Program folder ('GameData' and 'Ships' folders) into your /Kerbal Space Program folder.
-    - It should look like this:
-        Kerbal Space Program/GameData/StarshipInterface
-        Kerbal Space Program/Ships/Script  (here the scripts are saved)
-        Kerbal Space Program/Ships/VAB
-(To Update do the same, but first delete the 'StarshipInterface' folder and overwrite anything else!)
+
+- Copy the contents of the /Kerbal Space Program folder ('GameData' and 'Ships' folders) into your /Kerbal Space Program folder (and overwrite if you are updating).
+
+- It should now look like this:
+    Kerbal Space Program/GameData/StarshipInterface
+    Kerbal Space Program/Ships/Script  (here the kOS scripts are saved)
+    Kerbal Space Program/Ships/VAB
 
 
 # IMPORTANT!:
-- Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker"). These can be found if you enable stock vehicles in your savegame, or you copy them manually to your savegame.
+- Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker"). Look inside the stock craft category (left hand side) in the VAB's vessel loading menu. These can be found if you enable stock vehicles in your savegame, or you copy them manually to your savegame.
+
 - If the Interface or ship doesn't show up, check again that you fulfill all the requirements listed below or try reinstalling!
+
 - Before filing a bug, read the "Bug support guide" at the bottom of this page.
 
 # REQUIRES:
@@ -41,7 +47,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
     https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued
 
 # RECOMMENDED:
-- HangarExtender (Recommended for being able to load cargo)
+- HangarExtender (Recommended for being able to load cargo without moving the whole ship up and down)
     https://spacedock.info/mod/1428/HangerExtender#stats
 
 # INCOMPATIBLE(!!):
@@ -69,13 +75,15 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 # Known Issues:
 - Your KSP should be set to english for the scripts to work.
 
+- Users reported booster catch may fail if you have MechJeb and the Q or G Limiter reduces thrust where the script wouldn't do that.
+
 - RSS issues:
     - On booster catch the tower may be glitching due to Kraken, and if catch succeeds the booster is probably not recoverable (looking for a fix).
     - Booster/Ship control gets wonky with big ship distances. May cause Ship to fully lose control during booster catching.
 
 - Being in IVA during Booster Separation can cause problems with returning back into the IVA later on, and break the camera. A reload after launch completion fixes everything.
 
-- Enabling logging of data can seldomly cause a crash when it attempts to write and it loses the connection before/during the writing. Logging is therefore disabled by default.
+- Enabling logging of data from the Interfaces settings can seldomly cause a crash when it attempts to write and it loses the connection before/during the writing, usually during timewarp and re-entry. Logging is therefore disabled by default.
 
 
 

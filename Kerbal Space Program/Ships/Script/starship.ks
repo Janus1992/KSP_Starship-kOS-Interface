@@ -1638,12 +1638,24 @@ set cargo1button:onclick to {
         }
     }
     else {
-        for x in range(0, Nose:modules:length) {
-            if Nose:getmodulebyindex(x):hasaction("toggle docking hatch") {
-                Nose:getmodulebyindex(x):DoAction("toggle docking hatch", true).
+        if Nose:getmodule("ModuleAnimateGeneric"):hasevent("open docking hatch") {
+            for x in range(0, Nose:modules:length) {
+                if Nose:getmodulebyindex(x):hasevent("open airlock") {
+                    Nose:getmodulebyindex(x):DoEvent("open airlock").
+                }
+                if Nose:getmodulebyindex(x):hasevent("open docking hatch") {
+                    Nose:getmodulebyindex(x):DoEvent("open docking hatch").
+                }
             }
-            if Nose:getmodulebyindex(x):hasaction("toggle airlock") {
-                Nose:getmodulebyindex(x):DoAction("toggle airlock", true).
+        }
+        if Nose:getmodule("ModuleAnimateGeneric"):hasevent("close docking hatch") {
+            for x in range(0, Nose:modules:length) {
+                if Nose:getmodulebyindex(x):hasevent("close airlock") {
+                    Nose:getmodulebyindex(x):DoEvent("close airlock").
+                }
+                if Nose:getmodulebyindex(x):hasevent("close docking hatch") {
+                    Nose:getmodulebyindex(x):DoEvent("close docking hatch").
+                }
             }
         }
     }
@@ -4445,6 +4457,7 @@ set launchbutton:ontoggle to {
                         InhibitButtons(0, 0, 0).
                         set LaunchToTargetOrbit to false.
                         set LaunchIntoLAN to false.
+                        set SavedInclination to setting3:text.
                         if ShipsInOrbit():length > 0 {
                             set TargetShip to false.
                             until false {
@@ -4464,6 +4477,7 @@ set launchbutton:ontoggle to {
                                     set execute:text to "<b>CONFIRM</b>".
                                     if confirm() {
                                         set TargetShip to tship.
+                                        set setting3:text to round(tship:orbit:inclination, 2) + "°".
                                         break.
                                     }
                                 }
@@ -4487,7 +4501,7 @@ set launchbutton:ontoggle to {
                             }
                         }
                         set IntendedInc to setting3:text:split("°")[0]:toscalar(0).
-                        set data to LAZcalc_init(targetap, setting3:text:split("°")[0]:toscalar(0)).
+                        set data to LAZcalc_init(targetap, IntendedInc).
                         if data[0] = IntendedInc {}
                         else {
                             set message1:text to "<b><color=yellow>Inclination impossible from current latitude..</color></b>".
@@ -4501,6 +4515,7 @@ set launchbutton:ontoggle to {
                                 set execute:text to "<b>EXECUTE</b>".
                                 LogToFile("Launch Function cancelled").
                                 ClearInterfaceAndSteering().
+                                set setting3:text to SavedInclination.
                                 return.
                             }
                         }
@@ -4599,6 +4614,7 @@ set launchbutton:ontoggle to {
                                         InhibitButtons(0, 1, 1).
                                         wait 3.
                                         ClearInterfaceAndSteering().
+                                        set setting3:text to SavedInclination.
                                         return.
                                     }
                                     set LaunchTime to time:seconds + launchWindowList[0] - 19.
@@ -4620,6 +4636,7 @@ set launchbutton:ontoggle to {
                                 }
                                 if cancelconfirmed or time:seconds > LaunchTime + 5 {
                                     ClearInterfaceAndSteering().
+                                    set setting3:text to SavedInclination.
                                     return.
                                 }
                             }
@@ -4644,6 +4661,7 @@ set launchbutton:ontoggle to {
                                     InhibitButtons(0, 1, 1).
                                     wait 3.
                                     ClearInterfaceAndSteering().
+                                    set setting3:text to SavedInclination.
                                     return.
                                 }
                                 set LaunchTime to time:seconds + launchWindowList[0] - 19.
@@ -4664,11 +4682,13 @@ set launchbutton:ontoggle to {
                                 }
                                 if cancelconfirmed or time:seconds > LaunchTime + 5 {
                                     ClearInterfaceAndSteering().
+                                    set setting3:text to SavedInclination.
                                     return.
                                 }
                             }
                             if cancelconfirmed {
                                 ClearInterfaceAndSteering().
+                                set setting3:text to SavedInclination.
                                 return.
                             }
                             Launch().
@@ -4676,6 +4696,7 @@ set launchbutton:ontoggle to {
                         else {
                             set execute:text to "<b>EXECUTE</b>".
                             LogToFile("Launch Function cancelled").
+                            set setting3:text to SavedInclination.
                             ClearInterfaceAndSteering().
                         }
                     }
