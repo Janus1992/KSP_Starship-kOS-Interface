@@ -1,6 +1,8 @@
 # V2.2.17 (2023-11-20)
 - Fix for not launching to 0 degr. incl. target correctly on stock with an inclination set higher than required.
 - Improved Crew airlock/docking hatch logic. Less likely to unsync.
+- Higher RSS fuel vent cutoff value, so as not to return with too little fuel on board.
+- Slightly decreased booster control sensitivity in the final catch stage on stock (> -15m/s VS).
 
 # V2.2.16 (2023-11-18)
 - fix for Interface failing to start. Cause was a variable for Rescale 2.5x.

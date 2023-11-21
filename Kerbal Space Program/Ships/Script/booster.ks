@@ -601,7 +601,7 @@ function Boostback {
                         lock SteeringVector to lookdirup(up:vector - 0.01 * velocity:surface, LandHeadingVector).
                     }
                     else {
-                        lock SteeringVector to lookdirup(up:vector - 0.0175 * velocity:surface, LandHeadingVector).
+                        lock SteeringVector to lookdirup(up:vector - 0.01 * velocity:surface, LandHeadingVector).
                     }
                     lock steering to SteeringVector.
                     if abs(LngError) > 10 and not (RSS) or abs(LatError) > 10 and not (RSS) or abs(LngError) > 20 and RSS or abs(LatError) > 20 and RSS {

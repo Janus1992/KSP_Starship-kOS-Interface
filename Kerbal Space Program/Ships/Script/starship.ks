@@ -119,7 +119,7 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set towerhgt to 96.
     set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
     set DefaultLaunchSite to "28.6084,-80.59975".
-    set FuelVentCutOffValue to 2484.
+    set FuelVentCutOffValue to 3000.
     set FuelBalanceSpeed to 100.
     set LandRollVector to heading(270,0):vector.
     set SafeAltOverLZ to 10000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
@@ -7499,6 +7499,8 @@ function ReEntryAndLand {
         sas off.
         rcs off.
         ActivateEngines(0).
+        Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 15).
+        Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 15).
 
         if ship:body:atm:sealevelpressure < 0.5 {
             ActivateEngines(1).
@@ -7524,8 +7526,6 @@ function ReEntryAndLand {
         if RSS {
             set PitchPID to PIDLOOP(0.00005, 0, 0, -25, 30).
             set YawPID to PIDLOOP(0.0005, 0, 0, -50, 50).
-            Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 0).
-            Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 0).
             when airspeed < 7000 and ship:body:atm:sealevelpressure > 0.5 or airspeed < 3000 and ship:body:atm:sealevelpressure < 0.5 then {
                 set PitchPID to PIDLOOP(0.0001, 0, 0, -25, 30).
                 set YawPID to PIDLOOP(0.005, 0, 0, -50, 50).
@@ -7759,7 +7759,7 @@ function ReEntryData {
     if result = V(0,0,0) {
         set result to lookdirup(facing:forevector, facing:topvector).
     }
-    if vang(facing:forevector, result:vector) > 10 and ship:body:atm:sealevelpressure > 0.5 {
+    if altitude < ship:body:atm:height - 25000 and vang(facing:forevector, result:vector) > 10 and ship:body:atm:sealevelpressure > 0.5 {
         Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
         set tt to time:seconds.
@@ -7889,7 +7889,7 @@ function ReEntryData {
                 set message1:text to "<b>Remaining Flight Time:</b>  " + timeSpanCalculator(ADDONS:TR:TIMETILLIMPACT) + "     <color=red><b>Slope:  </b>" + round(Slope, 1) + "°</color>".
             }
         }
-        else {
+        else if addons:tr:hasimpact {
             set message1:text to "<b>Remaining Flight Time:</b>  " + timeSpanCalculator(ADDONS:TR:TIMETILLIMPACT).
         }
         if DistanceToTarget < 10 {
