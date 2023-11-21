@@ -343,10 +343,14 @@ set TimeSinceDock to 0.
 set TimeSinceLastSteering to 0.
 set TimeToOrbitCompletion to 0.
 set FullTanks to true.
+set AirlockStatus to false.
+set DockingHatchStatus to false.
+set CargoDoorStatus to false.
 
 
 
 //---------------Finding Parts-----------------//
+
 
 
 function FindParts {
@@ -1659,47 +1663,7 @@ set cargo1button:onclick to {
             }
         }
     }
-    set cargo1text:text to Nose:getmodule("ModuleAnimateGeneric"):getfield("status").
-    set cargo1text:style:textcolor to cyan.
-    if ShipType = "Cargo" {
-        when time:seconds > CargoBayOperationStart + 2.05 and not CargoBayDoorHalfOpen then {
-            set CargoBayDoorHalfOpen to true.
-            set cargoimage:style:bg to "starship_img/starship_cargobay_moving".
-        }
-    }
-    else {
-        when time:seconds > CargoBayOperationStart + 2.05 and not CargoBayDoorHalfOpen then {
-            set CargoBayDoorHalfOpen to true.
-            set cargoimage:style:bg to "starship_img/starship_crew_hatch_moving".
-        }
-    }
-    when time:seconds > CargoBayOperationStart + 4.1 then {
-        if ShipType = "Cargo" {
-            if Nose:getmodule("ModuleAnimateGeneric"):hasevent("close cargo door") {
-                set cargoimage:style:bg to "starship_img/starship_cargobay_open".
-                set cargo1text:text to "Open".
-                set cargo1text:style:textcolor to yellow.
-            }
-            else {
-                set cargoimage:style:bg to "starship_img/starship_cargobay_closed".
-                set cargo1text:text to "Closed".
-                set cargo1text:style:textcolor to green.
-            }
-            LogToFile("Cargo Door Operation Complete").
-        }
-        else {
-            if Nose:getmodule("ModuleAnimateGeneric"):hasevent("close docking hatch") {
-                set cargoimage:style:bg to "starship_img/starship_crew_hatch_open".
-                set cargo1text:text to "Open".
-                set cargo1text:style:textcolor to yellow.
-            }
-            else {
-                set cargoimage:style:bg to "starship_img/starship_crew_hatch_closed".
-                set cargo1text:text to "Closed".
-                set cargo1text:style:textcolor to green.
-            }
-        }
-    }
+    LogToFile("Cargo Door Operation Requested").
 }.
     
 
@@ -4422,6 +4386,7 @@ set launchbutton:ontoggle to {
                 }
                 set runningprogram to "Input".
                 set targetap to OriginalTargetAp.
+                updateCargoPage().
                 if alt:radar < 110 {
                     if vang(ship:facing:topvector, heading(90,0):vector) < 30 or ShipType = "Crew" {
                         set Launch180 to true.
@@ -6175,16 +6140,6 @@ if addons:tr:available and not startup {
         }
         if ShipType = "Cargo" {
             cargobutton:show().
-            if Nose:getmodule("ModuleAnimateGeneric"):hasevent("close cargo door") {
-                set cargoimage:style:bg to "starship_img/starship_cargobay_open".
-                set cargo1text:text to "Open".
-                set cargo1text:style:textcolor to yellow.
-            }
-            else {
-                set cargoimage:style:bg to "starship_img/starship_cargobay_closed".
-                set cargo1text:text to "Closed".
-                set cargo1text:style:textcolor to green.
-            }
             set Watchdog to SHIP:PARTSNAMED("SEP.22.SHIP.CARGO.KOS").
             if Watchdog:length = 0 {
                 set Watchdog to SHIP:PARTSNAMED(("SEP.22.SHIP.CARGO.KOS (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
@@ -6196,16 +6151,6 @@ if addons:tr:available and not startup {
         }
         if ShipType = "Crew" {
             cargobutton:show().
-            if Nose:getmodule("ModuleAnimateGeneric"):hasevent("close docking hatch") {
-                set cargoimage:style:bg to "starship_img/starship_crew_hatch_open".
-                set cargo1text:text to "Open".
-                set cargo1text:style:textcolor to yellow.
-            }
-            else {
-                set cargoimage:style:bg to "starship_img/starship_crew_hatch_closed".
-                set cargo1text:text to "Closed".
-                set cargo1text:style:textcolor to green.
-            }
             set Watchdog to SHIP:PARTSNAMED("SEP.22.SHIP.CREW.KOS").
             if Watchdog:length = 0 {
                 set Watchdog to SHIP:PARTSNAMED(("SEP.22.SHIP.CREW.KOS (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
@@ -6690,6 +6635,10 @@ function Launch {
 
         if Boosterconnected {
             when apoapsis > BoosterAp and not AbortLaunchInProgress then {
+                for eng in SLEngines {
+                    eng:getmodule("ModuleSEPRaptor"):doaction("enable actuate out", true).
+                    eng:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
+                }
                 BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
                 lock throttle to 0.5.
                 unlock steering.
@@ -6715,9 +6664,7 @@ function Launch {
                 }
                 set quickengine3:pressed to true.
                 if NrOfVacEngines = 3 or ShipType = "Depot" {
-                    if not (STOCK) {
-                        set quickengine2:pressed to true.
-                    }
+                    set quickengine2:pressed to true.
                 }
                 BoosterInterstage[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
                 Tank:getmodule("ModuleDockingNode"):doaction("undock node", true).
@@ -6744,7 +6691,8 @@ function Launch {
                 else {
                     SetLoadDistances(500000).
                 }
-                LogToFile("Stage-separation Complete").
+                LogToFile("Hot-Staging Complete").
+                set HotStageTime to time:seconds.
                 if CPUSPEED < 1000 {
                     set config:ipu to 1000.
                 }
@@ -6767,6 +6715,11 @@ function Launch {
 
         when StageSepComplete then {
             lock throttle to LaunchThrottle().
+            when time:seconds > HotStageTime + 5 then {
+                for eng in SLEngines {
+                    eng:getmodule("ModuleSEPRaptor"):doaction("disable actuate out", true).
+                }
+            }
             if ShipType = "Depot" {
                 set steeringmanager:yawtorquefactor to 0.1.
             }
@@ -6804,7 +6757,7 @@ function Launch {
                 }
             }
             else {
-                when apoapsis > targetap - 10000 or verticalspeed < 0 then {
+                when apoapsis > targetap - 10000 and time:seconds > HotStageTime + 15 or verticalspeed < 0 then {
                     if NrOfVacEngines = 3 or ShipType = "Depot" {
                         set quickengine2:pressed to false.
                     }
@@ -10816,6 +10769,92 @@ function updateCargoPage {
                         else {
                             set cargo3label2:text to NrofCargoItems + " Items<size=14> (" + round(CargoCG) + "i.u.)</size>".
                         }
+                    }
+                }
+            }
+            if ShipType = "Crew" or ShipType = "Cargo" or ShipType = "Expendable" {
+                for x in range(0, Nose:modules:length) {
+                    if ShipType = "Crew" {
+                        if Nose:getmodulebyindex(x):hasaction("toggle airlock") {
+                            set AirlockStatus to Nose:getmodulebyindex(x):getfield("status").
+                            if Nose:getmodulebyindex(x):hasevent("open airlock") and not (AirlockStatus = "Moving...") {
+                                set AirlockStatus to "Closed".
+                            }
+                            else if Nose:getmodulebyindex(x):hasevent("close airlock") and not (AirlockStatus = "Moving...") {
+                                set AirlockStatus to "Open".
+                            }
+                        }
+                        if Nose:getmodulebyindex(x):hasaction("toggle docking hatch") {
+                            set DockingHatchStatus to Nose:getmodulebyindex(x):getfield("status").
+                            if Nose:getmodulebyindex(x):hasevent("open docking hatch") and not (DockingHatchStatus = "Moving...") {
+                                set DockingHatchStatus to "Closed".
+                            }
+                            else if Nose:getmodulebyindex(x):hasevent("close docking hatch") and not (DockingHatchStatus = "Moving...") {
+                                set DockingHatchStatus to "Open".
+                            }
+                        }
+                    }
+                    if ShipType = "Cargo" or ShipType = "Expendable" {
+                        if Nose:getmodulebyindex(x):hasaction("toggle cargo door") {
+                            set DockingHatchStatus to Nose:getmodulebyindex(x):getfield("status").
+                        }
+                        if DockingHatchStatus = "Locked" and Nose:getmodulebyindex(x):hasevent("open cargo door") {
+                            set cargoimage:style:bg to "starship_img/starship_cargobay_closed".
+                            set cargo1text:style:textcolor to green.
+                            set cargo1text:text to "Closed".
+                        }
+                        else if DockingHatchStatus = "Moving..." {
+                            set cargoimage:style:bg to "starship_img/starship_cargobay_moving".
+                            set cargo1text:style:textcolor to yellow.
+                            set cargo1text:text to "Moving...".
+                        }
+                        else if DockingHatchStatus = "Locked" and Nose:getmodulebyindex(x):hasevent("close cargo door") {
+                            set cargoimage:style:bg to "starship_img/starship_cargobay_open".
+                            set cargo1text:style:textcolor to green.
+                            set cargo1text:text to "Open".
+                        }
+                    }
+                }
+                if ShipType = "Crew" {
+                    if AirlockStatus = "Open" and DockingHatchStatus = "Open" and not (AirlockStatus = "Moving...") and not (DockingHatchStatus = "Moving...") {
+                        set cargo1text:text to "Open".
+                        set cargo1text:style:textcolor to green.
+                    }
+                    else if AirlockStatus = "Moving..." or DockingHatchStatus = "Moving..." {
+                        set cargo1text:text to "Moving...".
+                        set cargo1text:style:textcolor to yellow.
+                    }
+                    else {
+                        set cargo1text:text to "Closed".
+                        set cargo1text:style:textcolor to green.
+                    }
+                    if AirlockStatus = "Closed" and DockingHatchStatus = "Closed" {
+                        set cargoimage:style:bg to "starship_img/starship_crew_hatch_closed_airlock_closed".
+                    }
+                    if AirlockStatus = "Open" and DockingHatchStatus = "Open" {
+                        set cargoimage:style:bg to "starship_img/starship_crew_hatch_open_airlock_open".
+                    }
+                    if AirlockStatus = "Moving..." and DockingHatchStatus = "Open" {
+                        set cargoimage:style:bg to "starship_img/starship_crew_hatch_open_airlock_moving".
+                    }
+                    if AirlockStatus = "Open" and DockingHatchStatus = "Moving..." {
+                        set cargoimage:style:bg to "starship_img/starship_crew_hatch_moving_airlock_open".
+                    }
+                    if AirlockStatus = "Moving..." and DockingHatchStatus = "Closed" {
+                        set cargoimage:style:bg to "starship_img/starship_crew_hatch_closed_airlock_moving".
+                    }
+                    if AirlockStatus = "Closed" and DockingHatchStatus = "Moving..." {
+                        set cargoimage:style:bg to "starship_img/starship_crew_hatch_moving_airlock_closed".
+                        set cargo1text:style:textcolor to yellow.
+                    }
+                    if AirlockStatus = "Moving" and DockingHatchStatus = "Moving..." {
+                        set cargoimage:style:bg to "starship_img/starship_crew_hatch_moving_airlock_moving".
+                    }
+                    if AirlockStatus = "Open" and DockingHatchStatus = "Closed" {
+                        set cargoimage:style:bg to "starship_img/starship_crew_hatch_closed_airlock_open".
+                    }
+                    if AirlockStatus = "Closed" and DockingHatchStatus = "Open" {
+                        set cargoimage:style:bg to "starship_img/starship_crew_hatch_open_airlock_closed".
                     }
                 }
             }

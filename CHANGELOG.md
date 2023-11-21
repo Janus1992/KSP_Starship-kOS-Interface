@@ -1,3 +1,8 @@
+# V2.2.18 (2023-11-21)
+- New airlock/docking hatch/cargo door logic and new images. Now it completely follows the actual door statuses.
+- Enabled SL engines for stock again for 15 seconds after hotstaging.
+- SL engines now actuate out upon hotstaging, until 5 seconds after hotstaging is complete.
+
 # V2.2.17 (2023-11-20)
 - Fix for not launching to 0 degr. incl. target correctly on stock with an inclination set higher than required.
 - Improved Crew airlock/docking hatch logic. Less likely to unsync.
