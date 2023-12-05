@@ -1,0 +1,27 @@
+IMPORTANT:
+
+
+
+
+KNOWN BUGS:
+
+- Log data causes crash when it attempts to write and it loses the connection before it can write.
+- RSS loss of control
+- tower shows 65m after landing.
+- Tanker sometimes doesn't start statusbar updating.
+- during time warp script not rebooting (after error).
+- can't vent separate fuels.
+- Flaps set wrong by 15 degrees on sep. Modify CoM accordingly after SEP update.
+- launch to target that has 90 inclination doesn´t work.
+
+
+
+
+
+
+cfg settable fields:
+name
+moduleID
+SwitchID = moduleID of the B9PS you want to use
+ActionName = the the text that shows up in the PAW and when setting up the action groups. Subtype used if not set. Example: ActionName = IVA --> Next IVA, Previous IVA, Current IVA. would show in game
+ShowCurrentSubtype = boolean value wether to show the current state of the part switch in the PAW and thus also show it to kOS. false if not set

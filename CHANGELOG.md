@@ -1,3 +1,6 @@
+# V2.3.0 (2023-12-05)
+- Update to work with the SEP dev version, may have some new bugs!
+
 # V2.2.18 (2023-11-21)
 - New airlock/docking hatch/cargo door logic and new images. Now it completely follows the actual door statuses.
 - Enabled SL engines for stock again for 15 seconds after hotstaging.

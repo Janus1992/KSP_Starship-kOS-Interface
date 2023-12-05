@@ -42,10 +42,13 @@ set LngCtrl to 0.
 set LngError to 0.
 set LatError to 0.
 set ErrorVector to V(0, 0, 0).
-set BoosterEngines to SHIP:PARTSNAMED("SEP.22.BOOSTER.CLUSTER.KOS").
-set GridFins to SHIP:PARTSNAMED("SEP.22.BOOSTER.GRIDFIN.KOS").
-set BoosterCore to SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS").
-set BoosterInter to SHIP:PARTSNAMED("SEP.22.BOOSTER.INTER.KOS").
+set BoosterEngines to SHIP:PARTSNAMED("SEP.23.BOOSTER.CLUSTER").
+set GridFins to SHIP:PARTSNAMED("SEP.23.BOOSTER.GRIDFIN").
+for part in ship:parts {
+    if part:name:contains("SEP.23.BOOSTER.INTEGRATED") {
+        set BoosterCore to part.
+    }
+}
 set InitialError to -9999.
 set maxDecel to 0.
 set TotalstopTime to 0.
@@ -57,11 +60,17 @@ set GS to 0.
 set BoostBackComplete to false.
 set lastVesselChange to time:seconds.
 set LandingBurnStarted to false.
+set BoosterRA to 0.
 set BoosterHeight to 0.
 set stopTime9 to 0.
 set TimeStabilized to 0.
 set LFBooster to 0.
+set LiftingPointToGridFinDist to 0.
 set MiddleEnginesShutdown to false.
+set StarshipExists to false.
+set TowerExists to false.
+set InitialOverShoot to 0.
+set TargetOLM to false.
 
 set RSS to false.
 set KSRSS to false.
@@ -71,29 +80,34 @@ if bodyexists("Earth") {
         set RSS to true.
         set Planet to "Earth".
         set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
-
-        set BoosterHeight to 71.0.
-        if BoosterCore[0]:hasmodule("FARPartModule") {
-            set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+        set BoosterHeight to 74.9.
+        set BoosterRA to 36.24.
+        set LiftingPointToGridFinDist to 4.5.
+        if BoosterCore:hasmodule("FARPartModule") {
+            set LngCtrlPID to PIDLOOP(0.01, 0.001, 0.001, -15, 15).
         }
         else {
-            set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+            set LngCtrlPID to PIDLOOP(0.01, 0.001, 0.001, -15, 15).
         }
-        set LatCtrlPID to PIDLOOP(0.02, 0.0025, 0.0025, -2, 2).
+        set LatCtrlPID to PIDLOOP(0.01, 0.0000, 0.0000, -2, 2).
         set LFBoosterFuelCutOff to 3600.
         set LandHeadingVector to heading(270,0):vector.
-        set BoosterLandingFactor to 0.9.
-        set BoosterGlideDistance to 12000.
-        set BoosterReturnMass to 238.3.
+        set BoosterLandingFactor to 0.8.
+        set BoosterGlideDistance to 7500.
+        set BoosterReturnMass to 198.3.
         set BoosterRaptorThrust to 2363.
+        set TowerAlignAltitude to 7500.
         set Scale to 1.6.
+        set InitialOverShoot to 450.
     }
     else {
         set KSRSS to true.
         set Planet to "Earth".
         set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
-        set BoosterHeight to 44.2.
-        if BoosterCore[0]:hasmodule("FARPartModule") {
+        set BoosterHeight to 46.8.
+        set BoosterRA to 22.65.
+        set LiftingPointToGridFinDist to 0.5.
+        if BoosterCore:hasmodule("FARPartModule") {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
         }
         else {
@@ -102,11 +116,13 @@ if bodyexists("Earth") {
         set LatCtrlPID to PIDLOOP(0.04, 0.0025, 0.0025, -2.5, 2.5).
         set LFBoosterFuelCutOff to 2400.
         set LandHeadingVector to heading(242,0):vector.
-        set BoosterLandingFactor to 1.0.
-        set BoosterGlideDistance to 4000.
+        set BoosterLandingFactor to 1.05.
+        set BoosterGlideDistance to 6000.
         set BoosterReturnMass to 139.2.
         set BoosterRaptorThrust to 627.
+        set TowerAlignAltitude to 4500.
         set Scale to 1.
+        set InitialOverShoot to 750.
     }
 }
 else {
@@ -114,8 +130,10 @@ else {
         set KSRSS to true.
         set Planet to "Kerbin".
         set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
-        set BoosterHeight to 44.2.
-        if BoosterCore[0]:hasmodule("FARPartModule") {
+        set BoosterHeight to 46.8.
+        set BoosterRA to 22.65.
+        set LiftingPointToGridFinDist to 0.5.
+        if BoosterCore:hasmodule("FARPartModule") {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
         }
         else {
@@ -124,33 +142,48 @@ else {
         set LatCtrlPID to PIDLOOP(0.04, 0.0025, 0.0025, -2.5, 2.5).
         set LFBoosterFuelCutOff to 2400.
         set LandHeadingVector to heading(242,0):vector.
-        set BoosterLandingFactor to 1.0.
-        set BoosterGlideDistance to 4000.
+        set BoosterLandingFactor to 1.05.
+        set BoosterGlideDistance to 6000.
         set BoosterReturnMass to 139.2.
         set BoosterRaptorThrust to 627.
+        set TowerAlignAltitude to 5500.
         set Scale to 1.
+        set InitialOverShoot to 750.
     }
     else {
         set STOCK to true.
         set Planet to "Kerbin".
         set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
-        set BoosterHeight to 44.2.
+        set BoosterHeight to 46.8.
+        set BoosterRA to 22.65.
+        set LiftingPointToGridFinDist to 0.5.
         set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
-        set LatCtrlPID to PIDLOOP(0.05, 0.0005, 0.0005, -2, 2).
+        set LatCtrlPID to PIDLOOP(0.05, 0.0005, 0.0005, -1, 1).
         set LFBoosterFuelCutOff to 2200.
         set LandHeadingVector to heading(270,0):vector.
-        set BoosterLandingFactor to 1.0.
+        set BoosterLandingFactor to 0.8.
         set BoosterGlideDistance to 5000.
         set BoosterReturnMass to 123.3.
         set BoosterRaptorThrust to 667.
+        set TowerAlignAltitude to 5500.
         set Scale to 1.
+        set InitialOverShoot to 750.
     }
 }
-lock RadarAlt to alt:radar - BoosterHeight.
+lock RadarAlt to alt:radar - BoosterRA.
 
-for res in BoosterCore[0]:resources {
+for res in BoosterCore:resources {
     if res:name = "LqdMethane" {
         set LFBoosterFuelCutOff to LFBoosterFuelCutOff * 5.310536.
+    }
+}
+
+for fin in GridFins {
+    if fin:hasmodule("ModuleControlSurface") {
+        fin:getmodule("ModuleControlSurface"):SetField("authority limiter", 32).
+    }
+    if fin:hasmodule("SyncModuleControlSurface") {
+        fin:getmodule("SyncModuleControlSurface"):SetField("authority limiter", 32).
     }
 }
 
@@ -165,7 +198,7 @@ print "Booster Nominal Operation, awaiting command..".
 until False {
     set ShipConnectedToBooster to false.
     for Part in SHIP:PARTS {
-        if Part:name:contains("SEP.22.SHIP.BODY.KOS") {
+        if Part:name:contains("SEP.23.SHIP.BODY") {
             set ShipConnectedToBooster to true.
         }
     }
@@ -190,12 +223,14 @@ until False {
 function Boostback {
     parameter roll.
 
-    wait until SHIP:PARTSNAMED("SEP.22.SHIP.BODY.KOS"):LENGTH = 0 and SHIP:PARTSNAMED("SEP.22.SHIP.BODY.EXP.KOS"):LENGTH = 0 and SHIP:PARTSNAMED("SEP.22.SHIP.DEPOT.KOS"):LENGTH = 0.
+    wait until SHIP:PARTSNAMED("SEP.23.SHIP.BODY"):LENGTH = 0 and SHIP:PARTSNAMED("SEP.23.SHIP.BODY.EXP"):LENGTH = 0 and SHIP:PARTSNAMED("SEP.23.SHIP.DEPOT"):LENGTH = 0.
     set ship:name to "Booster".
     unlock steering.
-    lock throttle to 1.
+    //if verticalspeed > 0 {
+        lock throttle to 1.
+    //}
     sas off.
-    set SteeringManager:ROLLCONTROLANGLERANGE to 10.
+    set SteeringManager:ROLLCONTROLANGLERANGE to 25.
     wait 0.1.
     HUDTEXT("Performing Boostback Burn..", 30, 2, 20, green, false).
     clearscreen.
@@ -229,32 +264,15 @@ function Boostback {
         set landingzone to latlng(-000.0972,-074.5577).
     }
 
-    for var in LaunchSites:keys {
-        if RSS {
-            if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 3) = round(landingzone:lat, 3) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 3) = round(landingzone:lng, 3) {
-                set TargetOLM to var + " OrbitalLaunchMount".
-                break.
-            }
-        }
-        else {
-            if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(landingzone:lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(landingzone:lng, 2) {
-                set TargetOLM to var + " OrbitalLaunchMount".
-                break.
-            }
-        }
-        list targets in OLMTargets.
-        if OLMTargets:length > 0 {
-            for x in OLMTargets {
-                if x:name:contains("OrbitalLaunchMount") {
-                    if round(body:geopositionof(x:position):lat, 2) = round(landingzone:lat, 2) and round(body:geopositionof(x:position):lng, 2) = round(landingzone:lng, 2) {
-                        set TargetOLM to x:name.
-                        break.
-                    }
+    list targets in OLMTargets.
+    if OLMTargets:length > 0 {
+        for x in OLMTargets {
+            if x:name:contains("OrbitalLaunchMount") {
+                set TowerExists to true.
+                if round(body:geopositionof(x:position):lat, 2) = round(landingzone:lat, 2) and round(body:geopositionof(x:position):lng, 2) = round(landingzone:lng, 2) {
+                    set TargetOLM to x:name.
                 }
             }
-        }
-        else {
-            set TargetOLM to false.
         }
     }
 
@@ -301,7 +319,7 @@ function Boostback {
     if defined L {
         if L:haskey("Ship Name") {
             set starship to L["Ship Name"].
-            until ShipFound {
+            until ShipFound or verticalspeed < 0 {
                 list targets in tgtlist.
                 for tgt in tgtlist {
                     if (tgt:name) = (starship) {
@@ -322,7 +340,9 @@ function Boostback {
         wait 0.1.
     }
 
-    BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("previous engine mode", true).
+    if verticalspeed > 0 {
+        BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("previous engine mode", true).
+    }
     if RSS {
         lock throttle to min(-(LngError + BoosterGlideDistance - 1000) / 20000 + 0.01, 7.5 * 9.81 / (max(ship:availablethrust, 0.000001) / ship:mass)).
         lock SteeringVector to lookdirup(vxcl(up:vector, -ErrorVector), -up:vector).
@@ -337,7 +357,7 @@ function Boostback {
     print "Available Thrust: " + round(max(ship:availablethrust, 0.000001)) + "kN".
     wait 0.1.
 
-    until ErrorVector:mag < BoosterGlideDistance + 5000 {
+    until ErrorVector:mag < BoosterGlideDistance + 5000 or verticalspeed < 0 {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         SetBoosterActive().
@@ -348,7 +368,7 @@ function Boostback {
     lock SteeringVector to lookdirup(CurrentVec, ApproachVector:normalized - 0.5 * up:vector:normalized).
     lock steering to SteeringVector.
 
-    until LngError > -BoosterGlideDistance {
+    until LngError > -BoosterGlideDistance or verticalspeed < 0 {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         SetBoosterActive().
@@ -362,39 +382,41 @@ function Boostback {
 
     CheckFuel().
     if LFBooster > LFBoosterFuelCutOff {
-        BoosterCore[0]:activate.
+        BoosterCore:activate.
     }
 
     set SteeringManager:maxstoppingtime to 5.
     lock SteeringVector to lookdirup(CurrentVec * AngleAxis(-6 * min(time:seconds - turnTime, 22.5), lookdirup(CurrentVec, up:vector):starvector), -up:vector).
     lock steering to SteeringVector.
 
-    until time:seconds - turnTime > 15 {
-        SteeringCorrections().
-        SetBoosterActive().
-        rcs on.
-        CheckFuel().
-        wait 0.1.
-    }
+    if vang(facing:forevector, lookdirup(CurrentVec * AngleAxis(-6 * 22.5, lookdirup(CurrentVec, up:vector):starvector), -up:vector):vector) > 10 {
+        until time:seconds - turnTime > 15 {
+            SteeringCorrections().
+            SetBoosterActive().
+            rcs on.
+            CheckFuel().
+            wait 0.1.
+        }
 
-    lock SteeringVector to lookdirup(CurrentVec * AngleAxis(-6 * min(time:seconds - turnTime, 22.5), lookdirup(CurrentVec, up:vector):starvector), up:vector).
-    lock steering to SteeringVector.
+        lock SteeringVector to lookdirup(CurrentVec * AngleAxis(-6 * min(time:seconds - turnTime, 22.5), lookdirup(CurrentVec, up:vector):starvector), up:vector).
+        lock steering to SteeringVector.
 
-    until time:seconds - turnTime > 19 {
-        SteeringCorrections().
-        SetBoosterActive().
-        rcs on.
-        CheckFuel().
-        wait 0.1.
-    }
-    set SteeringManager:maxstoppingtime to 2.
+        until time:seconds - turnTime > 19 {
+            SteeringCorrections().
+            SetBoosterActive().
+            rcs on.
+            CheckFuel().
+            wait 0.1.
+        }
+        set SteeringManager:maxstoppingtime to 2.
 
-    until time:seconds - turnTime > 30 {
-        SteeringCorrections().
-        SetBoosterActive().
-        rcs on.
-        CheckFuel().
-        wait 0.1.
+        until time:seconds - turnTime > 30 {
+            SteeringCorrections().
+            SetBoosterActive().
+            rcs on.
+            CheckFuel().
+            wait 0.1.
+        }
     }
 
     set switchTime to time:seconds.
@@ -416,10 +438,16 @@ function Boostback {
         wait 0.1.
     }
 
-    BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 5).
+    BoosterCore:getmodule("ModuleRCSFX"):SetField("thrust limiter", 5).
 
     if not (starship = "xxx") {
-        KUniverse:forceactive(vessel(starship)).
+        list targets in tlist.
+        for tgt in tlist {
+            if tgt:name:contains(starship) {
+                KUniverse:forceactive(vessel(starship)).
+                set StarshipExists to true.
+            }
+        }
     }
     else {
         if homeconnection:isconnected {
@@ -437,13 +465,13 @@ function Boostback {
         }
     }
 
-    until altitude < 30000 and not (RSS) or altitude < 50000 and RSS {
+    until altitude < 30000 and not (RSS) or altitude < 75000 and RSS {
         SteeringCorrections().
         rcs on.
         CheckFuel().
         if abs(steeringmanager:angleerror) > 10 {
             SetBoosterActive().
-            BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 25).
+            BoosterCore:getmodule("ModuleRCSFX"):SetField("thrust limiter", 25).
         }
         else if abs(steeringmanager:angleerror) < 0.25 and KUniverse:activevessel = ship {
             if TimeStabilized = "0" {
@@ -452,7 +480,7 @@ function Boostback {
             }
             if time:seconds - TimeStabilized > 5 {
                 SetStarshipActive().
-                BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 10).
+                BoosterCore:getmodule("ModuleRCSFX"):SetField("thrust limiter", 10).
                 set TimeStabilized to 0.
             }
         }
@@ -462,23 +490,24 @@ function Boostback {
         wait 0.1.
     }
 
-    BoosterCore[0]:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
-    lock SteeringVector to lookdirup(-velocity:surface * AngleAxis(-LngCtrl, lookdirup(-velocity:surface, up:vector):starvector) * AngleAxis(LatCtrl, up:vector), up:vector * AngleAxis(-2 * LatCtrl, ApproachVector)).
+    BoosterCore:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
+    //lock SteeringVector to lookdirup(-velocity:surface * AngleAxis(-LngCtrl, lookdirup(-velocity:surface, up:vector):starvector) * AngleAxis(LatCtrl, up:vector), up:vector * AngleAxis(-2 * LatCtrl, ApproachVector)).
+    lock SteeringVector to lookdirup(-velocity:surface * AngleAxis(-LngCtrl, lookdirup(-velocity:surface, up:vector):starvector) * AngleAxis(LatCtrl, up:vector), ApproachVector * AngleAxis(2 * LatCtrl, up:vector)).
     lock steering to SteeringVector.
 
     when RSS and LngError > LngCtrlPID:setpoint - 500 or not (RSS) and LngError > LngCtrlPID:setpoint - 100 then {
         if RSS {
-            set LngCtrlPID to PIDLOOP(0.025, 0.005, 0.005, -20, 20).
-            when altitude < 5000 then {
-                set LngCtrlPID:kp to 0.1.
-            }
+            set LngCtrlPID to PIDLOOP(0.1, 0.005, 0.005, -10, 10).
+            //when altitude < TowerAlignAltitude then {
+            //    set LngCtrlPID:kp to 0.025.
+            //}
         }
         else {
-            if BoosterCore[0]:hasmodule("FARPartModule") {
-                set LngCtrlPID to PIDLOOP(0.1, 0.015, 0.015, -20, 20).
+            if BoosterCore:hasmodule("FARPartModule") {
+                set LngCtrlPID to PIDLOOP(0.1, 0.015, 0.015, -10, 10).
             }
             else {
-                set LngCtrlPID to PIDLOOP(0.1, 0.015, 0.015, -20, 20).
+                set LngCtrlPID to PIDLOOP(0.1, 0.015, 0.015, -10, 10).
             }
             when altitude < 5000 then {
                 set LngCtrlPID:kp to 0.2.
@@ -512,34 +541,31 @@ function Boostback {
 
     if abs(LngError) > 600 or abs(LatError) > 150 {
         set LandSomewhereElse to true.
-        lock RadarAlt to alt:radar - BoosterHeight.
+        lock RadarAlt to alt:radar - BoosterRA.
         HUDTEXT("Mechazilla out of range..", 10, 2, 20, red, false).
         HUDTEXT("Landing somewhere else..", 10, 2, 20, red, false).
         lock SteeringVector to lookdirup(-1 * velocity:surface, ApproachVector).
         lock steering to SteeringVector.
     }
 
-    when alt:radar < 1500 and not (LandSomewhereElse) then {
-        if not (TargetOLM = "false") and Vessel(TargetOLM):distance < 2250 {
-            if RSS {
-                lock RadarAlt to alt:radar - ((Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position - Body(Planet):position):mag - SHIP:BODY:RADIUS - Vessel(TargetOLM):geoposition:terrainheight) - 3.64.
-            }
-            else {
-                lock RadarAlt to alt:radar - ((Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position - Body(Planet):position):mag - SHIP:BODY:RADIUS - Vessel(TargetOLM):geoposition:terrainheight).
-            }
-            when RadarAlt < 5 * BoosterHeight and vxcl(up:vector, landingzone:position - ship:position):mag < 7.5 or RadarAlt < 2 * BoosterHeight then {
-                sendMessage(Vessel(TargetOLM), "MechazillaArms,8,6,60,true").
-                sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
-                when RadarAlt < BoosterHeight then {
-                    set TimeToZero to -verticalspeed / min(maxDecel - 9.81, 5 + 9.81) - 0.5.
-                    set ArmIdealSpeed to 30 / TimeToZero.
-                    sendMessage(Vessel(TargetOLM), ("MechazillaArms,8," + ArmIdealSpeed + ",60,false")).
+    when RadarAlt < 1500 and not (LandSomewhereElse) then {
+        if not (TargetOLM = "false") and TowerExists {
+            if Vessel(TargetOLM):distance < 2250 {
+                lock RadarAlt to vdot(up:vector, GridFins[0]:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position) - LiftingPointToGridFinDist.
+                when RadarAlt < 5 * BoosterHeight and vxcl(up:vector, landingzone:position - ship:position):mag < 7.5 or RadarAlt < 2 * BoosterHeight then {
+                    sendMessage(Vessel(TargetOLM), "MechazillaArms,8,6,60,true").
+                    sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
+                    when RadarAlt < BoosterHeight then {
+                        set TimeToZero to -verticalspeed / min(maxDecel - 9.81, 5 + 9.81) - 0.5.
+                        set ArmIdealSpeed to 30 / TimeToZero.
+                        sendMessage(Vessel(TargetOLM), ("MechazillaArms,8," + ArmIdealSpeed + ",60,false")).
+                    }
                 }
             }
         }
     }
 
-    if BoosterCore[0]:hasmodule("FARPartModule") {
+    if BoosterCore:hasmodule("FARPartModule") {
         set MaxError to 100.
     }
     else {
@@ -551,7 +577,7 @@ function Boostback {
         BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
         lock throttle to (landingRatio * min(maxDecel, 5 + 9.81)) / maxDecel.
         if LngError > 250 or LngError < -50 or abs(LatError) > 25 {
-            lock RadarAlt to alt:radar - BoosterHeight.
+            lock RadarAlt to alt:radar - BoosterRA.
             set LandSomewhereElse to true.
             HUDTEXT("Mechazilla out of range..", 10, 2, 20, red, false).
             HUDTEXT("Landing somewhere else..", 10, 2, 20, red, false).
@@ -574,10 +600,10 @@ function Boostback {
                         lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.03 * ErrorVector, LandHeadingVector).
                     }
                     else if KSRSS {
-                        lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.035 * ErrorVector, LandHeadingVector).
+                        lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.0275 * ErrorVector, LandHeadingVector).
                     }
                     else {
-                        lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.04 * ErrorVector, LandHeadingVector).
+                        lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.03 * ErrorVector, LandHeadingVector).
                     }
                     lock steering to SteeringVector.
                 }
@@ -586,7 +612,7 @@ function Boostback {
                         lock SteeringVector to lookdirup(up:vector - 0.015 * velocity:surface - 0.0035 * ErrorVector, LandHeadingVector).
                     }
                     else if KSRSS {
-                        lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.01 * ErrorVector, LandHeadingVector).
+                        lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.0075 * ErrorVector, LandHeadingVector).
                     }
                     else {
                         lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.02 * ErrorVector, LandHeadingVector).
@@ -606,7 +632,7 @@ function Boostback {
                     lock steering to SteeringVector.
                     if abs(LngError) > 10 and not (RSS) or abs(LatError) > 10 and not (RSS) or abs(LngError) > 20 and RSS or abs(LatError) > 20 and RSS {
                         set LandSomewhereElse to true.
-                        lock RadarAlt to alt:radar - BoosterHeight.
+                        lock RadarAlt to alt:radar - BoosterRA.
                         lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface, LandHeadingVector).
                         lock steering to SteeringVector.
                         HUDTEXT("Mechazilla out of range..", 10, 2, 20, red, false).
@@ -618,7 +644,7 @@ function Boostback {
     }
 
 
-    until verticalspeed > -0.01 and RadarAlt < 1.5 and ship:status = "LANDED" or verticalspeed > 0.75 and RadarAlt < 2.5 {
+    until verticalspeed > -0.01 and RadarAlt < 1.5 and ship:status = "LANDED" or verticalspeed > 0.25 and RadarAlt < 2.5 {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         if RadarAlt > 500 {
@@ -736,9 +762,9 @@ function Boostback {
         HUDTEXT("Booster may now be recovered!", 10, 2, 20, green, false).
     }
     unlock throttle.
-    if BoosterInter[0]:getmodule("ModuleSepPartSwitchAction"):getfield("current decouple system") = "Decoupler" {
-        BoosterInter[0]:getmodule("ModuleSepPartSwitchAction"):DoAction("next decouple system", true).
-    }
+    //if BoosterCore:getmodule("ModuleSepPartSwitchAction"):getfield("current decouple system") = "Decoupler" {
+    //    BoosterCore:getmodule("ModuleSepPartSwitchAction"):DoAction("next decouple system", true).
+    //}
 
     if RSS {
         wait 2.
@@ -783,11 +809,11 @@ FUNCTION SteeringCorrections {
                 set InitialError to LngError.
             }
 
-            if altitude > 4000 {
-                set LngCtrlPID:setpoint to min(750, 0.5 * vdot(ApproachVector, vxcl(up:vector, landingzone:position - ship:position))).
+            if altitude > TowerAlignAltitude {
+                set LngCtrlPID:setpoint to min(InitialOverShoot, 0.5 * vdot(ApproachVector, vxcl(up:vector, landingzone:position - ship:position))).
             }
             else {
-                set LngCtrlPID:setpoint to 2 * BoosterLandingFactor * GS.
+                set LngCtrlPID:setpoint to min(2 * BoosterLandingFactor * GS, 350).
             }
 
             set LngCtrl to -LngCtrlPID:UPDATE(time:seconds, LngError).
@@ -822,7 +848,7 @@ FUNCTION SteeringCorrections {
             }
 
             if LandSomewhereElse {
-                set RadarAlt to alt:radar - BoosterHeight.
+                set RadarAlt to alt:radar - BoosterRA.
             }
         }
 
@@ -832,9 +858,9 @@ FUNCTION SteeringCorrections {
         print "Radar Alt: " + round(RadarAlt) + "m".
         //print " ".
 
-        //if altitude < 15000 and not (RSS) or altitude < 50000 and RSS {
-        //    print "LngCtrl: " + round(LngCtrl, 2).
-        //    print "LatCtrl: " + round(LatCtrl, 2).
+        if altitude < 15000 and not (RSS) or altitude < 50000 and RSS {
+            print "LngCtrl: " + round(LngCtrl, 2).
+            print "LatCtrl: " + round(LatCtrl, 2).
         //    print " ".
         //    print "Max Decel: " + round(maxDecel, 2).
         //    print "Radar Alt: " + round(RadarAlt).
@@ -842,7 +868,7 @@ FUNCTION SteeringCorrections {
         //    print "Stop Distance: " + round(TotalstopDist, 2).
         //    print "Stop Distance 3: " + round(stopDist3, 2).
         //    print "Landing Ratio: " + round(landingRatio, 2).
-        //}
+        }
     }
     else {
         clearscreen.
@@ -911,7 +937,7 @@ function SetBoosterActive {
 
 
 function SetStarshipActive {
-    if KUniverse:activevessel = vessel(ship:name) and time:seconds > lastVesselChange + 2 {
+    if KUniverse:activevessel = vessel(ship:name) and time:seconds > lastVesselChange + 2 and StarshipExists {
         HUDTEXT("Setting focus to Ship..", 3, 2, 20, yellow, false).
         KUniverse:forceactive(vessel(starship)).
         set lastVesselChange to time:seconds.
@@ -966,17 +992,17 @@ function SetLoadDistances {
 
 
 function CheckFuel {
-    for res in BoosterCore[0]:resources {
+    for res in BoosterCore:resources {
         if res:name = "LiquidFuel" {
             set LFBooster to res:amount.
             if LFBooster < LFBoosterFuelCutOff {
-                BoosterCore[0]:shutdown.
+                BoosterCore:shutdown.
             }
         }
         if res:name = "LqdMethane" {
             set LFBooster to res:amount.
             if LFBooster < LFBoosterFuelCutOff {
-                BoosterCore[0]:shutdown.
+                BoosterCore:shutdown.
             }
         }
     }

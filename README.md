@@ -4,9 +4,10 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 ![Alt text](/Infographic.png)
 
+# If you have a version OLDER than V2.3 installed please DELETE the starship .crafts from /ships/VAB and please also DELETE the StarshipInterface folder from /gamedata!!
 
 # INSTALL INSTRUCTIONS (NO CKAN SUPPORT!):
-- Download and install all requirements listed below (pay attention: SLE needs the DEV version, not available on CKAN. SEP requires the github green button download-all, not the releases).
+- Download and install all requirements listed below (pay attention: SLE and SEP need the DEV version, not available on CKAN. SEP requires the github green button download-all, not the releases).
 
 - If you update: first delete the 'StarshipInterface' folder!
 
@@ -31,15 +32,15 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 # REQUIRES:
 - Stock-size Kerbin, RSS, KSRSS (default size) or ReScale 2.5x (with a Folder called "ReScale 2.5x" in /gamedata), and the language has to be set to "english" (important).
-- Starship Expansion Project - github repository version and its requirements (!!)
+- Starship Expansion Project - github repository DEV (!!) version and its requirements (!!)
     https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
-    Github version: https://github.com/Kari1407/Starship-Expansion-Project
+    Github version: https://github.com/Kari1407/Starship-Expansion-Project/tree/V2.1_Dev
 - Starship Launch Expansion - the DEV version(!!)
     https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229
     Dev Version: https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev
 - kOS
     https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/
-- Trajectories, and its requirements!`
+- Trajectories, and its requirements!
     https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/
 - TundraExploration (actually only TundraExploration.dll)
     https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/

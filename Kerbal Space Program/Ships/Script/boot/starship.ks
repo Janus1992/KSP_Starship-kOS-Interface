@@ -1,7 +1,7 @@
 //
 // SEP Starship kOS Script
 //
-// Version 2.2 - GNUGPL3
+// Version 2.3 - GNUGPL3
 // Janus92
 //
 //
@@ -109,10 +109,10 @@ for res in Core:part:resources {
 if RSS {    // Set of variables when Real Solar System has been installed
     set aoa to 60.
     set MaxCargoToOrbit to 150000.
-    set MaxReEntryCargoThickAtmo to 30000.
+    set MaxReEntryCargoThickAtmo to 15000.
     set MaxIU to 400.
     set MaxReEntryCargoThinAtmo to 150000.
-    set LaunchTimeSpanInSeconds to 540.     // To be determined..
+    set LaunchTimeSpanInSeconds to 500.
     set ShipHeight to 49.7.
     set BoosterMinPusherDistance to 0.48.
     set ShipMinPusherDistance to 1.12.
@@ -120,10 +120,9 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set LaunchSites to lexicon("KSC", "28.6084,-80.59975").
     set DefaultLaunchSite to "28.6084,-80.59975".
     set FuelVentCutOffValue to 3000.
-    set FuelBalanceSpeed to 100.
     set LandRollVector to heading(270,0):vector.
     set SafeAltOverLZ to 10000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
-    set OriginalTargetAp to 250000.
+    set OriginalTargetAp to 225000.
     set RCSThrust to 100.
     set RCSBurnTimeLimit to 240.
     if Methane {
@@ -140,10 +139,10 @@ if RSS {    // Set of variables when Real Solar System has been installed
 else if KSRSS {
     set aoa to 60.
     set MaxCargoToOrbit to 125005.
-    set MaxReEntryCargoThickAtmo to 15000.
+    set MaxReEntryCargoThickAtmo to 7500.
     set MaxIU to 300.
     set MaxReEntryCargoThinAtmo to 100000.
-    set LaunchTimeSpanInSeconds to 340.
+    set LaunchTimeSpanInSeconds to 360.
     set ShipHeight to 31.0.
     set BoosterMinPusherDistance to 0.3.
     set ShipMinPusherDistance to 0.7.
@@ -157,7 +156,6 @@ else if KSRSS {
         set DefaultLaunchSite to "28.5166,-81.2062".
     }
     set FuelVentCutOffValue to 1138.5.
-    set FuelBalanceSpeed to 40.
     set LandRollVector to heading(242,0):vector.
     set SafeAltOverLZ to 5000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
     set OriginalTargetAp to 125000.
@@ -176,8 +174,8 @@ else if KSRSS {
 }
 else {  // Set of variables when Real Solar System has NOT been installed
     set aoa to 60.
-    set MaxCargoToOrbit to 75000.
-    set MaxReEntryCargoThickAtmo to 15000.
+    set MaxCargoToOrbit to 76800.
+    set MaxReEntryCargoThickAtmo to 7500.
     set MaxIU to 260.
     set MaxReEntryCargoThinAtmo to 75000.
     set LaunchTimeSpanInSeconds to 265.
@@ -188,7 +186,6 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
     set DefaultLaunchSite to "-0.0972,-74.5577".
     set FuelVentCutOffValue to 931.5.
-    set FuelBalanceSpeed to 40.
     set LandRollVector to heading(270,0):vector.
     set SafeAltOverLZ to 2500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
     set OriginalTargetAp to 75000.
@@ -209,8 +206,8 @@ set SNStart to 30.  // Defines the first Serial Number when multiple ships are f
 set MaxTilt to 2.5.  // Defines maximum allowed slope for the Landing Zone Search Function
 set maxstabengage to 50.  // Defines max closing of the stabilizers after landing.
 set CPUSPEED to 500.  // Defines cpu speed in lines per second.
-set FWDFlapDefault to 65.
-set AFTFlapDefault to 50.
+set FWDFlapDefault to 60.
+set AFTFlapDefault to 60.
 set rcsRaptorBoundary to 100.  // Defines the custom burn boundary velocity where the ship will burn either RCS below it or Raptors above it.
 
 
@@ -354,7 +351,7 @@ set CargoDoorStatus to false.
 
 
 function FindParts {
-    if ship:dockingports[0]:haspartner and SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS"):length = 0 {
+    if ship:dockingports[0]:haspartner and SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 {
         set ShipIsDocked to true.
     }
     else {
@@ -370,7 +367,7 @@ function FindParts {
     set CargoCoG to 0.
     set SLEnginesStep to List().
     set VACEnginesStep to List().
-    if Tank:name:contains("SEP.23.SHIP.DEPOT.KOS") {
+    if Tank:name:contains("SEP.23.SHIP.DEPOT") {
         set ShipType to "Depot".
         set CargoMassStep to CargoMassStep + Tank:mass - Tank:drymass.
         if stock {
@@ -390,31 +387,31 @@ function FindParts {
     function TreeWalking {
         parameter StartPart.
         for x in StartPart:children {
-            if x:name:contains("SEP.22.BOOSTER.INTER.KOS") {}
-            else if x:name:contains("SEP.22.SHIP.BODY.KOS") {}
+            if x:name:contains("SEP.23.BOOSTER.INTEGRATED") {}
+            else if x:name:contains("SEP.23.SHIP.BODY") {}
             else {
-                if x:name:contains("SEP.22.RAPTOR2.SL.KOS") {
+                if x:name:contains("SEP.23.RAPTOR2.SL.RC") {
                     SLEnginesStep:add(x).
                 }
-                else if x:name:contains("SEP.22.RAPTOR.VAC.KOS") {
+                else if x:name:contains("SEP.23.RAPTOR.VAC") {
                     VACEnginesStep:add(x).
                 }
-                else if x:name:contains("SEP.22.SHIP.AFT.LEFT.KOS") {
+                else if x:name:contains("SEP.23.SHIP.AFT.LEFT") {
                     set ALflap to x.
                 }
-                else if x:name:contains("SEP.22.SHIP.AFT.RIGHT.KOS") {
+                else if x:name:contains("SEP.23.SHIP.AFT.RIGHT") {
                     set ARflap to x.
                 }
-                else if x:name:contains("SEP.22.SHIP.FWD.LEFT.KOS") or x:title = "Donnager MK-1 Front Left Flap" or x:title = "Starship Forward Left Flap" {
+                else if x:name:contains("SEP.23.SHIP.FWD.LEFT") or x:title = "Donnager MK-1 Front Left Flap" or x:title = "Starship Forward Left Flap" {
                     set FLflap to x.
                 }
                 else if x:title = "Starship Forward Left Flap" {
                     set FLflap to x.
                 }
-                else if x:name:contains("SEP.22.SHIP.FWD.RIGHT.KOS") or x:title = "Donnager MK-1 Front Right Flap" or x:title = "Starship Forward Right Flap" {
+                else if x:name:contains("SEP.23.SHIP.FWD.RIGHT") or x:title = "Donnager MK-1 Front Right Flap" or x:title = "Starship Forward Right Flap" {
                     set FRflap to x.
                 }
-                else if x:name:contains("SEP.22.SHIP.HEADER.KOS") {
+                else if x:name:contains("SEP.23.SHIP.HEADER") {
                     set HeaderTank to x.
                 }
                 else if x:title = "Donnager MK-1 Header Tank" {
@@ -423,17 +420,17 @@ function FindParts {
                 else if x:title = "Starship Header Tank" {
                     set HeaderTank to x.
                 }
-                else if x:name:contains("SEP.22.SHIP.CARGO.KOS") {
+                else if x:name:contains("SEP.23.SHIP.CARGO") {
                     set Nose to x.
                     set ShipType to "Cargo".
                     set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
                 }
-                else if x:name:contains("SEP.22.SHIP.CREW.KOS") {
+                else if x:name:contains("SEP.23.SHIP.CREW") {
                     set Nose to x.
                     set ShipType to "Crew".
                     set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
                 }
-                else if x:name:contains("SEP.22.SHIP.TANKER.KOS") {
+                else if x:name:contains("SEP.23.SHIP.TANKER") {
                     set Nose to x.
                     set ShipType to "Tanker".
                     set CargoMassStep to CargoMassStep + x:mass - x:drymass.
@@ -442,7 +439,7 @@ function FindParts {
                         set MaxCargoToOrbit to 150000.
                     }
                 }
-                else if x:name:contains("SEP.23.SHIP.NOSE.EXP.KOS") {
+                else if x:name:contains("SEP.23.SHIP.NOSE.EXP") {
                     set Nose to x.
                     set ShipType to "Expendable".
                     set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
@@ -483,12 +480,11 @@ function FindParts {
         }
     }
 
-    if SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS"):length > 0 {
+    if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length > 0 {
         set Boosterconnected to true.
-        set BoosterEngines to SHIP:PARTSNAMED("SEP.22.BOOSTER.CLUSTER.KOS").
-        set GridFins to SHIP:PARTSNAMED("SEP.22.BOOSTER.GRIDFIN.KOS").
-        set BoosterInterstage to SHIP:PARTSNAMED("SEP.22.BOOSTER.INTER.KOS").
-        set BoosterCore to SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS").
+        set BoosterEngines to SHIP:PARTSNAMED("SEP.23.BOOSTER.CLUSTER").
+        set GridFins to SHIP:PARTSNAMED("SEP.23.BOOSTER.GRIDFIN").
+        set BoosterCore to SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED").
         if BoosterCore:length > 0 {
             set BoosterCore[0]:getmodule("kOSProcessor"):volume:name to "Booster".
         }
@@ -532,13 +528,13 @@ unlock throttle.
 
 if OnOrbitalMount {
     if RSS {
-        sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,8.15,0.5").
+        sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,6.4,0.5").
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,1,97.5,false").
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.2,1.12,false").
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaStabilizers,0").
     }
     else {
-        sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,5,0.5").
+        sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,4,0.5").
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,1,97.5,false").
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.2,0.7,false").
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaStabilizers,0").
@@ -6140,9 +6136,9 @@ if addons:tr:available and not startup {
         }
         if ShipType = "Cargo" {
             cargobutton:show().
-            set Watchdog to SHIP:PARTSNAMED("SEP.22.SHIP.CARGO.KOS").
+            set Watchdog to SHIP:PARTSNAMED("SEP.23.SHIP.CARGO").
             if Watchdog:length = 0 {
-                set Watchdog to SHIP:PARTSNAMED(("SEP.22.SHIP.CARGO.KOS (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
+                set Watchdog to SHIP:PARTSNAMED(("SEP.23.SHIP.CARGO (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
             }
             else {
                 set Watchdog to Watchdog[0]:getmodule("kOSProcessor").
@@ -6151,9 +6147,9 @@ if addons:tr:available and not startup {
         }
         if ShipType = "Crew" {
             cargobutton:show().
-            set Watchdog to SHIP:PARTSNAMED("SEP.22.SHIP.CREW.KOS").
+            set Watchdog to SHIP:PARTSNAMED("SEP.23.SHIP.CREW").
             if Watchdog:length = 0 {
-                set Watchdog to SHIP:PARTSNAMED(("SEP.22.SHIP.CREW.KOS (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
+                set Watchdog to SHIP:PARTSNAMED(("SEP.23.SHIP.CREW (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
             }
             else {
                 set Watchdog to Watchdog[0]:getmodule("kOSProcessor").
@@ -6162,9 +6158,9 @@ if addons:tr:available and not startup {
         }
         if ShipType = "Tanker" {
             set cargo1text:text to "Closed".
-            set Watchdog to SHIP:PARTSNAMED("SEP.22.SHIP.TANKER.KOS").
+            set Watchdog to SHIP:PARTSNAMED("SEP.23.SHIP.TANKER").
             if Watchdog:length = 0 {
-                set Watchdog to SHIP:PARTSNAMED(("SEP.22.SHIP.TANKER.KOS (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
+                set Watchdog to SHIP:PARTSNAMED(("SEP.23.SHIP.TANKER (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
             }
             else {
                 set Watchdog to Watchdog[0]:getmodule("kOSProcessor").
@@ -6173,9 +6169,9 @@ if addons:tr:available and not startup {
         }
         if ShipType = "Expendable" {
             set cargo1text:text to "Closed".
-            set Watchdog to SHIP:PARTSNAMED("SEP.23.SHIP.NOSE.EXP.KOS").
+            set Watchdog to SHIP:PARTSNAMED("SEP.23.SHIP.NOSE.EXP").
             if Watchdog:length = 0 {
-                set Watchdog to SHIP:PARTSNAMED(("SEP.23.SHIP.NOSE.EXP.KOS (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
+                set Watchdog to SHIP:PARTSNAMED(("SEP.23.SHIP.NOSE.EXP (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
             }
             else {
                 set Watchdog to Watchdog[0]:getmodule("kOSProcessor").
@@ -6316,7 +6312,7 @@ function Launch {
         if RSS {
             set LaunchElev to altitude - 108.384.
             if ShipType = "Depot" {
-                set BoosterAp to 134000 + (cos(targetincl) * 3000).
+                set BoosterAp to 133500 + (cos(targetincl) * 3000).
             }
             else {
                 set BoosterAp to 141500 + (cos(targetincl) * 3000).
@@ -6328,38 +6324,33 @@ function Launch {
                 set PitchIncrement to -1.25 + 2.6 * CargoMass / MaxCargoToOrbit.
             //}
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.01, 0, 0, -30, PitchIncrement).
-            if ShipType = "Depot" {
-                set TimeFromLaunchToOrbit to 500.
-            }
-            else {
-                set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 10.
-            }
+            set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 60.
             set BoosterThrottleDownAlt to 1500.
         }
         else if KSRSS {
             set LaunchElev to altitude - 67.74.
             if RESCALE {
-                if ShipType = "Depot" {
-                    set BoosterAp to 72500 + (cos(targetincl) * 1500).
-                }
-                else {
+                //if ShipType = "Depot" {
+                //    set BoosterAp to 72500 + (cos(targetincl) * 1500).
+                //}
+                //else {
                     set BoosterAp to 81500 + (cos(targetincl) * 1500).
-                }
+                //}
             }
             else {
-                if ShipType = "Depot" {
-                    set BoosterAp to 74500 + (cos(targetincl) * 1500).
-                }
-                else {
+                //if ShipType = "Depot" {
+                //    set BoosterAp to 74500 + (cos(targetincl) * 1500).
+                //}
+                //else {
                     set BoosterAp to 83500 + (cos(targetincl) * 1500).
-                }
+                //}
             }
 
             //if NrOfVacEngines = 6 {
             //    set PitchIncrement to -2.25 + 2.5 * CargoMass / MaxCargoToOrbit.
             //}
             //else {
-                set PitchIncrement to -2.5 + 2.5 * CargoMass / MaxCargoToOrbit.
+                set PitchIncrement to 0 + 2.5 * CargoMass / MaxCargoToOrbit.
             //}
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.025, 0, 0, -30, PitchIncrement).
             if ShipType = "Depot" {
@@ -6373,10 +6364,10 @@ function Launch {
         else {
             set LaunchElev to altitude - 67.74.
             if ShipType = "Depot" {
-                set BoosterAp to 39000 + (cos(targetincl) * 1000).
+                set BoosterAp to 38500 + (cos(targetincl) * 1000).
             }
             else {
-                set BoosterAp to 54000 + (cos(targetincl) * 1000).
+                set BoosterAp to 51000 + (cos(targetincl) * 1000).
             }
             if ShipType = "Depot" {
                 set PitchIncrement to 5.
@@ -6445,13 +6436,13 @@ function Launch {
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,1.12,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,8.15,0.5").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,6.4,0.5").
                 }
                 else {
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,0.7,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,5,0.5").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,4,0.5").
                 }
                 ClearInterfaceAndSteering().
                 return.
@@ -6494,21 +6485,21 @@ function Launch {
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,1.12,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,8.15,0.5").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,6.4,0.5").
                 }
                 else {
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,0.7,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,5,0.5").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,4,0.5").
                 }
                 ClearInterfaceAndSteering().
                 return.
             }
-            if BoosterEngines[0]:thrust > StackMass * Planet1G * 1.3 {}
+            if BoosterEngines[0]:thrust > StackMass * Planet1G * 1.25 and BoosterEngines[0]:thrust < StackMass * Planet1G * 2 {}
             else {
                 set message1:text to "<b>Launch Abort: </b>Thrust anomaly!".
-                set message2:text to "<b>Minimum Thrust: </b>" + round(StackMass * Planet1G * 1.3) + "kN".
+                set message2:text to "<b>Thrust Range: </b>" + round(StackMass * Planet1G * 1.25) + "kN - " + round(StackMass * Planet1G * 2) + "kN".
                 set message3:text to "<b>Actual Thrust: </b>" + round(BoosterEngines[0]:thrust) + "kN".
                 lock throttle to 0.
                 BoosterEngines[0]:shutdown.
@@ -6529,13 +6520,13 @@ function Launch {
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,1.12,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,8.15,0.5").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,6.4,0.5").
                 }
                 else {
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,0.7,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,5,0.5").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,4,0.5").
                 }
                 ClearInterfaceAndSteering().
                 return.
@@ -6587,13 +6578,13 @@ function Launch {
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,1.12,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,8.15,0.5").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,6.4,0.5").
                 }
                 else {
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,0.7,false").
                     sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,5,0.5").
+                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,4,0.5").
                 }
                 OLM:getmodule("ModuleAnimateGeneric"):doevent("open clamps + qd").
                 ClearInterfaceAndSteering().
@@ -6666,7 +6657,7 @@ function Launch {
                 if NrOfVacEngines = 3 or ShipType = "Depot" {
                     set quickengine2:pressed to true.
                 }
-                BoosterInterstage[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
+                BoosterCore[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
                 Tank:getmodule("ModuleDockingNode"):doaction("undock node", true).
                 wait 0.1.
                 set Boosterconnected to false.
@@ -6727,22 +6718,17 @@ function Launch {
                 set steeringmanager:pitchtorquefactor to 0.5.
             }
             if RSS {
-                when DesiredAccel / MaxAccel < 0.6 and not (ShipType = "Depot") and altitude > 100000 or apoapsis > 180000 and ShipType = "Depot" and altitude > 100000 or verticalspeed < 0 or apoapsis > targetap then {
-                    if NrOfVacEngines = 3 or ShipType = "Depot" {
-                        set quickengine2:pressed to false.
+                when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 5 or deltav < 500 then {
+                    if ShipType = "Depot" {
+                        set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 20).
                     }
-                    when altitude > targetap - 500 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 5 or deltav < 500 then {
-                        if ShipType = "Depot" {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 20).
-                        }
-                        else if NrOfVacEngines = 6 {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 15).
-                        }
-                        else {
-                            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 15).
-                        }
-                        set MaintainVS to true.
+                    else if NrOfVacEngines = 6 {
+                        set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 15).
                     }
+                    else {
+                        set OrbitBurnPitchCorrectionPID to PIDLOOP(0.75, 0, 0, -7.5, 15).
+                    }
+                    set MaintainVS to true.
                 }
             }
             else if KSRSS {
@@ -6750,8 +6736,8 @@ function Launch {
                     if NrOfVacEngines = 3 or ShipType = "Depot" or verticalspeed < 0 {
                         set quickengine2:pressed to false.
                     }
-                    when altitude > targetap - 100 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 5 or deltav < 250 then {
-                        set OrbitBurnPitchCorrectionPID to PIDLOOP(1.5, 0, 0, -7.5, 17.5).
+                    when altitude > targetap - 100 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 5 or deltav < 300 then {
+                        set OrbitBurnPitchCorrectionPID to PIDLOOP(1.5, 0, 0, -10, 17.5).
                         set MaintainVS to true.
                     }
                 }
@@ -6886,8 +6872,14 @@ function LaunchThrottle {
                         set thr to min(DesiredAccel / MaxAccel, max(deltaV / MaxAccel, 0.1)).
                     }
                 }
-                else if MaintainVS {
+                else if MaintainVS and periapsis < ship:body:atm:height {
                     set thr to min(DesiredAccel / MaxAccel, max(deltaV / MaxAccel, 0.1)).
+                }
+                else {
+                    set thr to 0.
+                    if periapsis > body:atm:height {
+                        set BurnComplete to true.
+                    }
                 }
             }
             else {
@@ -6918,7 +6910,7 @@ Function LaunchSteering {
         else if KSRSS {
             if RESCALE {
                 if ShipType = "Depot" {
-                    set targetpitch to 90 - (9.05 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                    set targetpitch to 90 - (10.25 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
                 }
                 else {
                     set targetpitch to 90 - (10.5 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
@@ -6926,10 +6918,10 @@ Function LaunchSteering {
             }
             else {
                 if ShipType = "Depot" {
-                    set targetpitch to 90 - (9.35 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                    set targetpitch to 90 - (10.5 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
                 }
                 else {
-                    set targetpitch to 90 - (10.85 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                    set targetpitch to 90 - (10.75 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
                 }
             }
         }
@@ -7206,7 +7198,7 @@ Function AbortLaunch {
             BoosterEngines[0]:shutdown.
             wait 0.1.
             //stage.
-            BoosterInterstage[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
+            BoosterCore[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
             //wait 0.1.
             //if stage:number = 2 {
             //    stage.
@@ -7739,85 +7731,7 @@ function ReEntryData {
     }
 
     if altitude < ship:body:ATM:height - 10000 and RadarAlt > FlipAltitude + 100 {
-        if not (RebalanceCoGox:status = "Transferring") or (RebalanceCoGlf:status = "Transferring") {
-            set PitchInput to SLEngines[0]:gimbal:pitchangle.
-            if PitchInput > 0.005 {
-                for res in HeaderTank:resources {
-                    if res:name = "Oxidizer" {
-                        if res:amount < abs(FuelBalanceSpeed * PitchInput) {}
-                        for res in Tank:resources {
-                            if res:name = "Oxidizer" {
-                                if res:amount > res:capacity - abs(FuelBalanceSpeed * PitchInput) {}
-                                else {
-                                    set RebalanceCoGox to TRANSFER("Oxidizer", HeaderTank, Tank, abs(FuelBalanceSpeed * PitchInput)).
-                                }
-                            }
-                        }
-                    }
-                    else if res:name = "LiquidFuel" {
-                        if res:amount < abs(FuelBalanceSpeed/(11/9) * PitchInput) {}
-                        for res in Tank:resources {
-                            if res:name = "LiquidFuel" {
-                                if res:amount > res:capacity - abs(FuelBalanceSpeed/(11/9) * PitchInput) {}
-                                else {
-                                    set RebalanceCoGlf to TRANSFER("LiquidFuel", HeaderTank, Tank, abs(FuelBalanceSpeed/(11/9) * PitchInput)).
-                                }
-                            }
-                        }
-                    }
-                    else if res:name = "LqdMethane" {
-                        if res:amount < abs(FuelBalanceSpeed/(1/3) * PitchInput) {}
-                        for res in Tank:resources {
-                            if res:name = "LqdMethane" {
-                                if res:amount > res:capacity - abs(FuelBalanceSpeed/(1/3) * PitchInput) {}
-                                else {
-                                    set RebalanceCoGlf to TRANSFER("LqdMethane", HeaderTank, Tank, abs(FuelBalanceSpeed/(1/3) * PitchInput)).
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else if PitchInput < -0.005 {
-                for res in Tank:resources {
-                    if res:name = "Oxidizer" {
-                        if res:amount < abs(FuelBalanceSpeed * PitchInput) {}
-                        for res in HeaderTank:resources {
-                            if res:name = "Oxidizer" {
-                                if res:amount > res:capacity - abs(FuelBalanceSpeed * PitchInput) {}
-                                else {
-                                    set RebalanceCoGox to TRANSFER("Oxidizer", Tank, HeaderTank, abs(FuelBalanceSpeed * PitchInput)).
-                                }
-                            }
-                        }
-                    }
-                    else if res:name = "LiquidFuel" {
-                        if res:amount < abs(FuelBalanceSpeed/(11/9) * PitchInput) {}
-                        for res in HeaderTank:resources {
-                            if res:name = "LiquidFuel" {
-                                if res:amount > res:capacity - abs(FuelBalanceSpeed/(11/9) * PitchInput) {}
-                                else {
-                                    set RebalanceCoGlf to TRANSFER("LiquidFuel", Tank, HeaderTank, abs(FuelBalanceSpeed/(11/9) * PitchInput)).
-                                }
-                            }
-                        }
-                    }
-                    else if res:name = "LqdMethane" {
-                        if res:amount < abs(FuelBalanceSpeed/(1/3) * PitchInput) {}
-                        for res in HeaderTank:resources {
-                            if res:name = "LqdMethane" {
-                                if res:amount > res:capacity - abs(FuelBalanceSpeed/(1/3) * PitchInput) {}
-                                else {
-                                    set RebalanceCoGlf to TRANSFER("LqdMethane", Tank, HeaderTank, abs(FuelBalanceSpeed/(1/3) * PitchInput)).
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            set RebalanceCoGox:ACTIVE to true.
-            set RebalanceCoGlf:ACTIVE to true.
-        }
+        set ship:control:pilotpitchtrim to -5 * SLEngines[0]:gimbal:pitchangle.
     }
 
     if (landingzone:lng - ship:geoposition:lng) < -180 {
@@ -7902,16 +7816,17 @@ function ReEntryData {
         if LandButtonIsRunning and not LaunchButtonIsRunning and not cancelconfirmed {
             set config:ipu to 1000.
             setflaps(0, 80, 1, 0).
-            set RepositionOxidizer to TRANSFERALL("Oxidizer", HeaderTank, Tank).
-            set RepositionOxidizer:ACTIVE to TRUE.
-            if Methane {
-                set RepositionLM to TRANSFERALL("LqdMethane", HeaderTank, Tank).
-                set RepositionLM:ACTIVE to TRUE.
-            }
-            else {
-                set RepositionLF to TRANSFERALL("LiquidFuel", HeaderTank, Tank).
-                set RepositionLF:ACTIVE to TRUE.
-            }
+            set ship:control:pilotpitchtrim to 0.
+            //set RepositionOxidizer to TRANSFERALL("Oxidizer", HeaderTank, Tank).
+            //set RepositionOxidizer:ACTIVE to TRUE.
+            //if Methane {
+            //    set RepositionLM to TRANSFERALL("LqdMethane", HeaderTank, Tank).
+            //    set RepositionLM:ACTIVE to TRUE.
+            //}
+            //else {
+            //    set RepositionLF to TRANSFERALL("LiquidFuel", HeaderTank, Tank).
+            //    set RepositionLF:ACTIVE to TRUE.
+            //}
             Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             LogToFile("Landing Procedure started. Starting Landing Flip Now!").
@@ -8063,7 +7978,7 @@ function ReEntryData {
                 }
             }
 
-            until verticalspeed > -0.02 and RadarAlt < 1.25 and ship:status = "LANDED" or verticalspeed > 0.75 and RadarAlt < 5 {
+            until verticalspeed > -0.02 and RadarAlt < 1.25 and ship:status = "LANDED" or verticalspeed > 0.25 and RadarAlt < 2.5 {
                 if ship:body:atm:sealevelpressure > 0.5 {
                     if ErrorVector:MAG > (RadarAlt + 25) and RadarAlt > 5 and not (LandSomewhereElse) or RadarAlt < -5 and not (LandSomewhereElse) {
                         set LandSomewhereElse to true.
@@ -9513,7 +9428,7 @@ function updateEnginePage {
             set engine1label4:tooltip to "".
             set engine2label1:tooltip to "Thrust in kN of the Super Heavy Raptor Engines".
             set engine2label5:tooltip to "% of Fuel Remaining in the Booster CH4 & LOX tanks".
-            set boosterfuel to 100 * (BoosterCore[0]:resources[0]:amount / BoosterCore[0]:resources[0]:capacity).
+            set boosterfuel to 100 * (BoosterCore[0]:resources[1]:amount / BoosterCore[0]:resources[1]:capacity).
             if boosterfuel < 20 {
                 set engine2label4:style:border:h to (boosterfuel / 20) * 10.
                 set engine2label4:style:border:h to (boosterfuel / 20) * 10.
@@ -9536,7 +9451,7 @@ function updateEnginePage {
                 set engine3label2:text to round(BoosterEngines[0]:gimbal:pitchangle * BoosterEngines[0]:gimbal:range) + "°".
                 set engine3label4:text to round(BoosterEngines[0]:gimbal:yawangle * BoosterEngines[0]:gimbal:range) + "°".
                 set engine2label1:text to round(BoosterEngines[0]:thrust):tostring + " kN".
-                set engine2label1:style:overflow:right to -100 + (100 * (BoosterEngines[0]:thrust / max(BoosterEngines[0]:availablethrust, 0.000001))).
+                set engine2label1:style:overflow:right to min(-100 + (100 * (BoosterEngines[0]:thrust / max(BoosterEngines[0]:availablethrust, 0.000001))), 0).
                 set engine2label1:style:border:h to throttleborder.
                 set engine2label1:style:border:v to throttleborder.
                 set engine1label5:text to "<b>33/33 OK</b>".
@@ -9699,7 +9614,7 @@ function updateEnginePage {
                 else {
                     set engine2label1:text to round(1 * SLEngines[0]:thrust):tostring + " kN".
                 }
-                set engine2label1:style:overflow:right to -100 + (100 * (SLEngines[0]:thrust / max(SLEngines[0]:availablethrust, 0.000001))).
+                set engine2label1:style:overflow:right to min(-100 + (100 * (SLEngines[0]:thrust / max(SLEngines[0]:availablethrust, 0.000001))), 0).
                 set engine2label1:style:border:h to throttleborder.
                 set engine2label1:style:border:v to throttleborder.
                 set engine2label4:style:border:h to 0.
@@ -9779,10 +9694,10 @@ function updateEnginePage {
                     set engine2label5:text to round(NrOfVacEngines * VACEngines[0]:thrust):tostring + " kN".
                 }
                 if EngineTogglesHidden {
-                    set engine2label4:style:overflow:right to 39 + (100 * min(throttle, 1)).
+                    set engine2label4:style:overflow:right to min(39 + (100 * min(throttle, 1)), 139).
                 }
                 else {
-                    set engine2label4:style:overflow:right to 10 + (100 * min(throttle, 1)).
+                    set engine2label4:style:overflow:right to min(10 + (100 * min(throttle, 1)), 110).
                 }
             }
             if SLEngines[0]:ignition = true and VACEngines[0]:ignition = true {
@@ -9825,13 +9740,13 @@ function updateEnginePage {
                 set engine2label1:style:border:v to throttleborder.
                 set engine2label4:style:border:h to throttleborder.
                 set engine2label4:style:border:v to throttleborder.
-                set engine2label1:style:overflow:right to -100 + (100 * (SLEngines[0]:thrust / max(SLEngines[0]:availablethrust, 0.000001))).
+                set engine2label1:style:overflow:right to min(-100 + (100 * (SLEngines[0]:thrust / max(SLEngines[0]:availablethrust, 0.000001))), 0).
                 set engine2label5:text to round(3 * VACEngines[0]:thrust):tostring + " kN".
                 if EngineTogglesHidden {
-                    set engine2label4:style:overflow:right to 39 + (100 * (VACEngines[0]:thrust / max(VACEngines[0]:availablethrust, 0.000001))).
+                    set engine2label4:style:overflow:right to min(39 + (100 * (VACEngines[0]:thrust / max(VACEngines[0]:availablethrust, 0.000001))), 139).
                 }
                 else {
-                    set engine2label4:style:overflow:right to 10 + (100 * (VACEngines[0]:thrust / max(VACEngines[0]:availablethrust, 0.000001))).
+                    set engine2label4:style:overflow:right to min(10 + (100 * (VACEngines[0]:thrust / max(VACEngines[0]:availablethrust, 0.000001))), 110).
                 }
             }
         }
@@ -10924,7 +10839,7 @@ function updateTower {
 
 
 function SetRadarAltitude {
-    if ship:rootpart = "SEP.22.SHIP.CREW.KOS" or ship:rootpart = "SEP.22.SHIP.CARGO.KOS" or ship:rootpart = "SEP.22.SHIP.TANKER.KOS" {
+    if ship:rootpart = "SEP.23.SHIP.CREW" or ship:rootpart = "SEP.23.SHIP.CARGO" or ship:rootpart = "SEP.23.SHIP.TANKER" {
         if RSS {
             set ShipBottomRadarHeight to 39.5167.
         }
@@ -11957,7 +11872,7 @@ function VehicleSelfCheck {
             for res in HeaderTank:resources {
                 if Methane {
                     if res:name = "LqdMethane" and res:amount < res:capacity + 1 {
-                        if round(res:capacity) = 4122 {}
+                        if round(res:capacity) = 3824 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -11965,7 +11880,7 @@ function VehicleSelfCheck {
                         }
                     }
                     if res:name = "Oxidizer" and res:amount < res:capacity + 1 {
-                        if round(res:capacity) = 1374 {}
+                        if round(res:capacity) = 1275 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -11975,7 +11890,7 @@ function VehicleSelfCheck {
                 }
                 else {
                     if res:name = "Liquid Fuel" {
-                        if res:capacity = 776 and res:amount < res:capacity + 1 {}
+                        if res:capacity = 720 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -11983,7 +11898,7 @@ function VehicleSelfCheck {
                         }
                     }
                     if res:name = "Oxidizer" {
-                        if res:capacity = 948.75 and res:amount < res:capacity + 1 {}
+                        if res:capacity = 880 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -11997,7 +11912,7 @@ function VehicleSelfCheck {
             for res in Nose:resources {
                 if Methane {
                     if res:name = "LqdMethane" {
-                        if round(res:capacity) = 35846 and res:amount < res:capacity + 1 {}
+                        if round(res:capacity) = 36706 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -12005,7 +11920,7 @@ function VehicleSelfCheck {
                         }
                     }
                     if res:name = "Oxidizer" {
-                        if round(res:capacity) = 11949 and res:amount < res:capacity + 1 {}
+                        if round(res:capacity) = 12235 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -12015,7 +11930,7 @@ function VehicleSelfCheck {
                 }
                 else {
                     if res:name = "Liquid Fuel" {
-                        if res:capacity = 6750 and res:amount < res:capacity + 1 {}
+                        if res:capacity = 6912 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -12023,7 +11938,7 @@ function VehicleSelfCheck {
                         }
                     }
                     if res:name = "Oxidizer" {
-                        if res:capacity = 8250 and res:amount < res:capacity + 1 {}
+                        if res:capacity = 8448 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -12111,7 +12026,7 @@ function VehicleSelfCheck {
                 }
             }
         }
-        if SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS"):length > 0 {
+        if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length > 0 {
             for res in BoosterCore[0]:resources {
                 if Methane {
                     if res:name = "LqdMethane" {
@@ -12197,7 +12112,8 @@ function VehicleSelfCheck {
             for res in Nose:resources {
                 if Methane {
                     if res:name = "LqdMethane" {
-                        if round(res:capacity) = 59744 and res:amount < res:capacity + 1 {}
+                        //if round(res:capacity) = 59744 and res:amount < res:capacity + 1 {}
+                        if round(res:capacity) = 36706 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -12205,7 +12121,8 @@ function VehicleSelfCheck {
                         }
                     }
                     if res:name = "Oxidizer" {
-                        if round(res:capacity) = 19914 and res:amount < res:capacity + 1 {}
+                        //if round(res:capacity) = 19914 and res:amount < res:capacity + 1 {}
+                        if round(res:capacity) = 12235 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -12215,8 +12132,8 @@ function VehicleSelfCheck {
                 }
                 else {
                     if res:name = "Liquid Fuel" {
-                        //if res:capacity = 6912 and res:amount < res:capacity + 1 {}
-                        if res:capacity = 11250 and res:amount < res:capacity + 1 {}
+                        if res:capacity = 6912 and res:amount < res:capacity + 1 {}
+                        //if res:capacity = 11250 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -12224,8 +12141,8 @@ function VehicleSelfCheck {
                         }
                     }
                     if res:name = "Oxidizer" {
-                        //if res:capacity = 8448 and res:amount < res:capacity + 1 {}
-                        if res:capacity = 13750 and res:amount < res:capacity + 1 {}
+                        if res:capacity = 8448 and res:amount < res:capacity + 1 {}
+                        //if res:capacity = 13750 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -12277,7 +12194,8 @@ function VehicleSelfCheck {
             else {
                 if res:name = "Liquid Fuel" {
                     if ShipType = "Depot" {
-                        if res:capacity = 43200 and res:amount < res:capacity + 1 {}
+                        //if res:capacity = 43200 and res:amount < res:capacity + 1 {}
+                        if res:capacity = 25200 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -12295,7 +12213,8 @@ function VehicleSelfCheck {
                 }
                 if res:name = "Oxidizer" {
                     if ShipType = "Depot" {
-                        if res:capacity = 52800 and res:amount < res:capacity + 1 {}
+                        //if res:capacity = 52800 and res:amount < res:capacity + 1 {}
+                        if res:capacity = 30800 and res:amount < res:capacity + 1 {}
                         else {
                             set FuelFail to true.
                             print res:amount.
@@ -12313,7 +12232,7 @@ function VehicleSelfCheck {
                 }
             }
         }
-        if SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS"):length > 0 {
+        if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length > 0 {
             for res in BoosterCore[0]:resources {
                 if Methane {
                     if res:name = "LqdMethane" {
@@ -12513,7 +12432,7 @@ function VehicleSelfCheck {
                 }
             }
         }
-        if SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS"):length > 0 {
+        if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length > 0 {
             for res in BoosterCore[0]:resources {
                 if Methane {
                     if res:name = "LqdMethane" {
@@ -12794,7 +12713,7 @@ function CheckFullTanks {
                 set cap to cap + res:capacity.
             }
         }
-        if SHIP:PARTSNAMED("SEP.22.BOOSTER.CORE.KOS"):length > 0 {
+        if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length > 0 {
             for res in BoosterCore[0]:resources {
                 if res:amount < res:capacity and not (res:name = "ElectricCharge") {
                     set FullTanks to false.
@@ -12817,8 +12736,8 @@ function Refuel {
             Droppriority().
             sendMessage(Processor(volume("OrbitalLaunchMount")), "ToggleReFueling,true").
             set tower11button4:text to "<b><color=cyan>FUEL</color></b>".
-            if BoosterInterstage:length > 0 {
-                BoosterInterstage[0]:getmodule("ModuleToggleCrossfeed"):DoAction("enable crossfeed", true).
+            if BoosterCore:length > 0 {
+                BoosterCore[0]:getmodule("ModuleToggleCrossfeed"):DoAction("enable crossfeed", true).
             }
             Until CheckFullTanks() or not (Refueling) {
                 set message1:text to "<b>Loading LqdMethane and Lqd Oxygen..</b>".
@@ -12830,8 +12749,8 @@ function Refuel {
             set message1:text to "".
             set message2:text to "".
             set tower11button4:text to "<b>FUEL</b>".
-            if BoosterInterstage:length > 0 {
-                BoosterInterstage[0]:getmodule("ModuleToggleCrossfeed"):DoAction("disable crossfeed", true).
+            if BoosterCore:length > 0 {
+                BoosterCore[0]:getmodule("ModuleToggleCrossfeed"):DoAction("disable crossfeed", true).
             }
         }
         else {
@@ -12841,8 +12760,8 @@ function Refuel {
             set message2:text to "".
             set Refueling to false.
             set tower11button4:text to "<b>FUEL</b>".
-            if BoosterInterstage:length > 0 {
-                BoosterInterstage[0]:getmodule("ModuleToggleCrossfeed"):DoAction("disable crossfeed", true).
+            if BoosterCore:length > 0 {
+                BoosterCore[0]:getmodule("ModuleToggleCrossfeed"):DoAction("disable crossfeed", true).
             }
         }
     }

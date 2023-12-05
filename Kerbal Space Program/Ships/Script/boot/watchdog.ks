@@ -27,7 +27,7 @@ if homeconnection:isconnected {
 }
 
 for x in ship:parts {
-    if x:name:contains("SEP.22.SHIP.BODY.KOS") or x:name:contains("SEP.23.SHIP.BODY.EXP.KOS") or x:name:contains("SEP.23.SHIP.DEPOT.KOS") {
+    if x:name:contains("SEP.23.SHIP.BODY") or x:name:contains("SEP.23.SHIP.BODY.EXP") or x:name:contains("SEP.23.SHIP.DEPOT") {
         set MainCPU to x:getmodule("kOSProcessor").
     }
 }
