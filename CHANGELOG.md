@@ -1,3 +1,8 @@
+# V2.3.1 (2023-12-11)
+- Added automatic re-stacking capability. Doesn't work in RSS.
+- Modified ship landing properties.
+- Fix for expendable cargo ship.
+
 # V2.3.0 (2023-12-05)
 - Update to work with the SEP dev version, may have some new bugs!
 

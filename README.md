@@ -7,31 +7,24 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 # If you have a version OLDER than V2.3 installed please DELETE the starship .crafts from /ships/VAB and please also DELETE the StarshipInterface folder from /gamedata!!
 
 # INSTALL INSTRUCTIONS (NO CKAN SUPPORT!):
-- Download and install all requirements listed below (pay attention: SLE and SEP need the DEV version, not available on CKAN. SEP requires the github green button download-all, not the releases).
-
+- Download and install all requirements listed below (pay attention: SLE and SEP both need the DEV branch (not available on CKAN). They can be downloaded by changing from main to dev branch and clicking the github green button download-all, not the releases).
 - If you update: first delete the 'StarshipInterface' folder!
-
 - Download the zip file.
-
 - Extract the contents to a folder.
-
-- Copy the contents of the /Kerbal Space Program folder ('GameData' and 'Ships' folders) into your /Kerbal Space Program folder (and overwrite if you are updating).
+- Move the contents of the /Kerbal Space Program folder ('GameData' and 'Ships' folders) into your /Kerbal Space Program folder (and overwrite if you are updating).
 
 - It should now look like this:
-    Kerbal Space Program/GameData/StarshipInterface
+    Kerbal Space Program/GameData/StarshipInterface  (location of the patch)
     Kerbal Space Program/Ships/Script  (here the kOS scripts are saved)
-    Kerbal Space Program/Ships/VAB
+    Kerbal Space Program/Ships/VAB  (location of the .craft files)
 
 
 # IMPORTANT!:
-- Works only with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker"). Look inside the stock craft category (left hand side) in the VAB's vessel loading menu. These can be found if you enable stock vehicles in your savegame, or you copy them manually to your savegame.
-
-- If the Interface or ship doesn't show up, check again that you fulfill all the requirements listed below or try reinstalling!
-
+- Works best with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker") located inside the stock craft category (left hand side) in the VAB's vessel loading menu. These can be found if you enable stock vehicles in your savegame, or you copy them manually to your savegame. Real Size ships are for using with RSS.
 - Before filing a bug, read the "Bug support guide" at the bottom of this page.
 
 # REQUIRES:
-- Stock-size Kerbin, RSS, KSRSS (default size) or ReScale 2.5x (with a Folder called "ReScale 2.5x" in /gamedata), and the language has to be set to "english" (important).
+- Stock-size Kerbin, RSS, any 2.5-2.7x sized planet pack, and the language has to be set to "english" (important).
 - Starship Expansion Project - github repository DEV (!!) version and its requirements (!!)
     https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
     Github version: https://github.com/Kari1407/Starship-Expansion-Project/tree/V2.1_Dev
@@ -59,37 +52,20 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 # Notes:
 - The recommended way of loading a craft is from the stock craft category in the VAB. If you can't find this category, you need to enter settings from the KSC default view and enable 'Include Stock Vessels'.
-
-- Automatic re-stacking/refueling is currently impossible because the Booster lacks the ability to dock to the tower.
-
-- When using multiple ships of the same name, they might get renamed by my scripts to avoid Interface crashes.
-
+- When using multiple ships of the same name, they might get renamed automatically by my scripts to avoid Interface crashes.
 - Seldom Interface crashes may/will occur (it makes a little crashing noise). A watchdog computer should try to restart the Interface after 5 seconds.
-
-- Existing Ships out on a trip will automatically try to update the Interface after one installs the latest version from here, provided a connection to the KSC is available.
-
+- Existing Ships out on a trip will automatically try to update the Interface after one installs the latest version from here, provided a connection to the KSC is available, and the changes are not ship-changing.
 - The KSP delta-V calculations are not correct, so trust the Interface instead! :)
-
-- If you have anything installed by Fossil Industries then also install the plume, because if you don't the plume will not show up. This is a patch limitation at this point. If you want to have default SEP plumes, you'll need to delete the entire Fossil Industries folder from /gamedata, as that is what the patch checks for.
 
 
 # Known Issues:
-- Your KSP should be set to english for the scripts to work.
-
 - Users reported booster catch may fail if you have MechJeb and the Q or G Limiter reduces thrust where the script wouldn't do that.
-
-- RSS issues:
-    - On booster catch the tower may be glitching due to Kraken, and if catch succeeds the booster is probably not recoverable (looking for a fix).
-    - Booster/Ship control gets wonky with big ship distances. May cause Ship to fully lose control during booster catching.
-
-- Being in IVA during Booster Separation can cause problems with returning back into the IVA later on, and break the camera. A reload after launch completion fixes everything.
-
-- Enabling logging of data from the Interfaces settings can seldomly cause a crash when it attempts to write and it loses the connection before/during the writing, usually during timewarp and re-entry. Logging is therefore disabled by default.
-
+- On non-stock Kerbin upon booster-catch the tower may be glitching/jumping due to Kraken.
+- If you have Kopernicus installed, but no planet-changing mods, standard SEP fuel (optimized for 2.7x sized Kerbin) will be loaded instead of stock and the Interface will not work. Remove Kopernicus to get proper stock fuel tank sizes!
 
 
 # Bug support guide:
-- check first that you fulfill the requirements above (check Incompatible Mods!!) and carefully (!!) read this whole page. Mods like FAR or RO can also leave CFGs behind that make KSP think you have them installed, and you'll notice this when you find no kOS CPUs on the ship when you load the ships from the VAB.
+- check first that you fulfill the requirements above (check Incompatible Mods!!) and carefully read this whole page.
 - If you have many mods installed, try moving unnecessary mods away from /gamedata temporarily. The less mods, the better (Only SEPs requirements and those of this mod).
 - If you still get script crashes that don't recover themselves: congratulations, you may have found a bug!
 - Keep the kOS CPUs open (right hand side) and screenshot any errors or problems.
@@ -99,8 +75,8 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
     - Write me on: SEP Discord
 - Be sure to describe the problem as accurately as possible and add the screenshots.
 - Videos would be very helpful as well if ship or booster does not perform properly.
-
+- Looking forward to your bugs!
 
 
 # By the author:
-This has been a pet project of mine since around May 2021, and I had a lot of fun making and using this Interface. I hope you will too! Let me know what you think! I thank all the mod makers whose work I have been able to rely on, and without whom none of this would have been possible. Especially I want to thank the makers of SEP: Kari, Sofie, etc.. and SAMCG14 for his work on the Launch Tower, both of whose CFGs I'm modifying.
+This has been a pet project of mine since around May 2021, and I had a lot of fun making and using this Interface. I hope you will too! Let me know what you think! I thank all the mod makers whose work I have been able to rely on, and without whom none of this would have been possible. Especially I want to thank the makers of SEP: Kari, Sofie, etc.. and SAMCG14 for his work on the Launch Tower.

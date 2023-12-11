@@ -14,7 +14,7 @@ if bodyexists("Earth") {
 else {
     if body("Kerbin"):radius > 1000000 {
         set KSRSS to true.
-        set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
+        set LaunchSites to lexicon("KSC", "-0.0970,-74.5833").
     }
     else {
         set STOCK to true.
@@ -178,6 +178,9 @@ until False {
         else if command = "ToggleReFueling" {
             ToggleReFueling(parameter1).
         }
+        else if command = "DockingForce" {
+            SetDockingForce(parameter1).
+        }
         else {
             PRINT "Unexpected message: " + RECEIVED:CONTENT.
         }
@@ -319,6 +322,12 @@ function ToggleReFueling {
             OLM:getmodulebyindex(NrforDelugeRefill):DoEvent("stop reloading water").
         }
     }
+}
+
+
+function SetDockingForce {
+    parameter Force.
+    OLM:getmodule("ModuleDockingNode"):SETFIELD("docking acquire force", parameter1:toscalar(100)).
 }
 
 

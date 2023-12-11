@@ -71,6 +71,8 @@ set StarshipExists to false.
 set TowerExists to false.
 set InitialOverShoot to 0.
 set TargetOLM to false.
+set BoosterDocked to false.
+set QuickSaveLoaded to false.
 
 set RSS to false.
 set KSRSS to false.
@@ -94,7 +96,7 @@ if bodyexists("Earth") {
         set LandHeadingVector to heading(270,0):vector.
         set BoosterLandingFactor to 0.8.
         set BoosterGlideDistance to 7500.
-        set BoosterReturnMass to 198.3.
+        set BoosterReturnMass to 200.
         set BoosterRaptorThrust to 2363.
         set TowerAlignAltitude to 7500.
         set Scale to 1.6.
@@ -118,7 +120,7 @@ if bodyexists("Earth") {
         set LandHeadingVector to heading(242,0):vector.
         set BoosterLandingFactor to 1.05.
         set BoosterGlideDistance to 6000.
-        set BoosterReturnMass to 139.2.
+        set BoosterReturnMass to 140.
         set BoosterRaptorThrust to 627.
         set TowerAlignAltitude to 4500.
         set Scale to 1.
@@ -142,9 +144,9 @@ else {
         set LatCtrlPID to PIDLOOP(0.04, 0.0025, 0.0025, -2.5, 2.5).
         set LFBoosterFuelCutOff to 2400.
         set LandHeadingVector to heading(242,0):vector.
-        set BoosterLandingFactor to 1.05.
+        set BoosterLandingFactor to 0.95.
         set BoosterGlideDistance to 6000.
-        set BoosterReturnMass to 139.2.
+        set BoosterReturnMass to 140.
         set BoosterRaptorThrust to 627.
         set TowerAlignAltitude to 5500.
         set Scale to 1.
@@ -163,7 +165,7 @@ else {
         set LandHeadingVector to heading(270,0):vector.
         set BoosterLandingFactor to 0.8.
         set BoosterGlideDistance to 5000.
-        set BoosterReturnMass to 123.3.
+        set BoosterReturnMass to 138.
         set BoosterRaptorThrust to 667.
         set TowerAlignAltitude to 5500.
         set Scale to 1.
@@ -205,6 +207,11 @@ until False {
     if ShipConnectedToBooster = "false" and BoostBackComplete = "false" and not (ship:status = "LANDED") and altitude > 10000 {
         Boostback(0).
     }
+    if alt:radar < 150 and ship:mass - ship:drymass < 50 and ship:partstitled("Starship Orbital Launch Integration Tower Base"):length = 0 {
+        setLandingZone().
+        setTargetOLM().
+        BoosterDocking().
+    }
     WAIT UNTIL NOT CORE:MESSAGES:EMPTY.
     SET RECEIVED TO CORE:MESSAGES:POP.
     IF RECEIVED:CONTENT = "Boostback, 0 Roll" {
@@ -230,7 +237,8 @@ function Boostback {
         lock throttle to 1.
     //}
     sas off.
-    set SteeringManager:ROLLCONTROLANGLERANGE to 25.
+    set SteeringManager:ROLLCONTROLANGLERANGE to 10.
+    set SteeringManager:rollts to 5.
     wait 0.1.
     HUDTEXT("Performing Boostback Burn..", 30, 2, 20, green, false).
     clearscreen.
@@ -239,42 +247,8 @@ function Boostback {
     set kuniverse:timewarp:warp to 0.
     set impactpos to ship:body:geopositionof(ship:position).
 
-    if homeconnection:isconnected {
-        if exists("0:/settings.json") {
-            set L to readjson("0:/settings.json").
-            if L:haskey("Log Data") {
-                if L["Log Data"] = "true" {
-                    set LogData to true.
-                }
-            }
-            if L:haskey("Launch Coordinates") {
-                if RSS {
-                    set landingzone to latlng(L["Launch Coordinates"]:split(",")[0]:toscalar(28.6084), L["Launch Coordinates"]:split(",")[1]:toscalar(-80.5998)).
-                }
-                else {
-                    set landingzone to latlng(L["Launch Coordinates"]:split(",")[0]:toscalar(-000.0972), L["Launch Coordinates"]:split(",")[1]:toscalar(-074.5577)).
-                }
-            }
-            else {
-                set landingzone to latlng(-000.0972,-074.5577).
-            }
-        }
-    }
-    else {
-        set landingzone to latlng(-000.0972,-074.5577).
-    }
-
-    list targets in OLMTargets.
-    if OLMTargets:length > 0 {
-        for x in OLMTargets {
-            if x:name:contains("OrbitalLaunchMount") {
-                set TowerExists to true.
-                if round(body:geopositionof(x:position):lat, 2) = round(landingzone:lat, 2) and round(body:geopositionof(x:position):lng, 2) = round(landingzone:lng, 2) {
-                    set TargetOLM to x:name.
-                }
-            }
-        }
-    }
+    setLandingZone().
+    setTargetOLM().
 
     set ApproachUPVector to (landingzone:position - body:position):normalized.
     set ApproachVector to vxcl(up:vector, landingzone:position - ship:position):normalized.
@@ -667,80 +641,56 @@ function Boostback {
     print "Booster Landed!".
     wait 0.01.
     BoosterEngines[0]:shutdown.
+    SetLoadDistances("default").
 
-    if not (LandSomewhereElse) and not (RSS) {
-        print "capture at: " + RadarAlt + "m RA".
-        print "Landing Burn started at: " + round(LandingBurnAltitude) + "m Altitude".
+    if not (LandSomewhereElse) {
         if not (TargetOLM = "false") {
-            HUDTEXT("Booster Landing Confirmed! Stand by for Booster Securing..", 10, 2, 20, green, false).
+            HUDTEXT("Booster Landing Confirmed! Stand by for Mechazilla operation..", 10, 2, 20, green, false).
             set LandingTime to time:seconds.
             set TowerReset to false.
-            set PusherSpeed5 to false.
-            set PusherSpeed2 to false.
-            set PusherSpeed1 to false.
             set RollAngleExceeded to false.
-            set BoosterSecured to false.
-            set BoosterBroughtDown to false.
-            set MechazillaGoesUp to false.
-            set MechazillaResetsItself to false.
+            BoosterEngines[0]:getmodule("ModuleDockingNode"):SETFIELD("docking acquire force", 200).
+            sendMessage(Vessel(TargetOLM), "DockingForce,200").
             print "Tower Operation in Progress..".
-            sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,0.3,false").
+
+            sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,0.2,false").
             sendMessage(Vessel(TargetOLM), ("MechazillaStabilizers," + maxstabengage)).
+
+            when time:seconds > LandingTime + 3.25 * Scale then {
+                sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.5," + (0.2 * Scale) + ",false")).
+                when time:seconds > LandingTime + 5.75 * Scale then {
+                    sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.3," + (0.2 * Scale) + ",false")).
+                    when time:seconds > LandingTime + 8.25 * Scale then {
+                        sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.1," + (0.2 * Scale) + ",false")).
+                        when kuniverse:canquicksave and time:seconds > LandingTime + 15 * Scale then {
+                            HUDTEXT("Loading current Booster quicksave for safe docking! (Avoid Kraken..)", 10, 2, 20, green, false).
+                            sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (7 * Scale) + ",0.5")).
+                            wait 1.5.
+                            when kuniverse:canquicksave then {
+                                kuniverse:quicksave().
+                                wait 0.1.
+                                when kuniverse:canquicksave then {
+                                    kuniverse:quickload().
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             until TowerReset {
                 clearscreen.
                 set RollAngle to vang(facing:starvector, AngleAxis(-90, up:vector) * LandHeadingVector).
                 print "Roll Angle: " + round(RollAngle,1).
-                if time:seconds > LandingTime + 3.25 * Scale and not PusherSpeed5 {
-                    sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.5," + (0.3 * Scale) + ",false")).
-                    set PusherSpeed5 to true.
-                }
-                if time:seconds > LandingTime + 5.75 * Scale and not PusherSpeed2 {
-                    sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.3," + (0.3 * Scale) + ",false")).
-                    set PusherSpeed2 to true.
-                }
-                if time:seconds > LandingTime + 8.25 * Scale and not PusherSpeed1 {
-                    sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.1," + (0.3 * Scale) + ",false")).
-                    set PusherSpeed1 to true.
-                }
-                if time:seconds > LandingTime + 15 * Scale and time:seconds < LandingTime + 75 * Scale and not BoosterSecured {
-                    //sendMessage(Vessel(TargetOLM), "MechazillaHeight,28,0.5").
-                    set TowerReset to true.
-                }
-    //            if time:seconds > LandingTime + 75 and not BoosterSecured {
-    //                sendMessage(Vessel(TargetOLM), "MechazillaHeight,42,0.5").
-    //                set BoosterSecured to true.
-    //            }
-    //            if time:seconds > LandingTime + 105 and not BoosterBroughtDown {
-    //                sendMessage(Vessel(TargetOLM), "MechazillaArms,8,2.5,60,true").
-    //                set BoosterBroughtDown to true.
-    //            }
-    //            if time:seconds > LandingTime + 114 and not MechazillaGoesUp {
-    //                sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
-    //                set MechazillaGoesUp to true.
-    //            }
-    //            if time:seconds > LandingTime + 117 and not MechazillaResetsItself {
-    //                sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,90,true").
-    //                if RSS {
-    //                    sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,0.3,20,true").
-    //                }
-    //                else {
-    //                    sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,0.3,12.5,true").
-    //                }
-    //                sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
-    //                set MechazillaResetsItself to true.
-    //            }
-    //            if time:seconds > LandingTime + 135 {
-    //                set TowerReset to true.
-    //                break.
-    //            }
                 if RollAngle > 30 or RollAngle < -30 {
                     set RollAngleExceeded to true.
+                    set TowerReset to true.
                     break.
                 }
             }
             if not RollAngleExceeded {
-                // print "Booster has been secured & Tower has been reset!".
-                // HUDTEXT("Tower has been reset, Booster may now be recovered!", 10, 2, 20, green, false).
+                print "Booster has been secured & Tower has been reset!".
+                HUDTEXT("Tower has been reset, Booster may now be recovered!", 10, 2, 20, green, false).
                 print "Booster has been secured!".
                 HUDTEXT("Booster may now be recovered!", 10, 2, 20, green, false).
             }
@@ -758,27 +708,16 @@ function Boostback {
         }
     }
     else {
-        print "Booster has touched down".
+        print "Booster has touched down somewhere".
         HUDTEXT("Booster may now be recovered!", 10, 2, 20, green, false).
     }
+
     unlock throttle.
     //if BoosterCore:getmodule("ModuleSepPartSwitchAction"):getfield("current decouple system") = "Decoupler" {
     //    BoosterCore:getmodule("ModuleSepPartSwitchAction"):DoAction("next decouple system", true).
     //}
 
-    if RSS {
-        wait 2.
-        HUDTEXT("Changing focus back to Starship..", 20, 2, 20, green, false).
-        SetLoadDistances("default").
-        wait 3.
-        when ship:status = "LANDED" then {
-            SetStarshipActive().
-        }
-    }
-    else {
-        SetLoadDistances("default").
-        HUDTEXT("Booster may now be recovered!", 10, 2, 20, green, false).
-    }
+    HUDTEXT("Booster may now be recovered!", 10, 2, 20, green, false).
 }
 
 
@@ -858,9 +797,9 @@ FUNCTION SteeringCorrections {
         print "Radar Alt: " + round(RadarAlt) + "m".
         //print " ".
 
-        if altitude < 15000 and not (RSS) or altitude < 50000 and RSS {
-            print "LngCtrl: " + round(LngCtrl, 2).
-            print "LatCtrl: " + round(LatCtrl, 2).
+        //if altitude < 15000 and not (RSS) or altitude < 50000 and RSS {
+        //    print "LngCtrl: " + round(LngCtrl, 2).
+        //    print "LatCtrl: " + round(LatCtrl, 2).
         //    print " ".
         //    print "Max Decel: " + round(maxDecel, 2).
         //    print "Radar Alt: " + round(RadarAlt).
@@ -868,7 +807,7 @@ FUNCTION SteeringCorrections {
         //    print "Stop Distance: " + round(TotalstopDist, 2).
         //    print "Stop Distance 3: " + round(stopDist3, 2).
         //    print "Landing Ratio: " + round(landingRatio, 2).
-        }
+        //}
     }
     else {
         clearscreen.
@@ -1003,6 +942,95 @@ function CheckFuel {
             set LFBooster to res:amount.
             if LFBooster < LFBoosterFuelCutOff {
                 BoosterCore:shutdown.
+            }
+        }
+    }
+}
+
+
+function setLandingZone {
+    if homeconnection:isconnected {
+        if exists("0:/settings.json") {
+            set L to readjson("0:/settings.json").
+            if L:haskey("Log Data") {
+                if L["Log Data"] = "true" {
+                    set LogData to true.
+                }
+            }
+            if L:haskey("Launch Coordinates") {
+                if RSS {
+                    set landingzone to latlng(L["Launch Coordinates"]:split(",")[0]:toscalar(28.6084), L["Launch Coordinates"]:split(",")[1]:toscalar(-80.5998)).
+                }
+                else {
+                    set landingzone to latlng(L["Launch Coordinates"]:split(",")[0]:toscalar(-000.0972), L["Launch Coordinates"]:split(",")[1]:toscalar(-074.5577)).
+                }
+            }
+            else {
+                set landingzone to latlng(-000.0972,-074.5577).
+            }
+        }
+    }
+    else {
+        set landingzone to latlng(-000.0972,-074.5577).
+    }
+}
+
+
+function setTargetOLM {
+    list targets in OLMTargets.
+    if OLMTargets:length > 0 {
+        for x in OLMTargets {
+            if x:name:contains("OrbitalLaunchMount") {
+                set TowerExists to true.
+                if round(body:geopositionof(x:position):lat, 2) = round(landingzone:lat, 2) and round(body:geopositionof(x:position):lng, 2) = round(landingzone:lng, 2) {
+                    set TargetOLM to x:name.
+                }
+            }
+        }
+    }
+}
+
+
+function BoosterDocking {
+    sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (29.9 * Scale) + ",0.5")).
+    set LandingTime to time:seconds.
+    clearscreen.
+    print "Booster docking in progress..".
+    HUDTEXT("Booster docking in progress..", 50, 2, 20, green, false).
+    when time:seconds > LandingTime + 50 * Scale and not (BoosterDocked) then {
+        HUDTEXT("Docking Booster..", 10, 2, 20, green, false).
+        sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (29.6 * Scale) + ",0.05")).
+        wait 6 * Scale.
+        sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (29.9 * Scale) + ",0.05")).
+        wait 6 * Scale.
+        preserve.
+    }
+    when ship:partstitled("Starship Orbital Launch Integration Tower Base"):length > 0 then {
+        set BoosterDocked to true.
+    }
+
+    when BoosterDocked then {
+        HUDTEXT("Booster Docked! Resetting tower..", 20, 2, 20, green, false).
+        sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (32.5 * Scale) + ",0.5")).
+        sendMessage(Vessel(TargetOLM), "MechazillaArms,8,2.5,60,true").
+        set DockedTime to time:seconds.
+        when time:seconds > DockedTime + 12.5 then {
+            sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
+            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,90,true").
+            sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,1," + (12.5 * Scale) + ",true")).
+            sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
+            if ship:partstitled("Starship Orbital Launch Mount"):length > 0 {
+                if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleAnimateGeneric"):hasevent("open clamps + qd") {
+                    ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleAnimateGeneric"):DoAction("toggle clamps + qd", true).
+                }
+            }
+            when time:seconds > DockedTime + 39 then {
+                set TowerReset to true.
+                HUDTEXT("Booster recovery complete! Rebooting..", 10, 2, 20, green, false).
+                //if BoosterCore:getmodule("ModuleSepPartSwitchAction"):getfield("current decouple system") = "Decoupler" {
+                //BoosterCore:getmodule("ModuleSepPartSwitchAction"):DoAction("next decouple system", true).
+                //}
+                reboot.
             }
         }
     }

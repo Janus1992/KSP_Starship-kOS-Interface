@@ -35,7 +35,7 @@ PART
 	sepI = 0
 	attm = 0
 	sameVesselCollision = False
-	modCost = 25011.1992
+	modCost = 35201
 	modMass = 0.00373541843
 	modSize = 0,0,0
 	link = SEP.23.SHIP.AFT.LEFT_4294152788
@@ -495,6 +495,24 @@ PART
 	}
 	MODULE
 	{
+		name = ModuleDockingNodeNamed
+		isEnabled = True
+		portName = Donnager MK-1 Main Body
+		initialized = True
+		controlTransformName = 
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -667,7 +685,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 18677
 		MaxPartId = 100
-		RequiredPower = 0.100000001
+		RequiredPower = 0.0399999991
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -736,7 +754,7 @@ PART
 	part = SEP.23.SHIP.AFT.LEFT_4294152788
 	partName = Part
 	persistentId = 1163261848
-	pos = 0.226787329,61.9190331,3.224998
+	pos = 0.226787329,61.9190331,3.22499895
 	attPos = 0,0,0
 	attPos0 = -3.1915319,-5.02599716,-6.53332563E-07
 	rot = -0.488304555,0.488304257,-0.511428475,0.511428177
@@ -962,10 +980,10 @@ PART
 	part = SEP.23.SHIP.AFT.RIGHT_4294152342
 	partName = Part
 	persistentId = 350874035
-	pos = 0.226788282,61.9190331,-3.15806866
+	pos = 0.226788282,61.9190331,-3.15806961
 	attPos = 0,0,0
 	attPos0 = 3.19153166,-5.02599621,1.07913888E-06
-	rot = 0.511428058,0.511428118,0.488304645,0.488304645
+	rot = 0.511428058,0.511428118,0.488304675,0.488304615
 	attRot = 0,0,0.707106769,0.707106769
 	attRot0 = 0.0163507331,0.0163507331,0.706917644,0.706917763
 	mir = 1,1,1
@@ -1188,7 +1206,7 @@ PART
 	part = SEP.23.RAPTOR2.SL.RC_4294125418
 	partName = Part
 	persistentId = 882070460
-	pos = -0.359015405,58.8624573,0.036945045
+	pos = -0.359015524,58.8624573,0.036945045
 	attPos = 0,0,0
 	attPos0 = -0.0034801811,-8.08257294,-0.585802794
 	rot = 0,0.707106829,0,0.707106829
@@ -1605,7 +1623,7 @@ PART
 	part = SEP.23.RAPTOR2.SL.RC_4294124602
 	partName = Part
 	persistentId = 2959271072
-	pos = 0.522703886,58.8624573,0.539045453
+	pos = 0.522703886,58.8624573,0.539045572
 	attPos = 0,0,0
 	attPos0 = -0.505580485,-8.08257294,0.2959162
 	rot = 0,0.965925932,0,-0.258819133
@@ -2014,7 +2032,7 @@ PART
 	part = SEP.23.RAPTOR2.SL.RC_4294124320
 	partName = Part
 	persistentId = 697545222
-	pos = 0.516676009,58.8624573,-0.47559607
+	pos = 0.516676068,58.8624573,-0.475596189
 	attPos = 0,0,0
 	attPos0 = 0.509060621,-8.08257294,0.289888382
 	rot = 0,0.258819014,0,-0.965925932
@@ -2423,7 +2441,7 @@ PART
 	part = SEP.23.RAPTOR.VAC_4294123522
 	partName = Part
 	persistentId = 2420794189
-	pos = 2.15899515,59.2146759,0.0334650278
+	pos = 2.15899563,59.2146759,0.0334650278
 	attPos = 0,0,0
 	attPos0 = -4.91738319E-07,-7.73035431,1.93220687
 	rot = 0,0.707106829,0,0.707106829
@@ -2683,7 +2701,7 @@ PART
 	part = SEP.23.RAPTOR.VAC_4294121034
 	partName = Part
 	persistentId = 501928300
-	pos = -0.739318728,59.2146759,-1.6398735
+	pos = -0.739319086,59.2146759,-1.6398741
 	attPos = 0,0,0
 	attPos0 = 1.67333758,-7.73035431,-0.96610558
 	rot = 0,0.965925932,0,-0.258819133
@@ -2935,7 +2953,7 @@ PART
 	part = SEP.23.RAPTOR.VAC_4294120934
 	partName = Part
 	persistentId = 3925262984
-	pos = -0.739318609,59.2146759,1.70680308
+	pos = -0.739318848,59.2146759,1.70680356
 	attPos = 0,0,0
 	attPos0 = -1.67333746,-7.73035431,-0.966106057
 	rot = 0,0.258819014,0,-0.965925932
@@ -3205,7 +3223,7 @@ PART
 	sepI = 0
 	attm = 0
 	sameVesselCollision = False
-	modCost = 33782.3984
+	modCost = 80784
 	modMass = 0
 	modSize = 0,0,0
 	link = SEP.23.BOOSTER.CLUSTER_4294140498
@@ -3410,7 +3428,7 @@ PART
 	MODULE
 	{
 		name = ModuleDockingNode
-		isEnabled = False
+		isEnabled = True
 		acquireForceTweak = 100
 		crossfeed = True
 		nodeIsLocked = True
@@ -3541,8 +3559,8 @@ PART
 		name = ModuleB9PartSwitch
 		isEnabled = True
 		stagingEnabled = True
-		moduleID = DecoupleSwitch
-		currentSubtype = Docking
+		moduleID = DockingSwitch
+		currentSubtype = Enabled
 		EVENTS
 		{
 		}
@@ -3555,11 +3573,11 @@ PART
 	}
 	MODULE
 	{
-		name = ModulePartVariants
+		name = ModuleB9PartSwitch
 		isEnabled = True
-		useVariantMass = True
 		stagingEnabled = True
-		selectedVariant = B9
+		moduleID = SEP_Booster_Aero
+		currentSubtype = B9
 		EVENTS
 		{
 		}
@@ -3599,6 +3617,76 @@ PART
 		}
 		ACTIONS
 		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleEnginesFX
+		isEnabled = True
+		independentThrottle = False
+		independentThrottlePercentage = 0
+		staged = False
+		flameout = False
+		EngineIgnited = False
+		engineShutdown = False
+		currentThrottle = 0
+		thrustPercentage = 100
+		manuallyOverridden = False
+		includeinDVCalcs = False
+		stagingEnabled = False
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+			OnAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ShutdownAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ActivateAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ToggleThrottle
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+		}
+		AXISGROUPS
+		{
+			independentThrottlePercentage
+			{
+				axisGroup = None
+				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				axisSpeedMultiplier = 0
+				axisInverted = None
+				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+			}
+			thrustPercentage
+			{
+				axisGroup = None
+				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				axisSpeedMultiplier = 0
+				axisInverted = None
+				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+			}
 		}
 		UPGRADESAPPLIED
 		{
@@ -4295,6 +4383,24 @@ PART
 	}
 	MODULE
 	{
+		name = ModuleDockingNodeNamed
+		isEnabled = True
+		portName = Behemoth Core
+		initialized = True
+		controlTransformName = 
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -4459,6 +4565,21 @@ PART
 	}
 	MODULE
 	{
+		name = ModuleWaterfallFX
+		isEnabled = True
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = kOSProcessor
 		isEnabled = True
 		bootFile = /boot/booster.ks
@@ -4467,7 +4588,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 0
 		MaxPartId = 100
-		RequiredPower = 0.100000001
+		RequiredPower = 0.0399999991
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -4506,6 +4627,31 @@ PART
 				wasActiveBeforePartWasAdjusted = False
 			}
 			ToggleSuppressAutopilot
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleSEPPartSwitchAction
+		isEnabled = True
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+			NextSubtype
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			PreviousSubtype
 			{
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
@@ -4590,6 +4736,17 @@ PART
 		isVisible = True
 		flowMode = Both
 	}
+	RESOURCE
+	{
+		name = SolidFuel
+		amount = 10
+		maxAmount = 10
+		flowState = True
+		isTweakable = True
+		hideFlow = False
+		isVisible = True
+		flowMode = Both
+	}
 }
 PART
 {
@@ -4611,7 +4768,7 @@ PART
 	dstg = 0
 	sidx = 0
 	sqor = 1
-	sepI = 0
+	sepI = 1
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -4772,51 +4929,6 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleSurfaceFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleSurfaceFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleSurfaceFX
-		isEnabled = True
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = ModuleEnginesFX
 		isEnabled = True
 		independentThrottle = False
@@ -4892,7 +5004,7 @@ PART
 	MODULE
 	{
 		name = ModuleEnginesFX
-		isEnabled = True
+		isEnabled = False
 		independentThrottle = False
 		independentThrottlePercentage = 0
 		staged = False
@@ -4966,7 +5078,7 @@ PART
 	MODULE
 	{
 		name = ModuleEnginesFX
-		isEnabled = True
+		isEnabled = False
 		independentThrottle = False
 		independentThrottlePercentage = 0
 		staged = False
@@ -5032,6 +5144,51 @@ PART
 				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleSurfaceFX
+		isEnabled = True
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleSurfaceFX
+		isEnabled = True
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleSurfaceFX
+		isEnabled = True
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
 		}
 		UPGRADESAPPLIED
 		{
@@ -5176,11 +5333,111 @@ PART
 	}
 	MODULE
 	{
+		name = ModuleDockingNode
+		isEnabled = True
+		acquireForceTweak = 100
+		crossfeed = True
+		nodeIsLocked = True
+		targetAngle = 0
+		inverted = False
+		stagingEnabled = False
+		state = Ready
+		dockUId = 0
+		dockNodeIdx = 0
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+			ToggleLockedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ServoEngageLockAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ServoDisgageLockAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			UndockAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			DecoupleAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			MakeReferenceToggle
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			EnableXFeedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			DisableXFeedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ToggleXFeedAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+		}
+		AXISGROUPS
+		{
+			targetAngle
+			{
+				axisGroup = None
+				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				axisSpeedMultiplier = 0
+				axisInverted = None
+				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = ModuleB9PartSwitch
 		isEnabled = True
 		stagingEnabled = True
 		moduleID = nozzleSwitch
 		currentSubtype = Enabled
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleDockingNodeNamed
+		isEnabled = True
+		portName = Behemoth "Andrada" Engine Cluster
+		initialized = True
+		controlTransformName = 
+		stagingEnabled = True
 		EVENTS
 		{
 		}
@@ -5284,7 +5541,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4294128844
 	partName = Part
 	persistentId = 904600901
-	pos = 2.07308698,56.0867538,3.23149157
+	pos = 2.07308745,56.0867538,3.23149204
 	attPos = 0,0,0
 	attPos0 = -3.1980257,22.3105087,1.84629416
 	rot = 0.50000006,-5.45420491E-08,-0.866025507,5.45420349E-08
@@ -5504,7 +5761,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4294128380
 	partName = Part
 	persistentId = 1562505890
-	pos = -1.6195085,56.0867538,3.231493
+	pos = -1.61950898,56.0867538,3.23149395
 	attPos = 0,0,0
 	attPos0 = -3.1980257,22.3105087,-1.84629893
 	rot = 0.866025507,4.8696247E-08,-0.50000006,-4.86962399E-08
@@ -5716,7 +5973,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4294128054
 	partName = Part
 	persistentId = 3561790327
-	pos = -1.61951184,56.0867538,-3.16456509
+	pos = -1.61951232,56.0867538,-3.16456652
 	attPos = 0,0,0
 	attPos0 = 3.1980269,22.3105087,-1.84630132
 	rot = -0.866025507,-4.86962435E-08,-0.49999994,-4.86962506E-08
@@ -5928,7 +6185,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4294127738
 	partName = Part
 	persistentId = 2643805636
-	pos = 2.07308578,56.0867538,-3.16456509
+	pos = 2.07308626,56.0867538,-3.16456604
 	attPos = 0,0,0
 	attPos0 = 3.19802713,22.3105087,1.84629393
 	rot = -0.500000119,5.45420384E-08,-0.866025448,5.45420527E-08
@@ -6155,7 +6412,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -6588,6 +6845,24 @@ PART
 	}
 	MODULE
 	{
+		name = ModuleDockingNodeNamed
+		isEnabled = True
+		portName = Starship Orbital Launch Mount
+		initialized = True
+		controlTransformName = 
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -6612,7 +6887,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 0
 		MaxPartId = 100
-		RequiredPower = 0.100000001
+		RequiredPower = 0.0399999991
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -6692,7 +6967,7 @@ PART
 	part = SLE.SS.OLIT.Base.KOS_4293811544
 	partName = Part
 	persistentId = 2162285333
-	pos = -20.6176281,3.6502037,-1.02561533
+	pos = -20.6176357,3.6502037,-1.02561533
 	attPos = 0,0,0
 	attPos0 = 20.8443909,-5.32064819,1.05908406
 	rot = 0,1.00000012,0,0
@@ -6707,7 +6982,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -7057,7 +7332,7 @@ PART
 	part = SLE.SS.OLIT.Core.KOS_4293804274
 	partName = Part
 	persistentId = 3736664408
-	pos = -20.6176319,7.16914749,-1.02561533
+	pos = -20.6176395,7.16914749,-1.02561533
 	attPos = 0,0,0
 	attPos0 = 3.81469727E-06,3.51894379,0
 	rot = 0,1.00000012,0,0
@@ -7072,7 +7347,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -7228,7 +7503,7 @@ PART
 	part = SLE.SS.OLIT.Top.KOS_4293787130
 	partName = Part
 	persistentId = 16182167
-	pos = -20.6176357,80.648056,-1.02561533
+	pos = -20.6176434,80.648056,-1.02561533
 	attPos = 0,0,0
 	attPos0 = 3.81469727E-06,73.4789047,0
 	rot = 0,1.00000012,0,0
@@ -7243,7 +7518,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -7378,7 +7653,7 @@ PART
 	part = SLE.SS.OLIT.MZ.KOS_4293784316
 	partName = Part
 	persistentId = 2967586275
-	pos = -15.2558126,78.9829712,-0.27091372
+	pos = -15.2558203,78.9829712,-0.27091372
 	attPos = 0,0,0
 	attPos0 = -5.36182022,71.8138199,-0.754700661
 	rot = 0,1.00000012,0,0
@@ -7393,7 +7668,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 1
+	sepI = 2
 	attm = 0
 	sameVesselCollision = True
 	modCost = 0
@@ -8002,7 +8277,7 @@ PART
 	sepI = 0
 	attm = 0
 	sameVesselCollision = False
-	modCost = 6885
+	modCost = 7050.23975
 	modMass = 0
 	modSize = 0,0,0
 	link = SEP.23.SHIP.FWD.LEFT_4292509232
@@ -8468,7 +8743,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 0
 		MaxPartId = 100
-		RequiredPower = 0.100000001
+		RequiredPower = 0.0399999991
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -8597,7 +8872,7 @@ PART
 	part = SEP.23.SHIP.FWD.LEFT_4292509232
 	partName = Part
 	persistentId = 1928192749
-	pos = 0.226950645,83.2104111,2.84389067
+	pos = 0.226950645,83.2104111,2.84389114
 	attPos = 0,0,0
 	attPos0 = -2.81042528,0.717590332,0.000164628043
 	rot = -0.542459369,0.434223801,-0.556381226,0.455661684
@@ -8815,7 +9090,7 @@ PART
 	part = SEP.23.SHIP.FWD.RIGHT_4292506172
 	partName = Part
 	persistentId = 2796782163
-	pos = 0.226949215,83.2104111,-2.77695942
+	pos = 0.226949215,83.2104111,-2.7769599
 	attPos = 0,0,0
 	attPos0 = 2.81042385,0.717590332,0.000163674369
 	rot = 0.556381404,0.455661833,0.54245919,0.434223652
@@ -9051,7 +9326,7 @@ PART
 	sepI = 0
 	attm = 0
 	sameVesselCollision = False
-	modCost = 791.774963
+	modCost = 734.399963
 	modMass = 0
 	modSize = 0,0,0
 	attN = node_bottom,SEP.23.SHIP.TANKER_4292517688_0|-7.15256192E-06|3.18214334E-05_0|-1.00000012|-1.1920929E-07_0|-7.15256192E-06|3.18214334E-05_0|-1.00000012|-1.1920929E-07

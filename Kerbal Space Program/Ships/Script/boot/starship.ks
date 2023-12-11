@@ -106,7 +106,7 @@ for res in Core:part:resources {
 
 
 
-if RSS {    // Set of variables when Real Solar System has been installed
+if RSS {    // Real Solar System
     set aoa to 60.
     set MaxCargoToOrbit to 150000.
     set MaxReEntryCargoThickAtmo to 15000.
@@ -135,8 +135,9 @@ if RSS {    // Set of variables when Real Solar System has been installed
     set ArmsHeight to 138.16.
     set OrbitPrecision to 250.
     set RendezvousOrbitLeadFactor to 0.6.
+    set Scale to 1.6.
 }
-else if KSRSS {
+else if KSRSS { // 2.5-2.7x scaled Kerbin
     set aoa to 60.
     set MaxCargoToOrbit to 125005.
     set MaxReEntryCargoThickAtmo to 7500.
@@ -171,8 +172,9 @@ else if KSRSS {
     set ArmsHeight to 86.35.
     set OrbitPrecision to 150.
     set RendezvousOrbitLeadFactor to 0.6.
+    set Scale to 1.
 }
-else {  // Set of variables when Real Solar System has NOT been installed
+else {  // Stock Kerbin
     set aoa to 60.
     set MaxCargoToOrbit to 76800.
     set MaxReEntryCargoThickAtmo to 7500.
@@ -201,6 +203,7 @@ else {  // Set of variables when Real Solar System has NOT been installed
     set ArmsHeight to 86.35.
     set OrbitPrecision to 100.
     set RendezvousOrbitLeadFactor to 0.6.
+    set Scale to 1.
 }
 set SNStart to 30.  // Defines the first Serial Number when multiple ships are found and renaming is necessary.
 set MaxTilt to 2.5.  // Defines maximum allowed slope for the Landing Zone Search Function
@@ -439,7 +442,7 @@ function FindParts {
                         set MaxCargoToOrbit to 150000.
                     }
                 }
-                else if x:name:contains("SEP.23.SHIP.NOSE.EXP") {
+                else if x:name:contains("SEP.23.SHIP.NOSE.EXP") or x:name:contains("SEP.23.SHIP.CARGO.EXP") {
                     set Nose to x.
                     set ShipType to "Expendable".
                     set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
@@ -2057,14 +2060,14 @@ local status1label5 is statusstackvlayout5:addlabel().
     set status1label5:style:wordwrap to false.
     set status1label5:tooltip to "Current Ship Mass in metric tons".
     
-local status2label1 is statusstackvlayout1:addlabel("-").
+local status2label1 is statusstackvlayout1:addlabel("").
     set status2label1:style:textcolor to grey.
     set status2label1:style:margin:left to 5.
     set status2label1:style:width to 50.
     set status2label1:style:wordwrap to false.
     set status2label1:style:fontsize to 12.
     set status2label1:style:align to "LEFT".
-    set status2label1:tooltip to "Left Hand Heat-Tile Surface Temperature".
+    //set status2label1:tooltip to "Left Hand Heat-Tile Surface Temperature".
 local status2label2 is statusstackvlayout2:addlabel().
     set status2label2:style:bg to "starship_img/starship_symbol".
     set status2label2:style:margin:top to 3.
@@ -2076,13 +2079,13 @@ local status2label2 is statusstackvlayout2:addlabel().
     set status2label2:style:overflow:right to -19.
     set status2label2:tooltip to "Visual Representation of the Hull".
     
-local status2label3 is statusstackvlayout3:addlabel("-").
+local status2label3 is statusstackvlayout3:addlabel(" ").
     set status2label3:style:textcolor to grey.
     set status2label3:style:width to 50.
     set status2label3:style:wordwrap to false.
     set status2label3:style:fontsize to 12.
     set status2label3:style:align to "CENTER".
-    set status2label3:tooltip to "Right Hand Heat-Tile Surface Temperature".
+    //set status2label3:tooltip to "Right Hand Heat-Tile Surface Temperature".
 local status2label4 is statusstackvlayout4:addlabel().
     set status2label4:style:fontsize to 16.
     set status2label4:style:align to "LEFT".
@@ -6216,18 +6219,43 @@ if addons:tr:available and not startup {
     updatestatusbar().
     SteeringManager:RESETTODEFAULT().
     clearvecdraws().
-    if ship:status = "FLYING" and eta:apoapsis < eta:periapsis and altitude < body:atm:height - 5000 or ship:status = "SUB_ORBITAL" and eta:apoapsis < eta:periapsis and altitude < body:atm:height - 5000 {
+    if ship:status = "FLYING" and eta:apoapsis < eta:periapsis and altitude < body:atm:height - 5000 and alt:radar > 1000 or ship:status = "SUB_ORBITAL" and eta:apoapsis < eta:periapsis and altitude < body:atm:height - 5000 and alt:radar > 1000 {
         if ship:body:atm:exists {
             Launch().
         }
     }
-    if ship:status = "FLYING" and eta:periapsis < eta:apoapsis or ship:status = "SUB_ORBITAL" and eta:periapsis < eta:apoapsis {
+    if ship:status = "FLYING" and eta:periapsis < eta:apoapsis and alt:radar > 1000 or ship:status = "SUB_ORBITAL" and eta:periapsis < eta:apoapsis and alt:radar > 1000 {
         if ship:body:atm:exists {
             ReEntryAndLand().
         }
         else {
             LandwithoutAtmo().
         }
+    }
+    if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 and alt:radar < 1000 and ship:mass - ship:drymass < 5 {
+        if defined watchdog {
+            Watchdog:deactivate().
+        }
+        wait 3.
+        LandAtOLM().
+        Tank:getmodule("ModuleDockingNode"):SETFIELD("docking acquire force", 200).
+        HUDTEXT("Stacking Starship and Booster..", 15, 2, 20, green, false).
+        when alt:radar < 1000 and ship:mass - ship:drymass < 50 and SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 then {
+            sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (4 * Scale) + ",0.25")).
+            wait 4 * Scale.
+            if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 {
+                sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (3 * Scale) + ",0.25")).
+                wait 4 * Scale.
+                preserve.
+            }
+        }
+        until SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length > 0 and alt:radar < 1000 and ship:mass - ship:drymass < 50 {
+            BackGroundUpdate().
+            wait 0.001.
+        }
+        HUDTEXT("Starship Re-stacked! Rebooting..", 5, 2, 20, green, false).
+        wait 1.
+        reboot.
     }
     VehicleSelfCheck().
     set startup to true.
@@ -6432,18 +6460,10 @@ function Launch {
                 }
             }
             if cancelconfirmed {
-                if RSS {
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,1.12,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,6.4,0.5").
-                }
-                else {
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,0.7,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,4,0.5").
-                }
+                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
+                sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers,0,0.25," + (0.7 * Scale) + ",false")).
+                sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
+                sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (4 * Scale) + ",0.5")).
                 ClearInterfaceAndSteering().
                 return.
             }
@@ -6481,18 +6501,10 @@ function Launch {
                         ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
                     }
                 }
-                if RSS {
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,1.12,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,6.4,0.5").
-                }
-                else {
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,0.7,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,4,0.5").
-                }
+                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
+                sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers,0,0.25," + (0.7 * Scale) + ",false")).
+                sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
+                sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (4 * Scale) + ",0.5")).
                 ClearInterfaceAndSteering().
                 return.
             }
@@ -6516,18 +6528,10 @@ function Launch {
                         ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
                     }
                 }
-                if RSS {
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,1.12,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,6.4,0.5").
-                }
-                else {
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,0.7,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,4,0.5").
-                }
+                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
+                sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers,0,0.25," + (0.7 * Scale) + ",false")).
+                sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
+                sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (4 * Scale) + ",0.5")).
                 ClearInterfaceAndSteering().
                 return.
             }
@@ -6545,6 +6549,11 @@ function Launch {
             }
             else {
                 OLM:getmodule("LaunchClamp"):DoEvent("release clamp").
+            }
+            if SHIP:PARTSNAMED("SEP.23.BOOSTER.CLUSTER"):length > 0 {
+                if BoosterEngines[0]:getmodule("ModuleDockingNode"):hasevent("undock") {
+                    BoosterEngines[0]:getmodule("ModuleDockingNode"):doevent("undock").
+                }
             }
             set OnOrbitalMount to False.
             if defined LaunchTime {
@@ -6574,18 +6583,10 @@ function Launch {
                         ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
                     }
                 }
-                if RSS {
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,1.12,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,6.4,0.5").
-                }
-                else {
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.25,0.7,false").
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
-                    sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,4,0.5").
-                }
+                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
+                sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers,0,0.25," + (0.7 * Scale) + ",false")).
+                sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
+                sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (4 * Scale) + ",0.5")).
                 OLM:getmodule("ModuleAnimateGeneric"):doevent("open clamps + qd").
                 ClearInterfaceAndSteering().
                 reboot.
@@ -6625,67 +6626,76 @@ function Launch {
         }
 
         if Boosterconnected {
-            when apoapsis > BoosterAp and not AbortLaunchInProgress then {
-                for eng in SLEngines {
-                    eng:getmodule("ModuleSEPRaptor"):doaction("enable actuate out", true).
-                    eng:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
+            when apoapsis > BoosterAp - 600 and not AbortLaunchInProgress then {
+                for x in range(0, BoosterCore[0]:modules:length) {
+                    if BoosterCore[0]:getmodulebyindex(x):hasfield("% rated thrust") {
+                        if BoosterCore[0]:getmodulebyindex(x):hasevent("activate engine") {
+                            BoosterCore[0]:getmodulebyindex(x):DoEvent("activate engine").
+                        }
+                    }
                 }
-                BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
-                lock throttle to 0.5.
-                unlock steering.
-                LogToFile("Starting stage-separation").
-                if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
-                set message1:text to "<b>Hot staging..</b>".
-                set message2:text to "".
-                set message3:text to "".
-                ShowHomePage().
-                wait 0.001.
-                set CargoBeforeSeparation to CargoMass.
-                if Tank:getmodule("ModuleSepPartSwitchAction"):getfield("current docking system") = "QD" {
-                    Tank:getmodule("ModuleSepPartSwitchAction"):DoAction("next docking system", true).
-                }
-                BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
-                if not cancelconfirmed {
-                    if not (Launch180) {
-                        sendMessage(Processor(volume("Booster")), "Boostback, 0 Roll").
+                when apoapsis > BoosterAp and not AbortLaunchInProgress then {
+                    for eng in SLEngines {
+                        eng:getmodule("ModuleSEPRaptor"):doaction("enable actuate out", true).
+                        eng:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
+                    }
+                    BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
+                    lock throttle to 0.5.
+                    unlock steering.
+                    LogToFile("Starting stage-separation").
+                    if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
+                    set message1:text to "<b>Hot staging..</b>".
+                    set message2:text to "".
+                    set message3:text to "".
+                    ShowHomePage().
+                    wait 0.001.
+                    set CargoBeforeSeparation to CargoMass.
+                    if Tank:getmodule("ModuleSepPartSwitchAction"):getfield("current docking system") = "QD" {
+                        Tank:getmodule("ModuleSepPartSwitchAction"):DoAction("next docking system", true).
+                    }
+                    BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
+                    if not cancelconfirmed {
+                        if not (Launch180) {
+                            sendMessage(Processor(volume("Booster")), "Boostback, 0 Roll").
+                        }
+                        else {
+                            sendMessage(Processor(volume("Booster")), "Boostback, 180 Roll").
+                        }
+                    }
+                    set quickengine3:pressed to true.
+                    if NrOfVacEngines = 3 or ShipType = "Depot" {
+                        set quickengine2:pressed to true.
+                    }
+                    BoosterCore[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
+                    Tank:getmodule("ModuleDockingNode"):doaction("undock node", true).
+                    wait 0.1.
+                    set Boosterconnected to false.
+                    set CargoAfterSeparation to CargoMass.
+                    InhibitButtons(1, 1, 1).
+                    set cancel:text to "<b>CANCEL</b>".
+                    rcs on.
+                    lock steering to LaunchSteering().
+                    set Booster to Vessel("Booster").
+                    set kuniverse:activevessel to vessel(ship:name).
+                    HideEngineToggles(1).
+                    if Tank:getmodule("ModuleSepPartSwitchAction"):getfield("current docking system") = "BTB" {
+                        Tank:getmodule("ModuleSepPartSwitchAction"):DoAction("next docking system", true).
+                    }
+                    set StageSepComplete to true.
+                    if RSS {
+                        SetLoadDistances(1650000).
+                    }
+                    else if KSRSS {
+                        SetLoadDistances(1000000).
                     }
                     else {
-                        sendMessage(Processor(volume("Booster")), "Boostback, 180 Roll").
+                        SetLoadDistances(500000).
                     }
-                }
-                set quickengine3:pressed to true.
-                if NrOfVacEngines = 3 or ShipType = "Depot" {
-                    set quickengine2:pressed to true.
-                }
-                BoosterCore[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
-                Tank:getmodule("ModuleDockingNode"):doaction("undock node", true).
-                wait 0.1.
-                set Boosterconnected to false.
-                set CargoAfterSeparation to CargoMass.
-                InhibitButtons(1, 1, 1).
-                set cancel:text to "<b>CANCEL</b>".
-                rcs on.
-                lock steering to LaunchSteering().
-                set Booster to Vessel("Booster").
-                set kuniverse:activevessel to vessel(ship:name).
-                HideEngineToggles(1).
-                if Tank:getmodule("ModuleSepPartSwitchAction"):getfield("current docking system") = "BTB" {
-                    Tank:getmodule("ModuleSepPartSwitchAction"):DoAction("next docking system", true).
-                }
-                set StageSepComplete to true.
-                if RSS {
-                    SetLoadDistances(1650000).
-                }
-                else if KSRSS {
-                    SetLoadDistances(1000000).
-                }
-                else {
-                    SetLoadDistances(500000).
-                }
-                LogToFile("Hot-Staging Complete").
-                set HotStageTime to time:seconds.
-                if CPUSPEED < 1000 {
-                    set config:ipu to 1000.
+                    LogToFile("Hot-Staging Complete").
+                    set HotStageTime to time:seconds.
+                    if CPUSPEED < 1000 {
+                        set config:ipu to 1000.
+                    }
                 }
             }
         }
@@ -6799,20 +6809,20 @@ function Launch {
         wait 0.001.
         Droppriority().
         rcs off.
-        if defined Booster and STOCK {
-            if Booster:altitude < 30000 {
-                HUDTEXT("Changing Focus to: Booster", 5, 2, 20, green, false).
-                wait 1.5.
-                HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 20, 2, 20, green, false).
-                wait 0.001.
-                set kuniverse:activevessel to vessel("Booster").
-            }
-            else {
-                HUDTEXT("Changing Focus when Booster passes below 30km Altitude", 15, 2, 20, yellow, false).
-                wait 1.5.
-                HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 20, 2, 20, green, false).
-            }
-        }
+        //if defined Booster and STOCK {
+        //    if Booster:altitude < 30000 and KUniverse:activevessel = vessel(ship:name) {
+        //        HUDTEXT("Changing Focus to: Booster", 5, 2, 20, green, false).
+        //        wait 1.5.
+        //        HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 20, 2, 20, green, false).
+        //        wait 0.001.
+        //        set kuniverse:activevessel to vessel("Booster").
+        //    }
+        //    else {
+        //        HUDTEXT("Changing Focus when Booster passes below 30km Altitude", 15, 2, 20, yellow, false).
+        //        wait 1.5.
+        //        HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 20, 2, 20, green, false).
+        //    }
+        //}
         set textbox:style:bg to "starship_img/starship_main_square_bg".
         ShowHomePage().
         LogToFile("Launch Complete").
@@ -7817,16 +7827,6 @@ function ReEntryData {
             set config:ipu to 1000.
             setflaps(0, 80, 1, 0).
             set ship:control:pilotpitchtrim to 0.
-            //set RepositionOxidizer to TRANSFERALL("Oxidizer", HeaderTank, Tank).
-            //set RepositionOxidizer:ACTIVE to TRUE.
-            //if Methane {
-            //    set RepositionLM to TRANSFERALL("LqdMethane", HeaderTank, Tank).
-            //    set RepositionLM:ACTIVE to TRUE.
-            //}
-            //else {
-            //    set RepositionLF to TRANSFERALL("LiquidFuel", HeaderTank, Tank).
-            //    set RepositionLF:ACTIVE to TRUE.
-            //}
             Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             LogToFile("Landing Procedure started. Starting Landing Flip Now!").
@@ -7834,11 +7834,11 @@ function ReEntryData {
             if ship:body:atm:sealevelpressure > 0.5 {
                 ShutDownAllEngines().
                 if RSS {
-                    set ThrottleMin to 0.3 * (ship:mass / 168.5) * (ship:mass / 168.5).
+                    set ThrottleMin to 0.25.
                     set LandingFlipTime to 6.
                 }
                 else {
-                    set ThrottleMin to 0.4 * (ship:mass / 67.5) * (ship:mass / 67.5).
+                    set ThrottleMin to 0.25.
                     set LandingFlipTime to 6.
                 }
                 lock throttle to ThrottleMin.
@@ -7980,7 +7980,7 @@ function ReEntryData {
 
             until verticalspeed > -0.02 and RadarAlt < 1.25 and ship:status = "LANDED" or verticalspeed > 0.25 and RadarAlt < 2.5 {
                 if ship:body:atm:sealevelpressure > 0.5 {
-                    if ErrorVector:MAG > (RadarAlt + 25) and RadarAlt > 5 and not (LandSomewhereElse) or RadarAlt < -5 and not (LandSomewhereElse) {
+                    if ErrorVector:MAG > ( Scale * RadarAlt + 25) and RadarAlt > 5 and not (LandSomewhereElse) or RadarAlt < -5 and not (LandSomewhereElse) {
                         set LandSomewhereElse to true.
                         set MechaZillaExists to false.
                         SetRadarAltitude().
@@ -8198,37 +8198,16 @@ function LandingVector {
             }
 
             if MechaZillaExists and TargetOLM {
-                if RSS {
-                    sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,1.12,false").
-                    sendMessage(Vessel(TargetOLM), ("MechazillaStabilizers," + maxstabengage)).
+                sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,1," + (0.7 * Scale) + ",false")).
+                sendMessage(Vessel(TargetOLM), ("MechazillaStabilizers," + maxstabengage)).
+                when time:seconds > ShutdownProcedureStart + 3.25 * Scale then {
+                    sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.5," + (0.7 * Scale) + ",false")).
                 }
-                else {
-                    sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,0.7,false").
-                    sendMessage(Vessel(TargetOLM), ("MechazillaStabilizers," + maxstabengage)).
+                when time:seconds > ShutdownProcedureStart + 5.75 * Scale then {
+                    sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.2," + (0.7 * Scale) + ",false")).
                 }
-                when time:seconds > ShutdownProcedureStart + 3.25 then {
-                    if RSS {
-                        sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,0.5,1.12,false").
-                    }
-                    else {
-                        sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,0.5,0.7,false").
-                    }
-                }
-                when time:seconds > ShutdownProcedureStart + 5.75 then {
-                    if RSS {
-                        sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,0.2,1.12,false").
-                    }
-                    else {
-                        sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,0.2,0.7,false").
-                    }
-                }
-                when time:seconds > ShutdownProcedureStart + 8.25 then {
-                    if RSS {
-                        sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,0.1,1.12,false").
-                    }
-                    else {
-                        sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,0.1,0.7,false").
-                    }
+                when time:seconds > ShutdownProcedureStart + 8.25 * Scale then {
+                    sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.1," + (0.7 * Scale) + ",false")).
                 }
             }
 
@@ -8285,8 +8264,17 @@ function LandingVector {
             unlock steering.
             LogToFile("Self-Check Complete, Re-Entry & Land Program Complete.").
             set textbox:style:bg to "starship_img/starship_main_square_bg".
-            wait 3.
             ClearInterfaceAndSteering().
+            //if defined watchdog {
+            //    Watchdog:deactivate().
+            //}
+            HUDTEXT("Loading current Ship quicksave for safe docking! (Avoid Kraken..)", 10, 2, 20, green, false).
+            wait 2.5.
+            when kuniverse:canquicksave then {
+                kuniverse:quicksave().
+                wait 0.1.
+                kuniverse:quickload().
+            }
         }
     }
     else if altitude > ship:body:atm:height {
@@ -8356,29 +8344,36 @@ function LngLatError {
 
             if ship:body:atm:sealevelpressure > 0.5 {
                 if MechaZillaExists and TargetOLM {
-                    if RSS {
-                        set LngLatOffset to ((138.5 / ship:mass) * 309) - 184 + (max(CargoCoG - 150, 0) / 100) * 10.
+                    if STOCK {
+                        set LngLatOffset to 160.
                     }
                     else if KSRSS {
-                        set LngLatOffset to ((48.8 / ship:mass) * 105) - 50 + (max(CargoCoG - 150, 0) / 100) * 10.
+                        if ReScale {
+                            set LngLatOffset to 40.
+                        }
+                        else {
+                            set LngLatOffset to 70.
+                        }
                     }
                     else {
-                        set LngLatOffset to ((48.8 / ship:mass) * 126) - 66 + (max(CargoCoG - 150, 0) / 100) * 10.
+                        set LngLatOffset to 140.
                     }
                 }
                 else {
-                    if RSS {
-                        set LngLatOffset to ((138.5 / ship:mass) * 281) - 236 + (max(CargoCoG - 150, 0) / 100) * 10.
+                    if STOCK {
+                        set LngLatOffset to 160.
                     }
                     else if KSRSS {
-                        set LngLatOffset to ((48.8 / ship:mass) * 125) - 85 + (max(CargoCoG - 150, 0) / 100) * 10.
+                        if ReScale {
+                            set LngLatOffset to 40.
+                        }
+                        else {
+                            set LngLatOffset to 70.
+                        }
                     }
                     else {
-                        set LngLatOffset to ((48.8 / ship:mass) * 105) - 50 + (max(CargoCoG - 150, 0) / 100) * 10.
+                        set LngLatOffset to 40.
                     }
-                }
-                if ShipType = "Crew" {
-                    set LngLatOffset to LngLatOffset + 15.
                 }
             }
             else if ship:body:atm:sealevelpressure < 0.5 and ship:body:atm:exists {
@@ -8504,7 +8499,7 @@ function confirm {
     set cancelconfirmed to 0.
     Droppriority().
     until executeconfirmed or cancelconfirmed {
-        BackGroundUpdate.
+        BackGroundUpdate().
     }
     if executeconfirmed {set action to 1.}
     if cancelconfirmed {set action to 0.}
@@ -9260,8 +9255,6 @@ function updateStatus {
         if GForce > 4 {set status3label4:style:textcolor to red.}
         if GForce < 3.02 {set status3label4:style:textcolor to white.}
 
-        CalculateShipTemperature().
-
         set DynamicQ to 100 * ship:q.
         if DynamicQ > 25 {
             set status2label4:style:textcolor to yellow.
@@ -9309,108 +9302,6 @@ function updateStatus {
 }
 
 
-function CalculateShipTemperature {
-    if not (ShipType = "Expendable") and not (ShipType = "Depot") {
-        if FLflap:getmodule("ModuleSEPControlSurface"):GetField("Deploy") = true {
-            if runningprogram = "De-orbit & Landing" or runningprogram = "Final Approach" or runningprogram = "Landing" or runningprogram = "After Landing" or runningprogram = "Attitude (Landing Armed)" {
-                set FlapsControl to "magenta".
-                set status1label1:style:textcolor to magenta.
-                set status1label3:style:textcolor to magenta.
-                set status3label1:style:textcolor to magenta.
-                set status3label3:style:textcolor to magenta.
-                set status1label2:style:textcolor to magenta.
-            }
-            else {
-                set FlapsControl to "manual".
-                set status1label1:style:textcolor to cyan.
-                set status1label3:style:textcolor to cyan.
-                set status3label1:style:textcolor to cyan.
-                set status3label3:style:textcolor to cyan.
-                set status1label2:style:textcolor to cyan.
-            }
-        }
-        else {
-            set FlapsControl to "none".
-        }
-    }
-    else {
-        set FlapsControl to "none".
-    }
-    if Gforce > 0.15 and throttle = 0 {
-        if ship:body:atm:sealevelpressure > 0.5 {
-            if RSS {
-                set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -86) + max(vang(facing:forevector, velocity:surface), 10)/90 * (abs(GForce) * airspeed / 5), 2653).
-            }
-            else {
-                set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -86) + max(vang(facing:forevector, velocity:surface), 10)/90 * (abs(GForce) * airspeed), 2653).
-            }
-        }
-        else if ship:body:atm:sealevelpressure < 0.5 {
-            if RSS {
-                set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -87) + max(vang(facing:forevector, velocity:surface), 10)/90 * (abs(GForce) * airspeed / 2), 2653).
-            }
-            else {
-                set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -87) + max(vang(facing:forevector, velocity:surface), 10)/90 * (abs(GForce) * 3 * airspeed), 2653).
-            }
-        }
-        else {
-            set ShipTemperature to -85.
-        }
-    }
-    else {
-        set ShipTemperature to min(max(body:atm:alttemp(altitude) - 273.15, -86) + 0.1 * max(vang(facing:forevector, velocity:surface), 10) * (ship:q * (airspeed / 100)^3), 2649).
-    }
-    if ShipType = "Depot" or ShipType = "Expendable" {
-        set status2label1:style:textcolor to white.
-        set status2label3:style:textcolor to white.
-        set status2label2:style:bg to "starship_img/starship_symbol_no_flaps".
-    }
-    else {
-        if ShipTemperature > 1750 {
-            set status2label1:style:textcolor to red.
-            set status2label3:style:textcolor to red.
-            if FlapsControl = "magenta" {
-                set status2label2:style:bg to "starship_img/starship_symbol_flaps_magenta_hot".
-            }
-            else if FlapsControl = "manual" {
-                set status2label2:style:bg to "starship_img/starship_symbol_flaps_cyan_hot".
-            }
-            else {
-                set status2label2:style:bg to "starship_img/starship_symbol_hot".
-            }
-        }
-        else if ShipTemperature > 1500 {
-            set status2label1:style:textcolor to yellow.
-            set status2label3:style:textcolor to yellow.
-            if FlapsControl = "magenta" {
-                set status2label2:style:bg to "starship_img/starship_symbol_flaps_magenta_warm".
-            }
-            else if FlapsControl = "manual" {
-                set status2label2:style:bg to "starship_img/starship_symbol_flaps_cyan_warm".
-            }
-            else {
-                set status2label2:style:bg to "starship_img/starship_symbol_warm".
-            }
-        }
-        else {
-            set status2label1:style:textcolor to white.
-            set status2label3:style:textcolor to white.
-            if FlapsControl = "magenta" {
-                set status2label2:style:bg to "starship_img/starship_symbol_flaps_magenta".
-            }
-            else if FlapsControl = "manual" {
-                set status2label2:style:bg to "starship_img/starship_symbol_flaps_cyan".
-            }
-            else {
-                set status2label2:style:bg to "starship_img/starship_symbol".
-            }
-        }
-    }
-    set status2label1:text to round(ShipTemperature + 0.3) + "°C".
-    set status2label3:text to round(ShipTemperature - (0.001 * ShipTemperature)) + "°C".
-}
-
-
 function updateEnginePage {
     if not EnginePageIsRunning {
         set EnginePageIsRunning to true.
@@ -9428,7 +9319,7 @@ function updateEnginePage {
             set engine1label4:tooltip to "".
             set engine2label1:tooltip to "Thrust in kN of the Super Heavy Raptor Engines".
             set engine2label5:tooltip to "% of Fuel Remaining in the Booster CH4 & LOX tanks".
-            set boosterfuel to 100 * (BoosterCore[0]:resources[1]:amount / BoosterCore[0]:resources[1]:capacity).
+            set boosterfuel to 100 * (BoosterCore[0]:resources[2]:amount / BoosterCore[0]:resources[2]:capacity).
             if boosterfuel < 20 {
                 set engine2label4:style:border:h to (boosterfuel / 20) * 10.
                 set engine2label4:style:border:h to (boosterfuel / 20) * 10.
@@ -10386,20 +10277,21 @@ function BackGroundUpdate {
                 }
             }
             else {
-                if ship:status = "PRELAUNCH" or ship:status = "LANDED" {
+                if ship:status = "PRELAUNCH" or ship:status = "LANDED" or alt:radar < 200 {
                     if landbutton:visible {
                         landbutton:hide().
                         landlabel:show().
                     }
                     list targets in tlist.
                     for tgt in tlist {
-                        if tgt:name:contains("OrbitalLaunchMount") and tgt:distance < 500 and not LaunchButtonIsRunning and not LandButtonIsRunning or ship:partstitled("Starship Orbital Launch Mount"):length > 0 {
+                        if tgt:name:contains("OrbitalLaunchMount") and tgt:distance < 500 and not (LaunchButtonIsRunning) and not (LandButtonIsRunning) or ship:partstitled("Starship Orbital Launch Mount"):length > 0 {
                             towerbutton:show().
                             set TargetOLM to tgt:name.
+                            break.
                         }
-                        else {
-                            towerbutton:hide().
-                        }
+                    }
+                    if TargetOLM = "False" {
+                        towerbutton:hide().
                     }
                 }
                 else if landlabel:visible {
@@ -10410,7 +10302,6 @@ function BackGroundUpdate {
                     maneuverbutton:show().
                     if launchbutton:visible {
                         launchbutton:hide().
-                        //set launchlabel:style:textcolor to grey.
                         launchlabel:show().
                     }
                 }
@@ -10418,12 +10309,11 @@ function BackGroundUpdate {
                     maneuverbutton:hide().
                     if launchlabel:visible {
                         launchlabel:hide().
-                        //set launchlabel:style:textcolor to white.
                         launchbutton:show().
                     }
                 }
             }
-            if ship:body:atm:exists and not (ship:status = "PRELAUNCH") and not (ship:status = "LANDED") {
+            if ship:body:atm:exists and not (ship:status = "PRELAUNCH") and not (ship:status = "LANDED") and alt:radar > 1000 {
                 attitudebutton:show().
             }
             else {
@@ -11111,26 +11001,28 @@ function LandAtOLM {
                         set FlipAltitude to FlipAltitude + ArmsHeight.
                     }
                     SetRadarAltitude().
-                    when RadarAlt < 2000 then {
-                        if not (TargetOLM = "false") {
-                            sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
-                            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,97,true").
-                            sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,false").
-                            sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
-                            when RadarAlt < 300 then {
-                                set LandRollVector to vxcl(up:vector, Vessel(TargetOLM):partstitled("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position).
-                                if RSS {
-                                    set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 5), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 5)).
-                                }
-                                else {
-                                    set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 4), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 4)).
+                    if alt:radar > 1000 {
+                        when RadarAlt < 2000 then {
+                            if not (TargetOLM = "false") {
+                                sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
+                                sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,97,true").
+                                sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,false").
+                                sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
+                                when RadarAlt < 300 then {
+                                    set LandRollVector to vxcl(up:vector, Vessel(TargetOLM):partstitled("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position).
+                                    if RSS {
+                                        set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 5), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 5)).
+                                    }
+                                    else {
+                                        set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 4), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 4)).
+                                    }
                                 }
                             }
-                        }
-                        else {
-                            SetRadarAltitude().
-                            set FlipAltitude to 750.
-                            LogToFile("TargetOLM was false").
+                            else {
+                                SetRadarAltitude().
+                                set FlipAltitude to 750.
+                                LogToFile("TargetOLM was false").
+                            }
                         }
                     }
                     return true.
@@ -12690,7 +12582,7 @@ function CheckFullTanks {
         local cap to 0.
         if not (ShipType = "Depot") and not (ShipType = "Expendable") {
             for res in HeaderTank:resources {
-                if res:amount < res:capacity and not (res:name = "ElectricCharge") {
+                if res:amount < res:capacity and not (res:name = "ElectricCharge") and not (res:name = "SolidFuel") {
                     set FullTanks to false.
                     set amount to amount + res:amount.
                     set cap to cap + res:capacity.
@@ -12699,7 +12591,7 @@ function CheckFullTanks {
         }
         if ShipType = "Tanker" {
             for res in Nose:resources {
-                if res:amount < res:capacity and not (res:name = "ElectricCharge") {
+                if res:amount < res:capacity and not (res:name = "ElectricCharge") and not (res:name = "SolidFuel") {
                     set FullTanks to false.
                     set amount to amount + res:amount.
                     set cap to cap + res:capacity.
@@ -12707,7 +12599,7 @@ function CheckFullTanks {
             }
         }
         for res in Tank:resources {
-            if res:amount < res:capacity and not (res:name = "ElectricCharge") {
+            if res:amount < res:capacity and not (res:name = "ElectricCharge") and not (res:name = "SolidFuel") {
                 set FullTanks to false.
                 set amount to amount + res:amount.
                 set cap to cap + res:capacity.
@@ -12715,7 +12607,7 @@ function CheckFullTanks {
         }
         if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length > 0 {
             for res in BoosterCore[0]:resources {
-                if res:amount < res:capacity and not (res:name = "ElectricCharge") {
+                if res:amount < res:capacity and not (res:name = "ElectricCharge") and not (res:name = "SolidFuel") {
                     set FullTanks to false.
                     set amount to amount + res:amount.
                     set cap to cap + res:capacity.
