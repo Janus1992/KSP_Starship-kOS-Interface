@@ -8356,7 +8356,7 @@ function LngLatError {
                         }
                     }
                     else {
-                        set LngLatOffset to 140.
+                        set LngLatOffset to 80.
                     }
                 }
                 else {
@@ -8372,7 +8372,7 @@ function LngLatError {
                         }
                     }
                     else {
-                        set LngLatOffset to 40.
+                        set LngLatOffset to 80.
                     }
                 }
             }
