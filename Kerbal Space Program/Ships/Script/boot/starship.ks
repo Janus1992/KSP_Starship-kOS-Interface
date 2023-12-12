@@ -6743,7 +6743,7 @@ function Launch {
             }
             else if KSRSS {
                 when DesiredAccel / MaxAccel < 0.6 and altitude > 80000 or apoapsis > targetap then {
-                    if NrOfVacEngines = 3 or ShipType = "Depot" or verticalspeed < 0 {
+                    if NrOfVacEngines = 6 or ShipType = "Depot" or verticalspeed < 0 {
                         set quickengine2:pressed to false.
                     }
                     when altitude > targetap - 100 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 5 or deltav < 300 then {
@@ -6754,7 +6754,7 @@ function Launch {
             }
             else {
                 when apoapsis > targetap - 10000 and time:seconds > HotStageTime + 15 or verticalspeed < 0 then {
-                    if NrOfVacEngines = 3 or ShipType = "Depot" {
+                    if NrOfVacEngines = 6 or ShipType = "Depot" {
                         set quickengine2:pressed to false.
                     }
                     when altitude > targetap - 1000 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 5 or deltav < 100 then {
@@ -7980,7 +7980,7 @@ function ReEntryData {
 
             until verticalspeed > -0.02 and RadarAlt < 1.25 and ship:status = "LANDED" or verticalspeed > 0.25 and RadarAlt < 2.5 {
                 if ship:body:atm:sealevelpressure > 0.5 {
-                    if ErrorVector:MAG > ( Scale * RadarAlt + 25) and RadarAlt > 5 and not (LandSomewhereElse) or RadarAlt < -5 and not (LandSomewhereElse) {
+                    if ErrorVector:MAG > ( Scale * 1.5 * RadarAlt + 25) and RadarAlt > 5 and not (LandSomewhereElse) or RadarAlt < -5 and not (LandSomewhereElse) {
                         set LandSomewhereElse to true.
                         set MechaZillaExists to false.
                         SetRadarAltitude().
@@ -8268,12 +8268,14 @@ function LandingVector {
             //if defined watchdog {
             //    Watchdog:deactivate().
             //}
-            HUDTEXT("Loading current Ship quicksave for safe docking! (Avoid Kraken..)", 10, 2, 20, green, false).
-            wait 2.5.
-            when kuniverse:canquicksave then {
-                kuniverse:quicksave().
-                wait 0.1.
-                kuniverse:quickload().
+            if MechaZillaExists and TargetOLM {
+                HUDTEXT("Loading current Ship quicksave for safe docking! (Avoid Kraken..)", 10, 2, 20, green, false).
+                wait 2.5.
+                when kuniverse:canquicksave then {
+                    kuniverse:quicksave().
+                    wait 0.1.
+                    kuniverse:quickload().
+                }
             }
         }
     }
@@ -8356,7 +8358,7 @@ function LngLatError {
                         }
                     }
                     else {
-                        set LngLatOffset to 80.
+                        set LngLatOffset to 120.
                     }
                 }
                 else {
@@ -8372,7 +8374,7 @@ function LngLatError {
                         }
                     }
                     else {
-                        set LngLatOffset to 80.
+                        set LngLatOffset to 120.
                     }
                 }
             }

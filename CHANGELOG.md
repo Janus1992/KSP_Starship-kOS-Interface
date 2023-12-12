@@ -1,3 +1,7 @@
+# V2.3.2 (2023-12-12)
+- Fixes for stock orbit completion.
+- RSS ship landing fix.
+
 # V2.3.1 (2023-12-11)
 - Added automatic re-stacking capability. Doesn't work in RSS.
 - Modified ship landing properties.

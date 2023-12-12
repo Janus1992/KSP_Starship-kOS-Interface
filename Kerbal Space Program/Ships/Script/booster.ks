@@ -207,7 +207,7 @@ until False {
     if ShipConnectedToBooster = "false" and BoostBackComplete = "false" and not (ship:status = "LANDED") and altitude > 10000 {
         Boostback(0).
     }
-    if alt:radar < 150 and ship:mass - ship:drymass < 50 and ship:partstitled("Starship Orbital Launch Integration Tower Base"):length = 0 {
+    if alt:radar < 150 and alt:radar > 40 and ship:mass - ship:drymass < 50 and ship:partstitled("Starship Orbital Launch Integration Tower Base"):length = 0 {
         setLandingZone().
         setTargetOLM().
         BoosterDocking().
