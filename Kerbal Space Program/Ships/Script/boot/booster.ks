@@ -207,7 +207,7 @@ until False {
     if ShipConnectedToBooster = "false" and BoostBackComplete = "false" and not (ship:status = "LANDED") and altitude > 10000 {
         Boostback(0).
     }
-    if alt:radar < 150 and ship:mass - ship:drymass < 50 and ship:partstitled("Starship Orbital Launch Integration Tower Base"):length = 0 {
+    if alt:radar < 150 and alt:radar > 40 and ship:mass - ship:drymass < 50 and ship:partstitled("Starship Orbital Launch Integration Tower Base"):length = 0 {
         setLandingZone().
         setTargetOLM().
         BoosterDocking().
@@ -274,18 +274,7 @@ function Boostback {
             lock steering to SteeringVector.
         }
         when vang(facing:forevector, -vxcl(up:vector, ErrorVector)) < 90 then {
-            for fin in GridFins {
-                if fin:hasmodule("ModuleControlSurface") {
-                    fin:getmodule("ModuleControlSurface"):DoAction("activate pitch controls", true).
-                    fin:getmodule("ModuleControlSurface"):DoAction("activate yaw control", true).
-                    fin:getmodule("ModuleControlSurface"):DoAction("activate roll control", true).
-                }
-                if fin:hasmodule("SyncModuleControlSurface") {
-                    fin:getmodule("SyncModuleControlSurface"):DoAction("activate pitch controls", true).
-                    fin:getmodule("SyncModuleControlSurface"):DoAction("activate yaw control", true).
-                    fin:getmodule("SyncModuleControlSurface"):DoAction("activate roll control", true).
-                }
-            }
+            ActivateGridFins().
         }
     }
 
@@ -643,6 +632,9 @@ function Boostback {
     BoosterEngines[0]:shutdown.
     SetLoadDistances("default").
 
+    DeactivateGridFins().
+    BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
+
     if not (LandSomewhereElse) {
         if not (TargetOLM = "false") {
             HUDTEXT("Booster Landing Confirmed! Stand by for Mechazilla operation..", 10, 2, 20, green, false).
@@ -665,11 +657,13 @@ function Boostback {
                         when kuniverse:canquicksave and time:seconds > LandingTime + 15 * Scale then {
                             HUDTEXT("Loading current Booster quicksave for safe docking! (Avoid Kraken..)", 10, 2, 20, green, false).
                             sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (7 * Scale) + ",0.5")).
-                            wait 2.5.
+                            wait 1.5.
                             when kuniverse:canquicksave then {
                                 kuniverse:quicksave().
                                 wait 0.1.
-                                kuniverse:quickload().
+                                when kuniverse:canquicksave then {
+                                    kuniverse:quickload().
+                                }
                             }
                         }
                     }
@@ -991,6 +985,7 @@ function setTargetOLM {
 
 function BoosterDocking {
     sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (29.9 * Scale) + ",0.5")).
+    DeactivateGridFins().
     set LandingTime to time:seconds.
     clearscreen.
     print "Booster docking in progress..".
@@ -1024,12 +1019,44 @@ function BoosterDocking {
             }
             when time:seconds > DockedTime + 39 then {
                 set TowerReset to true.
-                HUDTEXT("Booster recovery complete! Rebooting..", 10, 2, 20, green, false).
+                HUDTEXT("Booster recovery complete!", 10, 2, 20, green, false).
                 //if BoosterCore:getmodule("ModuleSepPartSwitchAction"):getfield("current decouple system") = "Decoupler" {
                 //BoosterCore:getmodule("ModuleSepPartSwitchAction"):DoAction("next decouple system", true).
                 //}
                 reboot.
             }
+        }
+    }
+}
+
+
+function ActivateGridFins {
+    for fin in GridFins {
+        if fin:hasmodule("ModuleControlSurface") {
+            fin:getmodule("ModuleControlSurface"):DoAction("activate pitch controls", true).
+            fin:getmodule("ModuleControlSurface"):DoAction("activate yaw control", true).
+            fin:getmodule("ModuleControlSurface"):DoAction("activate roll control", true).
+        }
+        if fin:hasmodule("SyncModuleControlSurface") {
+            fin:getmodule("SyncModuleControlSurface"):DoAction("activate pitch controls", true).
+            fin:getmodule("SyncModuleControlSurface"):DoAction("activate yaw control", true).
+            fin:getmodule("SyncModuleControlSurface"):DoAction("activate roll control", true).
+        }
+    }
+}
+
+
+function DeactivateGridFins {
+    for fin in GridFins {
+        if fin:hasmodule("ModuleControlSurface") {
+            fin:getmodule("ModuleControlSurface"):DoAction("deactivate pitch control", true).
+            fin:getmodule("ModuleControlSurface"):DoAction("deactivate yaw control", true).
+            fin:getmodule("ModuleControlSurface"):DoAction("deactivate roll control", true).
+        }
+        if fin:hasmodule("SyncModuleControlSurface") {
+            fin:getmodule("SyncModuleControlSurface"):DoAction("deactivate pitch control", true).
+            fin:getmodule("SyncModuleControlSurface"):DoAction("deactivate yaw control", true).
+            fin:getmodule("SyncModuleControlSurface"):DoAction("deactivate roll control", true).
         }
     }
 }

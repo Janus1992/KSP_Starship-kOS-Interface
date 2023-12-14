@@ -1,3 +1,6 @@
+# V2.3.3 (2023-12-14)
+- Fixes for stacking and reflying starship.
+
 # V2.3.2 (2023-12-12)
 - Fixes for stock orbit completion.
 - RSS ship landing fix.

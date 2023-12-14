@@ -6319,6 +6319,17 @@ function Launch {
         sas off.
         rcs off.
         setflaps(0, 0, 0, 20).
+        if ship:name:contains("OrbitalLaunchMount") {
+            if ShipType = "Cargo" {
+                set ship:name to "Starship Cargo".
+            }
+            if ShipType = "Crew" {
+                set ship:name to "Starship Crew".
+            }
+            if ShipType = "Tanker" {
+                set ship:name to "Starship Tanker".
+            }
+        }
         SaveToSettings("Ship Name", ship:name).
 
         set targetincl to setting3:text:split("°")[0]:toscalar(0).
@@ -6905,42 +6916,42 @@ function LaunchThrottle {
 
 Function LaunchSteering {
     set myAzimuth to LAZcalc(LaunchData).
-    if altitude - LaunchElev < 500 {
+    if altitude - LaunchElev < 250 {
         set result to heading(myAzimuth, 90).
     }
     else if Boosterconnected {
         if RSS {
             if ShipType = "Depot" {
-                set targetpitch to 90 - (6.65 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                set targetpitch to 90 - (6.65 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
             }
             else {
-                set targetpitch to 90 - (7.5 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                set targetpitch to 90 - (7.5 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
             }
         }
         else if KSRSS {
             if RESCALE {
                 if ShipType = "Depot" {
-                    set targetpitch to 90 - (10.25 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                    set targetpitch to 90 - (10.25 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
                 }
                 else {
-                    set targetpitch to 90 - (10.5 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                    set targetpitch to 90 - (10.5 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
                 }
             }
             else {
                 if ShipType = "Depot" {
-                    set targetpitch to 90 - (10.5 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                    set targetpitch to 90 - (10.5 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
                 }
                 else {
-                    set targetpitch to 90 - (10.75 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                    set targetpitch to 90 - (10.75 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
                 }
             }
         }
         else {
             if ShipType = "Depot" {
-                set targetpitch to 90 - (9.5 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                set targetpitch to 90 - (9.5 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
             }
             else {
-                set targetpitch to 90 - (11.5 * SQRT(max((altitude - 500 - LaunchElev), 0)/1000)).
+                set targetpitch to 90 - (11.5 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
             }
         }
         if not (Launch180) {
@@ -7003,10 +7014,10 @@ function LaunchLabelData {
         if quicksetting1:pressed and altitude - LaunchElev > 150 and altitude - LaunchElev < 1000 {
             set kuniverse:timewarp:warp to 4.
         }
-        if quicksetting1:pressed and altitude - LaunchElev > 500 and altitude - LaunchElev < 2000 or kuniverse:timewarp:warp > 0 and altitude - LaunchElev > 500 and altitude - LaunchElev < 2000 {
+        if quicksetting1:pressed and altitude - LaunchElev > 500 and altitude - LaunchElev < 2500 or kuniverse:timewarp:warp > 0 and altitude - LaunchElev > 500 and altitude - LaunchElev < 2500 {
             set kuniverse:timewarp:warp to 1.
         }
-        if quicksetting1:pressed and altitude - LaunchElev > 2000 and apoapsis < BoosterAp - 5000 or altitude - LaunchElev > 2000 and altitude - LaunchElev < 2500 and kuniverse:timewarp:warp = 1 {
+        if quicksetting1:pressed and altitude - LaunchElev > 2500 and apoapsis < BoosterAp - 5000 or altitude - LaunchElev > 2000 and altitude - LaunchElev < 3000 and kuniverse:timewarp:warp = 1 {
             set kuniverse:timewarp:warp to 4.
         }
         else if apoapsis > BoosterAp - 5000 {
@@ -8274,7 +8285,9 @@ function LandingVector {
                 when kuniverse:canquicksave then {
                     kuniverse:quicksave().
                     wait 0.1.
-                    kuniverse:quickload().
+                    when kuniverse:canquicksave then {
+                        kuniverse:quickload().
+                    }
                 }
             }
         }
