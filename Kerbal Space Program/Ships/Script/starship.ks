@@ -5602,28 +5602,28 @@ function LandwithoutAtmo {
         }
         sas off.
         rcs on.
+        ActivateEngines(0).
         ActivateEngines(1).
-        if NrOfVacEngines = 6 {
-            set FinalDescentEngines to list().
-            for engine in VACEngines {
-                //print "vdot: " + vdot(engine:position - ship:position, facing:starvector).
-                if RSS {
-                    if vdot(engine:position - ship:position, facing:starvector) > 3 or vdot(engine:position - ship:position, facing:starvector) < -3 {
-                        engine:shutdown.
-                        FinalDescentEngines:add(engine).
-                    }
-                }
-                else {
-                    if vdot(engine:position - ship:position, facing:starvector) > 1.8 or vdot(engine:position - ship:position, facing:starvector) < -1.8 {
-                        engine:shutdown.
-                        FinalDescentEngines:add(engine).
-                    }
-
-                }
-                set FourVacBrakingBurn to true.
-            }
-            //print FinalDescentEngines.
-        }
+        //if NrOfVacEngines = 6 {
+        //    set FinalDescentEngines to list().
+        //    for engine in VACEngines {
+        //        //print "vdot: " + vdot(engine:position - ship:position, facing:starvector).
+        //        if RSS {
+        //            if vdot(engine:position - ship:position, facing:starvector) > 3 or vdot(engine:position - ship:position, facing:starvector) < -3 {
+        //                engine:shutdown.
+        //                FinalDescentEngines:add(engine).
+        //            }
+        //        }
+        //        else {
+        //            if vdot(engine:position - ship:position, facing:starvector) > 1.8 or vdot(engine:position - ship:position, facing:starvector) < -1.8 {
+        //                engine:shutdown.
+        //                FinalDescentEngines:add(engine).
+        //            }
+        //        }
+        //        set FourVacBrakingBurn to true.
+        //    }
+        //    print FinalDescentEngines.
+        //}
         lock throttle to 0.
         if quicksetting1:pressed and altitude > 10000 {
             set kuniverse:timewarp:warp to 4.
@@ -5637,12 +5637,15 @@ function LandwithoutAtmo {
             LogToFile("Landing without atmo, with cancelling of velocity enabled").
             when horDist < horStopDist then {
                 LogToFile("Cancelling velocity...").
-                lock throttle to max(min(abs(LngLatErrorList[0]) / (CosAngle * 2000), min(29.43 / MaxAccel, CancelHorVelRatio * CancelHorVelRatio * min(29.43, MaxAccel) / MaxAccel)), 0.33).
+                lock throttle to max(min(abs(LngLatErrorList[0]) / (CosAngle * 2000), min(29.43 / MaxAccel, CancelHorVelRatio * min(29.43, MaxAccel) / MaxAccel)), 0.33).
                 set runningprogram to "Landing".
                 set LandingFacingVector to vxcl(ApproachUPVector, ApproachVector).
                 set CancelVelocityHasStarted to true.
                 when LngLatErrorList[0] < 150 then {
                     lock throttle to 0.
+                    for engine in VACEngines {
+                        engine:shutdown.
+                    }
                     set CancelVelocityHasFinished to true.
                     when landingRatio > 1 then {
                         lock throttle to min(((DesiredDecel + Planet1G) * landingRatio) / MaxAccel, 2 * 9.81 / MaxAccel).
@@ -5658,6 +5661,9 @@ function LandwithoutAtmo {
             if kuniverse:timewarp:warp > 0 {
                 set kuniverse:timewarp:warp to 0.
             }
+            for engine in VACEngines {
+                engine:shutdown.
+            }
             set LandingFacingVector to vxcl(ApproachUPVector, landingzone:position - ship:position):normalized.
             set runningprogram to "Landing".
             set CancelVelocityHasStarted to true.
@@ -5670,39 +5676,39 @@ function LandwithoutAtmo {
         }
         lock STEERING to LandwithoutAtmoSteering.
 
-        when RadarAlt < SafeAltOverLZ / 4 and CancelVelocityHasFinished then {
+        //when RadarAlt < SafeAltOverLZ / 4 and CancelVelocityHasFinished then {
             //if abs(LngLatErrorList[1]) > 1000 and CancelVelocityHasStarted {
             //    CheckLZReachable().
             //    set LandingFacingVector to vxcl(up:vector, landingzone:position - ship:position):normalized.
             //    set NewTargetSet to true.
             //}
             //InhibitButtons(1, 1, 1).
-            if NrOfVacEngines = 6 {
-                LogToFile("Shutting down 2 engines").
-                if RSS {
-                    if ship:mass < 750 {
-                        for engine in VACEngines {
-                            engine:shutdown.
-                        }
-                        for engine in FinalDescentEngines {
-                            engine:activate.
-                        }
-                        set FourVacBrakingBurn to false.
-                        set TwoVacEngineLanding to true.
-                    }
-                }
-                else {
-                    for engine in VACEngines {
-                        engine:shutdown.
-                    }
-                    for engine in FinalDescentEngines {
-                        engine:activate.
-                    }
-                    set FourVacBrakingBurn to false.
-                    set TwoVacEngineLanding to true.
-                }
-            }
-        }
+            //if NrOfVacEngines = 6 {
+            //    LogToFile("Shutting down 2 engines").
+            //    if RSS {
+            //        if ship:mass < 750 {
+            //
+            //            for engine in FinalDescentEngines {
+            //                engine:activate.for engine in VACEngines {
+            //                engine:shutdown.
+            //            }
+            //            }
+            //            set FourVacBrakingBurn to false.
+            //            set TwoVacEngineLanding to true.
+            //        }
+            //    }
+            //    else {
+            //        for engine in VACEngines {
+            //            engine:shutdown.
+            //        }
+            //        for engine in FinalDescentEngines {
+            //            engine:activate.
+            //        }
+            //        set FourVacBrakingBurn to false.
+            //        set TwoVacEngineLanding to true.
+            //    }
+            //}
+        //}
 
         when verticalspeed > -10 and LandingBurnStarted then {
             //GEAR on.
@@ -5753,7 +5759,7 @@ function LandwithoutAtmo {
             Tank:activate.
         }
         ShutDownAllEngines().
-        set TwoVacEngineLanding to false.
+        //set TwoVacEngineLanding to false.
         until ShutdownComplete {
             set message3:text to "<b>Please Standby..</b> (" + round((ShutdownProcedureStart + 17) - time:seconds) + "s)".
             BackGroundUpdate().
@@ -5819,7 +5825,7 @@ function LandwithoutAtmoSteering {
     }
     local horStopTime to groundspeed / BurnAccel.
     set horStopDist to (0.5 * BurnAccel * horStopTime * horStopTime) / CosAngle + 100.
-    set CancelHorVelRatio to horStopDist / horDist.
+    set CancelHorVelRatio to abs(horStopDist / horDist).
 
     if RadarAlt < 1000 and ErrorVector:MAG > (RadarAlt + 15) and groundspeed < 75 and not LandSomewhereElse {
         set LandSomewhereElse to true.
@@ -6233,29 +6239,33 @@ if addons:tr:available and not startup {
         }
     }
     if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 and alt:radar < 1000 and ship:mass - ship:drymass < 5 {
-        if defined watchdog {
-            Watchdog:deactivate().
-        }
-        wait 3.
         LandAtOLM().
-        Tank:getmodule("ModuleDockingNode"):SETFIELD("docking acquire force", 200).
-        HUDTEXT("Stacking Starship and Booster..", 15, 2, 20, green, false).
-        when alt:radar < 1000 and ship:mass - ship:drymass < 50 and SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 then {
-            sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (4 * Scale) + ",0.25")).
-            wait 4 * Scale.
-            if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 {
-                sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (3 * Scale) + ",0.25")).
-                wait 4 * Scale.
-                preserve.
+        if not (TargetOLM = "false") {
+            if Vessel(TargetOLM):PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length > 0 {
+                if defined watchdog {
+                    Watchdog:deactivate().
+                }
+                wait 3.
+                Tank:getmodule("ModuleDockingNode"):SETFIELD("docking acquire force", 200).
+                HUDTEXT("Stacking Starship and Booster..", 15, 2, 20, green, false).
+                when alt:radar < 1000 and ship:mass - ship:drymass < 50 and SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 then {
+                    sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (4 * Scale) + ",0.25")).
+                    wait 4 * Scale.
+                    if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 {
+                        sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (3 * Scale) + ",0.25")).
+                        wait 4 * Scale.
+                        preserve.
+                    }
+                }
+                until SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length > 0 and alt:radar < 1000 and ship:mass - ship:drymass < 50 {
+                    BackGroundUpdate().
+                    wait 0.001.
+                }
+                HUDTEXT("Starship Re-stacked! Rebooting..", 5, 2, 20, green, false).
+                wait 1.
+                reboot.
             }
         }
-        until SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length > 0 and alt:radar < 1000 and ship:mass - ship:drymass < 50 {
-            BackGroundUpdate().
-            wait 0.001.
-        }
-        HUDTEXT("Starship Re-stacked! Rebooting..", 5, 2, 20, green, false).
-        wait 1.
-        reboot.
     }
     VehicleSelfCheck().
     set startup to true.
@@ -8060,7 +8070,7 @@ function LandingVector {
         }
         if ship:body:atm:sealevelpressure < 0.5 {
             if ErrorVector:mag > min(RadarAlt / 5, 5) {
-                set ErrorVector to ErrorVector:normalized * min(RadarAlt / 5, 5).
+                set ErrorVector to ErrorVector:normalized * min(max(RadarAlt / 5, 1), 5).
             }
         }
 
@@ -8121,7 +8131,7 @@ function LandingVector {
                         set result to -velocity:surface - 0.025 * ErrorVector.
                     }
                     else {
-                        set result to ship:up:vector - 0.02 * velocity:surface - 0.02 * ErrorVector.
+                        set result to ship:up:vector - 0.03 * velocity:surface - 0.02 * ErrorVector.
                     }
                 }
                 set message2:text to "<b>Target Error:</b>                " + round(vdot(LandingForwardDirection, vxcl(up:vector, ship:position - landingzone:position))) + "m " + round(vdot(LandingLateralDirection, vxcl(up:vector, ship:position - landingzone:position))) + "m".
@@ -8399,7 +8409,7 @@ function LngLatError {
                     set LngLatOffset to 1500 + max((ship:mass - 80) / 80 * 7000, 0).
                 }
                 else {
-                    set LngLatOffset to ship:mass / 100 * 500.
+                    set LngLatOffset to ship:mass / 100 * 750.
                 }
             }
             else {
@@ -10190,8 +10200,8 @@ function ClearInterfaceAndSteering {
     set executeconfirmed to false.
     set cancelconfirmed to false.
     set cancel:text to "<b>CANCEL</b>".
-    set TwoVacEngineLanding to false.
-    set FourVacBrakingBurn to false.
+    //set TwoVacEngineLanding to false.
+    //set FourVacBrakingBurn to false.
     set landbutton:pressed to false.
     set launchbutton:pressed to false.
     wait 0.001.
@@ -10762,15 +10772,15 @@ function SetRadarAltitude {
     }
     if MechaZillaExists and TargetOLM {
         if RSS {
-            lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ArmsHeight + (39.5167 - ShipBottomRadarHeight) - 0.25.
+            lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ArmsHeight + (39.5167 - ShipBottomRadarHeight) - 0.1.
         }
         else {
-            lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ArmsHeight + (24.698 - ShipBottomRadarHeight) - 0.25.
+            lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ArmsHeight + (24.698 - ShipBottomRadarHeight) - 0.1.
         }
-        LogToFile("Radar Altitude set.. (" + (ArmsHeight + (39.5167 - ShipBottomRadarHeight) - 0.25) + ")").
+        LogToFile("Radar Altitude set.. (" + (ArmsHeight + (39.5167 - ShipBottomRadarHeight) - 0.1) + ")").
     }
     else {
-        lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ShipBottomRadarHeight - 0.25.
+        lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ShipBottomRadarHeight + 0.1.
         LogToFile("Radar Altitude set (no OLM)").
     }
 }

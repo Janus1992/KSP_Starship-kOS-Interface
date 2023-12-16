@@ -1,3 +1,7 @@
+# V2.3.4 (2023-12-16)
+- Fixes for mun/duna landings.
+- Check that OLM has booster before starting stacking.
+
 # V2.3.3 (2023-12-14)
 - Fixes for stacking and reflying starship.
 
