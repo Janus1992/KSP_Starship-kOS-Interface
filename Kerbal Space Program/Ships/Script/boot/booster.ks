@@ -144,11 +144,11 @@ else {
         set LatCtrlPID to PIDLOOP(0.04, 0.0025, 0.0025, -2.5, 2.5).
         set LFBoosterFuelCutOff to 2400.
         set LandHeadingVector to heading(242,0):vector.
-        set BoosterLandingFactor to 0.95.
+        set BoosterLandingFactor to 0.75.
         set BoosterGlideDistance to 6000.
         set BoosterReturnMass to 140.
         set BoosterRaptorThrust to 627.
-        set TowerAlignAltitude to 5500.
+        set TowerAlignAltitude to 6000.
         set Scale to 1.
         set InitialOverShoot to 750.
     }
@@ -984,6 +984,8 @@ function setTargetOLM {
 
 
 function BoosterDocking {
+    HUDTEXT("Wait for Booster docking to start..", 20, 2, 20, green, false).
+    wait 25.
     sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (29.9 * Scale) + ",0.5")).
     DeactivateGridFins().
     set LandingTime to time:seconds.

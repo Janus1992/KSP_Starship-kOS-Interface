@@ -286,7 +286,6 @@ set EngineTogglesHidden to false.
 set Refueling to false.
 set NewTargetSet to false.
 set BurnComplete to false.
-set ShowSLdeltaV to true.
 set Logging to false.
 set fan to false.
 set FlapsYawEngaged to true.
@@ -2439,7 +2438,6 @@ set quickengine1:onclick to {
     SLEngines[0]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
     SLEngines[1]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
     SLEngines[2]:getmodule("ModuleGimbal"):SetField("gimbal limit", 0).
-    set ShowSLdeltaV to true.
 }.
 
 set quickengine2:ontoggle to {
@@ -2450,20 +2448,17 @@ set quickengine2:ontoggle to {
             wait 0.25.
             set quickengine2:text to "<b>SL Raptors</b>".
             set quickengine2:pressed to false.
-            set ShowSLdeltaV to false.
         }
         else {
             set quickengine1:pressed to false.
             ActivateEngines(0).
             LogToFile("SL Engines ON").
-            set ShowSLdeltaV to true.
         }
     }
     else {
         if quickengine3:pressed {
             for eng in SLEngines {eng:shutdown.}.
             LogToFile("SL Engines OFF").
-            set ShowSLdeltaV to false.
         }
         else {
             ShutDownAllEngines().
@@ -2479,20 +2474,14 @@ set quickengine3:ontoggle to {
             wait 0.25.
             set quickengine3:text to "<b>VAC Raptors</b>".
             set quickengine3:pressed to false.
-            set ShowSLdeltaV to false.
         }
         else {
             set quickengine1:pressed to false.
             ActivateEngines(1).
             LogToFile("VAC Engines ON").
-            set ShowSLdeltaV to false.
-        }
-        if quickengine2:pressed {
-            set ShowSLdeltaV to true.
         }
     }
     else {
-        set ShowSLdeltaV to true.
         if quickengine2:pressed {
             for eng in VACEngines {eng:shutdown.}.
             LogToFile("VAC Engines OFF").
@@ -6647,7 +6636,7 @@ function Launch {
         }
 
         if Boosterconnected {
-            when apoapsis > BoosterAp - 600 and not AbortLaunchInProgress then {
+            when apoapsis > BoosterAp - 750 and not AbortLaunchInProgress then {
                 for x in range(0, BoosterCore[0]:modules:length) {
                     if BoosterCore[0]:getmodulebyindex(x):hasfield("% rated thrust") {
                         if BoosterCore[0]:getmodulebyindex(x):hasevent("activate engine") {
@@ -7892,6 +7881,13 @@ function ReEntryData {
             lock steering to LandingVector().
 
             if ship:body:atm:sealevelpressure > 0.5 {
+                if abs(LngLatErrorList[0]) > 65 or abs(LngLatErrorList[1]) > 25 {
+                    set LandSomewhereElse to true.
+                    set MechaZillaExists to false.
+                    SetRadarAltitude().
+                    LogToFile("Landing parameters out of bounds (" + (LngLatErrorList[0] + 65) + "," + (LngLatErrorList[0] - 65) + "," + (LngLatErrorList[1] + 25) + "," + (LngLatErrorList[1] - 25) + "), Landing Off-Target").
+                    LogToFile("Lng Error: " + LngError + "    LatError: " + LatError).
+                }
                 LogToFile("Starting Engines").
                 SLEngines[0]:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
                 SLEngines[0]:activate.
@@ -7902,13 +7898,6 @@ function ReEntryData {
                 SLEngines[2]:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
                 SLEngines[2]:activate.
                 LogToFile("Engines Activated").
-                if abs(LngLatErrorList[0]) > 65 or abs(LngLatErrorList[1]) > 25 {
-                    set LandSomewhereElse to true.
-                    set MechaZillaExists to false.
-                    SetRadarAltitude().
-                    LogToFile("Landing parameters out of bounds (" + (LngLatErrorList[0] + 65) + "," + (LngLatErrorList[0] - 65) + "," + (LngLatErrorList[1] + 25) + "," + (LngLatErrorList[1] - 25) + "), Landing Off-Target").
-                    LogToFile("Lng Error: " + LngError + "    LatError: " + LatError).
-                }
             }
             set message1:text to "<b>Performing Landing Flip..</b>".
             set message2:text to "<b><color=green>Engine Light-Up confirmed..</color></b>".
@@ -7918,6 +7907,10 @@ function ReEntryData {
             when vang(-1 * velocity:surface, ship:facing:forevector) < 0.6 * FlipAngle then {
                 set config:ipu to CPUSPEED.
                 setflaps(60, 60, 1, 0).
+                if MechaZillaExists and not (TargetOLM = "false") and not (LandSomewhereElse) {
+                    lock RadarAlt to vdot(up:vector, FLflap:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position) - 8.25 * Scale.
+                }
+
                 when vang(-1 * velocity:surface, ship:facing:forevector) < 0.05 * FlipAngle and ship:body:atm:sealevelpressure > 0.5 or vang(-1 * velocity:surface, ship:facing:forevector) < FlipAngleFactor * FlipAngle and ship:body:atm:sealevelpressure < 0.5 then {
                     if ship:body:atm:sealevelpressure > 0.5 {
                         set DesiredDecel to 12 - 9.81.
@@ -7986,8 +7979,9 @@ function ReEntryData {
                         }
                     }
                 }
-                when abs(LngError) < 10 and abs(LatError) < 5 and vxcl(up:vector, ship:position - landingzone:position):mag < 20 then {
+                when abs(LngError) < 10 * Scale and abs(LatError) < 10 * Scale and vxcl(up:vector, ship:position - landingzone:position):mag < 20 * Scale then {
                     set ReducingSensitivity to true.
+                    LogToFile("Reducing Sensitivity for final descent").
                 }
                 when verticalspeed > -10 then {
                     if MechaZillaExists and TargetOLM and not (LandSomewhereElse) {
@@ -8000,8 +7994,9 @@ function ReEntryData {
             }
 
             until verticalspeed > -0.02 and RadarAlt < 1.25 and ship:status = "LANDED" or verticalspeed > 0.25 and RadarAlt < 2.5 {
+                SendPing().
                 if ship:body:atm:sealevelpressure > 0.5 {
-                    if ErrorVector:MAG > ( Scale * 1.5 * RadarAlt + 25) and RadarAlt > 5 and not (LandSomewhereElse) or RadarAlt < -5 and not (LandSomewhereElse) {
+                    if ErrorVector:MAG > (Scale * 1.5 * RadarAlt + 25) and RadarAlt > 5 and not (LandSomewhereElse) or RadarAlt < -1 and not (LandSomewhereElse) {
                         set LandSomewhereElse to true.
                         set MechaZillaExists to false.
                         SetRadarAltitude().
@@ -8017,10 +8012,11 @@ function ReEntryData {
                 }
                 LogToFile("Re-Entry Telemetry").
                 BackGroundUpdate().
-                wait 0.1.
+                wait 0.01.
             }
-            if (MechaZillaExists) and (TargetOLM) {
+            if (MechaZillaExists) and not (TargetOLM = "false") {
                 print "capture at: " + RadarAlt + "m RA".
+                LogToFile("Capture at: " + round(RadarAlt) + "m Radar Altitude").
             }
 
 
@@ -8057,15 +8053,10 @@ function LandingVector {
 
         if ship:body:atm:sealevelpressure > 0.5 {
             if RadarAlt < 300 {
-                if MechaZillaExists and TargetOLM {
-                    set ErrorVector to 0.25 * ErrorVector + 1.5 * vxcl(up:vector, ship:position - landingzone:position).
-                }
-                else {
-                    set ErrorVector to ErrorVector + 1.5 * vxcl(up:vector, ship:position - landingzone:position).
-                }
+                set ErrorVector to ErrorVector + 1 * vxcl(up:vector, ship:position - landingzone:position).
             }
-            if ErrorVector:mag > max(min(RadarAlt / 20, 10), 7.5) {
-                set ErrorVector to ErrorVector:normalized * max(min(RadarAlt / 20, 10), 7.5).
+            if ErrorVector:mag > max(min(RadarAlt / 20, 10), min(RadarAlt / 2, 10)) {
+                set ErrorVector to ErrorVector:normalized * max(min(RadarAlt / 20, 10), min(RadarAlt / 2, 10)).
             }
         }
         if ship:body:atm:sealevelpressure < 0.5 {
@@ -8120,7 +8111,12 @@ function LandingVector {
             else {
                 if ship:body:atm:sealevelpressure > 0.5 {
                     if ReducingSensitivity {
-                        set result to ship:up:vector - 0.03 * velocity:surface - 0.015 * ErrorVector.
+                        if RSS {
+                            set result to ship:up:vector - 0.015 * velocity:surface - 0.0075 * ErrorVector.
+                        }
+                        else {
+                            set result to ship:up:vector - 0.03 * velocity:surface - 0.015 * ErrorVector.
+                        }
                     }
                     else {
                         set result to ship:up:vector - 0.03 * velocity:surface - 0.03 * ErrorVector.
@@ -8211,7 +8207,8 @@ function LandingVector {
             Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             if ship:body:atm:sealevelpressure > 0.5 {
-                Nose:activate. Tank:activate.
+                Nose:activate.
+                Tank:activate.
             }
             SLEngines[0]:shutdown. SLEngines[1]:shutdown. SLEngines[2]:shutdown.
             if GEAR {
@@ -8373,31 +8370,21 @@ function LngLatError {
                         set LngLatOffset to 160.
                     }
                     else if KSRSS {
-                        if ReScale {
-                            set LngLatOffset to 40.
-                        }
-                        else {
-                            set LngLatOffset to 70.
-                        }
+                        set LngLatOffset to 70.
                     }
                     else {
-                        set LngLatOffset to 120.
+                        set LngLatOffset to 65.
                     }
                 }
                 else {
                     if STOCK {
-                        set LngLatOffset to 160.
+                        set LngLatOffset to 115.
                     }
                     else if KSRSS {
-                        if ReScale {
-                            set LngLatOffset to 40.
-                        }
-                        else {
-                            set LngLatOffset to 70.
-                        }
+                        set LngLatOffset to 25.
                     }
                     else {
-                        set LngLatOffset to 120.
+                        set LngLatOffset to 20.
                     }
                 }
             }
@@ -9004,11 +8991,17 @@ function updatestatusbar {
             set FuelMass to Tank:mass - Tank:drymass.
         }
 
-        if ShowSLdeltaV {
-            set EngineISP to 309.
+        if SLEngines[0]:ignition and not (VACEngines[0]:ignition) {
+            set EngineISP to 327.
+        }
+        else if VACEngines[0]:ignition and not (SLEngines[0]:ignition) {
+            set EngineISP to 378.
+        }
+        else if SLEngines[0]:ignition and VACEngines[0]:ignition {
+            set EngineISP to 352.5.
         }
         else {
-            set EngineISP to 378.
+            set EngineISP to 327.
         }
         if FuelMass = 0 {
             set FuelMass to 0.001.
@@ -9017,11 +9010,17 @@ function updatestatusbar {
         if currentdeltav > 350 {set status2:style:textcolor to white.}
         else if currentdeltav < 325 {set status2:style:textcolor to red.}
         else {set status2:style:textcolor to yellow.}
-        if ShowSLdeltaV {
+        if SLEngines[0]:ignition and not (VACEngines[0]:ignition) {
             set status2:text to "<b>ΔV: </b>" + currentdeltav + "m/s <b><size=12>@SL</size></b>".
         }
-        else {
+        else if VACEngines[0]:ignition and not (SLEngines[0]:ignition) {
             set status2:text to "<b>ΔV: </b>" + currentdeltav + "m/s <b><size=12>@VAC</size></b>".
+        }
+        else if SLEngines[0]:ignition and VACEngines[0]:ignition {
+            set status2:text to "<b>ΔV: </b>" + currentdeltav + "m/s".
+        }
+        else {
+            set status2:text to "<b>ΔV: </b>" + currentdeltav + "m/s <b><size=12>@SL</size></b>".
         }
         set bat to round(100 * (ship:electriccharge / ELECcap), 2).
         if bat < 25 and bat > 15 {
@@ -9155,7 +9154,6 @@ function updateStatus {
         set StatusPageIsRunning to true.
         if not (ShipType = "Expendable") and not (ShipType = "Depot") {
             if FLflap:getmodule("ModuleSEPControlSurface"):GetField("Deploy") {
-
                 if defined FL {}
                 else {
                     set FL to FLflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle").
@@ -9164,7 +9162,6 @@ function updateStatus {
                     set AR to ARflap:getmodule("ModuleSEPControlSurface"):GetField("deploy angle").
                     set FlapAuthority to FLflap:getmodule("ModuleSEPControlSurface"):GetField("authority limiter").
                 }
-
                 if defined Fpitch {
                     if SLEngines[0]:ignition {
                         set Fpitch to SLEngines[0]:gimbal:pitchangle * FlapAuthority.
@@ -10421,7 +10418,7 @@ function LogToFile {
                             if LatDistanceToTarget < 0 {set LatDistanceToTarget to -1 * LatDistanceToTarget.}
                             set DistanceToTarget to sqrt(LngDistanceToTarget * LngDistanceToTarget + LatDistanceToTarget * LatDistanceToTarget).
                         }
-                        if altitude > 1500 {
+                        if alt:radar > 1500 {
                             if homeconnection:isconnected {
                                 LOG ("Time: " + timestamp():clock + "   Dist: " + round(DistanceToTarget, 3) + "km   Alt: " + round(altitude) + "m   Vert Speed: " + round(ship:verticalspeed,1) + "m/s   Airspeed: " + round(airspeed, 1) + "m/s   Trk/X-Trk Error: " + round((LngLatErrorList[0] + LngLatOffset) / 1000, 3) + "km  " + round((LngLatErrorList[1] / 1000), 3) + "km") to "0:/FlightData.txt".
                             }
@@ -10441,7 +10438,7 @@ function LogToFile {
                         else {
                             LOG ("Time: " + timestamp():clock + "   Dist: " + round(DistanceToTarget, 3) + "km   Alt: " + round(altitude) + "m   Vert Speed: " + round(ship:verticalspeed,1) + "m/s   Airspeed: " + round(airspeed, 1) + "m/s   Trk/X-Trk Error: " + round((LngLatErrorList[0] + LngLatOffset) / 1000, 3) + "km  " + round((LngLatErrorList[1] / 1000), 3) + "km") to "0:/FlightData.txt".
                             LOG ("                 Actual AoA: " + round(vang(ship:facing:forevector, velocity:surface), 1) + "°   Throttle: " + (100 * throttle) + "%   Battery: " + round(100 * (ship:electriccharge / ELECcap), 2) + "%   Mass: " + round(ship:mass * 1000, 3) + "kg") to "0:/FlightData.txt".
-                            LOG ("                 Radar Altitude: " + round(RadarAlt, 1) + "m") to "0:/FlightData.txt".
+                            LOG ("                 Radar Altitude: " + round(RadarAlt, 1) + "m   Groundspeed: " + round(groundspeed,1) + "m/s") to "0:/FlightData.txt".
                             LOG "" to "0:/FlightData.txt".
                             LOG (timestamp():clock + "," + DistanceToTarget + "," + altitude + "," + ship:verticalspeed + "," + airspeed + "," + (LngLatErrorList[0] + LngLatOffset) + "," + LngLatErrorList[1] + "," + vang(ship:facing:forevector, velocity:surface) + "," + (100 * throttle) + "," + (100 * (ship:electriccharge / ELECcap)) + "," + (ship:mass * 1000) + "," + RadarAlt) to "0:/LandingData.csv".
                         }
@@ -10777,7 +10774,7 @@ function SetRadarAltitude {
         else {
             lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ArmsHeight + (24.698 - ShipBottomRadarHeight) - 0.1.
         }
-        LogToFile("Radar Altitude set.. (" + (ArmsHeight + (39.5167 - ShipBottomRadarHeight) - 0.1) + ")").
+        LogToFile("Radar Altitude set.. (" + round(ArmsHeight + (39.5167 - ShipBottomRadarHeight) - 0.1, 1) + ")").
     }
     else {
         lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ShipBottomRadarHeight + 0.1.

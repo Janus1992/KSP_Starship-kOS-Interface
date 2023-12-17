@@ -1,3 +1,7 @@
+# V2.3.5 (2023-12-17)
+- Fixes for ship/booster landings.
+- Booster docking delayed by 25 seconds after loading the quicksave to avoid booster wiggle.
+
 # V2.3.4 (2023-12-16)
 - Fixes for mun/duna landings.
 - Check that OLM has booster before starting stacking.
