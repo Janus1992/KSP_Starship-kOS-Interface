@@ -1,3 +1,6 @@
+# V2.3.6 (2023-12-27)
+- Fix for accidental renaming of ship to tower name.
+
 # V2.3.5 (2023-12-17)
 - Fixes for ship/booster landings.
 - Booster docking delayed by 25 seconds after loading the quicksave to avoid booster wiggle.

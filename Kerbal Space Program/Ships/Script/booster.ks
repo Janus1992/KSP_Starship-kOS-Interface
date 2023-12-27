@@ -73,6 +73,7 @@ set InitialOverShoot to 0.
 set TargetOLM to false.
 set BoosterDocked to false.
 set QuickSaveLoaded to false.
+set ShipNotFound to false.
 
 set RSS to false.
 set KSRSS to false.
@@ -282,7 +283,7 @@ function Boostback {
     if defined L {
         if L:haskey("Ship Name") {
             set starship to L["Ship Name"].
-            until ShipFound or verticalspeed < 0 {
+            until ShipFound or verticalspeed < 0 or ShipNotFound {
                 list targets in tgtlist.
                 for tgt in tgtlist {
                     if (tgt:name) = (starship) {
@@ -291,6 +292,7 @@ function Boostback {
                         wait 0.001.
                     }
                 }
+                set ShipNotFound to true.
             }
         }
     }
