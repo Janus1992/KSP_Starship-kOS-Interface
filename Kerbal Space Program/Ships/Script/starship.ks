@@ -4106,15 +4106,15 @@ function AutoDocking {
             BackGroundUpdate().
         }
     }
-    if PortDistanceVector:mag > 100 or dockingmode = "INTMD" {
-        print "Approaching Docking Port..".
-        set dockingmode to "APPR".
-        lock steering to AutoDockSteering().
-        until PortDistanceVector:mag < 50 or cancelconfirmed {
-            BackGroundUpdate().
-        }
-    }
-    if PortDistanceVector:mag < 100 {
+    //if PortDistanceVector:mag > 100 or dockingmode = "INTMD" {
+    //    print "Approaching Docking Port..".
+    //    set dockingmode to "APPR".
+    //    lock steering to AutoDockSteering().
+    //    until PortDistanceVector:mag < 50 or cancelconfirmed {
+    //        BackGroundUpdate().
+    //    }
+    //}
+    if PortDistanceVector:mag < 150 {
         print "Docking to Docking Port..".
         set dockingmode to "DOCK".
         lock steering to AutoDockSteering().
@@ -4195,7 +4195,7 @@ function AutoDockSteering {
         set message3:text to "<b>Relative Velocity (m/s):   </b><size=14>X: " + round(RelVelX, 2) + "   Y: " + round(RelVelY,2) + "   Z: " + round(RelVelZ,2) + "</size>".
 
         if vang(SafeVector, facing:forevector) < 5 and abs(RelVelY) < 0.5 and abs(RelVelZ) < 0.5 {
-            set ship:control:translation to v(RelVelY/2, RelVelZ/2, (5 + SafeVector:mag / 400) + RelVelX).
+            set ship:control:translation to v(RelVelY/2, RelVelZ/2, (min(5, (SafeVector:mag - 20) / 10) + SafeVector:mag / 400) + RelVelX).
         }
         else if vang(SafeVector, facing:forevector) < 5 {
             set ship:control:translation to v(RelVelY, RelVelZ, 0).
@@ -4205,18 +4205,18 @@ function AutoDockSteering {
         }
         return lookdirup(SafeVector, facing:topvector).
     }
-    if dockingmode = "APPR" {
-        set message2:text to "<b>Target:</b>  Docking Port  (" + round(PortDistanceVector:mag, 1) + "m)".
-        set message3:text to "<b>Relative Velocity (m/s):   </b><size=14>X: " + round(RelVelX, 2) + "   Y: " + round(RelVelY,2) + "   Z: " + round(RelVelZ,2) + "</size>".
-        set PortApproachVector to target:dockingports[0]:nodeposition + 15 * target:facing:topvector + 20 * target:facing:forevector - ship:dockingports[0]:nodeposition.
-        if vang(PortApproachVector, facing:forevector) < 5 and abs(RelVelY) < 0.15 and abs(RelVelZ) < 0.15 {
-            set ship:control:translation to v(RelVelY/2, RelVelZ/2, 2.5 + RelVelX).
-        }
-        else {
-            set ship:control:translation to v(RelVelY, RelVelZ, RelVelX).
-        }
-        return lookdirup(PortApproachVector, facing:topvector).
-    }
+    //if dockingmode = "APPR" {
+    //    set message2:text to "<b>Target:</b>  Docking Port  (" + round(PortDistanceVector:mag, 1) + "m)".
+    //    set message3:text to "<b>Relative Velocity (m/s):   </b><size=14>X: " + round(RelVelX, 2) + "   Y: " + round(RelVelY,2) + "   Z: " + round(RelVelZ,2) + "</size>".
+    //    set PortApproachVector to target:dockingports[0]:nodeposition + 15 * target:facing:topvector + 20 * target:facing:forevector - ship:dockingports[0]:nodeposition.
+    //    if vang(PortApproachVector, facing:forevector) < 5 and abs(RelVelY) < 0.15 and abs(RelVelZ) < 0.15 {
+    //        set ship:control:translation to v(RelVelY/2, RelVelZ/2, 2.5 + RelVelX).
+    //    }
+    //    else {
+    //        set ship:control:translation to v(RelVelY, RelVelZ, RelVelX).
+    //    }
+    //    return lookdirup(PortApproachVector, facing:topvector).
+    //}
     if dockingmode = "DOCK" {
         set message2:text to "<b>Target:</b>  Docking Port  (" + round(PortDistanceVector:mag, 1) + "m)".
         if PortDistanceVector:mag < 10 {

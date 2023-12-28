@@ -216,7 +216,9 @@ until False {
 
 function LiftOff {
     //OLM:getmodule("LaunchClamp"):DoAction("release clamp", true).
-    OLM:getmodule("ModuleAnimateGeneric"):doevent("close clamps + qd").
+    if OLM:getmodule("ModuleAnimateGeneric"):hasevent("close clamps + qd") {
+        OLM:getmodule("ModuleAnimateGeneric"):doevent("close clamps + qd").
+    }
     wait until SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0.
     wait 0.1.
     RenameOLM().

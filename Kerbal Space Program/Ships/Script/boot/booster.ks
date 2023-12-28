@@ -292,7 +292,17 @@ function Boostback {
                         wait 0.001.
                     }
                 }
-                set ShipNotFound to true.
+                if not (ShipFound) {
+                    for tgt in tgtlist {
+                        if tgt:name:contains("Starship") and tgt:orbit:periapsis < ship:body:atm:height {
+                            set ShipFound to true.
+                            print tgt:name.
+                            set starship to tgt:name.
+                            wait 0.001.
+                        }
+                    }
+                    set ShipNotFound to true.
+                }
             }
         }
     }
@@ -1011,16 +1021,16 @@ function BoosterDocking {
         sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (32.5 * Scale) + ",0.5")).
         sendMessage(Vessel(TargetOLM), "MechazillaArms,8,2.5,60,true").
         set DockedTime to time:seconds.
+        if ship:partstitled("Starship Orbital Launch Mount"):length > 0 {
+            if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleAnimateGeneric"):hasevent("open clamps + qd") {
+                ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleAnimateGeneric"):DoAction("toggle clamps + qd", true).
+            }
+        }
         when time:seconds > DockedTime + 12.5 then {
             sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
             sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,90,true").
             sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,1," + (12.5 * Scale) + ",true")).
             sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
-            if ship:partstitled("Starship Orbital Launch Mount"):length > 0 {
-                if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleAnimateGeneric"):hasevent("open clamps + qd") {
-                    ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleAnimateGeneric"):DoAction("toggle clamps + qd", true).
-                }
-            }
             when time:seconds > DockedTime + 39 then {
                 set TowerReset to true.
                 HUDTEXT("Booster recovery complete!", 10, 2, 20, green, false).

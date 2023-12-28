@@ -1,3 +1,6 @@
+# V2.3.7 (2023-12-29)
+- Bug fixes for relaunching.
+
 # V2.3.6 (2023-12-27)
 - Fix for accidental renaming of ship to tower name.
 
