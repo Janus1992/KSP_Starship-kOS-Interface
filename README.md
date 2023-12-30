@@ -4,7 +4,6 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 ![Alt text](/Infographic.png)
 
-# If you have a version OLDER than V2.3 installed please DELETE the starship .crafts from /ships/VAB and please also DELETE the StarshipInterface folder from /gamedata!!
 
 # INSTALL INSTRUCTIONS (NO CKAN SUPPORT!):
 - Download and install all requirements listed below (pay attention: SLE and SEP both need the DEV branch (not available on CKAN). They can be downloaded by changing from main to dev branch and clicking the github green button download-all, not the releases).
@@ -24,7 +23,7 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Before filing a bug, read the "Bug support guide" at the bottom of this page.
 
 # REQUIRES:
-- Stock-size Kerbin, RSS, any 2.5-2.7x sized planet pack, and the language has to be set to "english" (important).
+- Stock-size Kerbin, RSS, any 2.5-2.7x sized planet pack, and the language in KSP has to be set to "english" (important).
 - Starship Expansion Project - github repository DEV (!!) version and its requirements (!!)
     https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
     Github version: https://github.com/Kari1407/Starship-Expansion-Project/tree/V2.1_Dev
@@ -50,18 +49,10 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Realism Overhaul (RO)
 
 
-# Notes:
-- The recommended way of loading a craft is from the stock craft category in the VAB. If you can't find this category, you need to enter settings from the KSC default view and enable 'Include Stock Vessels'.
-- When using multiple ships of the same name, they might get renamed automatically by my scripts to avoid Interface crashes.
-- Seldom Interface crashes may/will occur (it makes a little crashing noise). A watchdog computer should try to restart the Interface after 5 seconds.
-- Existing Ships out on a trip will automatically try to update the Interface after one installs the latest version from here, provided a connection to the KSC is available, and the changes are not ship-changing.
-- The KSP delta-V calculations are not correct, so trust the Interface instead! :)
-
-
 # Known Issues:
+- Auto-docking is currently broken until Kari fixes the dev version of SEP.
 - Users reported booster catch may fail if you have MechJeb and the Q or G Limiter reduces thrust where the script wouldn't do that.
 - On non-stock Kerbin upon booster-catch the tower may be glitching/jumping due to Kraken.
-- If you have Kopernicus installed, but no planet-changing mods, standard SEP fuel (optimized for 2.7x sized Kerbin) will be loaded instead of stock and the Interface will not work. Remove Kopernicus to get proper stock fuel tank sizes!
 
 
 # Bug support guide:
