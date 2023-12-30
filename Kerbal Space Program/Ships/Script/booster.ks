@@ -208,10 +208,19 @@ until False {
     if ShipConnectedToBooster = "false" and BoostBackComplete = "false" and not (ship:status = "LANDED") and altitude > 10000 {
         Boostback(0).
     }
-    if alt:radar < 150 and alt:radar > 40 and ship:mass - ship:drymass < 50 and ship:partstitled("Starship Orbital Launch Integration Tower Base"):length = 0 {
-        setLandingZone().
-        setTargetOLM().
-        BoosterDocking().
+    if alt:radar < 150 and alt:radar > 40 and ship:mass - ship:drymass < 50 and ship:partstitled("Starship Orbital Launch Integration Tower Base"):length = 0 and not (RSS) {
+        if homeconnection:isconnected {
+            if exists("0:/settings.json") {
+                set L to readjson("0:/settings.json").
+                if L:haskey("Auto-Stack") {
+                    if L["Auto-Stack"] = true {
+                        setLandingZone().
+                        setTargetOLM().
+                        BoosterDocking().
+                    }
+                }
+            }
+        }
     }
     WAIT UNTIL NOT CORE:MESSAGES:EMPTY.
     SET RECEIVED TO CORE:MESSAGES:POP.
@@ -233,10 +242,15 @@ function Boostback {
 
     wait until SHIP:PARTSNAMED("SEP.23.SHIP.BODY"):LENGTH = 0 and SHIP:PARTSNAMED("SEP.23.SHIP.BODY.EXP"):LENGTH = 0 and SHIP:PARTSNAMED("SEP.23.SHIP.DEPOT"):LENGTH = 0.
     set ship:name to "Booster".
+
+    set SeparationTime to time:seconds.
+    set ship:control:pitch to -1.
+    when time:seconds > SeparationTime + 0.5 then {
+        set ship:control:neutralize to true.
+    }
+
     unlock steering.
-    //if verticalspeed > 0 {
-        lock throttle to 1.
-    //}
+    lock throttle to 1.
     sas off.
     set SteeringManager:ROLLCONTROLANGLERANGE to 0.
     set SteeringManager:rollts to 5.
@@ -316,7 +330,7 @@ function Boostback {
     }
 
     set flipCompleteTime to time:seconds.
-    set steeringmanager:maxstoppingtime to 2.
+    set steeringmanager:maxstoppingtime to 3.
     when time:seconds > flipCompleteTime + 5 then {
         set SteeringManager:ROLLCONTROLANGLERANGE to 10.
     }
@@ -672,7 +686,7 @@ function Boostback {
                     sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.3," + (0.2 * Scale) + ",false")).
                     when time:seconds > LandingTime + 8.25 * Scale then {
                         sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.1," + (0.2 * Scale) + ",false")).
-                        when kuniverse:canquicksave and time:seconds > LandingTime + 15 * Scale then {
+                        when kuniverse:canquicksave and time:seconds > LandingTime + 15 * Scale and L["Auto-Stack"] = true and not (RSS) then {
                             HUDTEXT("Loading current Booster quicksave for safe docking! (Avoid Kraken..)", 10, 2, 20, green, false).
                             sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (7 * Scale) + ",0.5")).
                             wait 1.5.
@@ -683,6 +697,9 @@ function Boostback {
                                     kuniverse:quickload().
                                 }
                             }
+                        }
+                        if not (L["Auto-Stack"] = true) {
+                            HUDTEXT("Booster recovered!", 10, 2, 5, green, false).
                         }
                     }
                 }

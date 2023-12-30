@@ -1195,7 +1195,7 @@ local settingscheckboxes is settingsstackvlayout3:addvbox().
     set settingscheckboxes:style:vstretch to 1.
     set settingscheckboxes:style:margin:right to 0.
     set settingscheckboxes:style:bg to "starship_img/starship_main_square_bg".
-local quicksetting1 is settingscheckboxes:addcheckbox("<b>Auto-Warp</b>").
+local quicksetting1 is settingscheckboxes:addcheckbox("<b>Auto-Stack</b>").
     set quicksetting1:style:margin:top to 12.
     set quicksetting1:style:margin:left to 10.
     set quicksetting1:style:fontsize to 18.
@@ -1205,7 +1205,7 @@ local quicksetting1 is settingscheckboxes:addcheckbox("<b>Auto-Warp</b>").
     set quicksetting1:style:overflow:left to -3.
     set quicksetting1:style:overflow:top to -4.
     set quicksetting1:style:overflow:bottom to -9.
-    set quicksetting1:tooltip to "Auto warps the ship through Launch, Maneuvers and Re-Entries".
+    set quicksetting1:tooltip to "Auto stacks both Ship and Booster (unable in RSS)".
 local quicksetting2 is settingscheckboxes:addcheckbox("<b>  KX500</b>").
     set quicksetting2:style:fontsize to 18.
     set quicksetting2:style:margin:left to 10.
@@ -1415,10 +1415,10 @@ set setting3:onconfirm to {
 set quicksetting1:ontoggle to {
     parameter pressed.
     if pressed {
-        SaveToSettings("Auto-Warp", "true").
+        SaveToSettings("Auto-Stack", "true").
     }
     if not pressed {
-        SaveToSettings("Auto-Warp", "false").
+        SaveToSettings("Auto-Stack", "false").
     }
 }.
 
@@ -4498,12 +4498,7 @@ set launchbutton:ontoggle to {
                             set message1:text to "<b>Launch to Parking Orbit</b>  (± " + (targetap / 1000) + "km, " + round(setting3:text:split("°")[0]:toscalar(0), 2) + "°)".
                             set message2:text to "<b>Booster Return to Launch Site</b>".
                         }
-                        if quicksetting1:pressed {
-                            set message3:text to "<b>Launch <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
-                        }
-                        else {
-                            set message3:text to "<b>Launch <color=white>or</color> Cancel?</b>".
-                        }
+                        set message3:text to "<b>Launch <color=white>or</color> Cancel?</b>".
                         set message1:style:textcolor to white.
                         set message2:style:textcolor to white.
                         set message3:style:textcolor to cyan.
@@ -4887,12 +4882,7 @@ set landbutton:ontoggle to {
                             ShowHomePage().
                             set message1:text to "<b>Landingzone out of Range..   Slope:  </b>" + round(AvailableLandingSpots[3], 1) + "°".
                             set message2:text to "<b>Override Re-Entry?</b> (" + round(LngLatErrorList[0] / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km)".
-                            if quicksetting1:pressed {
-                                set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
-                            }
-                            else {
-                                set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
-                            }
+                            set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
                             set message1:style:textcolor to yellow.
                             set message2:style:textcolor to yellow.
                             set message3:style:textcolor to cyan.
@@ -4930,12 +4920,7 @@ set landbutton:ontoggle to {
                             set message1:style:textcolor to white.
                             set message2:style:textcolor to white.
                             set message3:style:textcolor to cyan.
-                            if quicksetting1:pressed {
-                                set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
-                            }
-                            else {
-                                set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
-                            }
+                            set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
                             set landlabel:style:textcolor to white.
                             InhibitButtons(0, 0, 0).
                             if confirm() {
@@ -5071,12 +5056,7 @@ set landbutton:ontoggle to {
                                     set message1:text to "<b>Required Fuel Venting:</b>  " + timeSpanCalculator((LFShip - MaxFuel / 4.6 / 5) / VentRate).
                                     set message2:text to "<b>Max. Fuel Mass: </b>" + round(MaxFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * FuelUnitsToKg) / 1000, 1) + "t)".
                                 }
-                                if quicksetting1:pressed {
-                                    set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
-                                }
-                                else {
-                                    set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
-                                }
+                                set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
                                 set message3:style:textcolor to cyan.
                                 InhibitButtons(0, 0, 0).
                                 if confirm() {
@@ -5262,12 +5242,7 @@ set landbutton:ontoggle to {
                     set landlabel:style:textcolor to white.
                     set message1:text to "<b>Required Fuel Venting:</b>  " + timeSpanCalculator((LFShip - MaxFuel / 4.6 / 5) / VentRate).
                     set message2:text to "<b>Max. Fuel Mass: </b>" + round(MaxFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * FuelUnitsToKg) / 1000, 1) + "t)".
-                    if quicksetting1:pressed {
-                        set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
-                    }
-                    else {
-                        set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
-                    }
+                    set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
                     set message3:style:textcolor to cyan.
                     InhibitButtons(0, 0, 0).
                     if confirm() {
@@ -5371,12 +5346,7 @@ set landbutton:ontoggle to {
                             ShowHomePage().
                             set message1:text to "<b>Landingzone out of Range..   Slope:  </b>" + round(AvailableLandingSpots[3], 1) + "°".
                             set message2:text to "<b>Override Re-Entry?</b> (" + round(LngLatErrorList[0] / 1000, 2) + "km  " + round((LngLatErrorList[1] / 1000), 2) + "km)".
-                            if quicksetting1:pressed {
-                                set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
-                            }
-                            else {
-                                set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
-                            }
+                            set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
                             set message1:style:textcolor to yellow.
                             set message2:style:textcolor to yellow.
                             set message3:style:textcolor to cyan.
@@ -5399,12 +5369,7 @@ set landbutton:ontoggle to {
                             set message1:style:textcolor to white.
                             set message2:style:textcolor to white.
                             set message3:style:textcolor to cyan.
-                            if quicksetting1:pressed {
-                                set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
-                            }
-                            else {
-                                set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
-                            }
+                            set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
                             set landlabel:style:textcolor to white.
                             InhibitButtons(0, 0, 0).
                             if confirm() {
@@ -5614,9 +5579,6 @@ function LandwithoutAtmo {
         //    print FinalDescentEngines.
         //}
         lock throttle to 0.
-        if quicksetting1:pressed and altitude > 10000 {
-            set kuniverse:timewarp:warp to 4.
-        }
         if defined Nose {
             Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
         }
@@ -6036,8 +5998,8 @@ if addons:tr:available and not startup {
                         set quicksetting3:pressed to true.
                     }
                 }
-                if L:haskey("Auto-Warp") {
-                    if L["Auto-Warp"] = true {
+                if L:haskey("Auto-Stack") {
+                    if L["Auto-Stack"] = true {
                         set quicksetting1:pressed to true.
                     }
                 }
@@ -6227,7 +6189,7 @@ if addons:tr:available and not startup {
             LandwithoutAtmo().
         }
     }
-    if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 and alt:radar < 1000 and ship:mass - ship:drymass < 5 {
+    if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 and alt:radar < 1000 and ship:mass - ship:drymass < 5 and quicksetting1:pressed and not (RSS) {
         LandAtOLM().
         if not (TargetOLM = "false") {
             if Vessel(TargetOLM):PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length > 0 {
@@ -6350,17 +6312,14 @@ function Launch {
         if RSS {
             set LaunchElev to altitude - 108.384.
             if ShipType = "Depot" {
-                set BoosterAp to 130500 + (cos(targetincl) * 3000). //133500
+                set BoosterAp to 131500 + (cos(targetincl) * 3000). //133500
+                set turnAltitude to 750.
             }
             else {
                 set BoosterAp to 138500 + (cos(targetincl) * 3000). //141500
+                set turnAltitude to 250.
             }
-            //if NrOfVacEngines = 6 {
-            //    set PitchIncrement to -1.0 + 2.6 * CargoMass / MaxCargoToOrbit.
-            //}
-            //else {
-                set PitchIncrement to -1.25 + 2.6 * CargoMass / MaxCargoToOrbit.
-            //}
+            set PitchIncrement to -1.25 + 2.6 * CargoMass / MaxCargoToOrbit.
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.01, 0, 0, -30, PitchIncrement).
             set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 60.
             set BoosterThrottleDownAlt to 1500.
@@ -6368,61 +6327,42 @@ function Launch {
         else if KSRSS {
             set LaunchElev to altitude - 67.74.
             if RESCALE {
-                //if ShipType = "Depot" {
-                //    set BoosterAp to 72500 + (cos(targetincl) * 1500).
-                //}
-                //else {
-                    set BoosterAp to 78500 + (cos(targetincl) * 1500). //81500
-                //}
+                if ShipType = "Depot" {
+                    set BoosterAp to 81500 + (cos(targetincl) * 1500).
+                    set TimeFromLaunchToOrbit to 360.
+                }
+                else {
+                    set BoosterAp to 81500 + (cos(targetincl) * 1500).
+                    set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 10.
+                }
             }
             else {
-                //if ShipType = "Depot" {
-                //    set BoosterAp to 74500 + (cos(targetincl) * 1500).
-                //}
-                //else {
-                    set BoosterAp to 80500 + (cos(targetincl) * 1500). //83500
-                //}
+                if ShipType = "Depot" {
+                    set BoosterAp to 83500 + (cos(targetincl) * 1500).
+                    set TimeFromLaunchToOrbit to 360.
+                }
+                else {
+                    set BoosterAp to 83500 + (cos(targetincl) * 1500). //83500
+                    set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 10.
+                }
             }
-
-            //if NrOfVacEngines = 6 {
-            //    set PitchIncrement to -2.25 + 2.5 * CargoMass / MaxCargoToOrbit.
-            //}
-            //else {
-                set PitchIncrement to 0 + 2.5 * CargoMass / MaxCargoToOrbit.
-            //}
+            set PitchIncrement to 0 + 2.5 * CargoMass / MaxCargoToOrbit.
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.025, 0, 0, -30, PitchIncrement).
-            if ShipType = "Depot" {
-                set TimeFromLaunchToOrbit to 360.
-            }
-            else {
-                set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 10.
-            }
             set BoosterThrottleDownAlt to 1250.
         }
         else {
             set LaunchElev to altitude - 67.74.
             if ShipType = "Depot" {
-                set BoosterAp to 36000 + (cos(targetincl) * 1000). //38500
+                set BoosterAp to 40000 + (cos(targetincl) * 1000). //38500
+                set TimeFromLaunchToOrbit to 285.
+                set PitchIncrement to 5.
             }
             else {
                 set BoosterAp to 48500 + (cos(targetincl) * 1000). //51000
-            }
-            if ShipType = "Depot" {
-                set PitchIncrement to 5.
-            }
-            //else if NrOfVacEngines = 6 {
-            //    set PitchIncrement to 0.
-            //}
-            //else {
-                set PitchIncrement to 0.
-            //}
-            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.025, 0, 0, -30, PitchIncrement).
-            if ShipType = "Depot" {
-                set TimeFromLaunchToOrbit to 285.
-            }
-            else {
                 set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 10.
+                set PitchIncrement to 0.
             }
+            set OrbitBurnPitchCorrectionPID to PIDLOOP(0.025, 0, 0, -30, PitchIncrement).
             set BoosterThrottleDownAlt to 1500.
         }
         set OrbitBurnPitchCorrectionPID:setpoint to targetap.
@@ -6931,36 +6871,36 @@ Function LaunchSteering {
     else if Boosterconnected {
         if RSS {
             if ShipType = "Depot" {
-                set targetpitch to 90 - (6.65 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
+                set targetpitch to 90 - (6.4 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
             }
             else {
-                set targetpitch to 90 - (7.5 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
+                set targetpitch to 90 - (7.25 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
             }
         }
         else if KSRSS {
             if RESCALE {
                 if ShipType = "Depot" {
-                    set targetpitch to 90 - (10.25 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
+                    set targetpitch to 90 - (10.125 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
                 }
                 else {
-                    set targetpitch to 90 - (10.5 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
+                    set targetpitch to 90 - (10.375 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
                 }
             }
             else {
                 if ShipType = "Depot" {
-                    set targetpitch to 90 - (10.5 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
+                    set targetpitch to 90 - (10.375 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
                 }
                 else {
-                    set targetpitch to 90 - (10.75 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
+                    set targetpitch to 90 - (10.625 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
                 }
             }
         }
         else {
             if ShipType = "Depot" {
-                set targetpitch to 90 - (9.5 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
+                set targetpitch to 90 - (8.5 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
             }
             else {
-                set targetpitch to 90 - (11.5 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
+                set targetpitch to 90 - (11 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
             }
         }
         set result to lookdirup(heading(myAzimuth, targetpitch):vector, north:vector).
@@ -7022,13 +6962,10 @@ function LaunchLabelData {
     if not (LaunchLabelIsRunning) {
         set LaunchLabelIsRunning to true.
         set SteeringError to steeringmanager:angleerror.
-        if quicksetting1:pressed and altitude - LaunchElev > 150 and altitude - LaunchElev < 1000 {
-            set kuniverse:timewarp:warp to 4.
-        }
-        if quicksetting1:pressed and altitude - LaunchElev > 500 and altitude - LaunchElev < 2500 or kuniverse:timewarp:warp > 0 and altitude - LaunchElev > 500 and altitude - LaunchElev < 2500 {
+        if kuniverse:timewarp:warp > 1 and altitude - LaunchElev > 500 and altitude - LaunchElev < 2500 {
             set kuniverse:timewarp:warp to 1.
         }
-        if quicksetting1:pressed and altitude - LaunchElev > 2500 and apoapsis < BoosterAp - 5000 or altitude - LaunchElev > 2000 and altitude - LaunchElev < 3000 and kuniverse:timewarp:warp = 1 {
+        if altitude - LaunchElev > 2000 and altitude - LaunchElev < 3000 and kuniverse:timewarp:warp = 1 {
             set kuniverse:timewarp:warp to 4.
         }
         else if apoapsis > BoosterAp - 5000 {
@@ -7518,16 +7455,10 @@ function ReEntryAndLand {
         }
 
         lock STEERING to ReEntrySteering().
-        if quicksetting1:pressed and altitude > 30000 {
-            set kuniverse:timewarp:warp to 4.
-        }
         
         when altitude < body:atm:height then {
             set quickstatus1:pressed to true.
             LogToFile("<Atmosphere Height, Body-Flaps Activated").
-            if quicksetting1:pressed and altitude > 30000 {
-                set kuniverse:timewarp:warp to 4.
-            }
             when airspeed < 2150 then {
                 if ship:body:atm:sealevelpressure < 0.5 {
                     set SteeringManager:pitchts to 5.
@@ -9254,6 +9185,21 @@ function updateStatus {
             set status1label2:style:textcolor to grey.
         }
         set PrevUpdateTime to time:seconds.
+
+        if ShipType = "Depot" or ShipType = "Expendable" {
+            set status2label2:style:bg to "starship_img/starship_symbol_no_flaps".
+        }
+        else if FLflap:getmodule("ModuleSEPControlSurface"):GetField("Deploy") = true {
+            if runningprogram = "De-orbit & Landing" or runningprogram = "Final Approach" or runningprogram = "Landing" or runningprogram = "After Landing" or runningprogram = "Attitude (Landing Armed)" {
+                set status2label2:style:bg to "starship_img/starship_symbol_flaps_magenta".
+            }
+            else {
+                set status2label2:style:bg to "starship_img/starship_symbol_flaps_cyan".
+            }
+        }
+        else {
+            set status2label2:style:bg to "starship_img/starship_symbol".
+        }
 
         if ship:status = "PRELAUNCH" or ship:status = "LANDED" {set status1label4:text to "<b>AoA:</b>  0°".}
         else{set status1label4:text to "<b>AoA:</b>  " + round(vang(ship:facing:forevector, velocity:surface), 1) + "°".}
@@ -11189,12 +11135,7 @@ function LandingZoneFinder {
         else {
             set message1:text to "<b>Suggested Landing Zone:</b>  <color=yellow>" + round(AvailableLandingSpots[1]:lat, 4) + "," + round(AvailableLandingSpots[1]:lng, 4) + "</color>".
             set message2:text to "<b>Distance:  </b><color=yellow>" + round(AvailableLandingSpots[2]) + "m away</color>      <b>Slope:  </b><color=yellow>" + round(AvailableLandingSpots[3],1) + "°</color>".
-            if quicksetting1:pressed {
-                set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
-            }
-            else {
-                set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
-            }
+            set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
             set message3:style:textcolor to cyan.
             InhibitButtons(0, 0, 0).
             if confirm() {
@@ -11391,12 +11332,7 @@ function PerformBurn {
         set message2:text to "<b>@:</b>  <color=yellow>" + burnstarttime:hour + ":" + burnstarttime:minute + ":" + burnstarttime:second + "<b>UT</b></color>   <b>ΔV:</b>  <color=yellow>" + round(DeltaV, 1) + "m/s</color>".
     }
     set message3:style:textcolor to cyan.
-    if quicksetting1:pressed {
-        set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>  <color=yellow>(Auto-Warp enabled)</color>".
-    }
-    else {
-        set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
-    }
+    set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
     InhibitButtons(0, 0, 0).
     if confirm() {
         if not hasnode {
@@ -12449,69 +12385,6 @@ function Timewarp {
     parameter BufferTime.
     //clearscreen.
     //print "countdown: " + round(GoalTime - time:seconds).
-
-    if quicksetting1:pressed {
-        if STOCK {
-            if GoalTime - time:seconds > 90 and kuniverse:timewarp:warp < 1 {
-                set kuniverse:timewarp:warp to 1.
-            }
-            if GoalTime - time:seconds > 180 and kuniverse:timewarp:warp < 2 {
-                set kuniverse:timewarp:warp to 2.
-            }
-            if GoalTime - time:seconds > 3600 * 0.5 and kuniverse:timewarp:warp < 4 {
-                set kuniverse:timewarp:warp to 4.
-            }
-            if GoalTime - time:seconds > 3600 and kuniverse:timewarp:warp < 5 {
-                set kuniverse:timewarp:warp to 5.
-            }
-            if GoalTime - time:seconds > 3600 * 9 and kuniverse:timewarp:warp < 6 {
-                set kuniverse:timewarp:warp to 6.
-            }
-            if GoalTime - time:seconds > 3600 * 24 * 1.5 and kuniverse:timewarp:warp < 7 {
-                set kuniverse:timewarp:warp to 7.
-            }
-        }
-        else if KSRSS {
-            if GoalTime - time:seconds > 90 and kuniverse:timewarp:warp < 1 {
-                set kuniverse:timewarp:warp to 1.
-            }
-            if GoalTime - time:seconds > 120 and kuniverse:timewarp:warp < 2 {
-                set kuniverse:timewarp:warp to 2.
-            }
-            if GoalTime - time:seconds > 3600 * 0.5 and kuniverse:timewarp:warp < 4 {
-                set kuniverse:timewarp:warp to 4.
-            }
-            if GoalTime - time:seconds > 3600 and kuniverse:timewarp:warp < 5 {
-                set kuniverse:timewarp:warp to 5.
-            }
-            if GoalTime - time:seconds > 3600 * 9 and kuniverse:timewarp:warp < 6 {
-                set kuniverse:timewarp:warp to 6.
-            }
-            if GoalTime - time:seconds > 3600 * 24 * 1.5 and kuniverse:timewarp:warp < 7 {
-                set kuniverse:timewarp:warp to 7.
-            }
-        }
-        else {
-            if GoalTime - time:seconds > 90 and kuniverse:timewarp:warp < 1 {
-                set kuniverse:timewarp:warp to 1.
-            }
-            if GoalTime - time:seconds > 3600 * 0.25 and kuniverse:timewarp:warp < 2 {
-                set kuniverse:timewarp:warp to 2.
-            }
-            if GoalTime - time:seconds > 3600 * 4.5 and kuniverse:timewarp:warp < 3 {
-                set kuniverse:timewarp:warp to 3.
-            }
-            if GoalTime - time:seconds > 3600 * 24 * 2 and kuniverse:timewarp:warp < 4 {
-                set kuniverse:timewarp:warp to 4.
-            }
-            if GoalTime - time:seconds > 3600 * 24 * 5 and kuniverse:timewarp:warp < 5 {
-                set kuniverse:timewarp:warp to 5.
-            }
-            if GoalTime - time:seconds > 3600 * 24 * 25 and kuniverse:timewarp:warp < 6 {
-                set kuniverse:timewarp:warp to 6.
-            }
-        }
-    }
 
     if STOCK {
         if GoalTime - time:seconds < 3600 * 24 and kuniverse:timewarp:warp = 7 {

@@ -1,6 +1,8 @@
 # V2.3.8 (2023-12-30)
 - IFT-2 Launch Profile implemented.
 - Booster can use gridfins for roll during launch.
+- Auto-warp replaced by auto-stack option.
+- Tooltips disabled by default.
 
 # V2.3.7 (2023-12-29)
 - Bug fixes for relaunching.
