@@ -238,7 +238,7 @@ function Boostback {
         lock throttle to 1.
     //}
     sas off.
-    set SteeringManager:ROLLCONTROLANGLERANGE to 10.
+    set SteeringManager:ROLLCONTROLANGLERANGE to 0.
     set SteeringManager:rollts to 5.
     wait 0.1.
     HUDTEXT("Performing Boostback Burn..", 30, 2, 20, green, false).
@@ -266,17 +266,17 @@ function Boostback {
     }
 
     if verticalspeed > 0 {
-        if roll = 0 {
-            lock SteeringVector to lookdirup(AngleAxis(-30, facing:starvector) * facing:forevector, -up:vector).
-            lock steering to SteeringVector.
-        }
-        else {
-            lock SteeringVector to lookdirup(AngleAxis(30, facing:starvector) * facing:forevector, up:vector).
-            lock steering to SteeringVector.
-        }
-        when vang(facing:forevector, -vxcl(up:vector, ErrorVector)) < 90 then {
-            ActivateGridFins().
-        }
+        //if roll = 0 {
+        //    lock SteeringVector to lookdirup(AngleAxis(-30, facing:starvector) * facing:forevector, -up:vector).
+        //    lock steering to SteeringVector.
+        //}
+        //else {
+        //    lock SteeringVector to lookdirup(AngleAxis(30, facing:starvector) * facing:forevector, up:vector).
+        //    lock steering to SteeringVector.
+        //}
+        lock SteeringVector to lookdirup(vxcl(up:vector, -ErrorVector), facing:topvector).
+        lock steering to SteeringVector.
+        set steeringmanager:maxstoppingtime to 0.75.
     }
 
     wait 0.001.
@@ -307,7 +307,7 @@ function Boostback {
         }
     }
 
-    until vang(facing:forevector, vxcl(up:vector, -ErrorVector)) < 15 or vang(facing:forevector, vxcl(up:vector, -ErrorVector)) < angularvel:y * 100 or verticalspeed < 0 {
+    until vang(facing:forevector, vxcl(up:vector, -ErrorVector)) < 15 or verticalspeed < 0 {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         SetBoosterActive().
@@ -315,6 +315,11 @@ function Boostback {
         wait 0.1.
     }
 
+    set flipCompleteTime to time:seconds.
+    set steeringmanager:maxstoppingtime to 2.
+    when time:seconds > flipCompleteTime + 5 then {
+        set SteeringManager:ROLLCONTROLANGLERANGE to 10.
+    }
     if verticalspeed > 0 {
         BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("previous engine mode", true).
     }
@@ -404,6 +409,7 @@ function Boostback {
     }
 
     HUDTEXT("Starship will continue its orbit insertion..", 10, 2, 20, green, false).
+    ActivateGridFins().
 
     until time:seconds > switchTime + 5 {
         SteeringCorrections().
@@ -1033,7 +1039,7 @@ function BoosterDocking {
             sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
             when time:seconds > DockedTime + 39 then {
                 set TowerReset to true.
-                HUDTEXT("Booster recovery complete!", 10, 2, 20, green, false).
+                HUDTEXT("Booster recovery complete, tower has been reset!", 10, 2, 20, green, false).
                 //if BoosterCore:getmodule("ModuleSepPartSwitchAction"):getfield("current decouple system") = "Decoupler" {
                 //BoosterCore:getmodule("ModuleSepPartSwitchAction"):DoAction("next decouple system", true).
                 //}

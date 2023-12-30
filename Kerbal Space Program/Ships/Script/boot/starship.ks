@@ -6350,10 +6350,10 @@ function Launch {
         if RSS {
             set LaunchElev to altitude - 108.384.
             if ShipType = "Depot" {
-                set BoosterAp to 133500 + (cos(targetincl) * 3000).
+                set BoosterAp to 130500 + (cos(targetincl) * 3000). //133500
             }
             else {
-                set BoosterAp to 141500 + (cos(targetincl) * 3000).
+                set BoosterAp to 138500 + (cos(targetincl) * 3000). //141500
             }
             //if NrOfVacEngines = 6 {
             //    set PitchIncrement to -1.0 + 2.6 * CargoMass / MaxCargoToOrbit.
@@ -6372,7 +6372,7 @@ function Launch {
                 //    set BoosterAp to 72500 + (cos(targetincl) * 1500).
                 //}
                 //else {
-                    set BoosterAp to 81500 + (cos(targetincl) * 1500).
+                    set BoosterAp to 78500 + (cos(targetincl) * 1500). //81500
                 //}
             }
             else {
@@ -6380,7 +6380,7 @@ function Launch {
                 //    set BoosterAp to 74500 + (cos(targetincl) * 1500).
                 //}
                 //else {
-                    set BoosterAp to 83500 + (cos(targetincl) * 1500).
+                    set BoosterAp to 80500 + (cos(targetincl) * 1500). //83500
                 //}
             }
 
@@ -6402,10 +6402,10 @@ function Launch {
         else {
             set LaunchElev to altitude - 67.74.
             if ShipType = "Depot" {
-                set BoosterAp to 38500 + (cos(targetincl) * 1000).
+                set BoosterAp to 36000 + (cos(targetincl) * 1000). //38500
             }
             else {
-                set BoosterAp to 51000 + (cos(targetincl) * 1000).
+                set BoosterAp to 48500 + (cos(targetincl) * 1000). //51000
             }
             if ShipType = "Depot" {
                 set PitchIncrement to 5.
@@ -6487,6 +6487,11 @@ function Launch {
                 print "Actual Distance: " + round((target:position - ship:position):mag / 1000, 1).
             }
             lock throttle to 0.33.
+            for fin in GridFins {
+                fin:getmodule("ModuleControlSurface"):SetField("authority limiter", 3).
+                fin:getmodule("ModuleControlSurface"):DoAction("activate roll control", true).
+                fin:getmodule("ModuleControlSurface"):SetField("deploy direction", true).
+            }
             BoosterEngines[0]:getmodule("ModuleEnginesFX"):doaction("activate engine", true).
             set EngineStartTime to time:seconds.
             set message3:text to "".
@@ -6648,6 +6653,11 @@ function Launch {
                     for eng in SLEngines {
                         eng:getmodule("ModuleSEPRaptor"):doaction("enable actuate out", true).
                         eng:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
+                    }
+                    for fin in GridFins {
+                        fin:getmodule("ModuleControlSurface"):SetField("deploy direction", false).
+                        fin:getmodule("ModuleControlSurface"):SetField("authority limiter", 32).
+                        fin:getmodule("ModuleControlSurface"):DoAction("deactivate roll control", true).
                     }
                     BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
                     lock throttle to 0.5.
@@ -6953,12 +6963,13 @@ Function LaunchSteering {
                 set targetpitch to 90 - (11.5 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
             }
         }
-        if not (Launch180) {
-            set result to heading(myAzimuth, targetpitch).
-        }
-        else {
-            set result to heading(myAzimuth, targetpitch) * R(0, 0, 180).
-        }
+        set result to lookdirup(heading(myAzimuth, targetpitch):vector, north:vector).
+        //if not (Launch180) {
+        //    set result to heading(myAzimuth, targetpitch).
+        //}
+        //else {
+        //    set result to heading(myAzimuth, targetpitch) * R(0, 0, 180).
+        //}
     }
     else {
         set ProgradeAngle to 90 - vang(velocity:surface, up:vector).
@@ -6995,12 +7006,13 @@ Function LaunchSteering {
         }
 
         rcs on.
-        if not (Launch180) {
-            set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, up:vector).
-        }
-        else {
-            set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, -up:vector).
-        }
+        set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, north:vector).
+        //if not (Launch180) {
+        //    set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, up:vector).
+        //}
+        //else {
+        //    set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, -up:vector).
+        //}
     }
     return result.
 }

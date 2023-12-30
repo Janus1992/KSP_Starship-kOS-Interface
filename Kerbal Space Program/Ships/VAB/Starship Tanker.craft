@@ -7999,7 +7999,7 @@ PART
 		isEnabled = True
 		CurrentOpenCloseLimit = 20
 		OpenClose = False
-		ExtensionLimit = 8.5
+		ExtensionLimit = 8
 		ExtensionSpeed = 10
 		OpenCloseLimit = 20
 		stagingEnabled = True
