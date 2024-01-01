@@ -245,7 +245,7 @@ function Boostback {
 
     set SeparationTime to time:seconds.
     set ship:control:pitch to -1.
-    when time:seconds > SeparationTime + 0.5 then {
+    when time:seconds > SeparationTime + 0.75 then {
         set ship:control:neutralize to true.
     }
 

@@ -1,3 +1,6 @@
+# V2.3.9 (2024-01-01)
+- Tiny fixes for RSS launch using the new IFT-2 profile.
+
 # V2.3.8 (2023-12-30)
 - IFT-2 Launch Profile implemented.
 - Booster can use gridfins for roll during launch.

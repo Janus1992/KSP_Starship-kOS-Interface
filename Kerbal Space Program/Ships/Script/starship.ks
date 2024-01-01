@@ -6312,14 +6312,14 @@ function Launch {
         if RSS {
             set LaunchElev to altitude - 108.384.
             if ShipType = "Depot" {
-                set BoosterAp to 131500 + (cos(targetincl) * 3000). //133500
+                set BoosterAp to 132000 + (cos(targetincl) * 3000).
                 set turnAltitude to 750.
             }
             else {
-                set BoosterAp to 138500 + (cos(targetincl) * 3000). //141500
+                set BoosterAp to 140500 + (cos(targetincl) * 3000).
                 set turnAltitude to 250.
             }
-            set PitchIncrement to -1.25 + 2.6 * CargoMass / MaxCargoToOrbit.
+            set PitchIncrement to -0.5 + 2.6 * CargoMass / MaxCargoToOrbit.
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.01, 0, 0, -30, PitchIncrement).
             set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 60.
             set BoosterThrottleDownAlt to 1500.
@@ -6871,10 +6871,10 @@ Function LaunchSteering {
     else if Boosterconnected {
         if RSS {
             if ShipType = "Depot" {
-                set targetpitch to 90 - (6.4 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
+                set targetpitch to 90 - (6.65 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
             }
             else {
-                set targetpitch to 90 - (7.25 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
+                set targetpitch to 90 - (7.5 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
             }
         }
         else if KSRSS {
