@@ -50,6 +50,9 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 
 # Known Issues:
+- If you get the tank mismatch error:
+    - Stock: Check that you don't have Kopernicus installed.
+    - Planet mod: Check that you have Kopernicus AND your planet mod properly installd.
 - Auto-docking is currently broken until Kari fixes the dev version of SEP.
 - Users reported booster catch may fail if you have MechJeb and the Q or G Limiter reduces thrust where the script wouldn't do that.
 - On non-stock Kerbin upon booster-catch the tower may be glitching/jumping due to Kraken.

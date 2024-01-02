@@ -1,3 +1,6 @@
+# V2.3.10 (2024-01-02)
+- Change in wording for the fuel tank mismatch error.
+
 # V2.3.9 (2024-01-01)
 - Tiny fixes for RSS launch using the new IFT-2 profile.
 

@@ -72,23 +72,29 @@ set Methane to false.
 if bodyexists("Earth") {
     if body("Earth"):radius > 1600000 {
         set RSS to true.
+        set planetpack to "RSS".
     }
     else {
         set KSRSS to true.
+        set planetpack to "KSRSS".
         if body("Earth"):radius < 1500001 {
             set RESCALE to true.
+            set planetpack to "Rescale".
         }
     }
 }
 else {
     if body("Kerbin"):radius > 1000000 {
         set KSRSS to true.
+        set planetpack to "KSRSS".
         if body("Kerbin"):radius < 1500001 {
             set RESCALE to true.
+            set planetpack to "Rescale".
         }
     }
     else {
         set STOCK to true.
+        set planetpack to "Stock".
     }
 }
 
@@ -12336,14 +12342,15 @@ function VehicleSelfCheck {
         }
     }
     if FuelFail {
-        print "Overfilled Fuel Tanks/Mismatch detected!".
+        print "Fuel Tanks mismatch detected!".
+        print "Planet Pack: " + planetpack.
         print "Interface Disabled..".
-        LogToFile("Overfilled Fuel Tanks/Mismatch detected! Interface Disabled..").
+        LogToFile("Fuel Tanks mismatch detected! Interface Disabled..").
         InhibitButtons(1, 1, 1).
         ShowButtons(0).
         ShowHomePage().
         set message1:text to "<b>Fuel Amount vs. Capacity mismatch!</b>".
-        set message2:text to "<b>Reset overfilled Fuel Tanks in the VAB..</b>".
+        set message2:text to "<b>Check your install.. </b>(" + planetpack + ")".
         set message3:text to "<b>Interface has been disabled!</b>".
         set message1:style:textcolor to red.
         set message2:style:textcolor to yellow.
@@ -12352,7 +12359,7 @@ function VehicleSelfCheck {
         set runningprogram to "Self-Test Failed".
         updatestatusbar().
     }
-    if ship:name:contains("Stock") and not (STOCK) or ship:name:contains("KSRSS") and not (KSRSS) or ship:name:contains("RSS") and not (RSS) and not (ship:name:contains("KSRSS")) {
+    if ship:name:contains("Real Size") and not (RSS) or RSS and not (ship:name:contains("Real Size")) {
         print "Wrong Craft detected!".
         print "Interface Disabled..".
         LogToFile("Wrong Craft detected! Interface Disabled..").
@@ -12360,14 +12367,11 @@ function VehicleSelfCheck {
         ShowButtons(0).
         ShowHomePage().
         set message1:text to "<b>You are using the wrong craft!</b>".
-        if STOCK {
-            set message2:text to "<b>Use 'Stock Starship..' craft..</b>".
-        }
-        else if KSRSS {
-            set message2:text to "<b>Use 'KSRSS Starship..' craft..</b>".
+        if STOCK or KSRSS {
+            set message2:text to "<b>Use 'Starship..' craft..</b>".
         }
         else if RSS {
-            set message2:text to "<b>Use 'RSS Starship..' craft..</b>".
+            set message2:text to "<b>Use 'Starship.. Real Size' craft..</b>".
         }
         set message3:text to "<b>Interface has been disabled!</b>".
         set message1:style:textcolor to red.
