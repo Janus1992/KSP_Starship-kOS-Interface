@@ -12350,7 +12350,12 @@ function VehicleSelfCheck {
         ShowButtons(0).
         ShowHomePage().
         set message1:text to "<b>Fuel Amount vs. Capacity mismatch!</b>".
-        set message2:text to "<b>Check your install.. </b>(" + planetpack + ")".
+        if STOCK {
+            set message2:text to "<b>Check that Kopernicus is not installed..</b>".
+        }
+        else {
+            set message2:text to "<b>Check that your Planet Mod is approved..</b>".
+        }
         set message3:text to "<b>Interface has been disabled!</b>".
         set message1:style:textcolor to red.
         set message2:style:textcolor to yellow.
