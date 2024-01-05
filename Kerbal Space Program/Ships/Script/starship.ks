@@ -12365,7 +12365,7 @@ function VehicleSelfCheck {
         set runningprogram to "Self-Test Failed".
         updatestatusbar().
     }
-    if ship:name:contains("Real Size") and not (RSS) or RSS and not (ship:name:contains("Real Size")) {
+    if ship:name:contains("Real Size") and not (RSS) {
         print "Wrong Craft detected!".
         print "Interface Disabled..".
         LogToFile("Wrong Craft detected! Interface Disabled..").
@@ -12373,12 +12373,7 @@ function VehicleSelfCheck {
         ShowButtons(0).
         ShowHomePage().
         set message1:text to "<b>You are using the wrong craft!</b>".
-        if STOCK or KSRSS {
-            set message2:text to "<b>Use 'Starship..' craft..</b>".
-        }
-        else if RSS {
-            set message2:text to "<b>Use 'Starship.. Real Size' craft..</b>".
-        }
+        set message2:text to "<b>Use 'Starship..' craft..</b>".
         set message3:text to "<b>Interface has been disabled!</b>".
         set message1:style:textcolor to red.
         set message2:style:textcolor to yellow.

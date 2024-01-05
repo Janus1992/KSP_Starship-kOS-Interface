@@ -1,3 +1,6 @@
+# V2.3.11 (2024-01-04)
+- Fix for RSS when ship was renamed.
+
 # V2.3.10 (2024-01-02)
 - Change in wording for the fuel tank mismatch error.
 
