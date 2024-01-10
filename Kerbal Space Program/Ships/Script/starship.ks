@@ -7860,6 +7860,9 @@ function ReEntryData {
             set message2:text to "<b><color=green>Engine Light-Up confirmed..</color></b>".
             set message3:text to "".
             DisengageYawRCS(0).
+            if defined watchdog {
+                Watchdog:deactivate().
+            }
 
             when vang(-1 * velocity:surface, ship:facing:forevector) < 0.6 * FlipAngle then {
                 set config:ipu to CPUSPEED.
@@ -7868,7 +7871,7 @@ function ReEntryData {
                     lock RadarAlt to vdot(up:vector, FLflap:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position) - 8.25 * Scale.
                 }
 
-                when vang(-1 * velocity:surface, ship:facing:forevector) < 0.05 * FlipAngle and ship:body:atm:sealevelpressure > 0.5 or vang(-1 * velocity:surface, ship:facing:forevector) < FlipAngleFactor * FlipAngle and ship:body:atm:sealevelpressure < 0.5 then {
+                when ship:body:atm:sealevelpressure < 0.5 and vang(-1 * velocity:surface, ship:facing:forevector) < 0.05 * FlipAngle or ship:body:atm:sealevelpressure > 0.5 and vang(-1 * velocity:surface, ship:facing:forevector) < FlipAngleFactor * FlipAngle then {
                     if ship:body:atm:sealevelpressure > 0.5 {
                         set DesiredDecel to 12 - 9.81.
                     }
@@ -7891,7 +7894,7 @@ function ReEntryData {
                 }
             }
 
-            when LngError < 25 and ship:body:atm:sealevelpressure < 0.5 or verticalspeed > -40 and ship:body:atm:sealevelpressure > 0.5 then {
+            when ship:body:atm:sealevelpressure < 0.5 and LngError < 25 or ship:body:atm:sealevelpressure > 0.5 and verticalspeed > -40 then {
                 if ship:body:atm:sealevelpressure > 0.5 {
                     if RSS {
                         SLEngines[1]:shutdown.

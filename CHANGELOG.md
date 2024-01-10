@@ -1,5 +1,6 @@
 # V2.3.12 (2024-01-10)
 - Auto-docking works again with the latest SEP dev version.
+- Disable the watchdog CPU during ship landing (so it can't time-out).
 
 # V2.3.11 (2024-01-04)
 - Fix for RSS when ship was renamed.
