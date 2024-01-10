@@ -4045,6 +4045,9 @@ set maneuver3button:onclick to {
 
 
 function AutoDocking {
+    if target:name:contains("Body") {
+        set target to target:ship.
+    }
     set target:loaddistance:orbit:unload to 25000.
     set target:loaddistance:orbit:load to 10050.
     wait 0.001.
@@ -4103,7 +4106,7 @@ function AutoDocking {
     //print "Initial Facing error: " + vang(target:facing:topvector, PortDistanceVector) + " degrees".
     //set VectorDraw to vecdraw(target:dockingports[0]:nodeposition, 5 * target:facing:topvector, magenta, "", 20, true, 0.005, true, true).
 
-    if vang(target:facing:topvector, PortDistanceVector) < 105 and PortDistanceVector:mag > 100 {
+    if vang(target:facing:topvector, PortDistanceVector) < 105 {
         print "Maneuvring to Intermediate Safe Point..".
         set dockingmode to "INTMD".
         DetermineSafeVector().
@@ -4112,14 +4115,14 @@ function AutoDocking {
             BackGroundUpdate().
         }
     }
-    //if PortDistanceVector:mag > 100 or dockingmode = "INTMD" {
-    //    print "Approaching Docking Port..".
-    //    set dockingmode to "APPR".
-    //    lock steering to AutoDockSteering().
-    //    until PortDistanceVector:mag < 50 or cancelconfirmed {
-    //        BackGroundUpdate().
-    //    }
-    //}
+    if PortDistanceVector:mag > 150 {
+        print "Approaching Docking Port..".
+        set dockingmode to "APPR".
+        lock steering to AutoDockSteering().
+        until PortDistanceVector:mag < 60 or cancelconfirmed {
+            BackGroundUpdate().
+        }
+    }
     if PortDistanceVector:mag < 150 {
         print "Docking to Docking Port..".
         set dockingmode to "DOCK".
@@ -4180,11 +4183,16 @@ function AutoDockSteering {
         return lookdirup(facing:forevector, facing:topvector).
     }
 
-    if target:distance < 2000 {
-        set PortDistanceVector to target:dockingports[0]:nodeposition - ship:dockingports[0]:nodeposition.
+    if target:name:contains("Docking Port") or target:name:contains("Body") {
+        set PortDistanceVector to target:position - ship:dockingports[0]:nodeposition.
     }
     else {
-        set PortDistanceVector to target:position - ship:position.
+        if target:distance < 2000 {
+            set PortDistanceVector to target:dockingports[0]:nodeposition - ship:dockingports[0]:nodeposition.
+        }
+        else {
+            set PortDistanceVector to target:position - ship:position.
+        }
     }
 
     set RelDistX to vdot(facing:forevector, PortDistanceVector).
@@ -4211,18 +4219,18 @@ function AutoDockSteering {
         }
         return lookdirup(SafeVector, facing:topvector).
     }
-    //if dockingmode = "APPR" {
-    //    set message2:text to "<b>Target:</b>  Docking Port  (" + round(PortDistanceVector:mag, 1) + "m)".
-    //    set message3:text to "<b>Relative Velocity (m/s):   </b><size=14>X: " + round(RelVelX, 2) + "   Y: " + round(RelVelY,2) + "   Z: " + round(RelVelZ,2) + "</size>".
-    //    set PortApproachVector to target:dockingports[0]:nodeposition + 15 * target:facing:topvector + 20 * target:facing:forevector - ship:dockingports[0]:nodeposition.
-    //    if vang(PortApproachVector, facing:forevector) < 5 and abs(RelVelY) < 0.15 and abs(RelVelZ) < 0.15 {
-    //        set ship:control:translation to v(RelVelY/2, RelVelZ/2, 2.5 + RelVelX).
-    //    }
-    //    else {
-    //        set ship:control:translation to v(RelVelY, RelVelZ, RelVelX).
-    //    }
-    //    return lookdirup(PortApproachVector, facing:topvector).
-    //}
+    if dockingmode = "APPR" {
+        set message2:text to "<b>Target:</b>  Docking Port  (" + round(PortDistanceVector:mag, 1) + "m)".
+        set message3:text to "<b>Relative Velocity (m/s):   </b><size=14>X: " + round(RelVelX, 2) + "   Y: " + round(RelVelY,2) + "   Z: " + round(RelVelZ,2) + "</size>".
+        set PortApproachVector to target:dockingports[0]:nodeposition + 15 * target:facing:topvector + 20 * target:facing:forevector - ship:dockingports[0]:nodeposition.
+        if vang(PortApproachVector, facing:forevector) < 5 and abs(RelVelY) < 0.15 and abs(RelVelZ) < 0.15 {
+            set ship:control:translation to v(RelVelY/2, RelVelZ/2, (min(5, (PortDistanceVector:mag - 50) / 20) + PortDistanceVector:mag / 400) + RelVelX).
+        }
+        else {
+            set ship:control:translation to v(RelVelY, RelVelZ, RelVelX).
+        }
+        return lookdirup(PortApproachVector, facing:topvector).
+    }
     if dockingmode = "DOCK" {
         set message2:text to "<b>Target:</b>  Docking Port  (" + round(PortDistanceVector:mag, 1) + "m)".
         if PortDistanceVector:mag < 10 {
@@ -4242,7 +4250,7 @@ function AutoDockSteering {
         else {
             set ship:control:translation to v(RelVelY, RelVelZ, RelVelX).
         }
-        return lookdirup(target:facing:forevector, target:dockingports[0]:portfacing:vector).
+        return lookdirup(target:facing:forevector, -target:dockingports[0]:portfacing:vector).
     }
 }
 
@@ -11230,16 +11238,20 @@ function updateManeuver {
             set prevTargetFindingTime to time:seconds.
         }
         if hastarget and TargetSelected and ManeuverPicker:text = "<b><color=white>Auto-Dock</color></b>" {
-            if target:distance < 2000 {
-                set maneuver3label1:text to "<b>Distance:  </b><color=yellow>" + round((target:dockingports[0]:nodeposition - ship:dockingports[0]:nodeposition):mag, 2) + "m</color>".
-                set maneuver3label2:text to "<b>Rel. Velocity:  </b><color=yellow>" + round((target:velocity:orbit - ship:velocity:orbit):mag, 2) + "m/s</color>".
-                set maneuver3label3:text to "".
+            if target:name:contains("Docking Port") or target:name:contains("Body") {
+                set maneuver3label1:text to "<b>Distance:  </b><color=yellow>" + round((target:position - ship:dockingports[0]:nodeposition):mag, 2) + "m</color>".
+                set maneuver3label2:text to "<b>Rel. Velocity:  </b><color=yellow>" + round((target:ship:velocity:orbit - ship:velocity:orbit):mag, 2) + "m/s</color>".
             }
             else {
-                set maneuver3label1:text to "<b>Distance:  </b><color=yellow>" + round(target:distance, 2) + "m</color>".
+                if target:distance < 2000 {
+                    set maneuver3label1:text to "<b>Distance:  </b><color=yellow>" + round((target:dockingports[0]:nodeposition - ship:dockingports[0]:nodeposition):mag, 2) + "m</color>".
+                }
+                else {
+                    set maneuver3label1:text to "<b>Distance:  </b><color=yellow>" + round(target:distance, 2) + "m</color>".
+                }
                 set maneuver3label2:text to "<b>Rel. Velocity:  </b><color=yellow>" + round((target:velocity:orbit - ship:velocity:orbit):mag, 2) + "m/s</color>".
-                set maneuver3label3:text to "".
             }
+            set maneuver3label3:text to "".
         }
         else if hastarget and ManeuverPicker:text = "<b><color=white>Align Planes</color></b>" {
             set maneuver2label1:text to "<b>Target:  </b><color=yellow>" + target:name + "</color>".
@@ -12344,6 +12356,7 @@ function VehicleSelfCheck {
     if FuelFail {
         print "Fuel Tanks mismatch detected!".
         print "Planet Pack: " + planetpack.
+        print "LqdMethane: " + (Methane).
         print "Interface Disabled..".
         LogToFile("Fuel Tanks mismatch detected! Interface Disabled..").
         InhibitButtons(1, 1, 1).
