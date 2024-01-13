@@ -113,6 +113,14 @@
             "$type": "kOS.Safe.Encapsulation.ScalarDoubleValue"
         },
         {
+            "value": "Auto-Stack",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
+            "value": "true",
+            "$type": "kOS.Safe.Encapsulation.StringValue"
+        },
+        {
             "value": "Tooltips",
             "$type": "kOS.Safe.Encapsulation.StringValue"
         },

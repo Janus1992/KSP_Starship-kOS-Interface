@@ -1,3 +1,6 @@
+# V2.3.13 (2024-01-13)
+- bugfix for no key found error after booster landing.
+
 # V2.3.12 (2024-01-10)
 - Auto-docking works again with the latest SEP dev version.
 - Disable the watchdog CPU during ship landing (so it can't time-out).
