@@ -12,49 +12,64 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Extract the contents to a folder.
 - Move the contents of the /Kerbal Space Program folder ('GameData' and 'Ships' folders) into your /Kerbal Space Program folder (and overwrite if you are updating).
 
-- It should now look like this:
-    Kerbal Space Program/GameData/StarshipInterface  (location of the patch)
-    Kerbal Space Program/Ships/Script  (here the kOS scripts are saved)
-    Kerbal Space Program/Ships/VAB  (location of the .craft files)
+- Correct folders:
+    Kerbal Space Program/GameData/StarshipInterface     (location of the patch)
+    Kerbal Space Program/Ships/Script                   (here the kOS scripts are saved)
+    Kerbal Space Program/Ships/VAB                      (location of the .craft files)
+
+- Optional: If you wish to use Parallax on a stock kerbin, move "SEPKOS patch for stock Kerbin with Parallax.cfg" to the StarshipInterface folder.
 
 
 # IMPORTANT!:
-- Works best with the provided .craft files ("Starship Cargo", "Starship Crew", "Starship Tanker") located inside the stock craft category (left hand side) in the VAB's vessel loading menu. These can be found if you enable stock vehicles in your savegame, or you copy them manually to your savegame. Real Size ships are for using with RSS.
+- Use the provided .craft files (e.g. "Starship Cargo") located inside the stock craft category in the VAB's vessel loading menu (left hand side).
+    - This needs stock vehicles enabled in your savegame. Real Solar System: use "Starship xxx Real Size" ships.
 - Before filing a bug, read the "Bug support guide" at the bottom of this page.
 
+
 # REQUIRES:
-- Stock-size Kerbin, RSS, any 2.5-2.7x sized planet pack, and the language in KSP has to be set to "english" (important).
-- Starship Expansion Project - github repository DEV (!!) version and its requirements (!!)
-    https://forum.kerbalspaceprogram.com/index.php?/topic/206555-1101-112x-starship-expansion-project-sep-v101-january-30th-2022/
-    Github version: https://github.com/Kari1407/Starship-Expansion-Project/tree/V2.1_Dev
-- Starship Launch Expansion - the DEV version(!!)
+- Stock-size Kerbin or Real Solar System or KSRSS or SigmaDimensions (2.5-2.7x)
+
+- KSP language set to English
+
+- Starship Expansion Project - github repository DEV version
+    https://forum.kerbalspaceprogram.com/topic/206555-112x-starship-expansion-project-sep-v2031-november-20th-2023/
+    https://github.com/Kari1407/Starship-Expansion-Project/tree/V2.1_Dev
+
+- Starship Launch Expansion - github repository DEV version
     https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229
-    Dev Version: https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev
+    https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev
+
 - kOS
     https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/
+    https://github.com/KSP-KOS/KOS/releases
+
 - Trajectories, and its requirements!
     https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/
+    https://github.com/neuoy/KSPTrajectories/releases
+
 - TundraExploration (actually only TundraExploration.dll)
     https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/
+    https://github.com/TundraMods/TundraExploration/releases
+
 - Kerbal Joint Reinforcement Continued
+    https://forum.kerbalspaceprogram.com/topic/184019-131-14x-15x-16x-17x-kerbal-joint-reinforcement-continued-v340-25-04-2019/
     https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued
 
 # RECOMMENDED:
 - HangarExtender (Recommended for being able to load cargo without moving the whole ship up and down)
-    https://spacedock.info/mod/1428/HangerExtender#stats
+    https://spacedock.info/mod/1428/HangerExtender
 
 # INCOMPATIBLE(!!):
 - TweakableEverything
 - Ferram AeroSpace Research (FAR)
 - Realism Overhaul (RO)
-- Parallax (on stock only: Kopernicus needs to NOT be installed for correct fuel tank sizes)
 
 
 # Known Issues:
 - If you get the tank mismatch error:
-    - Stock: Check that you don't have Kopernicus installed (might cause issues with Parallax).
+    - Stock: Check that you don't have Kopernicus installed.
     - Planet mod: Check that you have Kopernicus AND your planet mod properly installed.
-    - Check that you removed the StarshipExpansionProject Folder before installing SEP.
+    - Check that you removed old versions of SEP and the Interface before installing the new ones.
 - Users reported booster catch may fail if you have MechJeb and the Q or G Limiter reduces thrust where the script wouldn't do that.
 - On non-stock Kerbin the tower may be glitching/jumping upon booster-catch due to the Kraken.
 

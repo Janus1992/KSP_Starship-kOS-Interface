@@ -1,3 +1,6 @@
+# V2.3.14 (2024-02-06)
+- included an optional patch for use with parallax on a stock Kerbin.
+
 # V2.3.13 (2024-01-13)
 - bugfix for no key found error after booster landing.
 
