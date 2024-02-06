@@ -20,10 +20,10 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 - Optional: If you wish to use Parallax on a stock kerbin, move "SEPKOS patch for stock Kerbin with Parallax.cfg" to the StarshipInterface folder.
 
 
-# IMPORTANT!:
-- Use the provided .craft files (e.g. "Starship Cargo") located inside the stock craft category in the VAB's vessel loading menu (left hand side).
+> [!IMPORTANT]
+> - Use the provided .craft files (e.g. "Starship Cargo") located inside the stock craft category in the VAB's vessel loading menu (left hand side).
     - This needs stock vehicles enabled in your savegame. Real Solar System: use "Starship xxx Real Size" ships.
-- Before filing a bug, read the "Bug support guide" at the bottom of this page.
+> - Before filing a bug, read the "Bug support guide" at the bottom of this page.
 
 
 # REQUIRES:
@@ -31,33 +31,26 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 - KSP language set to English
 
-- Starship Expansion Project - github repository DEV version
-    https://forum.kerbalspaceprogram.com/topic/206555-112x-starship-expansion-project-sep-v2031-november-20th-2023/
-    https://github.com/Kari1407/Starship-Expansion-Project/tree/V2.1_Dev
+- Starship Expansion Project - [github repository DEV version](https://github.com/Kari1407/Starship-Expansion-Project/tree/V2.1_Dev)
+    [Forum](https://forum.kerbalspaceprogram.com/topic/206555-112x-starship-expansion-project-sep-v2031-november-20th-2023/)
 
-- Starship Launch Expansion - github repository DEV version
-    https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229
-    https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev
+- Starship Launch Expansion - [github repository DEV version](https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev)
+    [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229)
 
-- kOS
-    https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/
-    https://github.com/KSP-KOS/KOS/releases
+- [kOS](https://github.com/KSP-KOS/KOS/releases)
+    [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/)
 
-- Trajectories, and its requirements!
-    https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/
-    https://github.com/neuoy/KSPTrajectories/releases
+- [Trajectories](https://github.com/neuoy/KSPTrajectories/releases), and its requirements!
+    [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/)
 
-- TundraExploration (actually only TundraExploration.dll)
-    https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/
-    https://github.com/TundraMods/TundraExploration/releases
+- [TundraExploration](https://github.com/TundraMods/TundraExploration/releases) (actually only TundraExploration.dll)
+    [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/)
 
-- Kerbal Joint Reinforcement Continued
-    https://forum.kerbalspaceprogram.com/topic/184019-131-14x-15x-16x-17x-kerbal-joint-reinforcement-continued-v340-25-04-2019/
-    https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued
+- [Kerbal Joint Reinforcement Continued](https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued)
+    [Forum](https://forum.kerbalspaceprogram.com/topic/184019-131-14x-15x-16x-17x-kerbal-joint-reinforcement-continued-v340-25-04-2019/)
 
 # RECOMMENDED:
-- HangarExtender (Recommended for being able to load cargo without moving the whole ship up and down)
-    https://spacedock.info/mod/1428/HangerExtender
+- [HangarExtender](https://spacedock.info/mod/1428/HangerExtender) (easier cargo loading)
 
 # INCOMPATIBLE(!!):
 - TweakableEverything
@@ -66,17 +59,18 @@ An Interface for automating the 'Starship Expansion Project' and 'Starship Launc
 
 
 # Known Issues:
-- If you get the tank mismatch error:
+- Tank mismatch error:
     - Stock: Check that you don't have Kopernicus installed.
     - Planet mod: Check that you have Kopernicus AND your planet mod properly installed.
     - Check that you removed old versions of SEP and the Interface before installing the new ones.
-- Users reported booster catch may fail if you have MechJeb and the Q or G Limiter reduces thrust where the script wouldn't do that.
-- On non-stock Kerbin the tower may be glitching/jumping upon booster-catch due to the Kraken.
+- Mechjeb Q or G Limiter could cause launch failures.
+- On non-stock Kerbin the tower may be glitching upon booster-catch due to the Kraken.
 
 
 # Bug support guide:
-- check first that you fulfill the requirements above (check Incompatible Mods!!) and carefully read this whole page.
+- First carefully read this whole page!
 - If you have many mods installed, try moving unnecessary mods away from /gamedata temporarily. The less mods, the better (Only SEPs requirements and those of this mod).
+
 - If you still get script crashes that don't recover themselves: congratulations, you may have found a bug!
 - Keep the kOS CPUs open (right hand side) and screenshot any errors or problems.
 - Either:
