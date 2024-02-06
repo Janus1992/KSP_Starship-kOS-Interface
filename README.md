@@ -13,9 +13,9 @@ A **kOS Interface** for the **Starship Expansion Project** in Kerbal Space Progr
 - Move the contents of the _/Kerbal Space Program_ folder (_GameData_ and _Ships_ folders) into your /Kerbal Space Program folder (and overwrite if you are updating).
 
 - Correct folders:
-    _Kerbal Space Program/GameData/StarshipInterface_    (location of the patch)
-    _Kerbal Space Program/Ships/Script_                  (here the kOS scripts are saved)
-    _Kerbal Space Program/Ships/VAB_                     (location of the .craft files)
+  - _Kerbal Space Program/GameData/StarshipInterface_    (location of the patch)
+  - _Kerbal Space Program/Ships/Script_                  (here the kOS scripts are saved)
+  - _Kerbal Space Program/Ships/VAB_                     (location of the .craft files)
 
 - **Optional:** If you wish to use **_Parallax_** on a stock Kerbin, move _SEPKOS patch for stock Kerbin with Parallax.cfg_ to the StarshipInterface folder.
 
@@ -26,33 +26,33 @@ A **kOS Interface** for the **Starship Expansion Project** in Kerbal Space Progr
 
 
 
-### REQUIRES:
+### Requirements:
 - Stock-size Kerbin or Real Solar System or KSRSS or SigmaDimensions (2.5-2.7x)
 
-- KSP language set to English
+- KSP language set to **English**
 
-- Starship Expansion Project - [github repository DEV version](https://github.com/Kari1407/Starship-Expansion-Project/tree/V2.1_Dev)
+- **Starship Expansion Project** - [github repository DEV version](https://github.com/Kari1407/Starship-Expansion-Project/tree/V2.1_Dev)
   - [Forum](https://forum.kerbalspaceprogram.com/topic/206555-112x-starship-expansion-project-sep-v2031-november-20th-2023/)
 
-- Starship Launch Expansion - [github repository DEV version](https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev)
+- **Starship Launch Expansion** - [github repository DEV version](https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev)
   - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229)
 
-- [kOS](https://github.com/KSP-KOS/KOS/releases)
+- **[kOS](https://github.com/KSP-KOS/KOS/releases)**
   - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/)
 
-- [Trajectories](https://github.com/neuoy/KSPTrajectories/releases), and its requirements!
+- **[Trajectories](https://github.com/neuoy/KSPTrajectories/releases)**, and its requirements!
   - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/)
 
-- [TundraExploration](https://github.com/TundraMods/TundraExploration/releases) (actually only TundraExploration.dll)
+- **[TundraExploration](https://github.com/TundraMods/TundraExploration/releases)** (actually only TundraExploration.dll)
   - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/)
 
-- [Kerbal Joint Reinforcement Continued](https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued)
+- **[Kerbal Joint Reinforcement Continued](https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued)**
   - [Forum](https://forum.kerbalspaceprogram.com/topic/184019-131-14x-15x-16x-17x-kerbal-joint-reinforcement-continued-v340-25-04-2019/)
 
-### RECOMMENDED:
-- [HangarExtender](https://spacedock.info/mod/1428/HangerExtender) (easier cargo loading)
+### Recommended:
+- **[HangarExtender](https://spacedock.info/mod/1428/HangerExtender)** (easier cargo loading)
 
-### INCOMPATIBLE(!!):
+### Incompatible:
 - TweakableEverything
 - Ferram AeroSpace Research (FAR)
 - Realism Overhaul (RO)
