@@ -1,5 +1,5 @@
-# KSP_Starship-kOS-Interface V2
-A **kOS Interface** for the **Starship Expansion Project** in Kerbal Space Program.
+# KSP Starship kOS Interface
+- A **kOS Interface** for the **Starship Expansion Project** in Kerbal Space Program
 
 
 ![Alt text](/Infographic.png)
