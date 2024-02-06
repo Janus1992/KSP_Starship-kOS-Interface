@@ -17,7 +17,7 @@
   - _Kerbal Space Program/Ships/Script_                  (here the kOS scripts are saved)
   - _Kerbal Space Program/Ships/VAB_                     (location of the .craft files)
 
-**Optional:** If you wish to use **_Parallax_** on a stock Kerbin, move the _SEPKOS patch for stock Kerbin with Parallax.cfg_ to the _StarshipInterface_ folder.
+**Optional:** If you wish to use **_Parallax_** on a stock Kerbin, move the _SEPkOS patch for stock Kerbin with Parallax.cfg_ to the _StarshipInterface_ folder.
 
 
 > [!IMPORTANT]
