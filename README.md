@@ -4,6 +4,7 @@
 
 ![Alt text](/Infographic.png)
 
+User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 
 ## Installation:
 - Download and install all requirements listed below.
