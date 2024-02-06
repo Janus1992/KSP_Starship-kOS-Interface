@@ -31,32 +31,26 @@ A **kOS Interface** for the **Starship Expansion Project** in Kerbal Space Progr
 
 - KSP language set to **English**
 
-- **Starship Expansion Project** - [github repository DEV version](https://github.com/Kari1407/Starship-Expansion-Project/tree/V2.1_Dev)
-  - [Forum](https://forum.kerbalspaceprogram.com/topic/206555-112x-starship-expansion-project-sep-v2031-november-20th-2023/)
+- **Starship Expansion Project** - [github repository DEV version](https://github.com/Kari1407/Starship-Expansion-Project/tree/V2.1_Dev) - [Forum](https://forum.kerbalspaceprogram.com/topic/206555-112x-starship-expansion-project-sep-v2031-november-20th-2023/)
 
-- **Starship Launch Expansion** - [github repository DEV version](https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev)
-  - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229)
+- **Starship Launch Expansion** - [github repository DEV version](https://github.com/SAMCG14/StarshipLaunchExpansion/tree/Dev) - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/203952-1129-starship-launch-expansion-v05-beta-may-31/&tab=comments#comment-4008229)
 
-- **[kOS](https://github.com/KSP-KOS/KOS/releases)**
-  - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/)
+- **kOS** - [github](https://github.com/KSP-KOS/KOS/releases) - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/165628-ksp-1101-and-111-kos-v1310-kos-scriptable-autopilot-system/)
 
-- **[Trajectories](https://github.com/neuoy/KSPTrajectories/releases)**, and its requirements!
-  - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/)
+- **Trajectories** - [github](https://github.com/neuoy/KSPTrajectories/releases) - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/)
 
-- **[TundraExploration](https://github.com/TundraMods/TundraExploration/releases)** (actually only TundraExploration.dll)
-  - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/)
+- **TundraExploration** - [github](https://github.com/TundraMods/TundraExploration/releases) - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/) (actually only TundraExploration.dll)
 
-- **[Kerbal Joint Reinforcement Continued](https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued)**
-  - [Forum](https://forum.kerbalspaceprogram.com/topic/184019-131-14x-15x-16x-17x-kerbal-joint-reinforcement-continued-v340-25-04-2019/)
+- **Kerbal Joint Reinforcement Continued** - [github](https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued) - [Forum](https://forum.kerbalspaceprogram.com/topic/184019-131-14x-15x-16x-17x-kerbal-joint-reinforcement-continued-v340-25-04-2019/)
 
 ### Recommended:
-- **[HangarExtender](https://spacedock.info/mod/1428/HangerExtender)** (easier cargo loading)
+- **HangarExtender** - [github](https://spacedock.info/mod/1428/HangerExtender) (easier cargo loading)
 
 ### Incompatible:
-- TweakableEverything
-- Ferram AeroSpace Research (FAR)
-- Realism Overhaul (RO)
-- CKAN
+- **TweakableEverything**
+- **Ferram AeroSpace Research (FAR)**
+- **Realism Overhaul (RO)**
+- **CKAN**
 
 
 ### Known Issues:
