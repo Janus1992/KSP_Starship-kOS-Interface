@@ -2,7 +2,7 @@
 A **kOS Interface** for the **Starship Expansion Project** in Kerbal Space Program.
 
 
-![Alt text](/Infographic 2.png)
+![Alt text](/Infographic.png)
 
 
 ## Installation:
