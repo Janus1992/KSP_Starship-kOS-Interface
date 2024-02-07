@@ -6380,6 +6380,11 @@ function Launch {
             set BoosterThrottleDownAlt to 1500.
         }
         set OrbitBurnPitchCorrectionPID:setpoint to targetap.
+        set LaunchRollVector to angleaxis(-targetincl, up:vector) * north:vector.
+        if vang(north:vector, LaunchRollVector) > 90 {
+            set LaunchRollVector to -LaunchRollVector.
+        }
+        //set lv to vecdraw(v(0, 0, 0), LaunchRollVector, green, "LaunchRollVector", 35, true, 0.005, true, true).
 
         if OnOrbitalMount {
             InhibitButtons(1, 1, 0).
@@ -6917,7 +6922,7 @@ Function LaunchSteering {
                 set targetpitch to 90 - (11 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
             }
         }
-        set result to lookdirup(heading(myAzimuth, targetpitch):vector, north:vector).
+        set result to lookdirup(heading(myAzimuth, targetpitch):vector, LaunchRollVector).
         //if not (Launch180) {
         //    set result to heading(myAzimuth, targetpitch).
         //}
@@ -6960,7 +6965,7 @@ Function LaunchSteering {
         }
 
         rcs on.
-        set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, north:vector).
+        set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, LaunchRollVector).
         //if not (Launch180) {
         //    set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, up:vector).
         //}
