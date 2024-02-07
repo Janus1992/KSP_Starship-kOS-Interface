@@ -4469,7 +4469,7 @@ set launchbutton:ontoggle to {
                         }
                         set IntendedInc to setting3:text:split("°")[0]:toscalar(0).
                         set data to LAZcalc_init(targetap, IntendedInc).
-                        if data[0] = IntendedInc {}
+                        if data[0] = abs(IntendedInc) {}
                         else {
                             set message1:text to "<b><color=yellow>Inclination impossible from current latitude..</color></b>".
                             set message2:text to "<b>Setting Inclination to:  </b>" + round(data[0], 1) + "°".

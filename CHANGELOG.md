@@ -1,6 +1,7 @@
 # V2.3.15 (2024-02-07)
 - Fix for booster not rolling a clean 90 degrees during launch. It should now always roll 90 degrees with the top facing north.
 - Possible fix for newly used modules renamed by AtmosphereAutopilot.
+- Avoid a superfluous message when launching into negative inclinations.
 
 # V2.3.14 (2024-02-06)
 - included an optional patch for use with parallax on a stock Kerbin.
