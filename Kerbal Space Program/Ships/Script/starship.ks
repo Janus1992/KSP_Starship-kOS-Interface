@@ -6447,9 +6447,16 @@ function Launch {
             }
             lock throttle to 0.33.
             for fin in GridFins {
-                fin:getmodule("ModuleControlSurface"):SetField("authority limiter", 3).
-                fin:getmodule("ModuleControlSurface"):DoAction("activate roll control", true).
-                fin:getmodule("ModuleControlSurface"):SetField("deploy direction", true).
+                if fin:hasmodule("ModuleControlSurface") {
+                    fin:getmodule("ModuleControlSurface"):SetField("authority limiter", 3).
+                    fin:getmodule("ModuleControlSurface"):DoAction("activate roll control", true).
+                    fin:getmodule("ModuleControlSurface"):SetField("deploy direction", true).
+                }
+                if fin:hasmodule("SyncModuleControlSurface") {
+                    fin:getmodule("SyncModuleControlSurface"):SetField("authority limiter", 3).
+                    fin:getmodule("SyncModuleControlSurface"):DoAction("activate roll control", true).
+                    fin:getmodule("SyncModuleControlSurface"):SetField("deploy direction", true).
+                }
             }
             BoosterEngines[0]:getmodule("ModuleEnginesFX"):doaction("activate engine", true).
             set EngineStartTime to time:seconds.
@@ -6614,9 +6621,16 @@ function Launch {
                         eng:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
                     }
                     for fin in GridFins {
-                        fin:getmodule("ModuleControlSurface"):SetField("deploy direction", false).
-                        fin:getmodule("ModuleControlSurface"):SetField("authority limiter", 32).
-                        fin:getmodule("ModuleControlSurface"):DoAction("deactivate roll control", true).
+                        if fin:hasmodule("ModuleControlSurface") {
+                            fin:getmodule("ModuleControlSurface"):SetField("deploy direction", false).
+                            fin:getmodule("ModuleControlSurface"):SetField("authority limiter", 32).
+                            fin:getmodule("ModuleControlSurface"):DoAction("deactivate roll control", true).
+                        }
+                        if fin:hasmodule("SyncModuleControlSurface") {
+                            fin:getmodule("SyncModuleControlSurface"):SetField("deploy direction", false).
+                            fin:getmodule("SyncModuleControlSurface"):SetField("authority limiter", 32).
+                            fin:getmodule("SyncModuleControlSurface"):DoAction("deactivate roll control", true).
+                        }
                     }
                     BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
                     lock throttle to 0.5.
