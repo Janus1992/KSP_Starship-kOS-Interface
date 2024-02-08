@@ -8267,8 +8267,9 @@ function LandingVector {
             //}
             if MechaZillaExists and TargetOLM {
                 HUDTEXT("Loading current Ship quicksave for safe docking! (Avoid Kraken..)", 10, 2, 20, green, false).
+                sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (1 * Scale) + ",0.5")).
                 wait 2.5.
-                when kuniverse:canquicksave then {
+                when kuniverse:canquicksave and KUniverse:activevessel = ship then {
                     kuniverse:quicksave().
                     wait 0.1.
                     when kuniverse:canquicksave then {
@@ -11025,7 +11026,14 @@ function LandAtOLM {
                                 sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,false").
                                 sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
                                 when RadarAlt < 300 then {
-                                    set LandRollVector to vxcl(up:vector, Vessel(TargetOLM):partstitled("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position).
+                                    if homeconnection:isconnected {
+                                        if exists("0:/settings.json") {
+                                            set L to readjson("0:/settings.json").
+                                            if L:haskey("TowerHeadingVector") {
+                                                set LandRollVector to L["TowerHeadingVector"].
+                                            }
+                                        }
+                                    }
                                     if RSS {
                                         set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 5), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 5)).
                                     }

@@ -589,7 +589,14 @@ function Boostback {
             when verticalspeed > -80 then {
                 if not (LandSomewhereElse) {
                     if not (TargetOLM = "false") {
-                        set LandHeadingVector to vxcl(up:vector, Vessel(TargetOLM):partstitled("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position).
+                        if homeconnection:isconnected {
+                            if exists("0:/settings.json") {
+                                set L to readjson("0:/settings.json").
+                                if L:haskey("TowerHeadingVector") {
+                                    set LandHeadingVector to L["TowerHeadingVector"].
+                                }
+                            }
+                        }
                     }
                     if RSS {
                         lock SteeringVector to lookdirup(up:vector - 0.03 * velocity:surface - 0.03 * ErrorVector, LandHeadingVector).
@@ -690,7 +697,7 @@ function Boostback {
                             HUDTEXT("Loading current Booster quicksave for safe docking! (Avoid Kraken..)", 10, 2, 20, green, false).
                             sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (7 * Scale) + ",0.5")).
                             wait 1.5.
-                            when kuniverse:canquicksave then {
+                            when kuniverse:canquicksave and KUniverse:activevessel = ship then {
                                 kuniverse:quicksave().
                                 wait 0.1.
                                 when kuniverse:canquicksave then {

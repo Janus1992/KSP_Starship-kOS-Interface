@@ -204,6 +204,7 @@ until False {
         if not (ship:name:contains("OrbitalLaunchMount")) {
             RenameOLM().
         }
+        SaveToSettings("TowerHeadingVector", vxcl(up:vector, TowerBase:position - OLM:position)).
         set PrevTime to time:seconds.
     }
 }

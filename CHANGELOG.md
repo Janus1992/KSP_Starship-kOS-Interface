@@ -1,5 +1,8 @@
 # V2.3.16 (2024-02-08)
 - Fix for manually flown re-entries followed by automatic landings on Duna.
+- Fix for booster crash when the tower explodes.
+- Fix for ship auto-stacking not starting after landing (quicksave stuck).
+- Fix for problems due to changing to other ship during auto-stacking.
 
 # V2.3.15 (2024-02-07)
 - Fix for booster not rolling a clean 90 degrees during launch. It should now always roll 90 degrees with the top facing north.
