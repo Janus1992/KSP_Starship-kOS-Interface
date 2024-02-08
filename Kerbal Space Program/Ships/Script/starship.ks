@@ -7794,7 +7794,7 @@ function ReEntryData {
         }
     }
     if RadarAlt < 2500 {
-        if abs(LngLatErrorList[0]) > 50 and ship:body:atm:sealevelpressure > 0.5 or abs(LngLatErrorList[1]) > 50 or abs(LngLatErrorList[0]) > 200 and ship:body:atm:sealevelpressure < 0.5 {
+        if abs(LngLatErrorList[0]) > 50 and ship:body:atm:sealevelpressure > 0.5 or abs(LngLatErrorList[1]) > 50 or abs(LngLatErrorList[0]) > 500 and ship:body:atm:sealevelpressure < 0.5 {
             if not ClosingIsRunning {
                 set message3:style:textcolor to yellow.
             }
@@ -10837,7 +10837,7 @@ function CheckSlope {
     set LowestSlopeDictionary to lexicon().
     set multiplier to 2.
     if SetNewLZNow {
-        if ship:body:atm:sealevelpressure > 0.5 {
+        if addons:tr:hasimpact {
             set impactpos to addons:tr:impactpos.
             set landingzone to latlng(impactpos:lat, impactpos:lng).
         }

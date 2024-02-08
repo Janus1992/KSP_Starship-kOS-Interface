@@ -1,3 +1,6 @@
+# V2.3.16 (2024-02-08)
+- Fix for manually flown re-entries followed by automatic landings on Duna.
+
 # V2.3.15 (2024-02-07)
 - Fix for booster not rolling a clean 90 degrees during launch. It should now always roll 90 degrees with the top facing north.
 - Possible fix for newly used modules renamed by AtmosphereAutopilot.
