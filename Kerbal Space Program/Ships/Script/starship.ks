@@ -6190,8 +6190,8 @@ if addons:tr:available and not startup {
     updatestatusbar().
     SteeringManager:RESETTODEFAULT().
     clearvecdraws().
-    if ship:status = "FLYING" and eta:apoapsis < eta:periapsis and altitude < body:atm:height - 5000 and alt:radar > 1000 or ship:status = "SUB_ORBITAL" and eta:apoapsis < eta:periapsis and altitude < body:atm:height - 5000 and alt:radar > 1000 {
-        if ship:body:atm:exists {
+    if ship:status = "FLYING" and eta:apoapsis < eta:periapsis and altitude < body:atm:height - 5000 and alt:radar > 1000 or ship:status = "SUB_ORBITAL" and eta:apoapsis < eta:periapsis and altitude < body:atm:height - 5000 and alt:radar > 1000 and ship:body:atm:exists {
+        if ship:mass - ship:drymass > 12 and not (RSS) or ship:mass - ship:drymass > 30 and RSS {
             Launch().
         }
     }
@@ -7469,9 +7469,13 @@ function ReEntryAndLand {
 
         SteeringManager:RESETTODEFAULT().
         set SteeringManager:yawts to 5.
+        set PitchPID to PIDLOOP(0.000025, 0, 0, -10, 10).
+        set ChangeOverSensitivity to ship:body:radius * sqrt(9.81 / (ship:body:radius + ship:body:atm:height)).
 
         if RSS {
-            set PitchPID to PIDLOOP(0.00005, 0, 0, -25, 30).
+            when airspeed < ChangeOverSensitivity then {
+                set PitchPID to PIDLOOP(0.00005, 0, 0, -25, 30).
+            }
             set YawPID to PIDLOOP(0.0005, 0, 0, -50, 50).
             when airspeed < 7000 and ship:body:atm:sealevelpressure > 0.5 or airspeed < 3000 and ship:body:atm:sealevelpressure < 0.5 then {
                 set PitchPID to PIDLOOP(0.0001, 0, 0, -25, 30).
@@ -7479,11 +7483,15 @@ function ReEntryAndLand {
             }
         }
         else if KSRSS {
-            set PitchPID to PIDLOOP(0.0005, 0, 0, -25, 30).
+            when airspeed < ship:body:radius * sqrt(9.81 / (ship:body:radius + ship:body:atm:height)) then {
+                set PitchPID to PIDLOOP(0.0005, 0, 0, -25, 30).
+            }
             set YawPID to PIDLOOP(0.015, 0, 0, -50, 50).
         }
         else {
-            set PitchPID to PIDLOOP(0.0005, 0, 0, -25, 30).
+            when airspeed < ship:body:radius * sqrt(9.81 / (ship:body:radius + ship:body:atm:height)) then {
+                set PitchPID to PIDLOOP(0.0005, 0, 0, -25, 30).
+            }
             set YawPID to PIDLOOP(0.025, 0, 0, -50, 50).
         }
 

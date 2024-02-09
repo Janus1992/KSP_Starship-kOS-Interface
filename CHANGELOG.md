@@ -1,3 +1,6 @@
+# V2.3.17 (2024-02-09)
+- Lowered sensitivity for high speed re-entries (from mun, minmus etc).
+
 # V2.3.16 (2024-02-08)
 - Fix for manually flown re-entries followed by automatic landings on Duna.
 - Fix for booster crash when the tower explodes.
