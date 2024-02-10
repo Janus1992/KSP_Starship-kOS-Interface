@@ -245,7 +245,7 @@ function Boostback {
 
     set SeparationTime to time:seconds.
     set ship:control:pitch to -1.
-    when time:seconds > SeparationTime + 0.75 then {
+    when time:seconds > SeparationTime + 2 then {
         set ship:control:neutralize to true.
     }
 
@@ -321,7 +321,7 @@ function Boostback {
         }
     }
 
-    until vang(facing:forevector, vxcl(up:vector, -ErrorVector)) < 15 or verticalspeed < 0 {
+    until vang(vxcl(up:vector, facing:forevector), vxcl(up:vector, -ErrorVector)) < 15 or verticalspeed < 0 {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         SetBoosterActive().
@@ -694,7 +694,7 @@ function Boostback {
                     when time:seconds > LandingTime + 8.25 * Scale then {
                         sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.1," + (0.2 * Scale) + ",false")).
                         when kuniverse:canquicksave and time:seconds > LandingTime + 15 * Scale and L["Auto-Stack"] = true and not (RSS) then {
-                            HUDTEXT("Loading current Booster quicksave for safe docking! (Avoid Kraken..)", 10, 2, 20, green, false).
+                            HUDTEXT("Loading current Booster quicksave for safe docking! (to avoid the Kraken..)", 20, 2, 20, green, false).
                             sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (7 * Scale) + ",0.5")).
                             wait 1.5.
                             when kuniverse:canquicksave and KUniverse:activevessel = ship then {
@@ -1026,12 +1026,13 @@ function setTargetOLM {
 
 
 function BoosterDocking {
-    HUDTEXT("Wait for Booster docking to start..", 20, 2, 20, green, false).
+    HUDTEXT("Wait for Booster docking to start..", 24, 2, 20, green, false).
     wait 25.
     sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (29.9 * Scale) + ",0.5")).
     DeactivateGridFins().
     set LandingTime to time:seconds.
     clearscreen.
+    HUDTEXT("Booster docking in progress..", 24, 2, 20, green, false).
     print "Booster docking in progress..".
     HUDTEXT("Booster docking in progress..", 50, 2, 20, green, false).
     when time:seconds > LandingTime + 50 * Scale and not (BoosterDocked) then {

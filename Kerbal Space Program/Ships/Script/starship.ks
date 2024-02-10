@@ -6380,7 +6380,9 @@ function Launch {
             set BoosterThrottleDownAlt to 1500.
         }
         set OrbitBurnPitchCorrectionPID:setpoint to targetap.
-        set LaunchRollVector to angleaxis(-targetincl, up:vector) * north:vector.
+
+        set myAzimuth to LAZcalc(LaunchData).
+        set LaunchRollVector to heading(mod(myAzimuth - 90, 360),0):vector.
         if vang(north:vector, LaunchRollVector) > 90 {
             set LaunchRollVector to -LaunchRollVector.
         }

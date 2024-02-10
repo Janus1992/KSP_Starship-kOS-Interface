@@ -46,10 +46,10 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 
 ### Known Issues:
 - **Tank mismatch error:**
-    - Stock: Check that you don't have _Kopernicus_ installed.
+    - Check that you removed old versions of SEP and the Interface before installing.
+    - Stock: You may need to install the optional _SEPkOS patch for stock Kerbin with Parallax.cfg_ patch.
     - Planet mod: Check that you have _Kopernicus_ AND your planet mod properly installed.
-    - Check that you removed old versions of SEP and the Interface before installing the new ones.
-- Mechjeb Q or G Limiter could cause launch failures.
+- Mechjeb Q or G Limiter could cause launch/catch failures.
 - On non-stock Kerbin the tower may be glitching upon booster-catch due to the Kraken.
 
 

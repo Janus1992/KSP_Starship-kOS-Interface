@@ -1,3 +1,7 @@
+# V2.3.18 (2024-02-10)
+- Fixed another bug that causes the ship to not roll 90 degrees during launch.
+- Tuned Booster flip.
+
 # V2.3.17 (2024-02-09)
 - Lowered sensitivity for high speed re-entries (from mun, minmus etc).
 
