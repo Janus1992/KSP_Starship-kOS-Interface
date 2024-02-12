@@ -1,3 +1,6 @@
+# V2.3.19 (2024-02-12)
+- targetap error fix upon crash during launch.
+
 # V2.3.18 (2024-02-10)
 - Fixed another bug that causes the ship to not roll 90 degrees during launch.
 - Tuned Booster flip.

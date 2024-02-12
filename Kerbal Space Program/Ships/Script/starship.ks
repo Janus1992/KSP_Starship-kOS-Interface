@@ -129,6 +129,7 @@ if RSS {    // Real Solar System
     set LandRollVector to heading(270,0):vector.
     set SafeAltOverLZ to 10000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
     set OriginalTargetAp to 225000.
+    set TargetAp to 225000.
     set RCSThrust to 100.
     set RCSBurnTimeLimit to 240.
     if Methane {
@@ -166,6 +167,7 @@ else if KSRSS { // 2.5-2.7x scaled Kerbin
     set LandRollVector to heading(242,0):vector.
     set SafeAltOverLZ to 5000.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
     set OriginalTargetAp to 125000.
+    set TargetAp to 125000.
     set RCSThrust to 70.
     set RCSBurnTimeLimit to 180.
     if Methane {
@@ -197,6 +199,7 @@ else {  // Stock Kerbin
     set LandRollVector to heading(270,0):vector.
     set SafeAltOverLZ to 2500.  // Defines the Safe Altitude it should reach over the landing zone during landing on a moon.
     set OriginalTargetAp to 75000.
+    set TargetAp to 75000.
     set RCSThrust to 40.
     set RCSBurnTimeLimit to 120.
     if Methane {
