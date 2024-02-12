@@ -354,6 +354,7 @@ set FullTanks to true.
 set AirlockStatus to false.
 set DockingHatchStatus to false.
 set CargoDoorStatus to false.
+set HotStageTime to time:seconds.
 
 
 
