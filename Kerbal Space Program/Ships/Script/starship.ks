@@ -19,6 +19,11 @@ clearscreen.
 
 if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
     if homeconnection:isconnected {
+        if config:arch {
+            set config:arch to false.
+            HUDTEXT("kOS start on archive setting turned off. Reload the scene.. (no reverting!)", 30, 2, 20, red, false).
+            shutdown.
+        }
         switch to 0.
         if exists("1:starship.ksm") {
             if homeconnection:isconnected {

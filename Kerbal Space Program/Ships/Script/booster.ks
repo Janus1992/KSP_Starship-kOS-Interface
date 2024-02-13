@@ -4,6 +4,9 @@ wait until ship:unpacked.
 
 if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
     if homeconnection:isconnected {
+        if config:arch {
+            shutdown.
+        }
         switch to 0.
         if exists("1:booster.ksm") {
             if homeconnection:isconnected {
