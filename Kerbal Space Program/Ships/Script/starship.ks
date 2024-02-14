@@ -7087,6 +7087,9 @@ function LaunchLabelData {
         }
         if not (BurnComplete) {
             LogToFile("Launch Telemetry").
+            if ship:name:contains("OrbitalLaunchMount") {
+                set ship:name to ()"Starship " + ShipType).
+            }
             BackGroundUpdate().
         }
         set LaunchLabelIsRunning to false.
