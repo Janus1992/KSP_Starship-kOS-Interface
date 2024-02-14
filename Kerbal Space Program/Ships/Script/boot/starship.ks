@@ -1,5 +1,7 @@
 wait until ship:unpacked.
 
+
+
 if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
     if homeconnection:isconnected {
         switch to 0.

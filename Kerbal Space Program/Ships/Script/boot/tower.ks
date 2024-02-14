@@ -221,9 +221,9 @@ function LiftOff {
         OLM:getmodule("ModuleAnimateGeneric"):doevent("close clamps + qd").
     }
     wait until SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0.
-    wait 0.1.
+    wait 3.
     RenameOLM().
-    wait 5.
+    wait 3.
     MechazillaPushers("0", "0.2", "12", "true").
     MechazillaHeight("6.5", "0.5").
     MechazillaArms("8","10","97.5","true").

@@ -1,5 +1,6 @@
 # V2.3.20 (2024-02-13)
 - Provide warning when kOS start-on-archive was active and the scene needs to be reloaded.
+- Hopefully avoid too early renaming of the tower causing the ship to be renamed too.
 
 # V2.3.19 (2024-02-12)
 - targetap error fix upon crash during launch.
