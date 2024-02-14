@@ -119,7 +119,7 @@ for res in Core:part:resources {
 
 if RSS {    // Real Solar System
     set aoa to 60.
-    set MaxCargoToOrbit to 150000.
+    set MaxCargoToOrbit to 151000.
     set MaxReEntryCargoThickAtmo to 15000.
     set MaxIU to 400.
     set MaxReEntryCargoThinAtmo to 150000.
@@ -151,7 +151,7 @@ if RSS {    // Real Solar System
 }
 else if KSRSS { // 2.5-2.7x scaled Kerbin
     set aoa to 60.
-    set MaxCargoToOrbit to 125005.
+    set MaxCargoToOrbit to 126000.
     set MaxReEntryCargoThickAtmo to 7500.
     set MaxIU to 300.
     set MaxReEntryCargoThinAtmo to 100000.
@@ -189,7 +189,7 @@ else if KSRSS { // 2.5-2.7x scaled Kerbin
 }
 else {  // Stock Kerbin
     set aoa to 60.
-    set MaxCargoToOrbit to 76800.
+    set MaxCargoToOrbit to 77800.
     set MaxReEntryCargoThickAtmo to 7500.
     set MaxIU to 260.
     set MaxReEntryCargoThinAtmo to 75000.
@@ -461,7 +461,7 @@ function FindParts {
                     set ShipType to "Expendable".
                     set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
                 }
-                else {
+                else if not (ShipType = "Tanker") {
                     set CargoMassStep to CargoMassStep + x:mass.
                     set CargoItems to CargoItems + 1.
                     set CargoCoG to CargoCoG + vdot(x:position - Tank:position, facing:forevector) * x:mass.
