@@ -1,3 +1,6 @@
+# V2.3.22 (2024-03-13)
+- Added support for AECS Motion Suppressor.
+
 # V2.3.21 (2024-02-14)
 - Hopefully avoid too early renaming of the tower causing the ship to be renamed too.
 - Built in safeguard against starship having an OLM name during launch.
