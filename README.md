@@ -18,7 +18,7 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
   - _Kerbal Space Program/Ships/Script_                  (here the kOS scripts are saved)
   - _Kerbal Space Program/Ships/VAB_                     (location of the .craft files)
 
-**Optional:** If you wish to use **_Parallax_** on a stock Kerbin, move the _SEPkOS patch for stock Kerbin with Parallax.cfg_ to the _StarshipInterface_ folder.
+**Optional:** If you wish to use **_Parallax_** on a **_stock Kerbin_**, move the _SEPkOS patch for stock Kerbin with Parallax.cfg_ to the _StarshipInterface_ folder.
 
 
 > [!IMPORTANT]
@@ -47,10 +47,12 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 ### Known Issues:
 - **Tank mismatch error:**
     - Check that you removed old versions of SEP and the Interface before installing.
-    - Stock: You may need to install the optional _SEPkOS patch for stock Kerbin with Parallax.cfg_ patch.
     - Planet mod: Check that you have _Kopernicus_ AND your planet mod properly installed.
     - Your .craft may be messed up, load a fresh one from the stock category in the VAB.
-- Mechjeb Q or G Limiter could cause launch/catch failures.
+- **Booster crashes into the Orbital Launch Mount on landing:**
+    - Stock Kerbin: You may need to install the optional _SEPkOS patch for stock Kerbin with Parallax.cfg_ patch.
+- **Booster runs out of fuel on return to the launch site:**
+    - Mechjeb Q or G Limiter could cause launch/catch failures.
 - On non-stock Kerbin the tower may be glitching upon booster-catch due to the Kraken.
 
 
