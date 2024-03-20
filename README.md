@@ -46,6 +46,7 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 
 ### Known Issues:
 - **Tank mismatch error:**
+    - This is a feature that stops launches _before they fail_ in-flight, and generally an indication that the fuel tanks are the wrong size and something got messed up along the way.
     - Check that you removed old versions of SEP and the Interface before installing.
     - Planet mod: Check that you have _Kopernicus_ AND your planet mod properly installed.
     - Your .craft may be messed up, load a fresh one from the stock category in the VAB.
