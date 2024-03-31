@@ -1,3 +1,9 @@
+# V2.3.24 (2024-03-31)
+- tiny patch fix.
+
+# V2.3.23 (2024-03-20)
+- New caution message warning for the IVA stage sep bug.
+
 # V2.3.22 (2024-03-13)
 - Added support for AECS Motion Suppressor.
 

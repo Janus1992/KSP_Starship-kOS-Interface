@@ -1,11 +1,3 @@
-//
-// SEP Starship kOS Script
-//
-// Version 2.3 - GNUGPL3
-// Janus92
-//
-//
-
 wait until ship:unpacked.
 unlock steering.
 clearguis().
@@ -21,7 +13,7 @@ if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
     if homeconnection:isconnected {
         if config:arch {
             set config:arch to false.
-            HUDTEXT("kOS start on archive setting turned off. Reload the scene.. (no reverting!)", 30, 2, 20, red, false).
+            HUDTEXT("kOS start on archive setting turned off. Please reload the scene.. (no reverting!)", 30, 2, 20, red, false).
             shutdown.
         }
         switch to 0.
@@ -6618,6 +6610,9 @@ function Launch {
         }
 
         if Boosterconnected {
+            when apoapsis > BoosterAp - 7500 and ShipType = "Crew" then {
+                HUDTEXT("Leave IVA ASAP! (to avoid the stage sep bug)", 10, 2, 20, yellow, false).
+            }
             when apoapsis > BoosterAp - 750 and not AbortLaunchInProgress then {
                 for x in range(0, BoosterCore[0]:modules:length) {
                     if BoosterCore[0]:getmodulebyindex(x):hasfield("% rated thrust") {
