@@ -1,5 +1,6 @@
-# V2.3.24 (2024-03-31)
-- tiny patch fix.
+# V2.3.24 (2024-04-01)
+- fixed the optional patch for parallax on a stock Kerbin.
+- tiny XyphosAerospace patch fix.
 
 # V2.3.23 (2024-03-20)
 - New caution message warning for the IVA stage sep bug.
