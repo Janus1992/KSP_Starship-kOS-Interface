@@ -135,7 +135,8 @@ until False {
         else {
             SET RECEIVED TO SHIP:MESSAGES:POP.
         }
-        //print "Command received: " + RECEIVED:CONTENT.
+        print "Command received: " + RECEIVED:CONTENT.
+        print "Command type: " + RECEIVED:CONTENT:typename.
         if RECEIVED:CONTENT:CONTAINS(",") {
             set message to RECEIVED:CONTENT:SPLIT(",").
             set command to message[0].
@@ -194,12 +195,7 @@ until False {
         }
         SaveToSettings("Tower:pushers:extension", Mechazilla:getmodulebyindex(NrforOpenClosePushers):getfield("current extension")).
         SaveToSettings("Tower:stabilizers:extension", Mechazilla:getmodulebyindex(NrforStabilizers):getfield("current extension")).
-        if RSS {
-            SaveToSettings("Tower:arms:height", Mechazilla:getmodulebyindex(NrforVertMoveMent):getfield("current extension")).
-        }
-        else {
-            SaveToSettings("Tower:arms:height", Mechazilla:getmodulebyindex(NrforVertMoveMent):getfield("current extension")).
-        }
+        SaveToSettings("Tower:arms:height", Mechazilla:getmodulebyindex(NrforVertMoveMent):getfield("current extension")).
         if not (ship:name:contains("OrbitalLaunchMount")) and SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 {
             RenameOLM().
         }

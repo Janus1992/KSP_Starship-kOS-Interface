@@ -520,7 +520,7 @@ function FindParts {
         else {
             set ArmsHeight to (Mechazilla:position - ship:body:position):mag - SHIP:BODY:RADIUS - ship:geoposition:terrainheight + 7.5.
         }
-        SaveToSettings("ArmsHeight", ArmsHeight).
+        //SaveToSettings("ArmsHeight", ArmsHeight).
         set StackMass to ship:mass - OLM:Mass - TowerBase:mass - TowerCore:mass - TowerTop:mass - Mechazilla:mass.
     }
     else {
@@ -6048,9 +6048,9 @@ if addons:tr:available and not startup {
                     set quicksetting2:pressed to false.
                     set quicksetting2:pressed to true.
                 }
-                if L:haskey("ArmsHeight") {
-                    set ArmsHeight to L["ArmsHeight"].
-                }
+                //if L:haskey("ArmsHeight") {
+                //    set ArmsHeight to L["ArmsHeight"].
+                //}
             }
             else {
                 set L to lexicon().

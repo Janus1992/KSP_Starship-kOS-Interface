@@ -550,8 +550,10 @@ function Boostback {
         if not (TargetOLM = "false") and TowerExists {
             if Vessel(TargetOLM):distance < 2250 {
                 lock RadarAlt to vdot(up:vector, GridFins[0]:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position) - LiftingPointToGridFinDist.
-                when RadarAlt < 5 * BoosterHeight and vxcl(up:vector, landingzone:position - ship:position):mag < 7.5 or RadarAlt < 2 * BoosterHeight then {
+                when RadarAlt < 5 * BoosterHeight and vxcl(up:vector, landingzone:position - ship:position):mag < 7.5 * Scale or RadarAlt < 2 * BoosterHeight then {
+                    wait 0.001.
                     sendMessage(Vessel(TargetOLM), "MechazillaArms,8,6,60,true").
+                    wait 0.001.
                     sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
                     when RadarAlt < BoosterHeight then {
                         set TimeToZero to -verticalspeed / min(maxDecel - 9.81, 5 + 9.81) - 0.5.
@@ -683,20 +685,26 @@ function Boostback {
             set LandingTime to time:seconds.
             set TowerReset to false.
             set RollAngleExceeded to false.
-            BoosterEngines[0]:getmodule("ModuleDockingNode"):SETFIELD("docking acquire force", 200).
-            sendMessage(Vessel(TargetOLM), "DockingForce,200").
+            if not (RSS) {
+                BoosterEngines[0]:getmodule("ModuleDockingNode"):SETFIELD("docking acquire force", 200).
+                sendMessage(Vessel(TargetOLM), "DockingForce,200").
+            }
             print "Tower Operation in Progress..".
 
             sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,0.2,false").
             sendMessage(Vessel(TargetOLM), ("MechazillaStabilizers," + maxstabengage)).
 
             when time:seconds > LandingTime + 3.25 * Scale then {
+                wait 0.001.
                 sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.5," + (0.2 * Scale) + ",false")).
                 when time:seconds > LandingTime + 5.75 * Scale then {
+                    wait 0.001.
                     sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.3," + (0.2 * Scale) + ",false")).
                     when time:seconds > LandingTime + 8.25 * Scale then {
+                        wait 0.001.
                         sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.1," + (0.2 * Scale) + ",false")).
                         when kuniverse:canquicksave and time:seconds > LandingTime + 15 * Scale and L["Auto-Stack"] = true and not (RSS) then {
+                            wait 0.001.
                             HUDTEXT("Loading current Booster quicksave for safe docking! (to avoid the Kraken..)", 20, 2, 20, green, false).
                             sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (7 * Scale) + ",0.5")).
                             wait 1.5.
@@ -715,11 +723,11 @@ function Boostback {
                 }
             }
 
-            until TowerReset {
+            until TowerReset or (RSS) {
                 clearscreen.
                 set RollAngle to vang(facing:starvector, AngleAxis(-90, up:vector) * LandHeadingVector).
                 print "Roll Angle: " + round(RollAngle,1).
-                if RollAngle > 30 or RollAngle < -30 {
+                if abs(RollAngle) > 30 {
                     set RollAngleExceeded to true.
                     set TowerReset to true.
                     break.
