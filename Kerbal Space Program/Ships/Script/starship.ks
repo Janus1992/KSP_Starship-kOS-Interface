@@ -6905,7 +6905,7 @@ function LaunchThrottle {
 Function LaunchSteering {
     set myAzimuth to LAZcalc(LaunchData).
     if altitude - LaunchElev < 250 {
-        set result to heading(myAzimuth, 90).
+        set result to heading(myAzimuth, 88).
     }
     else if Boosterconnected {
         if RSS {

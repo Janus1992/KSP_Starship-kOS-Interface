@@ -2,6 +2,8 @@
 - Booster LZ fix when no connection is available when queried.
 - Ship/Tower naming bugs fixed.
 - Expendable Ship bug fixed.
+- 1 Degree pitch over on launch clamp release.
+- Trial: Clamp tower to the ground.
 
 # V2.3.24 (2024-04-01)
 - fixed the optional patch for parallax on a stock Kerbin.
