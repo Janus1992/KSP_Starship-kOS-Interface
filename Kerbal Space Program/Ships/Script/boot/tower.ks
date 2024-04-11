@@ -125,7 +125,6 @@ print "Fueling: " + NrforDelugeRefill.
 
 
 clearscreen.
-RenameOLM().
 print "Tower Nominal Operation, awaiting command..".
 
 until False {
@@ -201,7 +200,7 @@ until False {
         else {
             SaveToSettings("Tower:arms:height", Mechazilla:getmodulebyindex(NrforVertMoveMent):getfield("current extension")).
         }
-        if not (ship:name:contains("OrbitalLaunchMount")) {
+        if not (ship:name:contains("OrbitalLaunchMount")) and SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 {
             RenameOLM().
         }
         SaveToSettings("TowerHeadingVector", vxcl(up:vector, TowerBase:position - OLM:position)).

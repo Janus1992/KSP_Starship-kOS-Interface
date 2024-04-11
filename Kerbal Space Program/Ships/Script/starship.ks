@@ -103,6 +103,10 @@ for res in Core:part:resources {
     }
 }
 
+if ship:name:contains("Real Size") and (RSS) {
+    set ship:name to ship:name:replace(" Real Size", "").
+}
+
 
 
 //------------Configurables-------------//
@@ -429,7 +433,7 @@ function FindParts {
                 else if x:title = "Starship Header Tank" {
                     set HeaderTank to x.
                 }
-                else if x:name:contains("SEP.23.SHIP.CARGO") {
+                else if x:name:contains("SEP.23.SHIP.CARGO") and not x:name:contains("SEP.23.SHIP.CARGO.EXP") {
                     set Nose to x.
                     set ShipType to "Cargo".
                     set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
@@ -448,7 +452,7 @@ function FindParts {
                         set MaxCargoToOrbit to 150000.
                     }
                 }
-                else if x:name:contains("SEP.23.SHIP.NOSE.EXP") or x:name:contains("SEP.23.SHIP.CARGO.EXP") {
+                else if x:name:contains("SEP.23.SHIP.CARGO.EXP") {
                     set Nose to x.
                     set ShipType to "Expendable".
                     set Nose:getmodule("kOSProcessor"):volume:name to "watchdog".
@@ -551,6 +555,10 @@ if OnOrbitalMount {
 }
 set ship:type to "Ship".
 ShipsInOrbit().
+
+if ship:name:contains("OrbitalLaunchMount") {
+    set ship:name to ("Starship " + ShipType).
+}
 
 print "Starship Interface startup complete!".
 
@@ -6144,9 +6152,9 @@ if addons:tr:available and not startup {
         }
         if ShipType = "Expendable" {
             set cargo1text:text to "Closed".
-            set Watchdog to SHIP:PARTSNAMED("SEP.23.SHIP.NOSE.EXP").
+            set Watchdog to SHIP:PARTSNAMED("SEP.23.SHIP.CARGO.EXP").
             if Watchdog:length = 0 {
-                set Watchdog to SHIP:PARTSNAMED(("SEP.23.SHIP.NOSE.EXP (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
+                set Watchdog to SHIP:PARTSNAMED(("SEP.23.SHIP.CARGO.EXP (" + ship:name + ")"))[0]:getmodule("kOSProcessor").
             }
             else {
                 set Watchdog to Watchdog[0]:getmodule("kOSProcessor").
@@ -6296,15 +6304,7 @@ function Launch {
         rcs off.
         setflaps(0, 0, 0, 20).
         if ship:name:contains("OrbitalLaunchMount") {
-            if ShipType = "Cargo" {
-                set ship:name to "Starship Cargo".
-            }
-            if ShipType = "Crew" {
-                set ship:name to "Starship Crew".
-            }
-            if ShipType = "Tanker" {
-                set ship:name to "Starship Tanker".
-            }
+            set ship:name to ("Starship " + ShipType).
         }
         SaveToSettings("Ship Name", ship:name).
 
