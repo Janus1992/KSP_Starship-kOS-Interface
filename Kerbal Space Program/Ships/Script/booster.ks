@@ -556,7 +556,7 @@ function Boostback {
                     when RadarAlt < BoosterHeight then {
                         set TimeToZero to -verticalspeed / min(maxDecel - 9.81, 5 + 9.81) - 0.5.
                         set ArmIdealSpeed to 30 / TimeToZero.
-                        sendMessage(Vessel(TargetOLM), ("MechazillaArms,8," + ArmIdealSpeed + ",60,false")).
+                        sendMessage(Vessel(TargetOLM), ("MechazillaArms,8," + round(ArmIdealSpeed,3) + ",60,false")).
                     }
                 }
             }
@@ -1003,12 +1003,30 @@ function setLandingZone {
                 }
             }
             else {
-                set landingzone to latlng(-000.0972,-074.5577).
+                if RSS {
+                    set landingzone to latlng(28.6084,-80.59975).
+                }
+                else if KSRSS {
+                    set landingzone to latlng(28.5166,-81.2062).
+                }
+                else {
+                    set landingzone to latlng(-000.0972,-074.5577).
+                }
             }
         }
     }
     else {
-        set landingzone to latlng(-000.0972,-074.5577).
+        if RSS {
+            set landingzone to latlng(28.6084,-80.59975).
+        }
+        else if KSRSS {
+            set landingzone to latlng(28.5166,-81.2062).
+        }
+        else {
+            set landingzone to latlng(-000.0972,-074.5577).
+        }
+        wait 1.
+        setLandingZone().
     }
 }
 

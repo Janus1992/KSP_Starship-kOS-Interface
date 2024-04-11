@@ -8742,7 +8742,7 @@ PART
 		isEnabled = True
 		stagingEnabled = True
 		moduleID = IVASwitch
-		currentSubtype = Dear Moon IVA - Launch Seats
+		currentSubtype = Dear Moon IVA
 		EVENTS
 		{
 		}
@@ -8757,7 +8757,7 @@ PART
 	{
 		name = ModuleIVASwitch
 		isEnabled = True
-		internalName = SEP_CREW_IVA_DM_SEATS
+		internalName = SEP_CREW_IVA_DM
 		stagingEnabled = True
 		EVENTS
 		{

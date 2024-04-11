@@ -1,3 +1,6 @@
+# V2.3.25 (2024-04-11)
+- Booster LZ fix when no connection is available when queried.
+
 # V2.3.24 (2024-04-01)
 - fixed the optional patch for parallax on a stock Kerbin.
 - tiny XyphosAerospace patch fix.

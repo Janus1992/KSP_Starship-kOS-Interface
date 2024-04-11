@@ -6610,7 +6610,7 @@ function Launch {
         }
 
         if Boosterconnected {
-            when apoapsis > BoosterAp - 7500 and ShipType = "Crew" then {
+            when apoapsis > BoosterAp - 7500 * Scale and ShipType = "Crew" then {
                 HUDTEXT("Leave IVA ASAP! (to avoid the stage sep bug)", 10, 2, 20, yellow, false).
             }
             when apoapsis > BoosterAp - 750 and not AbortLaunchInProgress then {
@@ -8945,6 +8945,9 @@ function updatestatusbar {
             }
             else {
                 set status1:style:textcolor to green.
+            }
+            if runningprogram = "Launch" and alt:radar > 500 {
+                set status1:text to status1:text + " (" + round(altitude/1000) + "km)".
             }
         }
         for res in Tank:resources {
