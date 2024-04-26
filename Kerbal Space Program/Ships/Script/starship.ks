@@ -66,6 +66,7 @@ set KSRSS to false.
 set STOCK to false.
 set RESCALE to false.
 set Methane to false.
+set LF to false.
 if bodyexists("Earth") {
     if body("Earth"):radius > 1600000 {
         set RSS to true.
@@ -101,7 +102,11 @@ for res in Core:part:resources {
         set Methane to true.
         set FuelUnitsToKg to 2.09227666666667.
     }
+    if res:name = "LiquidFuel" {
+        set LF to true.
+    }
 }
+
 
 if ship:name:contains("Real Size") and (RSS) {
     set ship:name to ship:name:replace(" Real Size", "").
@@ -12431,6 +12436,26 @@ function VehicleSelfCheck {
         ShowHomePage().
         set message1:text to "<b>You are using the wrong craft!</b>".
         set message2:text to "<b>Use 'Starship..' craft..</b>".
+        set message3:text to "<b>Interface has been disabled!</b>".
+        set message1:style:textcolor to red.
+        set message2:style:textcolor to yellow.
+        set message3:style:textcolor to grey.
+        set textbox:style:bg to "starship_img/starship_main_square_bg".
+        set runningprogram to "Self-Test Failed".
+        updatestatusbar().
+    }
+    if methane and LF {
+        print "Fuel Tanks mismatch detected!".
+        print "Planet Pack: " + planetpack.
+        print "LqdMethane: " + (Methane).
+        print "LF:" + (LF).
+        print "Interface Disabled..".
+        LogToFile("Fuel Tanks mismatch detected! LF and LqdMethane found simultaneously. Interface Disabled..").
+        InhibitButtons(1, 1, 1).
+        ShowButtons(0).
+        ShowHomePage().
+        set message1:text to "<b>LF and Lqd CH4 detected simultaneously!</b>".
+        set message2:text to "<b>Load a fresh craft..</b>".
         set message3:text to "<b>Interface has been disabled!</b>".
         set message1:style:textcolor to red.
         set message2:style:textcolor to yellow.

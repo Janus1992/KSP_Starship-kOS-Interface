@@ -1,3 +1,6 @@
+# V2.3.26 (2024-04-26)
+- Built in a check for simultaneously having LF and Lqdmethane on board and then stopping the interface from working.
+
 # V2.3.25 (2024-04-11)
 - Booster LZ fix when no connection is available when queried.
 - Ship/Tower naming bugs fixed.
