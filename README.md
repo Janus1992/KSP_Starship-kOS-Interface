@@ -18,7 +18,7 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
   - _Kerbal Space Program/Ships/Script_                  (here the kOS scripts are saved)
   - _Kerbal Space Program/Ships/VAB_                     (location of the .craft files)
 
-**Optional:** If you wish to use **_Parallax_** on a **_stock Kerbin_**, move the _SEPkOS patch for stock Kerbin with Parallax.cfg_ to the _StarshipInterface_ folder.
+**Optional:** If you wish to use **_Kopernicus_** on a **_stock Kerbin_** (as required for _Parallax_), move the _SEPkOS patch for stock Kerbin with Kopernicus.cfg_ to the _StarshipInterface_ folder.
 
 
 > [!IMPORTANT]
@@ -47,10 +47,10 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 ### Known Issues:
 - **Tank mismatch error:**
     - This is a feature that stops launches _before they fail_ in-flight, and generally an indication that the fuel tanks are the wrong size and something got messed up along the way.
-    - Kopernicus: If you use stock Kerbin with _Kopernicus_ (it's a requirement for using _Parallax_) installed, please install the optional _SEPkOS patch for stock Kerbin with Parallax.cfg_ patch.
+    - **Kopernicus**: If you use stock Kerbin with _Kopernicus_ (it's a requirement for using _Parallax_) installed, please install the optional _SEPkOS patch for stock Kerbin with Kopernicus.cfg_ patch.
     - Your .craft may also be messed up, so load a fresh one from the stock category in the VAB.
 - **Booster crashes into the Orbital Launch Mount on landing:**
-    - Stock Kerbin: You may need to install the optional _SEPkOS patch for stock Kerbin with Parallax.cfg_ patch.
+    - Stock Kerbin: You may need to install the optional _SEPkOS patch for stock Kerbin with Kopernicus.cfg_ patch.
 - **Booster runs out of fuel on return to the launch site:**
     - Mechjeb Q or G Limiter could cause launch/catch failures.
 - On non-stock Kerbin the tower may be glitching upon booster-catch due to the Kraken.
