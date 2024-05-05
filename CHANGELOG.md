@@ -1,3 +1,7 @@
+# V2.3.27 (2024-05-05)
+- I got married yesterday!
+- Changed the optional patch and it's wording on github. It's actually the combination of Kopernicus and a stock Kerbin that causes some fuel tank issues. Using Parallax is just one situation that requires Kopernicus to be installed on a stock Kerbin.
+
 # V2.3.26 (2024-04-26)
 - Built in a check for simultaneously having LF and Lqdmethane on board and then stopping the interface from working.
 
