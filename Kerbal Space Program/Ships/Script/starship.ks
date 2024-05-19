@@ -361,6 +361,8 @@ set AirlockStatus to false.
 set DockingHatchStatus to false.
 set CargoDoorStatus to false.
 set HotStageTime to time:seconds.
+set LngError to 0.
+set LatError to 0.
 
 
 
@@ -5081,7 +5083,7 @@ set landbutton:ontoggle to {
                                     set message2:text to "<b>Max. Fuel Mass: </b>" + round((FuelVentCutOffValue * FuelUnitsToKg) / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * FuelUnitsToKg) / 1000, 1) + "t)".
                                 }
                                 else {
-                                    set message1:text to "<b>Required Fuel Venting:</b>  " + timeSpanCalculator((LFShip - MaxFuel / 4.6 / 5) / VentRate).
+                                    set message1:text to "<b>Required Fuel Venting:</b>  " + timeSpanCalculator((LFShip - MaxFuel / FuelUnitsToKg) / VentRate).
                                     set message2:text to "<b>Max. Fuel Mass: </b>" + round(MaxFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * FuelUnitsToKg) / 1000, 1) + "t)".
                                 }
                                 set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
@@ -5120,8 +5122,8 @@ set landbutton:ontoggle to {
                                                 set message3:text to "<b>Time Remaining:</b> " + timeSpanCalculator((LFShip - FuelVentCutOffValue) / VentRate).
                                             }
                                             else {
-                                                set message2:text to round((((drainBegin - MaxFuel / 4.6 / 5) - (LFShip - MaxFuel / 4.6 / 5)) / (LFcap - (LFcap - drainBegin) - MaxFuel / 4.6 / 5)) * 100, 1):tostring + "% Complete".
-                                                set message3:text to "<b>Time Remaining:</b> " + timeSpanCalculator((LFShip - MaxFuel / 4.6 / 5) / VentRate).
+                                                set message2:text to round((((drainBegin - MaxFuel / FuelUnitsToKg) - (LFShip - MaxFuel / FuelUnitsToKg)) / (LFcap - (LFcap - drainBegin) - MaxFuel / FuelUnitsToKg)) * 100, 1):tostring + "% Complete".
+                                                set message3:text to "<b>Time Remaining:</b> " + timeSpanCalculator((LFShip - MaxFuel / FuelUnitsToKg) / VentRate).
                                             }
                                             BackGroundUpdate().
                                         }
@@ -5268,7 +5270,9 @@ set landbutton:ontoggle to {
                     ShowHomePage().
                     set drainBegin to LFShip.
                     set landlabel:style:textcolor to white.
-                    set message1:text to "<b>Required Fuel Venting:</b>  " + timeSpanCalculator((LFShip - MaxFuel / 4.6 / 5) / VentRate).
+                    set message1:text to "<b>Required Fuel Venting:</b>  " + timeSpanCalculator((LFShip - MaxFuel / FuelUnitsToKg) / VentRate).
+                    print LFShip - MaxFuel / FuelUnitsToKg.
+                    print (LFShip - MaxFuel / FuelUnitsToKg) / VentRate.
                     set message2:text to "<b>Max. Fuel Mass: </b>" + round(MaxFuel / 1000, 1) + "t  (<b>FOB: </b>" + round((LFShip * FuelUnitsToKg) / 1000, 1) + "t)".
                     set message3:text to "<b>Execute <color=white>or</color> Cancel?</b>".
                     set message3:style:textcolor to cyan.
@@ -5301,8 +5305,8 @@ set landbutton:ontoggle to {
                                     ClearInterfaceAndSteering().
                                     return.
                                 }
-                                set message2:text to round((((drainBegin - MaxFuel / 4.6 / 5) - (LFShip - MaxFuel / 4.6 / 5)) / (LFcap - (LFcap - drainBegin) - MaxFuel / 4.6 / 5)) * 100, 1):tostring + "% Complete".
-                                set message3:text to "<b>Time Remaining:</b> " + timeSpanCalculator((LFShip - MaxFuel / 4.6 / 5) / VentRate).
+                                set message2:text to round((((drainBegin - MaxFuel / FuelUnitsToKg) - (LFShip - MaxFuel / FuelUnitsToKg)) / (LFcap - (LFcap - drainBegin) - MaxFuel / FuelUnitsToKg)) * 100, 1):tostring + "% Complete".
+                                set message3:text to "<b>Time Remaining:</b> " + timeSpanCalculator((LFShip - MaxFuel / FuelUnitsToKg) / VentRate).
                                 BackGroundUpdate().
                             }
                         }
@@ -6910,7 +6914,7 @@ function LaunchThrottle {
 Function LaunchSteering {
     set myAzimuth to LAZcalc(LaunchData).
     if altitude - LaunchElev < 250 {
-        set result to heading(myAzimuth, 88).
+        set result to heading(myAzimuth, 88.5).
     }
     else if Boosterconnected {
         if RSS {
@@ -11339,7 +11343,7 @@ function PerformBurn {
         }
         set burnstarttime to timestamp(time:seconds + BurnTime).
     }
-    if burnstarttime - 60 < timestamp(time:seconds) {
+    if burnstarttime - 5 < timestamp(time:seconds) {
         ShowHomePage().
         LogToFile("Stopping De-Orbit Burn due to wrong orientation").
         set textbox:style:bg to "starship_img/starship_main_square_bg".

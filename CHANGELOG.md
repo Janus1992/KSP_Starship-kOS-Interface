@@ -1,3 +1,6 @@
+# V2.3.28 (2024-05-19)
+- Fuel vent fixes.
+
 # V2.3.27 (2024-05-05)
 - I got married yesterday!
 - Changed the optional patch and it's wording on github. It's actually the combination of Kopernicus and a stock Kerbin that causes some fuel tank issues. Using Parallax is just one situation that requires Kopernicus to be installed on a stock Kerbin.

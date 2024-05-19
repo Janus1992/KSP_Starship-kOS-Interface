@@ -89,17 +89,19 @@ if bodyexists("Earth") {
         set BoosterHeight to 74.9.
         set BoosterRA to 36.24.
         set LiftingPointToGridFinDist to 4.5.
+        set LFBoosterFuelCutOff to 3600.
         if BoosterCore:hasmodule("FARPartModule") {
             set LngCtrlPID to PIDLOOP(0.01, 0.001, 0.001, -15, 15).
+            set LFBoosterFuelCutOff to LFBoosterFuelCutOff + 500.
+            set BoosterGlideDistance to 7500.
         }
         else {
             set LngCtrlPID to PIDLOOP(0.01, 0.001, 0.001, -15, 15).
+            set BoosterGlideDistance to 7500.
         }
         set LatCtrlPID to PIDLOOP(0.01, 0.0000, 0.0000, -2, 2).
-        set LFBoosterFuelCutOff to 3600.
         set LandHeadingVector to heading(270,0):vector.
         set BoosterLandingFactor to 0.8.
-        set BoosterGlideDistance to 7500.
         set BoosterReturnMass to 200.
         set BoosterRaptorThrust to 2363.
         set TowerAlignAltitude to 7500.
@@ -113,17 +115,19 @@ if bodyexists("Earth") {
         set BoosterHeight to 46.8.
         set BoosterRA to 22.65.
         set LiftingPointToGridFinDist to 0.5.
+        set LFBoosterFuelCutOff to 2400.
         if BoosterCore:hasmodule("FARPartModule") {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+            set LFBoosterFuelCutOff to LFBoosterFuelCutOff + 350.
+            set BoosterGlideDistance to 6000.
         }
         else {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+            set BoosterGlideDistance to 6000.
         }
         set LatCtrlPID to PIDLOOP(0.04, 0.0025, 0.0025, -2.5, 2.5).
-        set LFBoosterFuelCutOff to 2400.
         set LandHeadingVector to heading(242,0):vector.
         set BoosterLandingFactor to 1.05.
-        set BoosterGlideDistance to 6000.
         set BoosterReturnMass to 140.
         set BoosterRaptorThrust to 627.
         set TowerAlignAltitude to 4500.
@@ -139,17 +143,19 @@ else {
         set BoosterHeight to 46.8.
         set BoosterRA to 22.65.
         set LiftingPointToGridFinDist to 0.5.
+        set LFBoosterFuelCutOff to 2400.
         if BoosterCore:hasmodule("FARPartModule") {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+            set LFBoosterFuelCutOff to LFBoosterFuelCutOff + 350.
+            set BoosterGlideDistance to 6000.
         }
         else {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+            set BoosterGlideDistance to 6000.
         }
         set LatCtrlPID to PIDLOOP(0.04, 0.0025, 0.0025, -2.5, 2.5).
-        set LFBoosterFuelCutOff to 2400.
         set LandHeadingVector to heading(242,0):vector.
         set BoosterLandingFactor to 0.75.
-        set BoosterGlideDistance to 6000.
         set BoosterReturnMass to 140.
         set BoosterRaptorThrust to 627.
         set TowerAlignAltitude to 6000.
@@ -163,12 +169,19 @@ else {
         set BoosterHeight to 46.8.
         set BoosterRA to 22.65.
         set LiftingPointToGridFinDist to 0.5.
-        set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
-        set LatCtrlPID to PIDLOOP(0.05, 0.0005, 0.0005, -1, 1).
         set LFBoosterFuelCutOff to 2200.
+        if BoosterCore:hasmodule("FARPartModule") {
+            set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+            set LFBoosterFuelCutOff to LFBoosterFuelCutOff + 250.
+            set BoosterGlideDistance to 5000.
+        }
+        else {
+            set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
+            set BoosterGlideDistance to 5000.
+        }
+        set LatCtrlPID to PIDLOOP(0.05, 0.0005, 0.0005, -1, 1).
         set LandHeadingVector to heading(270,0):vector.
         set BoosterLandingFactor to 0.8.
-        set BoosterGlideDistance to 5000.
         set BoosterReturnMass to 138.
         set BoosterRaptorThrust to 667.
         set TowerAlignAltitude to 5500.
@@ -489,7 +502,6 @@ function Boostback {
     }
 
     BoosterCore:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
-    //lock SteeringVector to lookdirup(-velocity:surface * AngleAxis(-LngCtrl, lookdirup(-velocity:surface, up:vector):starvector) * AngleAxis(LatCtrl, up:vector), up:vector * AngleAxis(-2 * LatCtrl, ApproachVector)).
     lock SteeringVector to lookdirup(-velocity:surface * AngleAxis(-LngCtrl, lookdirup(-velocity:surface, up:vector):starvector) * AngleAxis(LatCtrl, up:vector), ApproachVector * AngleAxis(2 * LatCtrl, up:vector)).
     lock steering to SteeringVector.
 
@@ -551,9 +563,7 @@ function Boostback {
             if Vessel(TargetOLM):distance < 2250 {
                 lock RadarAlt to vdot(up:vector, GridFins[0]:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position) - LiftingPointToGridFinDist.
                 when RadarAlt < 5 * BoosterHeight and vxcl(up:vector, landingzone:position - ship:position):mag < 7.5 * Scale or RadarAlt < 2 * BoosterHeight then {
-                    wait 0.001.
                     sendMessage(Vessel(TargetOLM), "MechazillaArms,8,6,60,true").
-                    wait 0.001.
                     sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
                     when RadarAlt < BoosterHeight then {
                         set TimeToZero to -verticalspeed / min(maxDecel - 9.81, 5 + 9.81) - 0.5.
@@ -695,16 +705,12 @@ function Boostback {
             sendMessage(Vessel(TargetOLM), ("MechazillaStabilizers," + maxstabengage)).
 
             when time:seconds > LandingTime + 3.25 * Scale then {
-                wait 0.001.
                 sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.5," + (0.2 * Scale) + ",false")).
                 when time:seconds > LandingTime + 5.75 * Scale then {
-                    wait 0.001.
                     sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.3," + (0.2 * Scale) + ",false")).
                     when time:seconds > LandingTime + 8.25 * Scale then {
-                        wait 0.001.
                         sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.1," + (0.2 * Scale) + ",false")).
                         when kuniverse:canquicksave and time:seconds > LandingTime + 15 * Scale and L["Auto-Stack"] = true and not (RSS) then {
-                            wait 0.001.
                             HUDTEXT("Loading current Booster quicksave for safe docking! (to avoid the Kraken..)", 20, 2, 20, green, false).
                             sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (7 * Scale) + ",0.5")).
                             wait 1.5.
