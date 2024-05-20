@@ -1,3 +1,9 @@
+# V2.3.29 (2024-05-20)
+- Prevent venting of the header tank (due to unforeseen changes in fuel priority).
+- Change heat properties of the OLM to prevent long-term overheating.
+- Launch initial pitch reset to 90.
+- Fixed some craft files fuel priority.
+
 # V2.3.28 (2024-05-19)
 - Fuel vent fixes.
 

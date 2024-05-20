@@ -5101,6 +5101,7 @@ set landbutton:ontoggle to {
                                     rcs on.
                                     set runningprogram to "Venting Fuel..".
                                     HideEngineToggles(1).
+                                    ToggleHeaderTank(0).
                                     Nose:activate.
                                     Tank:activate.
                                     lock throttle to 0.
@@ -5129,6 +5130,7 @@ set landbutton:ontoggle to {
                                         }
                                     }
                                     ShutDownAllEngines().
+                                    ToggleHeaderTank(1).
                                     rcs off.
                                     LogToFile("Stop Venting").
                                     if kuniverse:timewarp:warp > 0 {
@@ -5288,6 +5290,7 @@ set landbutton:ontoggle to {
                         sas on.
                         rcs on.
                         set runningprogram to "Venting Fuel..".
+                        ToggleHeaderTank(0).
                         HideEngineToggles(1).
                         Nose:activate.
                         Tank:activate.
@@ -5311,6 +5314,7 @@ set landbutton:ontoggle to {
                             }
                         }
                         ShutDownAllEngines().
+                        ToggleHeaderTank(1).
                         rcs off.
                         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
                         LogToFile("Stop Venting").
@@ -5735,12 +5739,6 @@ function LandwithoutAtmo {
         set message2:style:textcolor to white.
         set message3:style:textcolor to white.
 
-        if ship:body:atm:sealevelpressure > 0.5 {
-            if defined Nose {
-                Nose:activate.
-            }
-            Tank:activate.
-        }
         ShutDownAllEngines().
         //set TwoVacEngineLanding to false.
         until ShutdownComplete {
@@ -6914,7 +6912,7 @@ function LaunchThrottle {
 Function LaunchSteering {
     set myAzimuth to LAZcalc(LaunchData).
     if altitude - LaunchElev < 250 {
-        set result to heading(myAzimuth, 88.5).
+        set result to heading(myAzimuth, 90).
     }
     else if Boosterconnected {
         if RSS {
@@ -7476,12 +7474,14 @@ function ReEntryAndLand {
         }
 
         if LFShip > max(FuelVentCutOffValue, MaxFuel) and ship:body:atm:sealevelpressure > 0.5 {
+            ToggleHeaderTank(0).
             Nose:activate.
             Tank:activate.
             when LFShip < max(FuelVentCutOffValue, MaxFuel) then {
                 ShutDownAllEngines().
                 wait 0.001.
                 ActivateEngines(0).
+                ToggleHeaderTank(1).
             }
         }
 
@@ -8990,9 +8990,9 @@ function updatestatusbar {
                     set OxShip to OxShip + res:amount.
                     set OxShipCap to OxShipCap + res:capacity.
                 }
-                if not (res:enabled) {
-                    set res:enabled to true.
-                }
+                //if not (res:enabled) {
+                //    set res:enabled to true.
+                //}
             }
             set FuelMass to (Tank:mass - Tank:drymass) + (HeaderTank:mass - HeaderTank:drymass).
         }
@@ -10230,6 +10230,7 @@ function ClearInterfaceAndSteering {
     set LandButtonIsRunning to false.
     set LaunchButtonIsRunning to false.
     wait 0.001.
+    ToggleHeaderTank(1).
     if Boosterconnected {
         HideEngineToggles(1).
     }
@@ -12653,6 +12654,16 @@ function Refuel {
             if BoosterCore:length > 0 {
                 BoosterCore[0]:getmodule("ModuleToggleCrossfeed"):DoAction("disable crossfeed", true).
             }
+        }
+    }
+}
+
+
+function ToggleHeaderTank {
+    parameter bool.
+    if defined HeaderTank {
+        for res in HeaderTank:resources {
+            set res:enabled to bool.
         }
     }
 }

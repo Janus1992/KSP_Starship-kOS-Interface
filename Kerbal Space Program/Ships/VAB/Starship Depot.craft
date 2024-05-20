@@ -28,7 +28,7 @@ PART
 	autostrutMode = Off
 	rigidAttachment = False
 	istg = -1
-	resPri = 0
+	resPri = 10
 	dstg = 0
 	sidx = -1
 	sqor = -1
