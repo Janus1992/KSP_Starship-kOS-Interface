@@ -3,6 +3,7 @@
 - Change heat properties of the OLM to prevent long-term overheating.
 - Launch initial pitch reset to 90.
 - Fixed some craft files fuel priority.
+- Added a check before engaging auto-docking to ask if QD docking mode has been set on both vehicles.
 
 # V2.3.28 (2024-05-19)
 - Fuel vent fixes.

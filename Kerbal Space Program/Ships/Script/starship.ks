@@ -4093,6 +4093,28 @@ function AutoDocking {
         return.
     }
 
+    ShowHomePage().
+    InhibitButtons(0, 0, 0).
+    set AutodockingIsRunning to true.
+    set message1:text to "<b><color=yellow>Are both ships docking mode set to QD?</color></b>".
+    set message2:text to "<b></b>".
+    set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
+    set message3:style:textcolor to cyan.
+    set textbox:style:bg to "starship_img/starship_main_square_bg".
+    set execute:text to "<b>CONFIRM</b>".
+    if confirm() {
+        set message3:style:textcolor to white.
+        set message1:text to "".
+        set message2:text to "".
+        set message3:text to "".
+        set execute:text to "<b>EXECUTE</b>".
+    }
+    else {
+        set AutodockingIsRunning to false.
+        ClearInterfaceAndSteering().
+        return.
+    }
+
     InhibitButtons(1,1,0).
     HideEngineToggles(1).
     ShowButtons(0).
@@ -4100,7 +4122,6 @@ function AutoDocking {
     set launchlabel:style:textcolor to grey.
     set landlabel:style:textcolor to grey.
     set ship:control:translation to v(0, 0, 0).
-    set AutodockingIsRunning to true.
     set message1:style:textcolor to white.
     set message1:style:textcolor to white.
     set message1:style:textcolor to white.
@@ -4266,6 +4287,7 @@ function AutoDockSteering {
         else {
             set ship:control:translation to v(RelVelY, RelVelZ, RelVelX).
         }
+        //set VectorDraw to vecdraw(target:dockingports[0]:nodeposition, -target:dockingports[0]:portfacing:vector, magenta, "", 20, true, 0.005, true, true).
         return lookdirup(target:facing:forevector, -target:dockingports[0]:portfacing:vector).
     }
 }
@@ -4345,7 +4367,7 @@ local cancel is statusbar:addbutton("<b>CANCEL</b>").
 set execute:onclick to {
     LogToFile("Execute button clicked").
     if not InhibitExecute {
-        if LandButtonIsRunning or LaunchButtonIsRunning or PerformingManeuver or ClosingIsRunning {
+        if LandButtonIsRunning or LaunchButtonIsRunning or PerformingManeuver or AutodockingIsRunning or ClosingIsRunning {
             LogToFile("Executing").
             set executeconfirmed to 1.
             set execute:pressed to false.
@@ -4390,7 +4412,7 @@ set launchbutton:ontoggle to {
                     set message3:text to "<b>Start refuelling <color=white>or</color> cancel refuelling?</b>".
                     set message3:style:textcolor to cyan.
                     set execute:text to "<b>REFUEL</b>".
-                    if confirm {
+                    if confirm() {
                         set message3:style:textcolor to white.
                         set message3:text to "".
                         set execute:text to "<b>EXECUTE</b>".
@@ -4492,7 +4514,7 @@ set launchbutton:ontoggle to {
                             set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
                             set message3:style:textcolor to cyan.
                             set execute:text to "<b>CONFIRM</b>".
-                            if confirm {}
+                            if confirm() {}
                             else {
                                 set setting3:text to IntendedInc + "°".
                                 set execute:text to "<b>EXECUTE</b>".
