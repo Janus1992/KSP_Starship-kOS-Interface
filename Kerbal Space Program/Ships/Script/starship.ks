@@ -363,6 +363,7 @@ set CargoDoorStatus to false.
 set HotStageTime to time:seconds.
 set LngError to 0.
 set LatError to 0.
+set LngLatErrorList to list().
 
 
 
