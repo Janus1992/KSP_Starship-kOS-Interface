@@ -12604,7 +12604,7 @@ function CheckFullTanks {
         local cap to 0.
         if not (ShipType = "Depot") and not (ShipType = "Expendable") {
             for res in HeaderTank:resources {
-                if res:amount < res:capacity and not (res:name = "ElectricCharge") and not (res:name = "SolidFuel") {
+                if res:amount < res:capacity - 1 and not (res:name = "ElectricCharge") and not (res:name = "SolidFuel") {
                     set FullTanks to false.
                     set amount to amount + res:amount.
                     set cap to cap + res:capacity.
@@ -12613,7 +12613,7 @@ function CheckFullTanks {
         }
         if ShipType = "Tanker" {
             for res in Nose:resources {
-                if res:amount < res:capacity and not (res:name = "ElectricCharge") and not (res:name = "SolidFuel") {
+                if res:amount < res:capacity - 1 and not (res:name = "ElectricCharge") and not (res:name = "SolidFuel") {
                     set FullTanks to false.
                     set amount to amount + res:amount.
                     set cap to cap + res:capacity.
@@ -12621,7 +12621,7 @@ function CheckFullTanks {
             }
         }
         for res in Tank:resources {
-            if res:amount < res:capacity and not (res:name = "ElectricCharge") and not (res:name = "SolidFuel") {
+            if res:amount < res:capacity - 1 and not (res:name = "ElectricCharge") and not (res:name = "SolidFuel") {
                 set FullTanks to false.
                 set amount to amount + res:amount.
                 set cap to cap + res:capacity.
@@ -12629,7 +12629,7 @@ function CheckFullTanks {
         }
         if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length > 0 {
             for res in BoosterCore[0]:resources {
-                if res:amount < res:capacity and not (res:name = "ElectricCharge") and not (res:name = "SolidFuel") {
+                if res:amount < res:capacity - 1 and not (res:name = "ElectricCharge") and not (res:name = "SolidFuel") {
                     set FullTanks to false.
                     set amount to amount + res:amount.
                     set cap to cap + res:capacity.
@@ -12638,6 +12638,7 @@ function CheckFullTanks {
         }
         set totalfuel to amount.
         set totalcap to cap.
+        //print round(totalfuel) + "/" + round(totalcap).
         return FullTanks.
     }
 }

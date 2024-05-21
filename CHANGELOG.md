@@ -1,3 +1,6 @@
+# V2.3.30 (2024-05-21)
+- Fixed a refueling issue that mainly happens on KSRSS.
+
 # V2.3.29 (2024-05-20)
 - Prevent venting of the header tank (due to unforeseen changes in fuel priority) by disabling the tank momentarily.
 - Change heat properties of the OLM to prevent long-term overheating.
