@@ -126,6 +126,7 @@ print "Fueling: " + NrforDelugeRefill.
 
 clearscreen.
 print "Tower Nominal Operation, awaiting command..".
+RenameOLM().
 
 until False {
     if CORE:MESSAGES:length > 0 or SHIP:MESSAGES:length > 0 {

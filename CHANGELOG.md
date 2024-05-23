@@ -1,5 +1,11 @@
+# V2.3.31 (2024-05-23)
+- Initial FAR support. Needs the very latest SEP dev.
+- Experimental booster catch slower deceleration if it is too far from the tower at a Radar Altitude of less than 300m. May fail, couldn't test yet.
+
 # V2.3.30 (2024-05-21)
 - Fixed a refueling issue that mainly happens on KSRSS.
+- Add invisible clamp to Tower Base.
+- reset pitch trim when cancelling a program.
 
 # V2.3.29 (2024-05-20)
 - Prevent venting of the header tank (due to unforeseen changes in fuel priority) by disabling the tank momentarily.

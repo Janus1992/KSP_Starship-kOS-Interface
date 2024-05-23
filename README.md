@@ -39,18 +39,19 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 - HangarExtender - [github](https://github.com/linuxgurugamer/FShangarExtender/releases)
 ### Incompatible:
 - TweakableEverything
-- Ferram AeroSpace Research (FAR)
 - Realism Overhaul (RO)
-- CKAN
 
 
 ### Known Issues:
+- **Kraken:**
+    - The scripts have been designed for stock Kerbin, and it functions most reliably on a stock install. If you use planet mods that increase the size of the planet (e.g. KSRSS,RSS) the chances of a wobbly tower or other problems are significantly higher.
 - **Tank mismatch error:**
     - This is a feature that stops launches _before they fail_ in-flight, and generally an indication that the fuel tanks are the wrong size and something got messed up along the way.
     - **Kopernicus**: If you use stock Kerbin with _Kopernicus_ (it's a requirement for using _Parallax_) installed, please install the optional _SEPkOS patch for stock Kerbin with Kopernicus.cfg_ patch.
     - Your .craft may also be messed up, so load a fresh one from the stock category in the VAB.
 - **Booster crashes into the Orbital Launch Mount on landing:**
     - Stock Kerbin: You may need to install the optional _SEPkOS patch for stock Kerbin with Kopernicus.cfg_ patch.
+    - FAR may also do this. Tell me all details of your failed attempt, and I'll try to tweak the responsible values.
 - **Booster runs out of fuel on return to the launch site:**
     - Mechjeb Q or G Limiter could cause launch/catch failures.
 - On non-stock Kerbin the tower may be glitching upon booster-catch due to the Kraken.
