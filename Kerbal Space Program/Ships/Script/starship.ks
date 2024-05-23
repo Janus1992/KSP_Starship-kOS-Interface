@@ -112,6 +112,16 @@ if ship:name:contains("Real Size") and (RSS) {
     set ship:name to ship:name:replace(" Real Size", "").
 }
 
+FindParts().
+if Tank:hasmodule("FARPartModule") {
+    set FAR to true.
+    set FARValue to 1.
+}
+else {
+    set FAR to false.
+    set FARValue to 0.
+}
+
 
 
 //------------Configurables-------------//
@@ -570,15 +580,6 @@ function FindParts {
 
 
 SetLoadDistances("default").
-FindParts().
-if Tank:hasmodule("FARPartModule") {
-    set FAR to true.
-    set FARValue to 1.
-}
-else {
-    set FAR to false.
-    set FARValue to 0.
-}
 lock throttle to 0.
 unlock throttle.
 
