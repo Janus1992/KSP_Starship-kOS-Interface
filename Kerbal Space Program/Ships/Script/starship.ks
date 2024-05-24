@@ -108,7 +108,7 @@ for res in Core:part:resources {
 }
 
 
-if ship:name:contains("Real Size") and (RSS) {
+if ship:name:contains(" Real Size") and (RSS) {
     set ship:name to ship:name:replace(" Real Size", "").
 }
 
@@ -259,7 +259,7 @@ set CPUSPEED to 500.  // Defines cpu speed in lines per second.
 set FWDFlapDefault to 60.
 set AFTFlapDefault to 60.
 set rcsRaptorBoundary to 100.  // Defines the custom burn boundary velocity where the ship will burn either RCS below it or Raptors above it.
-set CoGFuelBalancing to false.  // Disable this to stop constant fuel transfers during re-entry.
+set CoGFuelBalancing to true.  // Disable this to stop constant fuel transfers during re-entry.
 set DynamicPitch to true.   // Disable this to stop changing the flap defaults dynamically during re-entry.
 
 
@@ -916,21 +916,7 @@ set g_close:onclick to {
                     set attitudebutton:pressed to true.
                 }
             }
-            if ShipType = "Cargo" {
-                set textbox:style:bg to "starship_img/starship_main_square_bg_cargo".
-            }
-            if ShipType = "Crew" {
-                set textbox:style:bg to "starship_img/starship_main_square_bg_crew".
-            }
-            if ShipType = "Tanker" {
-                set textbox:style:bg to "starship_img/starship_main_square_bg_tanker".
-            }
-            if ShipType = "Expendable" {
-                set textbox:style:bg to "starship_img/starship_main_square_bg_expendable".
-            }
-            if ShipType = "Depot" {
-                set textbox:style:bg to "starship_img/starship_main_square_bg_depot".
-            }
+            SetShipBGPage().
         }
         set ClosingIsRunning to false.
     }
@@ -1116,21 +1102,7 @@ set maneuverbutton:ontoggle to {
 
 
 local textbox is flightstack:addhlayout().
-    if ShipType = "Cargo" {
-        set textbox:style:bg to "starship_img/starship_main_square_bg_cargo".
-    }
-    if ShipType = "Crew" {
-        set textbox:style:bg to "starship_img/starship_main_square_bg_crew".
-    }
-    if ShipType = "Tanker" {
-        set textbox:style:bg to "starship_img/starship_main_square_bg_tanker".
-    }
-    if ShipType = "Expendable" {
-        set textbox:style:bg to "starship_img/starship_main_square_bg_expendable".
-    }
-    if ShipType = "Depot" {
-        set textbox:style:bg to "starship_img/starship_main_square_bg_depot".
-    }
+    SetShipBGPage().
 local textboxvlayout1 is textbox:addvlayout().
     set textboxvlayout1:style:vstretch to true.
 local textboxvlayout2 is textbox:addvlayout().
@@ -6230,6 +6202,7 @@ if addons:tr:available and not startup {
         if ShipType = "Depot" {
             set cargo1text:text to "Closed".
         }
+        SetShipBGPage().
     }
     else {
         print "Upgrade of KSC facilities required!".
@@ -12828,5 +12801,24 @@ function ToggleHeaderTank {
         for res in HeaderTank:resources {
             set res:enabled to bool.
         }
+    }
+}
+
+
+function SetShipBGPage {
+    if ShipType = "Cargo" {
+        set textbox:style:bg to "starship_img/starship_main_square_bg_cargo".
+    }
+    if ShipType = "Crew" {
+        set textbox:style:bg to "starship_img/starship_main_square_bg_crew".
+    }
+    if ShipType = "Tanker" {
+        set textbox:style:bg to "starship_img/starship_main_square_bg_tanker".
+    }
+    if ShipType = "Expendable" {
+        set textbox:style:bg to "starship_img/starship_main_square_bg_expendable".
+    }
+    if ShipType = "Depot" {
+        set textbox:style:bg to "starship_img/starship_main_square_bg_depot".
     }
 }
