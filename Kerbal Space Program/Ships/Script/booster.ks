@@ -52,6 +52,7 @@ for part in ship:parts {
         set BoosterCore to part.
     }
 }
+set HSR to SHIP:PARTSNAMED("SEP.23.BOOSTER.HSR").
 set InitialError to -9999.
 set maxDecel to 0.
 set TotalstopTime to 0.
@@ -112,7 +113,7 @@ if bodyexists("Earth") {
             set BoosterGlideDistance to 7500.
             set LatCtrlPID to PIDLOOP(0.01, 0.0000, 0.0000, -2, 2).
             set BoosterLandingFactor to 0.8.
-            set TowerAlignAltitude to 7500.
+            set TowerAlignAltitude to 6000.
         }
         set LandHeadingVector to heading(270,0):vector.
         set BoosterReturnMass to 200.
@@ -197,7 +198,7 @@ else {
         else {
             set LngCtrlPID to PIDLOOP(0.005, 0.0025, 0.0025, -20, 20).
             set LatCtrlPID to PIDLOOP(0.05, 0.0005, 0.0005, -1, 1).
-            set BoosterGlideDistance to 5000.
+            set BoosterGlideDistance to 3000.
             set InitialOverShoot to 750.
             set TowerAlignAltitude to 5500.
             set BoosterLandingFactor to 0.8.
@@ -296,7 +297,7 @@ function Boostback {
     set CurrentTime to time:seconds.
     set kuniverse:timewarp:warp to 0.
     set impactpos to ship:body:geopositionof(ship:position).
-    BoosterCore:getmodule("ModuleRCSFX"):SetField("thrust limiter", 75).
+    BoosterCore:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
 
     setLandingZone().
     setTargetOLM().
@@ -357,13 +358,17 @@ function Boostback {
         }
     }
 
-    set flipCompleteTime to time:seconds.
+    set flipStartTime to time:seconds.
+
+    when time:seconds > flipStartTime + 4 and verticalspeed > 0 then {
+        BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("previous engine mode", true).
+    }
 
     until vang(vxcl(up:vector, facing:forevector), vxcl(up:vector, -ErrorVector)) < 15 or verticalspeed < 0 {
         SteeringCorrections().
         //set ErrorVectorDraw to vecdraw(v(0,0,0), -40 * ErrorVector:normalized, blue, "ErrorVector", 20, true, 0.005, true, true).
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
-        if ErrorVector = v(0,0,0) and not FailureMessage and time:seconds > flipCompleteTime + 1 {
+        if ErrorVector = v(0,0,0) and not FailureMessage and time:seconds > flipStartTime + 1 {
             HUDTEXT("FAR failure! Please restart KSP..", 30, 2, 22, red, false).
             set FailureMessage to true.
         }
@@ -372,13 +377,9 @@ function Boostback {
         wait 0.1.
     }
 
-
     set steeringmanager:maxstoppingtime to 3.
-    when time:seconds > flipCompleteTime + 5 then {
+    when time:seconds > flipStartTime + 5 then {
         set SteeringManager:ROLLCONTROLANGLERANGE to 10.
-    }
-    if verticalspeed > 0 {
-        BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("previous engine mode", true).
     }
     if RSS {
         lock throttle to min(-(LngError + BoosterGlideDistance - 1000) / 20000 + 0.01, 7.5 * 9.81 / (max(ship:availablethrust, 0.000001) / ship:mass)).
@@ -421,11 +422,11 @@ function Boostback {
     }
 
     set SteeringManager:maxstoppingtime to 5.
-    lock SteeringVector to lookdirup(CurrentVec * AngleAxis(-6 * min(time:seconds - turnTime, 22.5), lookdirup(CurrentVec, up:vector):starvector), -up:vector).
+    lock SteeringVector to lookdirup(CurrentVec * AngleAxis(-5 * min(time:seconds - turnTime, 27), lookdirup(CurrentVec, up:vector):starvector), -up:vector).
     lock steering to SteeringVector.
 
-    if vang(facing:forevector, lookdirup(CurrentVec * AngleAxis(-6 * 22.5, lookdirup(CurrentVec, up:vector):starvector), -up:vector):vector) > 10 {
-        until time:seconds - turnTime > 15 {
+    if vang(facing:forevector, lookdirup(CurrentVec * AngleAxis(-5 * 27, lookdirup(CurrentVec, up:vector):starvector), -up:vector):vector) > 10 {
+        until time:seconds - turnTime > 18 {
             SteeringCorrections().
             SetBoosterActive().
             rcs on.
@@ -433,10 +434,10 @@ function Boostback {
             wait 0.1.
         }
 
-        lock SteeringVector to lookdirup(CurrentVec * AngleAxis(-6 * min(time:seconds - turnTime, 22.5), lookdirup(CurrentVec, up:vector):starvector), up:vector).
+        lock SteeringVector to lookdirup(CurrentVec * AngleAxis(-5 * min(time:seconds - turnTime, 27), lookdirup(CurrentVec, up:vector):starvector), up:vector).
         lock steering to SteeringVector.
 
-        until time:seconds - turnTime > 19 {
+        until time:seconds - turnTime > 22 {
             SteeringCorrections().
             SetBoosterActive().
             rcs on.
@@ -445,7 +446,7 @@ function Boostback {
         }
         set SteeringManager:maxstoppingtime to 2.
 
-        until time:seconds - turnTime > 30 {
+        until time:seconds - turnTime > 35 {
             SteeringCorrections().
             SetBoosterActive().
             rcs on.
@@ -526,7 +527,7 @@ function Boostback {
         wait 0.1.
     }
 
-    BoosterCore:getmodule("ModuleRCSFX"):SetField("thrust limiter", 75).
+    BoosterCore:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
     lock SteeringVector to lookdirup(-velocity:surface * AngleAxis(-LngCtrl, lookdirup(-velocity:surface, up:vector):starvector) * AngleAxis(LatCtrl, up:vector), ApproachVector * AngleAxis(2 * LatCtrl, up:vector)).
     lock steering to SteeringVector.
 
@@ -967,9 +968,11 @@ function sendMessage{
 function SetBoosterActive {
     if KUniverse:activevessel = vessel(ship:name) {}
     else if time:seconds > lastVesselChange + 2 {
-        HUDTEXT("Setting focus to Booster..", 3, 2, 20, yellow, false).
-        KUniverse:forceactive(vessel("Booster")).
-        set lastVesselChange to time:seconds.
+        if not (vessel("Booster"):isdead) {
+            HUDTEXT("Setting focus to Booster..", 3, 2, 20, yellow, false).
+            KUniverse:forceactive(vessel("Booster")).
+            set lastVesselChange to time:seconds.
+        }
     }
 }
 

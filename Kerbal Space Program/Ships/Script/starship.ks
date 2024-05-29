@@ -112,6 +112,7 @@ if ship:name:contains(" Real Size") and (RSS) {
     set ship:name to ship:name:replace(" Real Size", "").
 }
 
+set ShipType to "".
 FindParts().
 if Tank:hasmodule("FARPartModule") {
     set FAR to true.
@@ -447,6 +448,7 @@ function FindParts {
         for x in StartPart:children {
             if x:name:contains("SEP.23.BOOSTER.INTEGRATED") {}
             else if x:name:contains("SEP.23.SHIP.BODY") {}
+            else if x:name:contains("SEP.23.BOOSTER.HSR") {}
             else {
                 if x:name:contains("SEP.23.RAPTOR2.SL.RC") {
                     SLEnginesStep:add(x).
@@ -542,6 +544,7 @@ function FindParts {
         set Boosterconnected to true.
         set BoosterEngines to SHIP:PARTSNAMED("SEP.23.BOOSTER.CLUSTER").
         set GridFins to SHIP:PARTSNAMED("SEP.23.BOOSTER.GRIDFIN").
+        set HSR to SHIP:PARTSNAMED("SEP.23.BOOSTER.HSR").
         set BoosterCore to SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED").
         if BoosterCore:length > 0 {
             set BoosterCore[0]:getmodule("kOSProcessor"):volume:name to "Booster".
@@ -6653,10 +6656,10 @@ function Launch {
                 HUDTEXT("Leave IVA ASAP! (to avoid stuck cameras)", 10, 2, 20, yellow, false).
             }
             when not (RSS) and apoapsis > BoosterAp - 900 and not AbortLaunchInProgress or RSS and apoapsis > BoosterAp - 1500 and not AbortLaunchInProgress then {
-                for x in range(0, BoosterCore[0]:modules:length) {
-                    if BoosterCore[0]:getmodulebyindex(x):hasfield("% rated thrust") {
-                        if BoosterCore[0]:getmodulebyindex(x):hasevent("activate engine") {
-                            BoosterCore[0]:getmodulebyindex(x):DoEvent("activate engine").
+                for x in range(0, HSR[0]:modules:length) {
+                    if HSR[0]:getmodulebyindex(x):hasfield("% rated thrust") {
+                        if HSR[0]:getmodulebyindex(x):hasevent("activate engine") {
+                            HSR[0]:getmodulebyindex(x):DoEvent("activate engine").
                         }
                     }
                 }
@@ -6704,16 +6707,28 @@ function Launch {
                     if NrOfVacEngines = 3 or ShipType = "Depot" {
                         set quickengine2:pressed to true.
                     }
-                    BoosterCore[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
+                    if defined HSR {
+                        HSR[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
+                    }
+                    else {
+                        BoosterCore[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
+                    }
                     Tank:getmodule("ModuleDockingNode"):doaction("undock node", true).
-                    wait 0.1.
+                    wait 0.001.
+                    if Tank:getmodule("ModuleDockingNode"):hasaction("undock node") {
+                        Tank:getmodule("ModuleDockingNode"):doaction("undock node", true).
+                    }
+                    wait until SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):LENGTH = 0.
+                    set ship:name to ("Starship " + ShipType).
                     set Boosterconnected to false.
                     set CargoAfterSeparation to CargoMass.
                     InhibitButtons(1, 1, 1).
                     set cancel:text to "<b>CANCEL</b>".
                     rcs on.
                     lock steering to LaunchSteering().
-                    set Booster to Vessel("Booster").
+                    if not (Vessel("Booster"):isdead) {
+                        set Booster to Vessel("Booster").
+                    }
                     set kuniverse:activevessel to vessel(ship:name).
                     HideEngineToggles(1).
                     if Tank:getmodule("ModuleSepPartSwitchAction"):getfield("current docking system") = "BTB" {
@@ -6753,7 +6768,9 @@ function Launch {
         }
 
         when StageSepComplete then {
-            lock throttle to LaunchThrottle().
+            when time:seconds > HotStageTime + 2 then {
+                lock throttle to LaunchThrottle().
+            }
             when time:seconds > HotStageTime + 5 then {
                 for eng in SLEngines {
                     eng:getmodule("ModuleSEPRaptor"):doaction("disable actuate out", true).
@@ -7248,7 +7265,8 @@ Function AbortLaunch {
             BoosterEngines[0]:shutdown.
             wait 0.1.
             //stage.
-            BoosterCore[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
+            //BoosterCore[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
+            HSR[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
             //wait 0.1.
             //if stage:number = 2 {
             //    stage.
@@ -12765,6 +12783,7 @@ function Refuel {
             set tower11button4:text to "<b><color=cyan>FUEL</color></b>".
             if BoosterCore:length > 0 {
                 BoosterCore[0]:getmodule("ModuleToggleCrossfeed"):DoAction("enable crossfeed", true).
+                HSR[0]:getmodule("ModuleToggleCrossfeed"):DoAction("enable crossfeed", true).
             }
             Until CheckFullTanks() or not (Refueling) {
                 set message1:text to "<b>Loading LqdMethane and Lqd Oxygen..</b>".
@@ -12778,6 +12797,7 @@ function Refuel {
             set tower11button4:text to "<b>FUEL</b>".
             if BoosterCore:length > 0 {
                 BoosterCore[0]:getmodule("ModuleToggleCrossfeed"):DoAction("disable crossfeed", true).
+                HSR[0]:getmodule("ModuleToggleCrossfeed"):DoAction("disable crossfeed", true).
             }
         }
         else {
@@ -12789,6 +12809,7 @@ function Refuel {
             set tower11button4:text to "<b>FUEL</b>".
             if BoosterCore:length > 0 {
                 BoosterCore[0]:getmodule("ModuleToggleCrossfeed"):DoAction("disable crossfeed", true).
+                HSR[0]:getmodule("ModuleToggleCrossfeed"):DoAction("disable crossfeed", true).
             }
         }
     }

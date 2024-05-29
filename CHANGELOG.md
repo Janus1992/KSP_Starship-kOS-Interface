@@ -1,3 +1,7 @@
+# V2.3.32 (2024-05-24)
+- FAR support broken.
+- new HSR part has been integrated.
+
 # V2.3.31 (2024-05-23)
 - Initial FAR support. Needs the very latest SEP dev.
 - Experimental booster catch slower deceleration if it is too far from the tower at a Radar Altitude of less than 300m. May fail, couldn't test yet.
