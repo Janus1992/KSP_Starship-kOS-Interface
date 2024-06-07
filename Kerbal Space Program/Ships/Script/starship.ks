@@ -185,8 +185,8 @@ else if KSRSS { // 2.5-2.7x scaled Kerbin
         set FuelVentCutOffValue to 931.5.
     }
     else {
-        set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
-        set DefaultLaunchSite to "28.5166,-81.2062".
+        set LaunchSites to lexicon("KSC", "28.50895,-81.20396").
+        set DefaultLaunchSite to "28.50895,-81.20396".
         set FuelVentCutOffValue to 931.5.
     }
     set FuelBalanceSpeed to 40.
@@ -277,7 +277,6 @@ set AbortLaunchInProgress to false.
 set AbortLaunchComplete to false.
 set LaunchComplete to false.
 set LandSomewhereElse to false.
-set MechaZillaExists to false.
 set currentdeltav to 0.
 set ShipMass to 0.
 set FuelMass to 1.
@@ -362,7 +361,6 @@ set LandingFacingVector to v(0, 0, 0).
 set MaxAccel to 10.
 set Launch180 to false.
 set ShipWasDocked to false.
-set FlipAltitude to 750.
 set TargetOLM to false.
 set StageSepComplete to false.
 set FLflap to false.
@@ -1349,10 +1347,10 @@ set TargetLZPicker:onchange to {
                 }
             }
             else {
-                set setting1:text to "28.5166,-81.2062".
-                set landingzone to latlng(28.5166,-81.2062).
+                set setting1:text to "28.50895,-81.20396".
+                set landingzone to latlng(28.50895,-81.20396).
                 if homeconnection:isconnected {
-                    SaveToSettings("Landing Coordinates", "28.5166,-81.2062").
+                    SaveToSettings("Landing Coordinates", "28.50895,-81.20396").
                 }
             }
         }
@@ -6256,7 +6254,7 @@ if addons:tr:available and not startup {
     }
     if SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 and alt:radar < 1000 and ship:mass - ship:drymass < 5 and quicksetting1:pressed and not (RSS) {
         LandAtOLM().
-        if not (TargetOLM = "false") {
+        if not (TargetOLM = "False") {
             if Vessel(TargetOLM):PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length > 0 {
                 if defined watchdog {
                     Watchdog:deactivate().
@@ -7468,6 +7466,7 @@ function ReEntryAndLand {
         set LandSomewhereElse to false.
         set DescentAngles to list(aoa, aoa, aoa, aoa).
         SetPlanetData().
+        LandAtOLM().
         set addons:tr:descentmodes to list(true, true, true, true).
         set addons:tr:descentgrades to list(false, false, false, false).
         LogToFile("Re-Entry & Landing Program Started").
@@ -7607,11 +7606,10 @@ function ReEntryAndLand {
                     }
                     if ship:body:atm:sealevelpressure > 0.5 {
                         setflaps(FWDFlapDefault, AFTFlapDefault, 1, 5).
-                        set FlipAltitude to 750.
                         if RSS {
                             set PitchPID:kp to 0.05.
-                            set PitchPID:ki to 0.0025.
-                            set PitchPID:kd to 0.0025.
+                            set PitchPID:ki to 0.025.
+                            set PitchPID:kd to 0.01.
                             set PitchPID:minoutput to -15.
                             set PitchPID:maxoutput to 0.
                             set YawPID:kp to 0.025.
@@ -7622,8 +7620,8 @@ function ReEntryAndLand {
                         }
                         else if KSRSS {
                             set PitchPID:kp to 0.125.
-                            set PitchPID:ki to 0.0025.
-                            set PitchPID:kd to 0.0025.
+                            set PitchPID:ki to 0.075.
+                            set PitchPID:kd to 0.035.
                             set PitchPID:minoutput to -15.
                             set PitchPID:maxoutput to 0.
                             set YawPID:kp to 0.1.
@@ -7634,8 +7632,8 @@ function ReEntryAndLand {
                         }
                         else {
                             set PitchPID:kp to 0.175.
-                            set PitchPID:ki to 0.0025.
-                            set PitchPID:kd to 0.0025.
+                            set PitchPID:ki to 0.1.
+                            set PitchPID:kd to 0.05.
                             set PitchPID:minoutput to -15.
                             set PitchPID:maxoutput to 0.
                             set YawPID:kp to 0.1.
@@ -7740,9 +7738,10 @@ function ReEntrySteering {
         clearscreen.
         //set ReEntryVector to vecdraw(v(0, 0, 0), result:vector, green, "Re-Entry Vector", 35, true, 0.005, true, true).
         print "LngError: " + round(LngLatErrorList[0]).
+        print "LatError: " + round(LngLatErrorList[1]).
         print "Desired AoA: " + round(DesiredAoA,2).
-        //print "pitchctrl: " + round(pitchctrl,2).
-        print "Yawctrl: " + round(yawctrl, 2).
+        print "PitchCtrl: " + round(pitchctrl,2).
+        print "YawCtrl: " + round(yawctrl, 2).
 
         set TimeSinceLastSteering to time:seconds.
         set SteeringIsRunning to false.
@@ -7993,12 +7992,12 @@ function ReEntryData {
             if ship:body:atm:sealevelpressure > 0.5 {
                 ShutDownAllEngines().
                 if RSS {
-                    set ThrottleMin to 0.25.
-                    set LandingFlipTime to 6.
+                    set ThrottleMin to 0.33.
+                    set LandingFlipTime to 5.
                 }
                 else {
-                    set ThrottleMin to 0.25.
-                    set LandingFlipTime to 6.
+                    set ThrottleMin to 0.33.
+                    set LandingFlipTime to 4.
                 }
                 lock throttle to ThrottleMin.
                 set FlipAngleFactor to 0.25.
@@ -8007,7 +8006,7 @@ function ReEntryData {
                 for eng in VACEngines {
                     eng:shutdown.
                 }
-                set ThrottleMin to 0.25.
+                set ThrottleMin to 0.33.
                 set LandingFlipTime to FlipTime.
                 lock throttle to ThrottleMin.
                 set FlipAngleFactor to 0.15.
@@ -8032,7 +8031,6 @@ function ReEntryData {
             if ship:body:atm:sealevelpressure > 0.5 {
                 if abs(LngLatErrorList[0]) > 65 + (25 * Scale * FARvalue) or abs(LngLatErrorList[1]) > 25 {
                     set LandSomewhereElse to true.
-                    set MechaZillaExists to false.
                     SetRadarAltitude().
                     LogToFile("Landing parameters out of bounds (" + (LngLatErrorList[0] + 65 + (30 * Scale * FARvalue)) + "," + (LngLatErrorList[0] - 65 + (30 * Scale * FARvalue)) + "," + (LngLatErrorList[1] + 25) + "," + (LngLatErrorList[1] - 25) + "), Landing Off-Target").
                     LogToFile("Lng Error: " + LngError + "    LatError: " + LatError).
@@ -8059,7 +8057,7 @@ function ReEntryData {
             when vang(-1 * velocity:surface, ship:facing:forevector) < 0.6 * FlipAngle then {
                 set config:ipu to CPUSPEED.
                 setflaps(60, 60, 1, 0).
-                if MechaZillaExists and not (TargetOLM = "false") and not (LandSomewhereElse) {
+                if not (TargetOLM = "false") and not (LandSomewhereElse) {
                     lock RadarAlt to vdot(up:vector, FLflap:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position) - 8.25 * Scale.
                 }
 
@@ -8136,7 +8134,7 @@ function ReEntryData {
                     LogToFile("Reducing Sensitivity for final descent").
                 }
                 when verticalspeed > -10 then {
-                    if MechaZillaExists and TargetOLM and not (LandSomewhereElse) {
+                    if TargetOLM and not (LandSomewhereElse) {
                         setflaps(0, 85, 1, 0).
                     }
                     else {
@@ -8150,7 +8148,6 @@ function ReEntryData {
                 if ship:body:atm:sealevelpressure > 0.5 {
                     if ErrorVector:MAG > (Scale * 1.5 * RadarAlt + 25) and RadarAlt > 5 and not (LandSomewhereElse) or RadarAlt < -1 and not (LandSomewhereElse) {
                         set LandSomewhereElse to true.
-                        set MechaZillaExists to false.
                         SetRadarAltitude().
                         LogToFile("Uh oh... Landing Off-Target").
                     }
@@ -8158,7 +8155,6 @@ function ReEntryData {
                 else {
                     if ErrorVector:MAG > 2 * RadarAlt + 10 and not LandSomewhereElse and RadarAlt < 250 {
                         set LandSomewhereElse to true.
-                        set MechaZillaExists to false.
                         LogToFile("Uh oh... Landing Off-Target").
                     }
                 }
@@ -8166,7 +8162,7 @@ function ReEntryData {
                 BackGroundUpdate().
                 wait 0.01.
             }
-            if (MechaZillaExists) and not (TargetOLM = "false") {
+            if not (TargetOLM = "false") {
                 print "capture at: " + RadarAlt + "m RA".
                 LogToFile("Capture at: " + round(RadarAlt) + "m Radar Altitude").
             }
@@ -8303,7 +8299,7 @@ function LandingVector {
         set message3:text to "<b>Radar Altimeter:</b>        " + round(RadarAlt) + "m".
     }
 
-    if MechaZillaExists and TargetOLM {
+    if TargetOLM {
         if RadarAlt < 4 * ShipHeight and RadarAlt > 3.5 * ShipHeight {
             sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,60,true").
             sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
@@ -8316,7 +8312,7 @@ function LandingVector {
         }
     }
 
-    if MechaZillaExists and TargetOLM and verticalspeed > -25 {
+    if TargetOLM and verticalspeed > -25 {
         return lookDirUp(result, LandRollVector).
     }
     else {
@@ -8334,7 +8330,7 @@ function LandingVector {
             set ShutdownComplete to false.
             set ShutdownProcedureStart to time:seconds.
             LogToFile("Vehicle Touchdown, performing self-check").
-            if not LandSomewhereElse and not MechaZillaExists {
+            if not LandSomewhereElse and not (TargetOLM) {
                 set message1:text to "<b><color=green>Successful Landing Confirmed!</color></b> (" + round((SLEngines[0]:position - landingzone:position):mag - 0.5) + "m)".
             }
             else if LandSomewhereElse {
@@ -8369,7 +8365,7 @@ function LandingVector {
                 Tank:getmodule("ModuleLevelingBase"):doaction("auto-level", true).
             }
 
-            if MechaZillaExists and TargetOLM {
+            if TargetOLM {
                 sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,1," + (0.7 * Scale) + ",false")).
                 sendMessage(Vessel(TargetOLM), ("MechazillaStabilizers," + maxstabengage)).
                 when time:seconds > ShutdownProcedureStart + 3.25 * Scale then {
@@ -8395,7 +8391,7 @@ function LandingVector {
             unlock throttle.
             set ship:control:neutralize to true.
             unlock steering.
-            if MechaZillaExists and TargetOLM {
+            if TargetOLM {
                 setflaps(0, 0, 0, 0).
             }
             else {
@@ -8407,7 +8403,7 @@ function LandingVector {
             set message1:text to "<b><color=green>Vehicle Self-Check OK!</color></b>".
             set message1:style:textcolor to white.
 
-            //if MechaZillaExists and TargetOLM {
+            //if TargetOLM {
             //    set message2:text to "<b><color=green>Ship has been secured by MechaZilla!</color></b>".
             //    set message3:text to "<b>Crane Operation in progress..</b>".
             //    set ShipDocked to false.
@@ -8440,7 +8436,7 @@ function LandingVector {
             //if defined watchdog {
             //    Watchdog:deactivate().
             //}
-            if MechaZillaExists and TargetOLM {
+            if TargetOLM and not (RSS) {
                 HUDTEXT("Loading current Ship quicksave for safe docking! (Avoid Kraken..)", 10, 2, 20, green, false).
                 sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (1 * Scale) + ",0.5")).
                 wait 2.5.
@@ -8479,6 +8475,9 @@ function LngLatError {
                 }
                 else if periapsis > 0 and vang(positionat(ship, time:seconds + eta:periapsis) - ship:body:position, ApproachUPVector) > 90 {
                     set ApproachVector to -vxcl(ApproachUPVector, velocityat(ship, time:seconds + eta:periapsis):surface):normalized.
+                }
+                else if RadarAlt < 9900 {
+                    set ApproachVector to vxcl(up:vector, facing:forevector):normalized.
                 }
                 else {
                     set ApproachVector to vxcl(ApproachUPVector, velocityat(ship, time:seconds + addons:tr:TIMETILLIMPACT - 120):surface):normalized.
@@ -8520,26 +8519,26 @@ function LngLatError {
             }
 
             if ship:body:atm:sealevelpressure > 0.5 {
-                if MechaZillaExists and TargetOLM {
+                if TargetOLM {
                     if STOCK {
-                        set LngLatOffset to 160.
+                        set LngLatOffset to 65.
                     }
                     else if KSRSS {
-                        set LngLatOffset to 70.
+                        set LngLatOffset to 40.
                     }
                     else {
-                        set LngLatOffset to 65.
+                        set LngLatOffset to -25.
                     }
                 }
                 else {
                     if STOCK {
-                        set LngLatOffset to 115.
+                        set LngLatOffset to 40.
                     }
                     else if KSRSS {
-                        set LngLatOffset to 25.
+                        set LngLatOffset to 10.
                     }
                     else {
-                        set LngLatOffset to 20.
+                        set LngLatOffset to -80.
                     }
                 }
                 if FAR {
@@ -10873,7 +10872,7 @@ function updateCargoPage {
 function updateTower {
     if not towerPageIsRunning {
         set towerPageIsRunning to true.
-        if TargetOLM or OnOrbitalMount and MechaZillaExists {
+        if TargetOLM or OnOrbitalMount {
             if OnOrbitalMount {
                 if homeconnection:isconnected {
                     if exists("0:/settings.json") {
@@ -10945,7 +10944,7 @@ function SetRadarAltitude {
             set ShipBottomRadarHeight to 9.15.
         }
     }
-    if MechaZillaExists and TargetOLM {
+    if TargetOLM {
         if RSS {
             lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ArmsHeight + (39.5167 - ShipBottomRadarHeight) - 0.1.
         }
@@ -11158,52 +11157,18 @@ function CheckSlope {
 function LandAtOLM {
     if not (LandAtOLMisrunning) {
         set LandAtOLMisrunning to true.
+        set TargetOLM to false.
+        set FlipAltitude to 500.
         list targets in shiplist.
         if shiplist:length > 0 {
-            for var in LaunchSites:keys {
-                if RSS {
-                    if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 3) = round(landingzone:lat, 3) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 3) = round(landingzone:lng, 3) {
-                        set TargetOLM to var + " OrbitalLaunchMount".
-                        LogToFile(("TargetOLM set to " + TargetOLM)).
-                        break.
-                    }
-                }
-                else {
-                    if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(landingzone:lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(landingzone:lng, 2) {
-                        set TargetOLM to var + " OrbitalLaunchMount".
-                        LogToFile(("TargetOLM set to " + TargetOLM)).
-                        break.
-                    }
-                }
-                list targets in OLMTargets.
-                if OLMTargets:length > 0 {
-                    for x in OLMTargets {
-                        if x:name:contains("OrbitalLaunchMount") {
-                            if round(body:geopositionof(x:position):lat, 2) = round(landingzone:lat, 2) and round(body:geopositionof(x:position):lng, 2) = round(landingzone:lng, 2) {
-                                set TargetOLM to x:name.
-                                LogToFile(("TargetOLM set to " + TargetOLM)).
-                                break.
-                            }
-                        }
-                    }
-                }
-                else {
-                    set TargetOLM to false.
-                }
-            }
             for x in shiplist {
-                set MechaZillaExists to false.
-                if x:name = TargetOLM {
-                    set MechaZillaExists to true.
-                    print "Orbital Launch Mount recognized and targeted".
-                    LogToFile("Orbital Launch Mount recognized and targeted").
-                    if FlipAltitude = 750 {
-                        set FlipAltitude to FlipAltitude + ArmsHeight.
-                    }
-                    SetRadarAltitude().
-                    if alt:radar > 1000 {
-                        when RadarAlt < 2000 then {
-                            if not (TargetOLM = "false") {
+                if x:name:contains("OrbitalLaunchMount") {
+                    if round(body:geopositionof(x:position):lat, 2) = round(landingzone:lat, 2) and round(body:geopositionof(x:position):lng, 2) = round(landingzone:lng, 2) {
+                        set TargetOLM to x:name.
+                        LogToFile(("TargetOLM set to " + TargetOLM)).
+                        SetRadarAltitude().
+                        if alt:radar > 1000 {
+                            when RadarAlt < 2000 then {
                                 sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
                                 sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,97,true").
                                 sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,false").
@@ -11225,15 +11190,10 @@ function LandAtOLM {
                                     }
                                 }
                             }
-                            else {
-                                SetRadarAltitude().
-                                set FlipAltitude to 750.
-                                LogToFile("TargetOLM was false").
-                            }
                         }
+                        return true.
+                        break.
                     }
-                    return true.
-                    break.
                 }
             }
             return false.

@@ -1,3 +1,8 @@
+# V2.3.33 (2024-06-07)
+- Re-entry final steering sharpened.
+- Landing flip changes.
+- KSRSS LZ changed.
+
 # V2.3.32 (2024-05-24)
 - FAR support broken.
 - new HSR part has been integrated.

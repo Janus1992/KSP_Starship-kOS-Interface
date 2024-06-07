@@ -102,15 +102,15 @@ if bodyexists("Earth") {
         set LiftingPointToGridFinDist to 4.5.
         set LFBoosterFuelCutOff to 3600.
         if FAR {
-            set LngCtrlPID to PIDLOOP(0.01, 0.001, 0.001, -15, 15).
-            set BoosterGlideDistance to 5500.
+            set LngCtrlPID to PIDLOOP(0.01, 0.001, 0.001, -10, 10).
+            set BoosterGlideDistance to 3500.
             set LatCtrlPID to PIDLOOP(0.075, 0.0001, 0.0001, -2, 2).
             set BoosterLandingFactor to 0.75.
             set TowerAlignAltitude to 6000.
         }
         else {
-            set LngCtrlPID to PIDLOOP(0.01, 0.001, 0.001, -15, 15).
-            set BoosterGlideDistance to 7500.
+            set LngCtrlPID to PIDLOOP(0.01, 0.001, 0.001, -10, 10).
+            set BoosterGlideDistance to 3500.
             set LatCtrlPID to PIDLOOP(0.01, 0.0000, 0.0000, -2, 2).
             set BoosterLandingFactor to 0.8.
             set TowerAlignAltitude to 6000.
@@ -124,7 +124,7 @@ if bodyexists("Earth") {
     else {
         set KSRSS to true.
         set Planet to "Earth".
-        set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
+        set LaunchSites to lexicon("KSC", "28.50895,-81.20396").
         set BoosterHeight to 46.8.
         set BoosterRA to 22.65.
         set LiftingPointToGridFinDist to 0.5.
@@ -152,7 +152,7 @@ else {
     if body("Kerbin"):radius > 1000000 {
         set KSRSS to true.
         set Planet to "Kerbin".
-        set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
+        set LaunchSites to lexicon("KSC", "28.50895,-81.20396").
         if body("Kerbin"):radius < 1500001 {
             set RESCALE to true.
             set LaunchSites to lexicon("KSC", "-0.0970,-74.5833").
@@ -1072,7 +1072,12 @@ function setLandingZone {
                     set landingzone to latlng(28.6084,-80.59975).
                 }
                 else if KSRSS {
-                    set landingzone to latlng(28.5166,-81.2062).
+                    if Rescale {
+                        set landingzone to latlng(-0.0970,-74.5833).
+                    }
+                    else {
+                        set landingzone to latlng(28.50895,-81.20396).
+                    }
                 }
                 else {
                     set landingzone to latlng(-000.0972,-074.5577).
@@ -1085,7 +1090,12 @@ function setLandingZone {
             set landingzone to latlng(28.6084,-80.59975).
         }
         else if KSRSS {
-            set landingzone to latlng(28.5166,-81.2062).
+            if Rescale {
+                set landingzone to latlng(-0.0970,-74.5833).
+            }
+            else {
+                set landingzone to latlng(28.50895,-81.20396).
+            }
         }
         else {
             set landingzone to latlng(-000.0972,-074.5577).

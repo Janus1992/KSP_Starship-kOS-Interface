@@ -8,7 +8,7 @@ if bodyexists("Earth") {
     }
     else {
         set KSRSS to true.
-        set LaunchSites to lexicon("KSC", "28.5166,-81.2062").
+        set LaunchSites to lexicon("KSC", "28.50895,-81.20396").
     }
 }
 else {
