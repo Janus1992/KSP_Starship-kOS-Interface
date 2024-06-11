@@ -1,3 +1,10 @@
+# V2.3.34 (2024-06-11)
+- IFT-4 improvements:
+    - Use of SL engines for Ships final orbit completion.
+    - Use of 3 center engines for the end of Boosters boostback burn.
+    - Less gliding of the booster.
+    - Way more aggressive booster landing burn.
+
 # V2.3.33 (2024-06-07)
 - Re-entry final steering sharpened.
 - Landing flip changes.

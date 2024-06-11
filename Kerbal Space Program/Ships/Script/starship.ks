@@ -163,6 +163,7 @@ if RSS {    // Real Solar System
     set Scale to 1.6.
     if FAR {
         set TRJCorrection to -7. // The error between desired AoA and what AoA actually needs to be flown to follow this path.
+        set aoa to aoa - TRJCorrection.
     }
     else {
         set TRJCorrection to 0.
@@ -209,6 +210,7 @@ else if KSRSS { // 2.5-2.7x scaled Kerbin
     set Scale to 1.
     if FAR {
         set TRJCorrection to -15. // The error between desired AoA and what AoA actually needs to be flown to follow this path.
+        set aoa to aoa - TRJCorrection.
     }
     else {
         set TRJCorrection to 0.
@@ -248,6 +250,7 @@ else {  // Stock Kerbin
     set Scale to 1.
     if FAR {
         set TRJCorrection to -15. // The error between desired AoA and what AoA actually needs to be flown to follow this path.
+        set aoa to aoa - TRJCorrection.
     }
     else {
         set TRJCorrection to 0.
@@ -261,7 +264,7 @@ set FWDFlapDefault to 60.
 set AFTFlapDefault to 60.
 set rcsRaptorBoundary to 100.  // Defines the custom burn boundary velocity where the ship will burn either RCS below it or Raptors above it.
 set CoGFuelBalancing to true.  // Disable this to stop constant fuel transfers during re-entry.
-set DynamicPitch to true.   // Disable this to stop changing the flap defaults dynamically during re-entry.
+set DynamicPitch to true.   // Change the flap defaults dynamically during re-entry.
 
 
 
@@ -6367,39 +6370,27 @@ function Launch {
         if RSS {
             set LaunchElev to altitude - 108.384.
             if ShipType = "Depot" {
-                set BoosterAp to 132000 + (cos(targetincl) * 3000).
+                set BoosterAp to 127000 + (cos(targetincl) * 3000).
                 set turnAltitude to 750.
             }
             else {
-                set BoosterAp to 140500 + (cos(targetincl) * 3000).
+                set BoosterAp to 135000 + (cos(targetincl) * 3000).
                 set turnAltitude to 250.
             }
-            set PitchIncrement to -0.5 + 2.6 * CargoMass / MaxCargoToOrbit.
+            set PitchIncrement to 0 + 2.6 * CargoMass / MaxCargoToOrbit.
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.01, 0, 0, -30, PitchIncrement).
             set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 60.
             set BoosterThrottleDownAlt to 1500.
         }
         else if KSRSS {
             set LaunchElev to altitude - 67.74.
-            if RESCALE {
-                if ShipType = "Depot" {
-                    set BoosterAp to 81500 + (cos(targetincl) * 1500).
-                    set TimeFromLaunchToOrbit to 360.
-                }
-                else {
-                    set BoosterAp to 81500 + (cos(targetincl) * 1500).
-                    set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 10.
-                }
+            if ShipType = "Depot" {
+                set BoosterAp to 78000 + (cos(targetincl) * 1500).
+                set TimeFromLaunchToOrbit to 360.
             }
             else {
-                if ShipType = "Depot" {
-                    set BoosterAp to 83500 + (cos(targetincl) * 1500).
-                    set TimeFromLaunchToOrbit to 360.
-                }
-                else {
-                    set BoosterAp to 83500 + (cos(targetincl) * 1500). //83500
-                    set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 10.
-                }
+                set BoosterAp to 78000 + (cos(targetincl) * 1500).
+                set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 10.
             }
             set PitchIncrement to 0 + 2.5 * CargoMass / MaxCargoToOrbit.
             set OrbitBurnPitchCorrectionPID to PIDLOOP(0.025, 0, 0, -30, PitchIncrement).
@@ -6408,12 +6399,12 @@ function Launch {
         else {
             set LaunchElev to altitude - 67.74.
             if ShipType = "Depot" {
-                set BoosterAp to 40000 + (cos(targetincl) * 1000). //38500
+                set BoosterAp to 40000 + (cos(targetincl) * 1000).
                 set TimeFromLaunchToOrbit to 285.
                 set PitchIncrement to 5.
             }
             else {
-                set BoosterAp to 48500 + (cos(targetincl) * 1000). //51000
+                set BoosterAp to 48500 + (cos(targetincl) * 1000).
                 set TimeFromLaunchToOrbit to LaunchTimeSpanInSeconds - 10.
                 set PitchIncrement to 0.
             }
@@ -6694,17 +6685,10 @@ function Launch {
                     }
                     BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
                     if not cancelconfirmed {
-                        if not (Launch180) {
-                            sendMessage(Processor(volume("Booster")), "Boostback, 0 Roll").
-                        }
-                        else {
-                            sendMessage(Processor(volume("Booster")), "Boostback, 180 Roll").
-                        }
+                        sendMessage(Processor(volume("Booster")), "Boostback").
                     }
+                    set quickengine2:pressed to true.
                     set quickengine3:pressed to true.
-                    if NrOfVacEngines = 3 or ShipType = "Depot" {
-                        set quickengine2:pressed to true.
-                    }
                     if defined HSR {
                         HSR[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
                     }
@@ -6753,9 +6737,7 @@ function Launch {
         else {
             set StageSepComplete to true.
             rcs on.
-            if NrOfVacEngines = 3 or ShipType = "Depot" {
-                set quickengine2:pressed to true.
-            }
+            set quickengine2:pressed to true.
             set quickengine3:pressed to true.
             if BoosterExists() {
                 set Booster to Vessel("Booster").
@@ -6773,6 +6755,9 @@ function Launch {
                 for eng in SLEngines {
                     eng:getmodule("ModuleSEPRaptor"):doaction("disable actuate out", true).
                 }
+            }
+            when deltav < 50 and deltav > 0 then {
+                set quickengine3:pressed to false.
             }
             if ShipType = "Depot" {
                 set steeringmanager:yawtorquefactor to 0.1.
@@ -6796,9 +6781,9 @@ function Launch {
             }
             else if KSRSS {
                 when DesiredAccel / MaxAccel < 0.6 and altitude > 80000 or apoapsis > targetap then {
-                    if NrOfVacEngines = 6 or ShipType = "Depot" or verticalspeed < 0 {
-                        set quickengine2:pressed to false.
-                    }
+                    //if NrOfVacEngines = 6 or ShipType = "Depot" or verticalspeed < 0 {
+                    //    set quickengine2:pressed to false.
+                    //}
                     when altitude > targetap - 100 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 5 or deltav < 300 then {
                         set OrbitBurnPitchCorrectionPID to PIDLOOP(1.5, 0, 0, -10, 17.5).
                         set MaintainVS to true.
@@ -6807,9 +6792,9 @@ function Launch {
             }
             else {
                 when apoapsis > targetap - 10000 and time:seconds > HotStageTime + 15 or verticalspeed < 0 then {
-                    if NrOfVacEngines = 6 or ShipType = "Depot" {
-                        set quickengine2:pressed to false.
-                    }
+                    //if NrOfVacEngines = 6 or ShipType = "Depot" {
+                    //    set quickengine2:pressed to false.
+                    //}
                     when altitude > targetap - 1000 or eta:apoapsis > 0.5 * ship:orbit:period or eta:apoapsis < 5 or deltav < 100 then {
                         if ShipType = "Depot" {
                             set OrbitBurnPitchCorrectionPID to PIDLOOP(2.5, 0, 0, -10, 12.5).
@@ -6914,7 +6899,7 @@ function LaunchThrottle {
         set TimeToOrbitCompletion to TimeFromLaunchToOrbit - (time:seconds - LiftOffTime).
         set DesiredAccel to max(deltaV / (TimeToOrbitCompletion), 0.25 * MaxAccel).
         set MaxAccel to 10.
-        if quickengine3:pressed {
+        if quickengine2:pressed {
             if defined CargoBeforeSeparation and defined CargoAfterSeparation {
                 set MaxAccel to max((ship:availablethrust / (ship:mass + ((CargoBeforeSeparation - CargoAfterSeparation) / 1000))), 0.000001).
             }
@@ -6925,18 +6910,18 @@ function LaunchThrottle {
                 if apoapsis < targetap + 7500 {
                     if apoapsis < targetap or MaintainVS and verticalspeed < 0 {
                         if STOCK {
-                            set thr to min((1 * Planet1G) / MaxAccel, max(deltaV / MaxAccel, 0.1)).
+                            set thr to max(min((1 * Planet1G) / MaxAccel, max(deltaV / MaxAccel, 0.1)), 0.33).
                         }
                         else {
-                            set thr to min((3 * Planet1G) / MaxAccel, max(deltaV / MaxAccel, 0.1)).
+                            set thr to max(min((3 * Planet1G) / MaxAccel, max(deltaV / MaxAccel, 0.1)), 0.33).
                         }
                     }
                     else {
-                        set thr to min(DesiredAccel / MaxAccel, max(deltaV / MaxAccel, 0.1)).
+                        set thr to max(min(DesiredAccel / MaxAccel, max(deltaV / MaxAccel, 0.1)), 0.33).
                     }
                 }
                 else if MaintainVS and periapsis < ship:body:atm:height {
-                    set thr to min(DesiredAccel / MaxAccel, max(deltaV / MaxAccel, 0.1)).
+                    set thr to max(min(DesiredAccel / MaxAccel, max(deltaV / MaxAccel, 0.1)), 0.33).
                 }
                 else {
                     set thr to 0.
@@ -7643,6 +7628,7 @@ function ReEntryAndLand {
                             set YawPID:maxoutput to 1.5.
                         }
                         if FAR {
+                            set PitchPID:kp to 0.75 * PitchPID:kp.
                             set PitchPID:minoutput to TRJCorrection - 15.
                             set PitchPID:maxoutput to 15.
                         }
@@ -7913,7 +7899,7 @@ function ReEntryData {
     set DistanceToTarget to sqrt(LngDistanceToTarget * LngDistanceToTarget + LatDistanceToTarget * LatDistanceToTarget).
 
     if not ClosingIsRunning {
-        if FindNewTarget {
+        if FindNewTarget and addons:tr:hasimpact {
             if Slope < 2.5 {
                 set message1:text to "<b>Remaining Flight Time:</b>  " + timeSpanCalculator(ADDONS:TR:TIMETILLIMPACT) + "     <color=green><b>Slope:  </b>" + round(Slope, 1) + "°</color>".
             }
@@ -8057,7 +8043,7 @@ function ReEntryData {
             when vang(-1 * velocity:surface, ship:facing:forevector) < 0.6 * FlipAngle then {
                 set config:ipu to CPUSPEED.
                 setflaps(60, 60, 1, 0).
-                if not (TargetOLM = "false") and not (LandSomewhereElse) {
+                if not (TargetOLM = "false") and not (LandSomewhereElse) and not (FindNewTarget) {
                     lock RadarAlt to vdot(up:vector, FLflap:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position) - 8.25 * Scale.
                 }
 
@@ -8084,7 +8070,7 @@ function ReEntryData {
                 }
             }
 
-            when ship:body:atm:sealevelpressure < 0.5 and LngError < 25 or ship:body:atm:sealevelpressure > 0.5 and verticalspeed > -40 then {
+            when ship:body:atm:sealevelpressure < 0.5 and LngError < 25 or ship:body:atm:sealevelpressure > 0.5 and verticalspeed > -30 then {
                 if ship:body:atm:sealevelpressure > 0.5 {
                     if RSS {
                         SLEngines[1]:shutdown.
@@ -8160,6 +8146,11 @@ function ReEntryData {
                 }
                 LogToFile("Re-Entry Telemetry").
                 BackGroundUpdate().
+                if KUniverse:activevessel = ship {}
+                else {
+                    HUDTEXT("Setting focus to Ship..", 3, 2, 20, yellow, false).
+                    KUniverse:forceactive(ship).
+                }
                 wait 0.01.
             }
             if not (TargetOLM = "false") {
@@ -8542,7 +8533,7 @@ function LngLatError {
                     }
                 }
                 if FAR {
-                    set LngLatOffset to LngLatOffset - 80.
+                    set LngLatOffset to LngLatOffset - 35.
                 }
             }
             else if ship:body:atm:sealevelpressure < 0.5 and ship:body:atm:exists {
@@ -10944,7 +10935,7 @@ function SetRadarAltitude {
             set ShipBottomRadarHeight to 9.15.
         }
     }
-    if TargetOLM {
+    if TargetOLM and not (LandSomewhereElse) {
         if RSS {
             lock RadarAlt to altitude - max(ship:geoposition:terrainheight, 0) - ArmsHeight + (39.5167 - ShipBottomRadarHeight) - 0.1.
         }
@@ -11168,7 +11159,7 @@ function LandAtOLM {
                         LogToFile(("TargetOLM set to " + TargetOLM)).
                         SetRadarAltitude().
                         if alt:radar > 1000 {
-                            when RadarAlt < 2000 then {
+                            when RadarAlt < 1800 then {
                                 sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
                                 sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,97,true").
                                 sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,false").

@@ -1438,7 +1438,7 @@ PART
 		isEnabled = True
 		stagingEnabled = True
 		moduleID = SEP_Fuel
-		currentSubtype = SEPLMOX
+		currentSubtype = SEPLFOX
 		EVENTS
 		{
 		}
@@ -5817,7 +5817,7 @@ PART
 		isEnabled = True
 		stagingEnabled = True
 		moduleID = SEP_Fuel
-		currentSubtype = SEPLMOX
+		currentSubtype = SEPLFOX
 		EVENTS
 		{
 		}

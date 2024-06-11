@@ -51,6 +51,8 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
     - This is a feature that stops launches _before they fail_ in-flight, and generally an indication that the fuel tanks are the wrong size and something got messed up along the way.
     - **Kopernicus**: If you use stock Kerbin with _Kopernicus_ (it's a requirement for using _Parallax_) installed, please install the optional _SEPkOS patch for stock Kerbin with Kopernicus.cfg_ patch.
     - Your .craft may also be messed up, so load a fresh one from the stock category in the VAB.
+- **Multiple ships of the same name:**
+    - Can cause issues where the wrong ship gets loaded during launch.
 - **Booster crashes into the Orbital Launch Mount on landing:**
     - Stock Kerbin: You may need to install the optional _SEPkOS patch for stock Kerbin with Kopernicus.cfg_ patch.
     - FAR may also do this. Tell me all details of your failed attempt, and I'll try to tweak the responsible values.
