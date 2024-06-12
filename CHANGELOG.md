@@ -1,6 +1,8 @@
 # V2.3.35 (2024-06-12)
 - Stage SEP maneuver is more closely approximating the IFT 4 procedure now.
 - Small fixes.
+- Added KSPCF as a dependency. It fixes booster landings now that the HSR is a separate part.
+- FAR is not supported anymore. It's stupid.
 
 # V2.3.34 (2024-06-11)
 - IFT-4 improvements:

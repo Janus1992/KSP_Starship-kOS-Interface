@@ -37,10 +37,12 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 - Trajectories - [github](https://github.com/neuoy/KSPTrajectories/releases) - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/162324-18-112x-trajectories-v241-2021-06-27-atmospheric-predictions/)
 - TundraExploration - [github](https://github.com/TundraMods/TundraExploration/releases) - [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/166915-112x-tundra-exploration-v600-january-23rd-restockalike-spacex-falcon-9-crew-dragon-xl/)
 - Kerbal Joint Reinforcement Continued - [github](https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued) - [Forum](https://forum.kerbalspaceprogram.com/topic/184019-131-14x-15x-16x-17x-kerbal-joint-reinforcement-continued-v340-25-04-2019/)
+- KSP Community Fixes - [github](https://github.com/KSPModdingLibs/KSPCommunityFixes/releases) - [Forum](https://forum.kerbalspaceprogram.com/topic/204002-18-112-kspcommunityfixes-bugfixes-and-qol-tweaks/)
 ### Recommended:
 - HangarExtender - [github](https://github.com/linuxgurugamer/FShangarExtender/releases)
 ### Incompatible:
 - TweakableEverything
+- FerramAerospaceResearch (FAR)
 - Realism Overhaul (RO)
 
 
