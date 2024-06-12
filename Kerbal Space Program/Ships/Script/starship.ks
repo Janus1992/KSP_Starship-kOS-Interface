@@ -6644,93 +6644,108 @@ function Launch {
             when apoapsis > BoosterAp - 7500 * Scale and ShipType = "Crew" then {
                 HUDTEXT("Leave IVA ASAP! (to avoid stuck cameras)", 10, 2, 20, yellow, false).
             }
-            when not (RSS) and apoapsis > BoosterAp - 900 and not AbortLaunchInProgress or RSS and apoapsis > BoosterAp - 1500 and not AbortLaunchInProgress then {
-                for x in range(0, HSR[0]:modules:length) {
-                    if HSR[0]:getmodulebyindex(x):hasfield("% rated thrust") {
-                        if HSR[0]:getmodulebyindex(x):hasevent("activate engine") {
-                            HSR[0]:getmodulebyindex(x):DoEvent("activate engine").
+            when apoapsis > BoosterAp and not AbortLaunchInProgress then {
+                for eng in SLEngines {
+                    eng:getmodule("ModuleSEPRaptor"):doaction("enable actuate out", true).
+                    eng:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
+                }
+                for fin in GridFins {
+                    if fin:hasmodule("ModuleControlSurface") {
+                        fin:getmodule("ModuleControlSurface"):SetField("deploy direction", false).
+                        fin:getmodule("ModuleControlSurface"):SetField("authority limiter", 32).
+                        fin:getmodule("ModuleControlSurface"):DoAction("deactivate roll control", true).
+                    }
+                    if fin:hasmodule("SyncModuleControlSurface") {
+                        fin:getmodule("SyncModuleControlSurface"):SetField("deploy direction", false).
+                        fin:getmodule("SyncModuleControlSurface"):SetField("authority limiter", 32).
+                        fin:getmodule("SyncModuleControlSurface"):DoAction("deactivate roll control", true).
+                    }
+                }
+                BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
+                lock throttle to 0.5.
+                unlock steering.
+                LogToFile("Starting stage-separation").
+                if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
+                set message1:text to "<b>Hot staging..</b>".
+                set message2:text to "".
+                set message3:text to "".
+                ShowHomePage().
+                wait 0.001.
+                set CargoBeforeSeparation to CargoMass.
+                if Tank:getmodule("ModuleSepPartSwitchAction"):getfield("current docking system") = "QD" {
+                    Tank:getmodule("ModuleSepPartSwitchAction"):DoAction("next docking system", true).
+                }
+                BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
+                set t to time:seconds.
+                until time:seconds > t + 1.5 {
+                    clearscreen.
+                    SendPing().
+                    BackGroundUpdate().
+                    LaunchLabelData().
+                    wait 0.1.
+                }
+                if defined HSR {
+                    for x in range(0, HSR[0]:modules:length) {
+                        if HSR[0]:getmodulebyindex(x):hasfield("% rated thrust") {
+                            if HSR[0]:getmodulebyindex(x):hasevent("activate engine") {
+                                HSR[0]:getmodulebyindex(x):DoEvent("activate engine").
+                            }
                         }
                     }
                 }
-                when apoapsis > BoosterAp and not AbortLaunchInProgress then {
-                    for eng in SLEngines {
-                        eng:getmodule("ModuleSEPRaptor"):doaction("enable actuate out", true).
-                        eng:getmodule("ModuleGimbal"):SetField("gimbal limit", 100).
-                    }
-                    for fin in GridFins {
-                        if fin:hasmodule("ModuleControlSurface") {
-                            fin:getmodule("ModuleControlSurface"):SetField("deploy direction", false).
-                            fin:getmodule("ModuleControlSurface"):SetField("authority limiter", 32).
-                            fin:getmodule("ModuleControlSurface"):DoAction("deactivate roll control", true).
-                        }
-                        if fin:hasmodule("SyncModuleControlSurface") {
-                            fin:getmodule("SyncModuleControlSurface"):SetField("deploy direction", false).
-                            fin:getmodule("SyncModuleControlSurface"):SetField("authority limiter", 32).
-                            fin:getmodule("SyncModuleControlSurface"):DoAction("deactivate roll control", true).
-                        }
-                    }
-                    BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
-                    lock throttle to 0.5.
-                    unlock steering.
-                    LogToFile("Starting stage-separation").
-                    if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
-                    set message1:text to "<b>Hot staging..</b>".
-                    set message2:text to "".
-                    set message3:text to "".
-                    ShowHomePage().
-                    wait 0.001.
-                    set CargoBeforeSeparation to CargoMass.
-                    if Tank:getmodule("ModuleSepPartSwitchAction"):getfield("current docking system") = "QD" {
-                        Tank:getmodule("ModuleSepPartSwitchAction"):DoAction("next docking system", true).
-                    }
-                    BoosterEngines[0]:getmodule("ModuleTundraEngineSwitch"):DOACTION("next engine mode", true).
-                    if not cancelconfirmed {
-                        sendMessage(Processor(volume("Booster")), "Boostback").
-                    }
-                    set quickengine2:pressed to true.
-                    set quickengine3:pressed to true.
-                    if defined HSR {
-                        HSR[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
-                    }
-                    else {
-                        BoosterCore[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
-                    }
+                until time:seconds > t + 3 {
+                    clearscreen.
+                    SendPing().
+                    BackGroundUpdate().
+                    LaunchLabelData().
+                    wait 0.1.
+                }
+                if not cancelconfirmed {
+                    sendMessage(Processor(volume("Booster")), "Boostback").
+                }
+                set quickengine2:pressed to true.
+                set quickengine3:pressed to true.
+                if defined HSR {
+                    HSR[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
+                }
+                else {
+                    BoosterCore[0]:getmodule("ModuleDockingNode"):doaction("undock node", true).
+                }
+                Tank:getmodule("ModuleDockingNode"):doaction("undock node", true).
+                wait 0.001.
+                if Tank:getmodule("ModuleDockingNode"):hasaction("undock node") {
                     Tank:getmodule("ModuleDockingNode"):doaction("undock node", true).
-                    wait 0.001.
-                    if Tank:getmodule("ModuleDockingNode"):hasaction("undock node") {
-                        Tank:getmodule("ModuleDockingNode"):doaction("undock node", true).
-                    }
-                    wait until SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):LENGTH = 0.
-                    set ship:name to ("Starship " + ShipType).
-                    set Boosterconnected to false.
-                    set CargoAfterSeparation to CargoMass.
-                    InhibitButtons(1, 1, 1).
-                    set cancel:text to "<b>CANCEL</b>".
-                    rcs on.
-                    lock steering to LaunchSteering().
-                    if not (Vessel("Booster"):isdead) {
-                        set Booster to Vessel("Booster").
-                    }
-                    set kuniverse:activevessel to vessel(ship:name).
-                    HideEngineToggles(1).
-                    if Tank:getmodule("ModuleSepPartSwitchAction"):getfield("current docking system") = "BTB" {
-                        Tank:getmodule("ModuleSepPartSwitchAction"):DoAction("next docking system", true).
-                    }
-                    set StageSepComplete to true.
-                    if RSS {
-                        SetLoadDistances(1650000).
-                    }
-                    else if KSRSS {
-                        SetLoadDistances(1000000).
-                    }
-                    else {
-                        SetLoadDistances(500000).
-                    }
-                    LogToFile("Hot-Staging Complete").
-                    set HotStageTime to time:seconds.
-                    if CPUSPEED < 1000 {
-                        set config:ipu to 1000.
-                    }
+                }
+                wait until SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):LENGTH = 0.
+                set ship:name to ("Starship " + ShipType).
+                set Boosterconnected to false.
+                set CargoAfterSeparation to CargoMass.
+                InhibitButtons(1, 1, 1).
+                set cancel:text to "<b>CANCEL</b>".
+                rcs on.
+                lock steering to LaunchSteering().
+                if not (Vessel("Booster"):isdead) {
+                    set Booster to Vessel("Booster").
+                }
+                set kuniverse:activevessel to vessel(ship:name).
+                HideEngineToggles(1).
+                if Tank:getmodule("ModuleSepPartSwitchAction"):getfield("current docking system") = "BTB" {
+                    Tank:getmodule("ModuleSepPartSwitchAction"):DoAction("next docking system", true).
+                }
+                set StageSepComplete to true.
+                if RSS {
+                    SetLoadDistances(1650000).
+                }
+                else if KSRSS {
+                    SetLoadDistances(1000000).
+                }
+                else {
+                    SetLoadDistances(500000).
+                }
+                LogToFile("Hot-Staging Complete").
+                set HotStageTime to time:seconds.
+                if CPUSPEED < 1000 {
+                    set config:ipu to 1000.
                 }
             }
         }
@@ -6883,7 +6898,7 @@ function LaunchThrottle {
             set thr to 1.
         }
         if apoapsis > BoosterAp - BoosterThrottleDownAlt {
-            set thr to 0.25 + (1 - ((apoapsis - BoosterAp + BoosterThrottleDownAlt) / BoosterThrottleDownAlt)).
+            set thr to 0.5 + (1 - ((apoapsis - BoosterAp + BoosterThrottleDownAlt) / BoosterThrottleDownAlt)).
         }
     }
     else {

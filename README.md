@@ -57,6 +57,7 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
     - Stock Kerbin: You may need to install the optional _SEPkOS patch for stock Kerbin with Kopernicus.cfg_ patch.
     - FAR may also do this. Tell me all details of your failed attempt, and I'll try to tweak the responsible values.
 - **Booster runs out of fuel on return to the launch site:**
+    - Load a fresh .craft from the stock category in the VAB.
     - Mechjeb Q or G Limiter could cause launch/catch failures.
 - On non-stock Kerbin the tower may be glitching upon booster-catch due to the Kraken.
 

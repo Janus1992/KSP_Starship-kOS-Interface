@@ -129,7 +129,7 @@ if bodyexists("Earth") {
         set LatCtrlPID to PIDLOOP(0.25, 0.2, 0.1, -5, 5).
         set LandHeadingVector to heading(242,0):vector.
         set BoosterReturnMass to 138.
-        set BoosterRaptorThrust to 627.
+        set BoosterRaptorThrust to 599.
         set Scale to 1.
     }
 }
@@ -156,7 +156,7 @@ else {
         set LatCtrlPID to PIDLOOP(0.25, 0.2, 0.1, -5, 5).
         set LandHeadingVector to heading(242,0):vector.
         set BoosterReturnMass to 138.
-        set BoosterRaptorThrust to 627.
+        set BoosterRaptorThrust to 599.
         set Scale to 1.
     }
     else {
@@ -173,11 +173,11 @@ else {
             set LngCtrlPID to PIDLOOP(0.25, 0.2, 0.1, -10, 10).
         }
         set BoosterGlideDistance to 1000.
-        set LngCtrlPID:setpoint to 70.
+        set LngCtrlPID:setpoint to 65.
         set LatCtrlPID to PIDLOOP(0.25, 0.2, 0.1, -5, 5).
         set LandHeadingVector to heading(270,0):vector.
-        set BoosterReturnMass to 136.
-        set BoosterRaptorThrust to 667.
+        set BoosterReturnMass to 135.8.
+        set BoosterRaptorThrust to 673.
         set Scale to 1.
     }
 }
