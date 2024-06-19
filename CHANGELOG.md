@@ -1,3 +1,19 @@
+# V2.3.36 (2024-06-14)
+- Even more agressive booster landing burn.
+- IFT-4 fixes.
+- Improved rolling for the tower catch to match the towers orientation.
+- Kraken mitigations:
+    - Tower rotates the mechazilla arms with Booster and Ship on catch.
+    - Wobbly Tower bug detected and alternate landingzone will be selected.
+    - Booster swinging (not stable) detected, and tower procedure for recovery will wait until the error is small enough not to cause destruction in most cases.
+    - Booster CPU shuts down on error during recovery.
+    - Tower top gets a built-in invisible Clamp too.
+- Auto-docking:
+    - Possible fix for docking to nowhere.
+    - Faster and smoother final docking.
+    - other small changes.
+- Fixed craft file for Depot. Engines were missing, resulting in an Interface crash.
+
 # V2.3.35 (2024-06-12)
 - Stage SEP maneuver is more closely approximating the IFT 4 procedure now.
 - Small fixes.

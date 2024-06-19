@@ -9,50 +9,49 @@ clearscreen.
 
 
 
-if not (ship:status = "FLYING") and not (ship:status = "SUB_ORBITAL") {
-    if homeconnection:isconnected {
-        if config:arch {
-            set config:arch to false.
-            HUDTEXT("kOS start on archive setting turned off. Please reload the scene.. (no reverting!)", 30, 2, 20, red, false).
-            shutdown.
-        }
-        switch to 0.
-        if exists("1:starship.ksm") {
-            if homeconnection:isconnected {
-                HUDTEXT("Starting Interface..", 5, 2, 20, green, false).
-                if open("0:starship.ks"):readall:string = open("1:/boot/starship.ks"):readall:string {}
-                else {
-                    HUDTEXT("Receiving Flight Control Software Update..", 5, 2, 20, yellow, false).
-                    COMPILE "0:/starship.ks" TO "0:/starship.ksm".
-                    if homeconnection:isconnected {
-                        copypath("0:starship.ks", "1:/boot/").
-                        copypath("starship.ksm", "1:").
-                        set core:BOOTFILENAME to "starship.ksm".
-                        reboot.
-                    }
-                    else {
-                        HUDTEXT("Connection lost during Update! Can't update Interface..", 10, 2, 20, red, false).
-                    }
-                }
-            }
+if homeconnection:isconnected {
+    if config:arch {
+        set config:arch to false.
+        HUDTEXT("kOS start on archive setting turned off. Please reload the scene.. (no reverting!)", 30, 2, 20, red, false).
+        shutdown.
+    }
+    switch to 0.
+    if exists("1:starship.ksm") {
+        if homeconnection:isconnected {
+            HUDTEXT("Starting Interface..", 5, 2, 20, green, false).
+            if open("0:starship.ks"):readall:string = open("1:/boot/starship.ks"):readall:string {}
             else {
-                HUDTEXT("Connection lost during Update! Can't update Interface..", 10, 2, 20, red, false).
+                sas on.
+                HUDTEXT("Receiving Flight Control Software Update..", 5, 2, 20, yellow, false).
+                COMPILE "0:/starship.ks" TO "0:/starship.ksm".
+                if homeconnection:isconnected {
+                    copypath("0:starship.ks", "1:/boot/").
+                    copypath("starship.ksm", "1:").
+                    set core:BOOTFILENAME to "starship.ksm".
+                    reboot.
+                }
+                else {
+                    HUDTEXT("Connection lost during Update! Can't update Interface..", 10, 2, 20, red, false).
+                }
             }
         }
         else {
-            HUDTEXT("Receiving Flight Control Software uplink..", 10, 2, 20, green, false).
-            print "starship.ksm doesn't yet exist in boot.. creating..".
-            COMPILE "0:/starship.ks" TO "0:/starship.ksm".
-            copypath("0:starship.ks", "1:/boot/").
-            copypath("starship.ksm", "1:").
-            set core:BOOTFILENAME to "starship.ksm".
-            reboot.
+            HUDTEXT("Connection lost during Update! Can't update Interface..", 10, 2, 20, red, false).
         }
     }
     else {
-        HUDTEXT("No connection available! Can't update Interface..", 10, 2, 20, red, false).
-        HUDTEXT("Starting Interface..", 5, 2, 20, green, false).
+        HUDTEXT("Receiving Flight Control Software uplink..", 10, 2, 20, green, false).
+        print "starship.ksm doesn't yet exist in boot.. creating..".
+        COMPILE "0:/starship.ks" TO "0:/starship.ksm".
+        copypath("0:starship.ks", "1:/boot/").
+        copypath("starship.ksm", "1:").
+        set core:BOOTFILENAME to "starship.ksm".
+        reboot.
     }
+}
+else {
+    HUDTEXT("No connection available! Can't update Interface..", 10, 2, 20, red, false).
+    HUDTEXT("Starting Interface..", 5, 2, 20, green, false).
 }
 
 
@@ -258,13 +257,16 @@ else {  // Stock Kerbin
 }
 set SNStart to 30.  // Defines the first Serial Number when multiple ships are found and renaming is necessary.
 set MaxTilt to 2.5.  // Defines maximum allowed slope for the Landing Zone Search Function
-set maxstabengage to 50.  // Defines max closing of the stabilizers after landing.
+set maxstabengage to 0.  // Defines max closing of the stabilizers after landing.
 set CPUSPEED to 500.  // Defines cpu speed in lines per second.
 set FWDFlapDefault to 60.
 set AFTFlapDefault to 60.
 set rcsRaptorBoundary to 100.  // Defines the custom burn boundary velocity where the ship will burn either RCS below it or Raptors above it.
 set CoGFuelBalancing to true.  // Disable this to stop constant fuel transfers during re-entry.
 set DynamicPitch to true.   // Change the flap defaults dynamically during re-entry.
+set steeringmanager:pitchtorquefactor to 0.75.
+set steeringmanager:yawtorquefactor to 0.75.
+set steeringmanager:rolltorquefactor to 0.75.
 
 
 
@@ -403,6 +405,7 @@ set LngError to 0.
 set LatError to 0.
 set LngLatErrorList to list(0,0).
 set t to time:seconds.
+set ShipRot to 0.
 
 
 
@@ -603,6 +606,7 @@ if OnOrbitalMount {
 }
 set ship:type to "Ship".
 ShipsInOrbit().
+Tank:getmodule("ModuleDockingNode"):SETFIELD("docking acquire force", 0).
 
 if ship:name:contains("OrbitalLaunchMount") {
     set ship:name to ("Starship " + ShipType).
@@ -4077,8 +4081,11 @@ function AutoDocking {
     if target:name:contains("Body") {
         set target to target:ship.
     }
+    set textbox:style:bg to "starship_img/starship_main_square_bg".
     set target:loaddistance:orbit:unload to 25000.
     set target:loaddistance:orbit:load to 10050.
+    set target:loaddistance:orbit:unpack to 1000.
+    set target:loaddistance:orbit:pack to 1500.
     wait 0.001.
     if not (target:loaded) {
         wait 1.
@@ -4100,7 +4107,6 @@ function AutoDocking {
         set message1:style:textcolor to yellow.
         set message2:style:textcolor to yellow.
         set message3:style:textcolor to yellow.
-        set textbox:style:bg to "starship_img/starship_main_square_bg".
         wait 3.
         ClearInterfaceAndSteering().
         return.
@@ -4113,7 +4119,6 @@ function AutoDocking {
     set message2:text to "<b></b>".
     set message3:text to "<b>Confirm <color=white>or</color> Cancel?</b>".
     set message3:style:textcolor to cyan.
-    set textbox:style:bg to "starship_img/starship_main_square_bg".
     set execute:text to "<b>CONFIRM</b>".
     if confirm() {
         set message3:style:textcolor to white.
@@ -4142,6 +4147,9 @@ function AutoDocking {
     set ManeuverPicker:enabled to false.
     set TargetPicker:enabled to false.
     ShowHomePage().
+    set steeringmanager:pitchtorquefactor to 0.75.
+    set steeringmanager:yawtorquefactor to 0.75.
+    set steeringmanager:rolltorquefactor to 0.75.
     sas off.
     set Continue to false.
     if KUniverse:activevessel = vessel(ship:name) {}
@@ -4150,6 +4158,10 @@ function AutoDocking {
     }
     if Tank:getmodule("ModuleSepPartSwitchAction"):getfield("current docking system") = "BTB" {
         Tank:getmodule("ModuleSepPartSwitchAction"):DoAction("next docking system", true).
+    }
+    Tank:getmodule("ModuleDockingNode"):SETFIELD("docking acquire force", 0).
+    if ShipType = "Depot" {
+        set steeringmanager:yawtorquefactor to 0.1.
     }
 
     set PortDistanceVector to target:dockingports[0]:nodeposition - ship:dockingports[0]:nodeposition.
@@ -4181,10 +4193,15 @@ function AutoDocking {
 
     until ship:dockingports[0]:state = "Docked (docker)" or ship:dockingports[0]:state = "Docked (dockee)" or ship:dockingports[0]:state = "Docked (same vessel)" or cancelconfirmed {
         BackGroundUpdate().
+        set t to time:seconds.
     }
-
+    until time:seconds > t + 2.5 {
+        BackGroundUpdate().
+    }
+    HUDTEXT("Docking Port Acquired!", 5, 2, 20, green, false).
     set maneuver3button:enabled to true.
     set ManeuverPicker:enabled to true.
+    set ManeuverPicker:index to 0.
     set TargetPicker:enabled to true.
     unlock steering.
     Droppriority().
@@ -4192,14 +4209,7 @@ function AutoDocking {
     ShowButtons(1).
     set ship:control:translation to v(0, 0, 0).
     set AutodockingIsRunning to false.
-    if ship:dockingports[0]:haspartner {
-        wait 1.
-        BackGroundUpdate().
-        set ManeuverPicker:index to 0.
-        HUDTEXT("Docking Port Acquired! 'Docking Complete' may take a few more seconds (when wobbly)..", 10, 2, 20, green, false).
-        wait 1.
-        SetInterfaceLocation().
-    }
+    SetInterfaceLocation().
     rcs off.
     ClearInterfaceAndSteering().
 }
@@ -4219,9 +4229,9 @@ function AutoDockSteering {
         set cancelconfirmed to true.
         return lookdirup(facing:forevector, facing:topvector).
     }
-    if ship:dockingports[0]:haspartner {
+    if ship:dockingports[0]:haspartner and t = 0 {
         set TargetPicker:index to 0.
-        set cancelconfirmed to true.
+        //set cancelconfirmed to true.
         return lookdirup(facing:forevector, facing:topvector).
     }
     if KUniverse:activevessel = vessel(ship:name) {}
@@ -4295,7 +4305,7 @@ function AutoDockSteering {
             print "Distance X: " + round(RelDistX + RelVelX, 2).
             print "Distance Y: " + round(RelDistY + RelVelY, 2).
             print "Distance Z: " + round(RelDistZ + RelVelZ, 2).
-            set ship:control:translation to v(min(max(RelDistY, -0.5), 0.5) + RelVelY, min(max(RelDistZ, -0.25), 0.25) + RelVelZ, min(max(RelDistX, -0.5), 0.5) + RelVelX).
+            set ship:control:translation to v(min(max(RelDistY, -6), 6) + 4 * RelVelY, min(max(RelDistZ, -2.25), 2.25) + 3 * RelVelZ, min(max(RelDistX, -6), 6) + 4 * RelVelX).
         }
         else {
             set ship:control:translation to v(RelVelY, RelVelZ, RelVelX).
@@ -6834,6 +6844,9 @@ function Launch {
 
         unlock steering.
         SteeringManager:RESETTODEFAULT().
+        set steeringmanager:pitchtorquefactor to 0.75.
+        set steeringmanager:yawtorquefactor to 0.75.
+        set steeringmanager:rolltorquefactor to 0.75.
         wait 0.001.
         lock throttle to 0.
         set config:ipu to CPUSPEED.
@@ -7464,6 +7477,7 @@ function ReEntryAndLand {
         set tt to time:seconds.
         set config:ipu to CPUSPEED.
         set LandSomewhereElse to false.
+        set WobblyTower to false.
         set DescentAngles to list(aoa, aoa, aoa, aoa).
         SetPlanetData().
         LandAtOLM().
@@ -8100,6 +8114,31 @@ function ReEntryData {
                         SLEngines[1]:getmodule("ModuleSEPRaptor"):DoAction("toggle actuate out", true).
                         LogToFile("3rd engine shutdown; performing a 2-engine landing").
                     }
+                    when WobblyTower then {
+                        HUDTEXT("Wobbly Tower detected..", 3, 2, 20, red, false).
+                        HUDTEXT("Landing at nearest suitable location..", 3, 2, 20, yellow, false).
+                        set landingzone to ship:body:geopositionof(landingzone:position - 15 * Scale * LandHeadingVector:normalized).
+                        set LandSomewhereElse to true.
+                        SetRadarAltitude().
+                        ADDONS:TR:SETTARGET(landingzone).
+                    }
+                    if TargetOLM {
+                        when vxcl(up:vector, landingzone:position - Nose:position):mag < 10 * Scale and RadarAlt < 7.5 * ShipHeight then {
+                            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,10,60,true").
+                            sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
+                            when vxcl(up:vector, landingzone:position - Nose:position):mag < 7.5 * Scale and RadarAlt < 3 * ShipHeight then {
+                                sendMessage(Vessel(TargetOLM), "MechazillaArms,8,10,30,true").
+                                when vxcl(up:vector, landingzone:position - Nose:position):mag < 5 * Scale and RadarAlt < 0.6 * ShipHeight then {
+                                sendMessage(Vessel(TargetOLM), "MechazillaArms," + round(8 + ShipRot, 1) + ",10,15,true").
+                                    when vxcl(up:vector, landingzone:position - Nose:position):mag < 5 * Scale and RadarAlt < 0.35 * ShipHeight then {
+                                        set TimeToZero to abs(verticalspeed) / DesiredDecel - 0.75.
+                                        set ArmIdealSpeed to min(7.5 / TimeToZero, 9.99).
+                                        sendMessage(Vessel(TargetOLM), ("MechazillaArms," + round(8 + ShipRot, 1) + "," + round(ArmIdealSpeed,2) + ",60,false")).
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 if ship:body:atm:sealevelpressure < 0.5 {
                     lock SLmaxDecel to max(SLEngines[0]:availablethrust * 3 / ship:mass, 0.000001).
@@ -8134,7 +8173,7 @@ function ReEntryData {
                     set ReducingSensitivity to true.
                     LogToFile("Reducing Sensitivity for final descent").
                 }
-                when verticalspeed > -10 then {
+                when verticalspeed > -12.5 then {
                     if TargetOLM and not (LandSomewhereElse) {
                         setflaps(0, 85, 1, 0).
                     }
@@ -8144,7 +8183,7 @@ function ReEntryData {
                 }
             }
 
-            until verticalspeed > -0.02 and RadarAlt < 1.25 and ship:status = "LANDED" or verticalspeed > 0.25 and RadarAlt < 2.5 {
+            until verticalspeed > -0.02 and RadarAlt < 1 and ship:status = "LANDED" or verticalspeed > 0.05 and RadarAlt < 2.5 {
                 SendPing().
                 if ship:body:atm:sealevelpressure > 0.5 {
                     if ErrorVector:MAG > (Scale * 1.5 * RadarAlt + 25) and RadarAlt > 5 and not (LandSomewhereElse) or RadarAlt < -1 and not (LandSomewhereElse) {
@@ -8297,6 +8336,7 @@ function LandingVector {
         print "Landing Ratio: " + round(landingRatio, 2).
         print "desired decel: " + round(DesiredDecel, 2).
         print "max decel: " + round(maxDecel, 2) + "m/s2".
+        print "Ship Rotation: " + round(ShipRot, 1).
         //if not maxDecel = 0 {
         //    print "current decel: " + round(throttle * maxDecel, 2) + "m/s2".
         //    print "vs: " + round(verticalspeed,2).
@@ -8305,18 +8345,8 @@ function LandingVector {
         set message3:text to "<b>Radar Altimeter:</b>        " + round(RadarAlt) + "m".
     }
 
-    if TargetOLM {
-        if RadarAlt < 4 * ShipHeight and RadarAlt > 3.5 * ShipHeight {
-            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,60,true").
-            sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
-        }
-        else if RadarAlt < 1.125 * ShipHeight and RadarAlt > 0.875 * ShipHeight {
-            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,30,true").
-        }
-        else if RadarAlt < (0.5 * DesiredDecel * 1.5 * 1.5) + 2 and RadarAlt > (0.5 * DesiredDecel * 1.5 * 1.5) - 2.5 {
-            sendMessage(Vessel(TargetOLM), ("MechazillaArms,8,10,30,false")).
-        }
-    }
+    set ShipRot to GetShipRotation().
+    DetectWobblyTower().
 
     if TargetOLM and verticalspeed > -25 {
         return lookDirUp(result, LandRollVector).
@@ -8382,6 +8412,7 @@ function LandingVector {
                 }
                 when time:seconds > ShutdownProcedureStart + 8.25 * Scale then {
                     sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.1," + (0.7 * Scale) + ",false")).
+                    sendMessage(Vessel(TargetOLM), ("MechazillaArms,8,0.25,60,false")).
                 }
             }
 
@@ -8530,7 +8561,7 @@ function LngLatError {
                         set LngLatOffset to 65.
                     }
                     else if KSRSS {
-                        set LngLatOffset to 40.
+                        set LngLatOffset to 35.
                     }
                     else {
                         set LngLatOffset to -25.
@@ -9113,7 +9144,7 @@ function updatestatusbar {
                 set status1:style:textcolor to green.
             }
             if runningprogram = "Launch" and alt:radar > 500 {
-                set status1:text to status1:text + " (" + round(altitude/1000) + "km)".
+                set status1:text to status1:text + " (" + round(altitude/1000, 1) + "km)".
             }
         }
         for res in Tank:resources {
@@ -9376,8 +9407,8 @@ function updateStatus {
 
                 if FL < max(FWDdownlim, 0) {set FL to max(FWDdownlim, 0).} if FL > min(FWDuplim, 78) {set FL to min(FWDuplim, 78).}
                 if FR < max(FWDdownlim, 0) {set FR to max(FWDdownlim, 0).} if FR > min(FWDuplim, 78) {set FR to min(FWDuplim, 78).}
-                if AL < max(AFTdownlim, 5) {set AL to max(AFTdownlim, 5).} if AL > min(AFTuplim, 70) {set AL to min(AFTuplim, 70).}
-                if AR < max(AFTdownlim, 5) {set AR to max(AFTdownlim, 5).} if AR > min(AFTuplim, 70) {set AR to min(AFTuplim, 70).}
+                if AL < max(AFTdownlim, 0) {set AL to max(AFTdownlim, 0).} if AL > min(AFTuplim, 70) {set AL to min(AFTuplim, 70).}
+                if AR < max(AFTdownlim, 0) {set AR to max(AFTdownlim, 0).} if AR > min(AFTuplim, 70) {set AR to min(AFTuplim, 70).}
 
                 set status1label1:text to round(FL):tostring + "°".
                 set status1label3:text to round(FR):tostring + "°".
@@ -9387,8 +9418,8 @@ function updateStatus {
             else {
                 set status1label1:text to "0°".
                 set status1label3:text to "0°".
-                set status3label1:text to "5°".
-                set status3label3:text to "5°".
+                set status3label1:text to "0°".
+                set status3label3:text to "0°".
                 set status1label1:style:textcolor to white.
                 set status1label3:style:textcolor to white.
                 set status3label1:style:textcolor to white.
@@ -10424,6 +10455,7 @@ function ClearInterfaceAndSteering {
     if kuniverse:timewarp:warp > 0 {
         set kuniverse:timewarp:warp to 0.
     }
+    set t to 0.
     LogToFile("Interface cleared").
 }
 
@@ -12807,5 +12839,28 @@ function SetShipBGPage {
     }
     if ShipType = "Depot" {
         set textbox:style:bg to "starship_img/starship_main_square_bg_depot".
+    }
+}
+
+
+function GetShipRotation {
+    if not (TargetOLM = "false") {
+        set varR to vang(vxcl(up:vector, Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position - Nose:position), LandRollVector).
+        if vdot(AngleAxis(90, up:vector) * LandRollVector, Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position - Nose:position) > 0 {
+            set varR to -1 * varR.
+        }
+        return min(max(varR, -10), 10).
+    }
+}
+
+
+function DetectWobblyTower {
+    if not (TargetOLM = "false") {
+        if Vessel(TargetOLM):distance < 2000 {
+            set ErrorPos to vxcl(up:vector, Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Rooftop")[0]:position):mag.
+            if ErrorPos > 0.25 {
+                set WobblyTower to true.
+            }
+        }
     }
 }

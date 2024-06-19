@@ -125,6 +125,11 @@ print "Fueling: " + NrforDelugeRefill.
 
 
 clearscreen.
+set ship:loaddistance:landed:unload to 2500.
+set ship:loaddistance:landed:load to 2250.
+wait 0.001.
+set ship:loaddistance:landed:pack to 2000.
+set ship:loaddistance:landed:unpack to 1750.
 print "Tower Nominal Operation, awaiting command..".
 RenameOLM().
 
@@ -136,8 +141,8 @@ until False {
         else {
             SET RECEIVED TO SHIP:MESSAGES:POP.
         }
-        print "Command received: " + RECEIVED:CONTENT.
-        print "Command type: " + RECEIVED:CONTENT:typename.
+        //print "Command received: " + RECEIVED:CONTENT.
+        //print "Command type: " + RECEIVED:CONTENT:typename.
         if RECEIVED:CONTENT:CONTAINS(",") {
             set message to RECEIVED:CONTENT:SPLIT(",").
             set command to message[0].
