@@ -588,6 +588,7 @@ function Boostback {
                 when WobblyTower then {
                     HUDTEXT("Wobbly Tower detected..", 3, 2, 20, red, false).
                     HUDTEXT("Trying to land in the OLM..", 3, 2, 20, yellow, false).
+                    sendMessage(Vessel(TargetOLM), "MechazillaArms,8,10,60,true").
                     lock RadarAlt to alt:radar - BoosterHeight.
                     ADDONS:TR:SETTARGET(landingzone).
                 }
@@ -638,7 +639,7 @@ function Boostback {
         }
         SetBoosterActive().
         CheckFuel().
-        DetectWobblyTower().
+        //DetectWobblyTower().
         wait 0.1.
     }
 
@@ -1210,7 +1211,7 @@ function DetectWobblyTower {
     if not (TargetOLM = "false") {
         if Vessel(TargetOLM):distance < 2000 {
             set ErrorPos to vxcl(up:vector, Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Rooftop")[0]:position):mag.
-            if ErrorPos > 0.25 {
+            if ErrorPos > 0.5 {
                 set WobblyTower to true.
             }
         }

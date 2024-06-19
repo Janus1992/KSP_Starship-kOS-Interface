@@ -8117,13 +8117,14 @@ function ReEntryData {
                     when WobblyTower then {
                         HUDTEXT("Wobbly Tower detected..", 3, 2, 20, red, false).
                         HUDTEXT("Landing at nearest suitable location..", 3, 2, 20, yellow, false).
+                        sendMessage(Vessel(TargetOLM), "MechazillaArms,8,10,60,true").
                         set landingzone to ship:body:geopositionof(landingzone:position - 15 * Scale * LandHeadingVector:normalized).
                         set LandSomewhereElse to true.
                         SetRadarAltitude().
                         ADDONS:TR:SETTARGET(landingzone).
                     }
                     if TargetOLM {
-                        when vxcl(up:vector, landingzone:position - Nose:position):mag < 10 * Scale and RadarAlt < 7.5 * ShipHeight then {
+                        when vxcl(up:vector, landingzone:position - Nose:position):mag < 10 * Scale and RadarAlt < 7.5 * ShipHeight and not (WobblyTower) then {
                             sendMessage(Vessel(TargetOLM), "MechazillaArms,8,10,60,true").
                             sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
                             when vxcl(up:vector, landingzone:position - Nose:position):mag < 7.5 * Scale and RadarAlt < 3 * ShipHeight then {
@@ -8346,7 +8347,7 @@ function LandingVector {
     }
 
     set ShipRot to GetShipRotation().
-    DetectWobblyTower().
+    //DetectWobblyTower().
 
     if TargetOLM and verticalspeed > -25 {
         return lookDirUp(result, LandRollVector).
@@ -12858,7 +12859,7 @@ function DetectWobblyTower {
     if not (TargetOLM = "false") {
         if Vessel(TargetOLM):distance < 2000 {
             set ErrorPos to vxcl(up:vector, Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Rooftop")[0]:position):mag.
-            if ErrorPos > 0.25 {
+            if ErrorPos > 0.5 {
                 set WobblyTower to true.
             }
         }
