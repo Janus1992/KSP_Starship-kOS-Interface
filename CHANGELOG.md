@@ -1,4 +1,14 @@
-# V2.3.36 (2024-06-14)
+# V2.3.37 (2024-06-20)
+- Auto-docking receives some more love:
+    - More accurate final docking.
+    - Trying to catch the node error and avoid docking into nowhere. It now gives a warning and terminates the auto-docking.
+    - Cancelling velocity upon cancelling the maneuver.
+    - Depot auto-docking disabled due to weak RCS authority.
+    - Fixed some crashes due to loss of target on dock.
+    - Auto-select first suitable target in the popup menu.
+    - New Safe-Vectors on every side of the target. Script picks the closest.
+
+# V2.3.36 (2024-06-19)
 - Even more agressive booster landing burn.
 - IFT-4 fixes.
 - Improved rolling for the tower catch to match the towers orientation.
