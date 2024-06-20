@@ -838,6 +838,7 @@ FUNCTION SteeringCorrections {
             print "Landing Ratio: " + round(landingRatio, 2).
             print " ".
             print "MZ Rotation: " + Round(8 + BoosterRot,1).
+            print "Ship Mass: " + round(ship:mass,3).
             if airspeed > 100 {
                 print "Descent Angle: " + round(vang(-velocity:surface, up:vector), 1).
                 print "GS: " + round(groundspeed).
