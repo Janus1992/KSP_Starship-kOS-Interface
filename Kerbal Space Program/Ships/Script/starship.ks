@@ -11599,12 +11599,14 @@ function PerformBurn {
         lock MaxAccel to RCSThrust / ship:mass.
         set UseRCSforBurn to true.
     }
-    else if SingleEngineDeOrbitBurn {
-        lock MaxAccel to (SLEngines[0]:possiblethrust) / ship:mass.
-    }
     else {
         lock MaxAccel to (VACEngines[0]:possiblethrust * NrOfVacEngines) / ship:mass.
         set UseRCSforBurn to false.
+    }
+    if BurnType = "DeOrbit" and UseRCSforBurn {
+        set SingleEngineDeOrbitBurn to true.
+        set UseRCSforBurn to false.
+        lock MaxAccel to SLEngines[0]:possiblethrust / ship:mass.
     }
     lock BurnAccel to min(19.62, MaxAccel).
     lock BurnDuration to deltaV / BurnAccel.
@@ -11698,9 +11700,7 @@ function PerformBurn {
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 75).
         sas off.
         rcs off.
-        if BurnType = "DeOrbit" and UseRCSforBurn {
-            set SingleEngineDeOrbitBurn to true.
-            set UseRCSforBurn to false.
+        if SingleEngineDeOrbitBurn {
             set OffsetAngle to vang(ship:position - SLEngines[0]:position, facing:forevector).
             lock BVec to nextnode:burnvector * AngleAxis(OffsetAngle, up:vector).
             SLEngines[0]:getmodule("ModuleSEPRaptor"):doaction("enable actuate out", true).
