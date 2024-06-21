@@ -11582,7 +11582,7 @@ function PerformBurn {
         }
         set burnstarttime to timestamp(time:seconds + BurnTime).
     }
-    if burnstarttime - 5 < timestamp(time:seconds) {
+    if burnstarttime - 1 < timestamp(time:seconds) {
         ShowHomePage().
         LogToFile("Stopping De-Orbit Burn due to wrong orientation").
         set textbox:style:bg to "starship_img/starship_main_square_bg".
@@ -11695,16 +11695,23 @@ function PerformBurn {
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 75).
         sas off.
         rcs off.
-        set BVec to nextnode:burnvector.
         if BurnType = "DeOrbit" and UseRCSforBurn {
             set SingleEngineDeOrbitBurn to true.
             set UseRCSforBurn to false.
             set OffsetAngle to vang(ship:position - SLEngines[0]:position, facing:forevector).
-            set BVec to BVec * AngleAxis(OffsetAngle, up:vector).
+            lock BVec to nextnode:burnvector * AngleAxis(OffsetAngle, up:vector).
             SLEngines[0]:getmodule("ModuleSEPRaptor"):doaction("enable actuate out", true).
-            SLEngines[0]:getmodule("ModuleSEPRaptor"):setfield("actuate limit", 100 * OffsetAngle / 15.5).
+            SLEngines[0]:getmodule("ModuleSEPRaptor"):setfield("actuate limit", 100 * OffsetAngle / 11).
         }
-        lock steering to lookdirup(BVec, north:vector).
+        else {
+            lock BVec to nextnode:burnvector.
+        }
+        if BurnType = "DeOrbit" {
+            lock steering to lookdirup(BVec, north:vector).
+        }
+        else {
+            lock steering to lookdirup(BVec, facing:topvector).
+        }
         set bTime to time:seconds + 9999.
         until time:seconds > bTime or cancelconfirmed and not ClosingIsRunning {
             if hasnode {
@@ -11820,6 +11827,7 @@ function PerformBurn {
         SLEngines[0]:getmodule("ModuleSEPRaptor"):doaction("disable actuate out", true).
         SLEngines[0]:getmodule("ModuleSEPRaptor"):setfield("actuate limit", 100).
     }
+    unlock BVec.
 }
 
 
