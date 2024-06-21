@@ -11599,6 +11599,9 @@ function PerformBurn {
         lock MaxAccel to RCSThrust / ship:mass.
         set UseRCSforBurn to true.
     }
+    else if SingleEngineDeOrbitBurn {
+        lock MaxAccel to (SLEngines[0]:possiblethrust) / ship:mass.
+    }
     else {
         lock MaxAccel to (VACEngines[0]:possiblethrust * NrOfVacEngines) / ship:mass.
         set UseRCSforBurn to false.
