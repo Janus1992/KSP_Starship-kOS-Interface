@@ -8209,7 +8209,7 @@ function ReEntryData {
                         SLEngines[1]:getmodule("ModuleSEPRaptor"):DoAction("toggle actuate out", true).
                         LogToFile("3rd engine shutdown; performing a 2-engine landing").
                     }
-                    when WobblyTower then {
+                    when WobblyTower and RadarAlt < 100 then {
                         HUDTEXT("Wobbly Tower detected..", 3, 2, 20, red, false).
                         HUDTEXT("Landing at nearest suitable location..", 3, 2, 20, yellow, false).
                         sendMessage(Vessel(TargetOLM), "MechazillaArms,8,10,60,true").
@@ -8442,7 +8442,7 @@ function LandingVector {
     }
 
     set ShipRot to GetShipRotation().
-    //DetectWobblyTower().
+    DetectWobblyTower().
 
     if TargetOLM and verticalspeed > -25 {
         return lookDirUp(result, LandRollVector).
@@ -11565,6 +11565,7 @@ function PerformBurn {
     parameter Burntime, ProgradeVelocity, NormalVelocity, RadialVelocity, BurnType.
     set config:ipu to CPUSPEED.
     set textbox:style:bg to "starship_img/starship_main_square_bg".
+    set SingleEngineDeOrbitBurn to false.
     if BurnTime:istype("TimeStamp") {
         if BurnType = "Execute" {}
         else {
@@ -11694,12 +11695,16 @@ function PerformBurn {
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 75).
         sas off.
         rcs off.
+        set BVec to nextnode:burnvector.
         if BurnType = "DeOrbit" and UseRCSforBurn {
-            lock steering to lookdirup(-nextnode:burnvector, up:vector).
+            set SingleEngineDeOrbitBurn to true.
+            set UseRCSforBurn to false.
+            set OffsetAngle to vang(ship:position - SLEngines[0]:position, facing:forevector).
+            set BVec to BVec * AngleAxis(OffsetAngle, up:vector).
+            SLEngines[0]:getmodule("ModuleSEPRaptor"):doaction("enable actuate out", true).
+            SLEngines[0]:getmodule("ModuleSEPRaptor"):setfield("actuate limit", 100 * OffsetAngle / 15.5).
         }
-        else {
-            lock steering to lookdirup(nextnode:burnvector, ship:facing:topvector).
-        }
+        lock steering to lookdirup(BVec, north:vector).
         set bTime to time:seconds + 9999.
         until time:seconds > bTime or cancelconfirmed and not ClosingIsRunning {
             if hasnode {
@@ -11710,47 +11715,36 @@ function PerformBurn {
             }
             TimeWarp(bTime, 45).
             set message1:text to "<b>Starting Burn in:</b>  " + timeSpanCalculator(nextnode:eta - 0.5 * BurnDuration).
-            if BurnType = "DeOrbit" and UseRCSforBurn {
-                set message2:text to "<b>Target Attitude:</b>    -Burnvector <size=15>(retrograde RCS)</size>".
-            }
-            else {
-                set message2:text to "<b>Target Attitude:</b>    Burnvector".
-            }
+            set message2:text to "<b>Target Attitude:</b>    Burnvector".
             set message3:text to "<b>Burn Duration:</b>      " + round(BurnDuration) + "s".
             BackGroundUpdate().
         }
         if hasnode {
-            if vang(nextnode:burnvector, ship:facing:forevector) < 15 and cancelconfirmed = false or vang(-nextnode:burnvector, ship:facing:forevector) < 15 and cancelconfirmed = false and BurnType = "DeOrbit" and UseRCSforBurn {
+            if vang(BVec, ship:facing:forevector) < 15 and cancelconfirmed = false or vang(-BVec, ship:facing:forevector) < 15 and cancelconfirmed = false and BurnType = "DeOrbit" and UseRCSforBurn {
                 LogToFile("Starting Burn").
                 set runningprogram to "Performing Burn".
                 if UseRCSforBurn {}
+                else if SingleEngineDeOrbitBurn {
+                    SLEngines[0]:activate.
+                }
                 else {
                     set quickengine3:pressed to true.
                 }
                 until vdot(facing:forevector, nextnode:deltav) < 0 and not (BurnType = "DeOrbit" and UseRCSforBurn) or vdot(-facing:forevector, nextnode:deltav) < 0 and BurnType = "DeOrbit" and UseRCSforBurn or cancelconfirmed = true and not ClosingIsRunning {
                     BackGroundUpdate().
-                    if vang(facing:forevector, nextnode:burnvector) < 10 or vang(facing:forevector, -nextnode:burnvector) < 10 and BurnType = "DeOrbit" and UseRCSforBurn {
+                    if vang(facing:forevector, BVec) < 10 {
                         if UseRCSforBurn {
                             rcs on.
-                            if BurnType = "DeOrbit" and UseRCSforBurn {
-                                set ship:control:translation to v(0, 0, -1).
-                            }
-                            else {
-                                set ship:control:translation to v(0, 0, 1).
-                            }
+                            set ship:control:translation to v(0, 0, 1).
                             set ship:control:rotation to v(0, 0, 0).
                         }
                         else {
                             lock throttle to min(nextnode:deltav:mag / MaxAccel, BurnAccel / MaxAccel).
+                            //lock throttle to max(min(nextnode:deltav:mag / MaxAccel, BurnAccel / MaxAccel), 0.33).
                         }
                     }
                     if nextnode:deltav:mag > 5 {
-                        if BurnType = "DeOrbit" and UseRCSforBurn {
-                            lock steering to lookdirup(-nextnode:burnvector, up:vector).
-                        }
-                        else {
-                            lock steering to lookdirup(nextnode:burnvector, ship:facing:topvector).
-                        }
+                        lock steering to lookdirup(BVec, ship:facing:topvector).
                     }
                     else {
                         lock steering to "kill".
@@ -11765,6 +11759,9 @@ function PerformBurn {
                     rcs off.
                     set ship:control:translation to v(0, 0, 0).
                     set ship:control:rotation to v(0, 0, 0).
+                }
+                else if SingleEngineDeOrbitBurn {
+                    SLEngines[0]:shutdown.
                 }
                 else {
                     set quickengine3:pressed to false.
@@ -11818,6 +11815,10 @@ function PerformBurn {
     else {
         LogToFile("User cancelled Burn").
         ClearInterfaceAndSteering().
+    }
+    if SLEngines[0]:getmodule("ModuleSEPRaptor"):hasaction("disable actuate out") {
+        SLEngines[0]:getmodule("ModuleSEPRaptor"):doaction("disable actuate out", true).
+        SLEngines[0]:getmodule("ModuleSEPRaptor"):setfield("actuate limit", 100).
     }
 }
 

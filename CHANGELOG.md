@@ -1,3 +1,7 @@
+# V2.3.38 (2024-06-21)
+- Single Raptor De-orbit burn.
+- Wobbly Tower detection reactivated and tweaked.
+
 # V2.3.37 (2024-06-20)
 - Auto-docking receives some more love:
     - More accurate final docking.

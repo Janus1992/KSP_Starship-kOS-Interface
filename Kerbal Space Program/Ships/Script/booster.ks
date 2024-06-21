@@ -576,7 +576,7 @@ function Boostback {
                                 }
                                 set ArmIdealSpeed to max(min(7.5 / TimeToZero + 1, 9.99), 2.5).
                                 sendMessage(Vessel(TargetOLM), ("MechazillaArms," + round(8 + BoosterRot, 1) + "," + round(ArmIdealSpeed,2) + ",60,false")).
-                                if RadarAlt > 2.5 {
+                                if RadarAlt > 5 {
                                     set t to time:seconds.
                                     until time:seconds > t + 0.1 {}
                                     preserve.
@@ -585,7 +585,7 @@ function Boostback {
                         }
                     }
                 }
-                when WobblyTower then {
+                when WobblyTower and RadarAlt < 100 then {
                     HUDTEXT("Wobbly Tower detected..", 3, 2, 20, red, false).
                     HUDTEXT("Trying to land in the OLM..", 3, 2, 20, yellow, false).
                     sendMessage(Vessel(TargetOLM), "MechazillaArms,8,10,60,true").
@@ -639,7 +639,7 @@ function Boostback {
         }
         SetBoosterActive().
         CheckFuel().
-        //DetectWobblyTower().
+        DetectWobblyTower().
         wait 0.1.
     }
 
