@@ -2,7 +2,7 @@
 - Craft files fixed for bug which caused the ship to lose integrity on relaunching (after catch and restack).
 - Depot craft HSR clamp switch set to HSR6.
 - Booster final guidance dampened a bit.
-- Hopefully fixed a case where target tracking was wrong during launch to intercept orbit.
+- Active target tracking during launch to intercept orbit.
 
 # V2.3.38 (2024-06-21)
 - Single Raptor De-orbit burn.

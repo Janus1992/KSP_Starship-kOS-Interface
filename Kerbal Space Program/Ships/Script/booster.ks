@@ -1127,7 +1127,7 @@ function BoosterDocking {
                 sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,90,true").
                 sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,1," + (12.5 * Scale) + ",true")).
                 sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
-                when time:seconds > DockedTime + 35 then {
+                when time:seconds > DockedTime + 30 then {
                     set TowerReset to true.
                     HUDTEXT("Booster recovery complete, tower has been reset!", 10, 2, 20, green, false).
                     //if BoosterCore:getmodule("ModuleSepPartSwitchAction"):getfield("current decouple system") = "Decoupler" {
