@@ -12935,7 +12935,7 @@ function DetectWobblyTower {
     if not (TargetOLM = "false") {
         if Vessel(TargetOLM):distance < 2000 {
             set ErrorPos to vxcl(up:vector, Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Base")[0]:position - Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Rooftop")[0]:position):mag.
-            if ErrorPos > 0.5 {
+            if ErrorPos > 0.5 * Scale {
                 set WobblyTower to true.
             }
         }
