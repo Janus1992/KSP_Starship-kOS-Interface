@@ -4505,7 +4505,7 @@ PART
 		isEnabled = True
 		stagingEnabled = True
 		moduleID = SEP_HSR_Design
-		currentSubtype = HSR3
+		currentSubtype = HSR6
 		EVENTS
 		{
 		}
