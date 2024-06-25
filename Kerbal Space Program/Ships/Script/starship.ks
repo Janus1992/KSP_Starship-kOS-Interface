@@ -8727,6 +8727,7 @@ function sendMessage {
         }
         else {
             print "message could not be sent!! (" + msg + ")".
+            HUDTEXT("Sending a Message failed!", 10, 2, 20, red, false).
             if defined message32 {
                 set message32:style:bg to "starship_img/starship_signal_red".
             }
@@ -8735,6 +8736,7 @@ function sendMessage {
     }
     else {
         print "connection could not be established..".
+        HUDTEXT("Sending a Message failed due to Connection problems..", 10, 2, 20, red, false).
         if defined message32 {
             set message32:style:bg to "starship_img/starship_signal_red".
         }
