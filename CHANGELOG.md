@@ -1,6 +1,7 @@
 # V2.3.39 (2024-06-25)
 - Craft files fixed for bug which caused the ship to lose integrity on relaunching (after catch and restack).
 - Depot craft HSR clamp switch set to HSR6.
+- Booster final guidance dampened a bit.
 
 # V2.3.38 (2024-06-21)
 - Single Raptor De-orbit burn.

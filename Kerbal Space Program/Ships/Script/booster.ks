@@ -616,10 +616,10 @@ function Boostback {
             lock SteeringVector to lookdirup(up:vector - 0.01 * velocity:surface - 0.01 * ErrorVector, LandHeadingVector).
         }
         else if KSRSS {
-            lock SteeringVector to lookdirup(up:vector - 0.02 * velocity:surface - 0.025 * ErrorVector, LandHeadingVector).
+            lock SteeringVector to lookdirup(up:vector - 0.02 * velocity:surface - 0.02 * ErrorVector, LandHeadingVector).
         }
         else {
-            lock SteeringVector to lookdirup(up:vector - 0.02 * velocity:surface - 0.025 * ErrorVector, LandHeadingVector).
+            lock SteeringVector to lookdirup(up:vector - 0.02 * velocity:surface - 0.02 * ErrorVector, LandHeadingVector).
         }
         lock steering to SteeringVector.
 

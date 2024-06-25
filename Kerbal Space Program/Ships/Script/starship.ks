@@ -50,7 +50,7 @@ if homeconnection:isconnected {
     }
 }
 else {
-    HUDTEXT("No connection available! Can't update Interface..", 10, 2, 20, red, false).
+    HUDTEXT("No connection available! Can't check for updates..", 10, 2, 20, yellow, false).
     HUDTEXT("Starting Interface..", 5, 2, 20, green, false).
 }
 
@@ -4201,7 +4201,7 @@ function AutoDocking {
         BackGroundUpdate().
     }
     if not (cancelconfirmed) {
-        HUDTEXT("Docking Port Acquired!", 5, 2, 20, green, false).
+        HUDTEXT("Docking confirmed!", 5, 2, 20, green, false).
     }
     else if dockingmode = "DOCK" {
         unlock steering.
@@ -6970,20 +6970,8 @@ function Launch {
         wait 0.001.
         Droppriority().
         rcs off.
-        //if defined Booster and STOCK {
-        //    if Booster:altitude < 30000 and KUniverse:activevessel = vessel(ship:name) {
-        //        HUDTEXT("Changing Focus to: Booster", 5, 2, 20, green, false).
-        //        wait 1.5.
-        //        HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 20, 2, 20, green, false).
-        //        wait 0.001.
-        //        set kuniverse:activevessel to vessel("Booster").
-        //    }
-        //    else {
-        //        HUDTEXT("Changing Focus when Booster passes below 30km Altitude", 15, 2, 20, yellow, false).
-        //        wait 1.5.
-        //        HUDTEXT("The Booster will now perform an automated landing at the Launch Site!", 20, 2, 20, green, false).
-        //    }
-        //}
+        HUDTEXT("Ship: Orbit achieved! Interface shutdown commanded..", 10, 2, 22, green, false).
+        HUDTEXT("Booster: Automated Return is in progress..", 15, 2, 22, green, false).
         set textbox:style:bg to "starship_img/starship_main_square_bg".
         ShowHomePage().
         LogToFile("Launch Complete").
