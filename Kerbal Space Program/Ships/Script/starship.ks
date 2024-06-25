@@ -6423,6 +6423,7 @@ g:dispose().
 shutdown.
 
 
+
 //--------------Launch Program--------------------------------//
 
     
@@ -6430,7 +6431,6 @@ shutdown.
 function Launch {
     if not AbortLaunchInProgress and not LaunchComplete {
         set LaunchButtonIsRunning to true.
-        //clearscreen.
         mainbox:showonly(flightstack).
         if hasnode {
             remove nextnode.
@@ -6445,6 +6445,7 @@ function Launch {
         HideEngineToggles(1).
         SetRadarAltitude().
         set BurnDuration to 0.
+        set TargetError to 0.
         LogToFile("Launch Program Started").
         set runningprogram to "Launch".
         ShowButtons(0).
@@ -6458,19 +6459,21 @@ function Launch {
 
         set targetincl to setting3:text:split("°")[0]:toscalar(0).
         set LaunchData to LAZcalc_init(targetap, targetincl).
+        print "Target Inc: " + round(setting3:text:split("°")[0]:toscalar(0)).
 
         if not (TargetShip = 0) {
             set target to TargetShip.
             local testHeading to heading(LAZcalc(LaunchData), 0):vector.
             local targetHeading to vxcl(up:vector, target:velocity:orbit).
             print "Heading difference: " + vang(testHeading, targetHeading).
-            if vang(testHeading, targetHeading) > 45 {
+            if vang(testHeading, targetHeading) > 15 {
                 set targetincl to -targetincl.
                 set LaunchData to LAZcalc_init(targetap, targetincl).
                 print "Changing Launch Inclination to depart southbound!".
                 print " ".
             }
         }
+        print "Target Inc: " + round(setting3:text:split("°")[0]:toscalar(0)).
 
         if RSS {
             set LaunchElev to altitude - 108.384.
@@ -6971,11 +6974,11 @@ function Launch {
         Droppriority().
         rcs off.
         HUDTEXT("Ship: Orbit achieved! Interface shutdown commanded..", 10, 2, 22, green, false).
-        HUDTEXT("Booster: Automated Return is in progress..", 15, 2, 22, green, false).
         set textbox:style:bg to "starship_img/starship_main_square_bg".
         ShowHomePage().
         LogToFile("Launch Complete").
         wait 3.
+        HUDTEXT("Booster: Automated Return is in progress..", 15, 2, 22, green, false).
         LogToFile("Launch Program Ended").
         print "Launch Program Ended".
         SetLoadDistances("default").
@@ -7054,8 +7057,23 @@ function LaunchThrottle {
 
 Function LaunchSteering {
     set myAzimuth to LAZcalc(LaunchData).
+    clearscreen.
+    print "Steering Error: " + round(SteeringManager:angleerror, 2).
+    print " ".
+
+    if hastarget {
+        set TargetError to vang(normal(target:orbit), normal(ship:orbit)).
+        if vdot(ship:velocity:orbit, normal(target:orbit)) < 0 {
+            set TargetError to -TargetError.
+        }
+        print "Target Error: " + round(TargetError, 2).
+    }
+    else if not (TargetShip = 0) {
+        set target to TargetShip.
+    }
+
     if altitude - LaunchElev < 250 {
-        set result to heading(myAzimuth, 90).
+        set result to heading(myAzimuth + TargetError, 90).
     }
     else if Boosterconnected {
         if RSS {
@@ -7092,13 +7110,7 @@ Function LaunchSteering {
                 set targetpitch to 90 - (11 * SQRT(max((altitude - 250 - LaunchElev), 0)/1000)).
             }
         }
-        set result to lookdirup(heading(myAzimuth, targetpitch):vector, LaunchRollVector).
-        //if not (Launch180) {
-        //    set result to heading(myAzimuth, targetpitch).
-        //}
-        //else {
-        //    set result to heading(myAzimuth, targetpitch) * R(0, 0, 180).
-        //}
+        set result to lookdirup(heading(myAzimuth + 3 * TargetError, targetpitch):vector, LaunchRollVector).
     }
     else {
         set ProgradeAngle to 90 - vang(velocity:surface, up:vector).
@@ -7115,33 +7127,12 @@ Function LaunchSteering {
             set OrbitBurnPitchCorrection to OrbitBurnPitchCorrectionPID:UPDATE(TIME:SECONDS, apoapsis).
         }
 
-        clearscreen.
         //print "Desired Accel: " + round(DesiredAccel / 9.81, 2) + "G".
         //print "Ratio: " + round(DesiredAccel / MaxAccel, 2).
         //print "Time to Orbit Completion: " + round(TimeToOrbitCompletion) + "s".
-        print "Steering Error: " + round(SteeringManager:angleerror, 2).
-        print " ".
-
-        if TargetShip = 0 {}
-        else if hastarget {
-        //    set InclinationError to vdot(normal(target:orbit), facing:starvector).
-        //    local TargetVector to target:velocity:orbit.
-        //    local ShipVector to velocity:orbit.
-        //    set InclinationError to
-        //    print "Incl Error: " + round(InclinationError, 2).
-        }
-        else {
-            set target to TargetShip.
-        }
 
         rcs on.
-        set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, LaunchRollVector).
-        //if not (Launch180) {
-        //    set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, up:vector).
-        //}
-        //else {
-        //    set result to lookdirup(heading(myAzimuth, ProgradeAngle + OrbitBurnPitchCorrection):vector, -up:vector).
-        //}
+        set result to lookdirup(heading(myAzimuth + 3 * TargetError, ProgradeAngle + OrbitBurnPitchCorrection):vector, LaunchRollVector).
     }
     return result.
 }
@@ -7164,7 +7155,7 @@ function LaunchLabelData {
         if altitude - LaunchElev < 500 {
             if not ClosingIsRunning {
                 set message1:text to "<b>Actual/Target Apoapsis:</b>   " + round(apoapsis/1000,1) + "/" + round(targetap / 1000, 1) + "km".
-                set message2:text to "<b>Guidance (Az./Pitch):</b>         " + round(myAzimuth, 1) + "°/90°".
+                set message2:text to "<b>Guidance (Az./Pitch):</b>         " + round(myAzimuth + TargetError, 1) + "°/90°".
                 set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
             }
         }
@@ -7191,13 +7182,13 @@ function LaunchLabelData {
             if Boosterconnected {
                 if not ClosingIsRunning {
                     if abs(SteeringError) < 2.5 {
-                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth, 1) + "°/" + round(targetpitch, 1) + "°/" + round(SteeringError, 1) + "°".
+                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth + TargetError, 1) + "°/" + round(targetpitch, 1) + "°/" + round(SteeringError, 1) + "°".
                     }
                     else if abs(SteeringError) < 35 {
-                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth, 1) + "°/" + round(targetpitch, 1) + "°/<color=yellow>" + round(SteeringError, 1) + "°</color>".
+                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth + TargetError, 1) + "°/" + round(targetpitch, 1) + "°/<color=yellow>" + round(SteeringError, 1) + "°</color>".
                     }
                     else {
-                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth, 1) + "°/" + round(targetpitch, 1) + "°/<color=red>" + round(SteeringError, 1) + "°</color>".
+                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth + TargetError, 1) + "°/" + round(targetpitch, 1) + "°/<color=red>" + round(SteeringError, 1) + "°</color>".
                     }
                     set message3:text to "<b>Down Range:</b>                         " + round(DownRange, 1) + "km".
                 }
@@ -7205,13 +7196,13 @@ function LaunchLabelData {
             else {
                 if not ClosingIsRunning {
                     if abs(SteeringError) < 2.5 {
-                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth, 1) + "°/" + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/" + round(SteeringError, 1) + "°".
+                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth + TargetError, 1) + "°/" + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/" + round(SteeringError, 1) + "°".
                     }
                     else if abs(SteeringError) < 35 {
-                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth, 1) + "°/" + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/<color=yellow>" + round(SteeringError, 1) + "°</color>".
+                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth + TargetError, 1) + "°/" + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/<color=yellow>" + round(SteeringError, 1) + "°</color>".
                     }
                     else {
-                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth, 1) + "°/" + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/<color=red>" + round(SteeringError, 1) + "°</color>".
+                        set message2:text to "<b>Guidance (Az./Pitch/Err):</b>  " + round(myAzimuth + TargetError, 1) + "°/" + round(ProgradeAngle + OrbitBurnPitchCorrection, 1) + "°/<color=red>" + round(SteeringError, 1) + "°</color>".
                     }
                     if defined Booster {
                         if not Booster:isdead {
