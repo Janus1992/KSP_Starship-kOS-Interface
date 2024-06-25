@@ -1,3 +1,6 @@
+# V2.3.39 (2024-06-25)
+- Craft files fixed for bug which caused the ship to lose integrity on relaunching (after catch and restack).
+
 # V2.3.38 (2024-06-21)
 - Single Raptor De-orbit burn.
 - Wobbly Tower detection reactivated and tweaked.
