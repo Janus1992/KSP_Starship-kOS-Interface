@@ -64,7 +64,7 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 
 
 ### Bug support guide:
-- First **carefully** read this whole page!
+- First **carefully** read this whole page! Remember there is no such thing as perfect code, and there will be errors that happen either due my scripts or just because of KSP and its unpredictability. If errors happen consistently, continue down below:
 - Move all unnecessary mods away from _/gamedata_ temporarily.
 - Keep the kOS CPUs open (right hand side) and screenshot any errors.
 - Either:

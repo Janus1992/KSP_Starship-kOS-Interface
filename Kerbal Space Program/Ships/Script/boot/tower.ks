@@ -205,7 +205,7 @@ until False {
         if not (ship:name:contains("OrbitalLaunchMount")) and SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 {
             RenameOLM().
         }
-        SaveToSettings("TowerHeadingVector", vxcl(up:vector, TowerBase:position - OLM:position)).
+        SaveToSettings("TowerHeadingVector", AngleAxis(2.9, up:vector) * vxcl(up:vector, TowerBase:position - OLM:position)).
         set PrevTime to time:seconds.
     }
 }
@@ -351,7 +351,7 @@ function SaveToSettings {
 
 function RenameOLM {
     if ship:partstitled("Donnager MK-1 Main Body"):length = 0 and ship:partstitled("Donnager MK-1 EXP Main Body"):length = 0 and ship:partstitled("Donnager MK-1 Depot"):length = 0 {
-        print "No Ship Detected..".
+        print "No Ship currently occupying the tower..".
         for var in LaunchSites:keys {
             if round(LaunchSites[var]:split(",")[0]:toscalar(9999), 2) = round(ship:geoposition:lat, 2) and round(LaunchSites[var]:split(",")[1]:toscalar(9999), 2) = round(ship:geoposition:lng, 2) {
                 set ship:name to var + " OrbitalLaunchMount".

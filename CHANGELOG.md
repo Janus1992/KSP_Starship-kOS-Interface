@@ -1,8 +1,17 @@
+# V2.4.0 (2024-07-08)
+- Ship landing now steeper (75-80 degrees AoA) at the cost of some lateral control.
+- Hopefully fixed failing booster catches.
+    - Still not sure why some people have a Landing Ratio of 1.3 and increasing..
+- More accurate tower arms rotation during catches.
+- Fixed a bug where the tower would not be properly initialized and the arms don't open to catch the ship.
+- Many changes in the background. Stability will be impacted with this release and bugs are to be expected.
+
 # V2.3.39 (2024-06-25)
 - Craft files fixed for bug which caused the ship to lose integrity on relaunching (after catch and restack).
 - Depot craft HSR clamp switch set to HSR6.
 - Booster final guidance dampened a bit.
 - Active target tracking during launch to intercept orbit.
+- Ship landing tweaks.
 
 # V2.3.38 (2024-06-21)
 - Single Raptor De-orbit burn.
