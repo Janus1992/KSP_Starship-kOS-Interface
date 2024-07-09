@@ -7878,6 +7878,13 @@ function ReEntryData {
         }
     }
 
+    if hastarget {
+        if target:name:contains("OrbitalLaunchMount") {
+            set landingzone to target:geoposition.
+            LandAtOLM().
+        }
+    }
+
     if result = V(0,0,0) {
         set result to lookdirup(facing:forevector, facing:topvector).
     }
@@ -8170,9 +8177,7 @@ function ReEntryData {
                 if TargetOLM {
                     when RadarAlt < 2 * ShipHeight then {
                         setflaps(0, 85, 1, 0).
-                        if not (RSS) {
-                            sendMessage(Vessel(TargetOLM), ("MechazillaArms," + round(ShipRot, 1) + ",10,30,true")).
-                        }
+                        sendMessage(Vessel(TargetOLM), ("MechazillaArms," + round(ShipRot, 1) + ",10,30,true")).
                         when RadarAlt < 0.7 * ShipHeight then {
                             sendMessage(Vessel(TargetOLM), ("MechazillaArms," + round(ShipRot, 1) + ",10,5,true")).
                             if RadarAlt > 1 * Scale {
@@ -8298,7 +8303,8 @@ function ReEntryData {
                 wait 0.01.
             }
             set LngLatErrorList to LngLatError().
-            if verticalspeed < -0.1 and ErrorVector:mag < 10 * Scale {
+            wait 1.
+            if RadarAlt < -1 and ErrorVector:mag < 10 * Scale {
                 set LandSomewhereElse to true.
                 SetRadarAltitude().
                 LogToFile("Uh oh... Ship not caught..").
@@ -11342,21 +11348,17 @@ function LandAtOLM {
                             }
                         }
                         if alt:radar > 1000 and alt:radar < 10100 {
-                            when RadarAlt < 1800 then {
+                            when RadarAlt < 2000 then {
                                 if not (Vessel(TargetOLM):isdead) {
                                     sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
                                     sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,90,true").
                                     sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,false").
                                     sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
-                                    when RadarAlt < 300 then {
-                                        if Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount"):length > 0 {
-                                            if RSS {
-                                                set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 5), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 5)).
-                                            }
-                                            else {
-                                                set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 4), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 4)).
-                                            }
-                                        }
+                                    if RSS {
+                                        set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 5), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 5)).
+                                    }
+                                    else {
+                                        set landingzone to latlng(round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lat, 4), round(body:geopositionof(Vessel(TargetOLM):partstitled("Starship Orbital Launch Mount")[0]:position):lng, 4)).
                                     }
                                 }
                             }
