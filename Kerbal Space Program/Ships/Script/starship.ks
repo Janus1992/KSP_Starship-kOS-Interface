@@ -550,6 +550,12 @@ function FindParts {
         set BoosterCore to SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED").
         if BoosterCore:length > 0 {
             set BoosterCore[0]:getmodule("kOSProcessor"):volume:name to "Booster".
+            if BoosterCore[0]:drymass = 55 and not (RSS) or BoosterCore[0]:drymass = 80 and RSS {
+                set BoosterCorrectVariant to true.
+            }
+            else {
+                set BoosterCorrectVariant to false.
+            }
         }
     }
     else {
@@ -4562,6 +4568,17 @@ set launchbutton:ontoggle to {
                         ClearInterfaceAndSteering().
                         return.
                     }
+                    if not (BoosterCorrectVariant) {
+                        LogToFile("Launch cancelled due to wrong Booster Type").
+                        set message1:text to "<b>Error: Wrong Booster Variant!</b>".
+                        set message2:text to "<b>Select Booster 9 Variant..</b>".
+                        set message3:text to "".
+                        set message1:style:textcolor to yellow.
+                        set textbox:style:bg to "starship_img/starship_main_square_bg".
+                        wait 3.
+                        ClearInterfaceAndSteering().
+                        return.
+                    }
                     if TowerAlreadyExists {
                         LogToFile("Launch cancelled due to other Tower found").
                         set message1:text to "<b>Error: Recover other Towers first!</b>".
@@ -8151,7 +8168,7 @@ function ReEntryData {
                 lock throttle to LandingThrottle.
 
                 if TargetOLM {
-                    when RadarAlt < 1.5 * ShipHeight then {
+                    when RadarAlt < 2 * ShipHeight then {
                         setflaps(0, 85, 1, 0).
                         if not (RSS) {
                             sendMessage(Vessel(TargetOLM), ("MechazillaArms," + round(ShipRot, 1) + ",10,30,true")).
@@ -11328,7 +11345,7 @@ function LandAtOLM {
                             when RadarAlt < 1800 then {
                                 if not (Vessel(TargetOLM):isdead) {
                                     sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
-                                    sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,60,true").
+                                    sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,90,true").
                                     sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,false").
                                     sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
                                     when RadarAlt < 300 then {

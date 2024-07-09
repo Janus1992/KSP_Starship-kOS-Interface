@@ -30,7 +30,7 @@ PART
 	istg = 0
 	resPri = 0
 	dstg = 0
-	sidx = 0
+	sidx = 3
 	sqor = 0
 	sepI = 0
 	attm = 0
@@ -1512,7 +1512,7 @@ PART
 	part = SEP.23.RAPTOR2.SL.RC_4292154298
 	partName = Part
 	persistentId = 1527989804
-	pos = -0.585801244,59.3086395,0.00346750021
+	pos = -0.585801363,59.3086395,0.00346750021
 	attPos = 0,0,0
 	attPos0 = -0.00348020135,-8.08257294,-0.585802853
 	rot = 0,0.707106829,0,0.707106829
@@ -1525,7 +1525,7 @@ PART
 	istg = 0
 	resPri = 0
 	dstg = 0
-	sidx = 1
+	sidx = 0
 	sqor = 0
 	sepI = 0
 	attm = 0
@@ -1929,7 +1929,7 @@ PART
 	part = SEP.23.RAPTOR2.SL.RC_4292152712
 	partName = Part
 	persistentId = 1194899490
-	pos = 0.295918047,59.3086395,0.505567908
+	pos = 0.295918107,59.3086395,0.505568027
 	attPos = 0,0,0
 	attPos0 = -0.505580664,-8.08257294,0.295916259
 	rot = 0,0.965925932,0,-0.258819133
@@ -1942,7 +1942,7 @@ PART
 	istg = 0
 	resPri = 0
 	dstg = 0
-	sidx = 1
+	sidx = 0
 	sqor = 0
 	sepI = 0
 	attm = 0
@@ -2338,7 +2338,7 @@ PART
 	part = SEP.23.RAPTOR2.SL.RC_4292152430
 	partName = Part
 	persistentId = 527224687
-	pos = 0.28989011,59.3086395,-0.509073615
+	pos = 0.28989017,59.3086395,-0.509073734
 	attPos = 0,0,0
 	attPos0 = 0.50906074,-8.08257294,0.289888442
 	rot = 0,0.258819014,0,-0.965925932
@@ -2351,7 +2351,7 @@ PART
 	istg = 0
 	resPri = 0
 	dstg = 0
-	sidx = 1
+	sidx = 0
 	sqor = 0
 	sepI = 0
 	attm = 0
@@ -2747,7 +2747,7 @@ PART
 	part = SEP.23.RAPTOR.VAC_4292142664
 	partName = Part
 	persistentId = 523005516
-	pos = 1.93715096E-06,59.6608582,1.93219423
+	pos = 1.93715096E-06,59.6608582,1.93219471
 	attPos = 0,0,0
 	attPos0 = -1.93220675,-7.73035431,0
 	rot = 0,0,0,1.00000012
@@ -2760,7 +2760,7 @@ PART
 	istg = 0
 	resPri = 0
 	dstg = 0
-	sidx = 2
+	sidx = 1
 	sqor = 0
 	sepI = 0
 	attm = 0
@@ -3007,7 +3007,7 @@ PART
 	part = SEP.23.RAPTOR.VAC_4292141648
 	partName = Part
 	persistentId = 3083723273
-	pos = 1.6733402,59.6608582,-0.966119587
+	pos = 1.67334068,59.6608582,-0.966119826
 	attPos = 0,0,0
 	attPos0 = 0.966106474,-7.73035431,1.67333841
 	rot = 0,0.866025448,0,0.49999997
@@ -3020,7 +3020,7 @@ PART
 	istg = 0
 	resPri = 0
 	dstg = 0
-	sidx = 2
+	sidx = 1
 	sqor = 0
 	sepI = 0
 	attm = 0
@@ -3259,7 +3259,7 @@ PART
 	part = SEP.23.RAPTOR.VAC_4292141548
 	partName = Part
 	persistentId = 2159209059
-	pos = -1.67333591,59.6608582,-0.96611917
+	pos = -1.67333651,59.6608582,-0.966119528
 	attPos = 0,0,0
 	attPos0 = 0.966106653,-7.73035431,-1.67333722
 	rot = 0,0.866025388,0,-0.50000006
@@ -3272,7 +3272,7 @@ PART
 	istg = 0
 	resPri = 0
 	dstg = 0
-	sidx = 2
+	sidx = 1
 	sqor = 0
 	sepI = 0
 	attm = 0
@@ -3511,7 +3511,7 @@ PART
 	part = SEP.23.RAPTOR.VAC_4292141278
 	partName = Part
 	persistentId = 1759471117
-	pos = 1.67334044,59.6608582,0.966093898
+	pos = 1.67334104,59.6608582,0.966094255
 	attPos = 0,0,0
 	attPos0 = -0.966106653,-7.73035431,1.67333841
 	rot = 0,-0.50000006,0,-0.866025507
@@ -3524,7 +3524,7 @@ PART
 	istg = 0
 	resPri = 0
 	dstg = 0
-	sidx = 3
+	sidx = 2
 	sqor = 0
 	sepI = 0
 	attm = 0
@@ -3763,7 +3763,7 @@ PART
 	part = SEP.23.RAPTOR.VAC_4292139808
 	partName = Part
 	persistentId = 77839896
-	pos = 2.05636024E-06,59.6608582,-1.93221974
+	pos = 2.05636024E-06,59.6608582,-1.93222022
 	attPos = 0,0,0
 	attPos0 = 1.93220675,-7.73035431,5.96046448E-07
 	rot = 0,-1.00000012,0,1.1920929E-07
@@ -3776,7 +3776,7 @@ PART
 	istg = 0
 	resPri = 0
 	dstg = 0
-	sidx = 3
+	sidx = 2
 	sqor = 0
 	sepI = 0
 	attm = 0
@@ -4015,7 +4015,7 @@ PART
 	part = SEP.23.RAPTOR.VAC_4292139708
 	partName = Part
 	persistentId = 554079584
-	pos = -1.67333531,59.6608582,0.966094494
+	pos = -1.67333579,59.6608582,0.966094732
 	attPos = 0,0,0
 	attPos0 = -0.966106892,-7.73035431,-1.67333686
 	rot = 0,-0.49999997,0,0.866025448
@@ -4028,7 +4028,7 @@ PART
 	istg = 0
 	resPri = 0
 	dstg = 0
-	sidx = 3
+	sidx = 2
 	sqor = 0
 	sepI = 0
 	attm = 0
@@ -4267,7 +4267,7 @@ PART
 	part = SEP.23.BOOSTER.HSR_4293741608
 	partName = Part
 	persistentId = 3645430446
-	pos = 3.11434292E-06,57.0974312,-1.27553949E-05
+	pos = 3.11434314E-06,57.0974312,-1.27553949E-05
 	attPos = 0,0,0
 	attPos0 = 7.95807972E-13,-10.2937813,1.41561043E-06
 	rot = 0,-0.707106829,0,-0.707106829
@@ -4649,7 +4649,7 @@ PART
 	part = SEP.23.BOOSTER.INTEGRATED_4293732090
 	partName = Part
 	persistentId = 176163902
-	pos = 5.49853257E-06,34.2224274,-1.2755394E-05
+	pos = 5.4985353E-06,34.2224274,-1.2755394E-05
 	attPos = 0,0,0
 	attPos0 = -4.76837158E-07,34.2224083,5.96046448E-08
 	rot = 0,0.707106829,0,0.707106829
@@ -4981,7 +4981,7 @@ PART
 		isEnabled = True
 		stagingEnabled = True
 		moduleID = DockingSwitch
-		currentSubtype = Disabled
+		currentSubtype = Enabled
 		EVENTS
 		{
 		}
@@ -4994,11 +4994,11 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleB9PartSwitch
+		name = ModulePartVariants
 		isEnabled = True
+		useVariantMass = True
 		stagingEnabled = True
-		moduleID = SEP_Booster_Aero
-		currentSubtype = B9
+		selectedVariant = B9
 		EVENTS
 		{
 		}
@@ -5452,7 +5452,7 @@ PART
 	part = SEP.23.BOOSTER.CLUSTER_4293709678
 	partName = Part
 	persistentId = 875181651
-	pos = 8.36700929E-06,13.3666916,-1.2755394E-05
+	pos = 8.36701656E-06,13.3666916,-1.2755394E-05
 	attPos = 0,0,0
 	attPos0 = -1.98951952E-13,-20.8557358,2.86847285E-06
 	rot = 0,-0.707106829,0,-0.707106829
@@ -6222,7 +6222,7 @@ PART
 	part = SLE.SS.OLM.KOS_4293683006
 	partName = Part
 	persistentId = 178751509
-	pos = 8.70541044E-06,9.41703033,-1.21891499E-05
+	pos = 8.70541771E-06,9.41703033,-1.21891499E-05
 	attPos = 0,0,0
 	attPos0 = -5.66243727E-07,-3.94966125,3.38400611E-07
 	rot = 0,-1.00000012,0,0
@@ -6774,7 +6774,7 @@ PART
 	part = SLE.SS.OLIT.Base.KOS_4293664370
 	partName = Part
 	persistentId = 3463403353
-	pos = -20.8444195,4.09638596,-1.05910051
+	pos = -20.8444271,4.09638596,-1.05910051
 	attPos = 0,0,0
 	attPos0 = 20.8443871,-5.32064438,1.05908418
 	rot = 0,-1.00000012,0,0
@@ -7162,7 +7162,7 @@ PART
 	part = SLE.SS.OLIT.Core.KOS_4293663230
 	partName = Part
 	persistentId = 3593322564
-	pos = -20.8444195,7.61532974,-1.05910051
+	pos = -20.8444271,7.61532974,-1.05910051
 	attPos = 0,0,0
 	attPos0 = 0,3.51894379,0
 	rot = 0,-1.00000012,0,0
@@ -7333,7 +7333,7 @@ PART
 	part = SLE.SS.OLIT.Top.KOS_4293654360
 	partName = Part
 	persistentId = 2291365338
-	pos = -20.8444195,81.0942307,-1.05910051
+	pos = -20.8444271,81.0942307,-1.05910051
 	attPos = 0,0,0
 	attPos0 = 0,73.4789047,0
 	rot = 0,-1.00000012,0,0
@@ -7448,6 +7448,29 @@ PART
 	}
 	MODULE
 	{
+		name = LaunchClamp
+		isEnabled = True
+		scaleFactor = 1
+		height = 0
+		stagingEnabled = False
+		towerRot = 0,0,0,0
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+			ReleaseClamp
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -7483,7 +7506,7 @@ PART
 	part = SLE.SS.OLIT.MZ.KOS_4293653866
 	partName = Part
 	persistentId = 3754693482
-	pos = -15.4826002,79.4291458,-0.304396987
+	pos = -15.4826078,79.4291458,-0.304396987
 	attPos = 0,0,0
 	attPos0 = -5.36182117,71.8138199,-0.75470084
 	rot = 0,-1.00000012,0,0
@@ -8089,7 +8112,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4293634742
 	partName = Part
 	persistentId = 2415302058
-	pos = 1.84630108,56.5329361,3.19801903
+	pos = 1.84630251,56.5329361,3.19802332
 	attPos = 0,0,0
 	attPos0 = -3.19802523,22.3105087,1.84629416
 	rot = 0.49999997,-5.45420598E-08,-0.866025448,5.45420313E-08
@@ -8309,7 +8332,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4293634106
 	partName = Part
 	persistentId = 3573472961
-	pos = -1.84629691,56.5329361,3.19801712
+	pos = -1.84629834,56.5329361,3.19801998
 	attPos = 0,0,0
 	attPos0 = -3.19802523,22.3105087,-1.84629881
 	rot = 0.866025388,4.86962577E-08,-0.50000006,-4.86962364E-08
@@ -8521,7 +8544,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4293633830
 	partName = Part
 	persistentId = 1148674369
-	pos = -1.84629726,56.5329361,-3.19804382
+	pos = -1.84629869,56.5329361,-3.19804525
 	attPos = 0,0,0
 	attPos0 = 3.19802666,22.3105087,-1.84630132
 	rot = -0.866025448,-4.86962435E-08,-0.49999997,-4.86962435E-08
@@ -8733,7 +8756,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4293633564
 	partName = Part
 	persistentId = 340063600
-	pos = 1.84630287,56.5329361,-3.1980443
+	pos = 1.8463043,56.5329361,-3.19804716
 	attPos = 0,0,0
 	attPos0 = 3.19802713,22.3105087,1.84629381
 	rot = -0.49999997,5.45420455E-08,-0.866025448,5.45420455E-08
