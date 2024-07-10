@@ -6,6 +6,10 @@
 
 User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 
+## Current State:
+- unstable.
+- Duna Landings overhaul in progress, landings currently don't work.
+
 ## Installation:
 - Download and install all requirements listed below.
 - If you update: first delete the _StarshipInterface_ folder!
@@ -64,7 +68,8 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 
 
 ### Bug support guide:
-- First **carefully** read this whole page! Remember there is no such thing as perfect code, and there will be errors that happen either due my scripts or just because of KSP and its unpredictability. If errors happen consistently, continue down below:
+- First **carefully** read this whole page! Remember there is no such thing as perfect code, and there will be errors that happen either due my scripts or just because of KSP and its unpredictability. If errors happen consistently, try the following:
+- Remove SEP/SLE/Interface and reinstall from the links above (dev versions).
 - Move all unnecessary mods away from _/gamedata_ temporarily.
 - Keep the kOS CPUs open (right hand side) and screenshot any errors.
 - Either:

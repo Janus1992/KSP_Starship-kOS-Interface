@@ -1,3 +1,7 @@
+# V2.4.2 (2024-07-10)
+- Took out selecting a target during re-entry again. Too unreliable for now.
+- Beginning of duna-landing overhaul. Currently not working.
+
 # V2.4.1 (2024-07-09)
 - Fixes for booster landings. Crafts didn't use Booster 9 Variant, which is important for accurate landings. Built in function to not allow launches with boosters other than B9.
 - Arms are more opened up initially prior to catch. To avoid the ship landing on top of them.
