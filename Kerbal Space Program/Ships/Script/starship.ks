@@ -551,7 +551,7 @@ function FindParts {
         set BoosterCore to SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED").
         if BoosterCore:length > 0 {
             set BoosterCore[0]:getmodule("kOSProcessor"):volume:name to "Booster".
-            if BoosterCore[0]:drymass = 55 and not (RSS) or BoosterCore[0]:drymass = 80 and RSS {
+            if BoosterCore[0]:drymass > 54.9 and not (RSS) or BoosterCore[0]:drymass > 79.9 and RSS {
                 set BoosterCorrectVariant to true.
             }
             else {
