@@ -30,14 +30,23 @@ set OLM to ship:partstitled("Starship Orbital Launch Mount")[0].
 set TowerBase to ship:partstitled("Starship Orbital Launch Integration Tower Base")[0].
 set TowerCore to ship:partstitled("Starship Orbital Launch Integration Tower Core")[0].
 Set TowerTop to ship:partstitled("Starship Orbital Launch Integration Tower Rooftop")[0].
-Set Mechazilla to ship:partsnamed("SLE.SS.OLIT.MZ.KOS")[0].
+Set Mechazilla to ship:partsnamed("SLE.SS.OLIT.MZ")[0].
 set PrevTime to time:seconds.
 clearscreen.
 
 
 //-------------Get Module Order-------------//
 
-
+set NrforVertMoveMent to 0.
+set NrforStopArm1 to 0.
+set NrforStopArm2 to 0.
+set NrforStopPusher1 to 0.
+set NrforStopPusher2 to 0.
+set NrforOpenCloseArms to 0.
+set NrforOpenClosePushers to 0.
+set NrforStabilizers to 0.
+set NrforFueling to 0.
+set NrforDelugeRefill to 0.
 
 for x in range(0, Mechazilla:modules:length) {
     if Mechazilla:getmodulebyindex(x):hasaction("stop trolley") {

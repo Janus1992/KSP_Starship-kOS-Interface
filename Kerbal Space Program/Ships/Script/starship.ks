@@ -129,12 +129,12 @@ set aoa to 60.
 
 
 
-if RSS {    // Real Solar System
+if RSS {         // Real Solar System
     set LandingAoA to 80.
     set MaxCargoToOrbit to 151000.
     set MaxReEntryCargoThickAtmo to 2500.
     set MaxIU to 200.
-    set MaxReEntryCargoThinAtmo to 75000.
+    set MaxReEntryCargoThinAtmo to 151000.
     set LaunchTimeSpanInSeconds to 500.
     set ShipHeight to 49.7.
     set BoosterMinPusherDistance to 0.48.
@@ -169,12 +169,12 @@ if RSS {    // Real Solar System
         set TRJCorrection to 0.
     }
 }
-else if KSRSS { // 2.5-2.7x scaled Kerbin
+else if KSRSS {      // 2.5-2.7x scaled Kerbin
     set LandingAoA to 75.
     set MaxCargoToOrbit to 126000.
     set MaxReEntryCargoThickAtmo to 1000.
     set MaxIU to 100.
-    set MaxReEntryCargoThinAtmo to 50000.
+    set MaxReEntryCargoThinAtmo to 126000.
     set LaunchTimeSpanInSeconds to 360.
     set ShipHeight to 31.0.
     set BoosterMinPusherDistance to 0.3.
@@ -216,12 +216,12 @@ else if KSRSS { // 2.5-2.7x scaled Kerbin
         set TRJCorrection to 0.
     }
 }
-else {  // Stock Kerbin
+else {       // Stock Kerbin
     set LandingAoA to 75.
     set MaxCargoToOrbit to 77800.
     set MaxReEntryCargoThickAtmo to 1000.
     set MaxIU to 100.
-    set MaxReEntryCargoThinAtmo to 37500.
+    set MaxReEntryCargoThinAtmo to 77800.
     set LaunchTimeSpanInSeconds to 265.
     set ShipHeight to 31.0.
     set BoosterMinPusherDistance to 0.3.
@@ -264,7 +264,7 @@ set FWDFlapDefault to 60.
 set AFTFlapDefault to 60.
 set rcsRaptorBoundary to 100.  // Defines the custom burn boundary velocity where the ship will burn either RCS/Single Raptor below it or VAC Raptors above it.
 set CoGFuelBalancing to true.  // Disable this to stop constant fuel transfers during re-entry.
-set DynamicPitch to false.   // Change the flap defaults dynamically during re-entry.
+set DynamicPitch to true.   // Change the flap defaults dynamically during re-entry.
 set steeringmanager:pitchtorquefactor to 0.75.
 set steeringmanager:yawtorquefactor to 0.75.
 set steeringmanager:rolltorquefactor to 0.75.
@@ -408,6 +408,9 @@ set t to time:seconds.
 set ShipRot to 0.
 set TowerHeadingVector to v(0,0,0).
 set tLZ to time:seconds.
+set CancelTime to 1.
+set CancelDist to 1.
+set Dist2LandProc to 1.
 
 
 
@@ -570,7 +573,7 @@ function FindParts {
         set TowerBase to ship:partstitled("Starship Orbital Launch Integration Tower Base")[0].
         set TowerCore to ship:partstitled("Starship Orbital Launch Integration Tower Core")[0].
         Set TowerTop to ship:partstitled("Starship Orbital Launch Integration Tower Rooftop")[0].
-        Set Mechazilla to ship:partsnamed("SLE.SS.OLIT.MZ.KOS")[0].
+        Set Mechazilla to ship:partsnamed("SLE.SS.OLIT.MZ")[0].
         if RSS {
             set ArmsHeight to (Mechazilla:position - ship:body:position):mag - SHIP:BODY:RADIUS - ship:geoposition:terrainheight + 12.
         }
@@ -2258,12 +2261,7 @@ set quickstatus1:ontoggle to {
             }
         }
         else {
-            //set flapcargomasscorr to round(10 - ((CargoMass / 10000) * 10)).
-            //if flapcargomasscorr < 0 {
-            //    set flapcargomasscorr to 0.
-            //}
             LogToFile("Flap control ON").
-            //setflaps(FWDFlapDefault + flapcargomasscorr, AFTFlapDefault, 1, 30).
             setflaps(FWDFlapDefault, AFTFlapDefault, 1, 30).
         }
     }
@@ -5196,7 +5194,7 @@ set landbutton:ontoggle to {
 
                             if ship:body:atm:sealevelpressure < 0.5 {
                                 if RSS {
-                                    set MinFuel to 85000 + (CargoMass / 150000 * 100000).
+                                    set MinFuel to 35000 + (CargoMass / 150000 * 200000).
                                     set MaxFuel to MinFuel + CargoMass + 75000.
                                 }
                                 else if KSRSS {
@@ -6339,6 +6337,9 @@ if addons:tr:available and not startup {
                     BackGroundUpdate().
                     wait 0.001.
                 }
+                if ship:partstitled("Starship Quick Disconnect Arm")[0]:getmodule("ModuleAnimateGeneric"):hasevent("Full Extension") {
+                    ship:partstitled("Starship Quick Disconnect Arm")[0]:getmodule("ModuleAnimateGeneric"):DOEVENT("Full Extension").
+                }
                 HUDTEXT("Starship Re-stacked! Rebooting..", 5, 2, 20, green, false).
                 wait 1.
                 reboot.
@@ -6512,6 +6513,9 @@ function Launch {
                 }
                 else {
                     set message2:text to "<b>Booster/Ship:             <color=green>Start-Up Confirmed..</color></b>".
+                    if ship:partstitled("Starship Quick Disconnect Arm")[0]:getmodule("ModuleAnimateGeneric"):hasevent("Full Retraction") and x - time:seconds < 3 {
+                        ship:partstitled("Starship Quick Disconnect Arm")[0]:getmodule("ModuleAnimateGeneric"):DOEVENT("Full Retraction").
+                    }
                 }
                 if x - time:seconds < 2.5 {
                     if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesFX") {
@@ -6531,6 +6535,18 @@ function Launch {
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers,0,0.25," + (0.7 * Scale) + ",false")).
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (4 * Scale) + ",0.5")).
+                set message3:text to "".
+                if time:seconds > x - 3 {
+                    set t to time:seconds.
+                    until time:seconds > t + 31 {
+                        SendPing().
+                        set message1:text to "<b><color=yellow>ABORT IN PROGRESS..</color></b>".
+                        set message2:text to "<b>Please standby..</b> (" + round(t + 31 - time:seconds) + "s)".
+                        if ship:partstitled("Starship Quick Disconnect Arm")[0]:getmodule("ModuleAnimateGeneric"):hasevent("Full Extension") {
+                            ship:partstitled("Starship Quick Disconnect Arm")[0]:getmodule("ModuleAnimateGeneric"):DOEVENT("Full Extension").
+                        }
+                    }
+                }
                 ClearInterfaceAndSteering().
                 return.
             }
@@ -7526,6 +7542,7 @@ function ReEntryAndLand {
         ShutDownAllEngines().
         set launchlabel:style:bg to "starship_img/starship_background".
         set textbox:style:bg to "starship_img/starship_main_square_bg".
+        set t to time:seconds.
 
         Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 25).
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 25).
@@ -7557,10 +7574,11 @@ function ReEntryAndLand {
         ActivateEngines(0).
 
         if ship:body:atm:sealevelpressure < 0.5 {
-            setflaps(FWDFlapDefault - 20, AFTFlapDefault - 20, 1, 30).
+            setflaps(FWDFlapDefault - 20, AFTFlapDefault - 20, 1, 10).
+            ActivateEngines(1).
         }
         else {
-            setflaps(FWDFlapDefault, AFTFlapDefault, 1, 20).
+            setflaps(FWDFlapDefault, AFTFlapDefault, 1, 10).
         }
 
         FLflap:getmodule("ModuleSEPControlSurface"):DoAction("activate yaw control", true).
@@ -7591,7 +7609,7 @@ function ReEntryAndLand {
             }
             set YawPID to PIDLOOP(0.0005, 0, 0, -50, 50).
             when airspeed < 7000 and ship:body:atm:sealevelpressure > 0.5 or airspeed < 3000 and ship:body:atm:sealevelpressure < 0.5 then {
-                set PitchPID to PIDLOOP(0.0001, 0.00005, 0.000025, -25, 30 - TRJCorrection).
+                set PitchPID to PIDLOOP(0.0001, 0.00001, 0.000001, -25, 30 - TRJCorrection).
                 set YawPID to PIDLOOP(0.0025, 0, 0, -50, 50).
             }
         }
@@ -7618,8 +7636,7 @@ function ReEntryAndLand {
                 if ship:body:atm:sealevelpressure < 0.5 {
                     setflaps(FWDFlapDefault - 20, AFTFlapDefault - 20, 1, 5).
                     if RSS {
-                        set YawPID to PIDLOOP(0.025, 0.015, 0.005, -50, 50).
-                        set PitchPID:kp to 0.001.
+                        set YawPID to PIDLOOP(0.0175, 0.015, 0.005, -50, 50).
                     }
                     else {
                         set PitchPID:kp to 0.0025.
@@ -7665,16 +7682,21 @@ function ReEntryAndLand {
                         }
                     }
                     else {
-                        setflaps(FWDFlapDefault - 20, AFTFlapDefault - 20, 1, 20).
+                        setflaps(FWDFlapDefault - 20, AFTFlapDefault - 20, 1, 5).
                         if RSS {
-                            set PitchPID:kp to 0.35.
-                            set PitchPID:ki to 0.3.
-                            set PitchPID:kd to 0.25.
+                            //set PitchPID:kp to 0.01.
+                            set PitchPID:ki to 0.00005.
+                            set PitchPID:kd to 0.00001.
+                        }
+                        else if KSRSS {
+                            //set PitchPID:kp to 0.005.
+                            set PitchPID:ki to 0.0001.
+                            set PitchPID:kd to 0.00005.
                         }
                         else {
-                            set PitchPID:kp to 0.2.
-                            set PitchPID:ki to 0.225.
-                            set PitchPID:kd to 0.2.
+                            set PitchPID:kp to 0.01.
+                            set PitchPID:ki to 0.0075.
+                            set PitchPID:kd to 0.005.
                         }
                     }
                     set runningprogram to "Final Approach".
@@ -7706,17 +7728,61 @@ function ReEntryAndLand {
             LogToFile("Radar Altimeter < " + round(FlipAltitude) + " (" + round(RadarAlt) + "), starting Landing Procedure").
         }
         if ship:body:atm:sealevelpressure < 0.5 {
-            lock maxDecel to min(max(ship:availablethrust, 0.000001) / ship:mass, 3 * 9.81).
-            set brakeDecel to maxDecel.
-            lock CancelTime to airspeed / (cos(90 - 1.25 * vang(-velocity:surface, up:vector)) * brakeDecel).
-            lock CancelDist to 0.5 * airspeed * CancelTime.
+            wait 0.001.
+            if (0.8 * max(SLEngines[0]:availablethrust, 0.000001) * 3) / ship:mass > 2 * 9.805 {
+                for eng in VACEngines {
+                    eng:shutdown.
+                }
+            }
 
-            until vxcl(up:vector, ship:position - landingzone:position):mag < CancelDist or cancelconfirmed and not ClosingIsRunning {
+            function CalcCancelTime {
+                local ISP to EngineISP.
+                local F to 0.8 * ship:availablethrust.
+                local v0 to groundspeed.
+                local m0 to ship:mass.
+                local g0 to 9.805.
+
+                // Calculate the exhaust velocity
+                local ve to ISP * g0.
+
+                // Calculate the mass flow rate
+                local dm to F / ve.
+
+                // Calculate the burn time to bring the rocket to a full stop
+                local CancelTime to (v0 * m0) / F.
+
+                // Number of intervals for the numerical integration
+                local num_intervals to 10.
+
+                // Calculate the step size for the integration
+                local h to CancelTime / num_intervals.
+
+                // Initialize the sum for the integration
+                local Cdistance to 0.
+
+                // Initialize the previous velocity
+                local current_velocity to v0.
+
+                // Perform the numerical integration using the trapezoidal rule
+                for i in range(0, num_intervals) {
+                    local t to i * h.
+                    local mt to m0 - dm * t.
+                    local acceleration to F / mt.
+                    local new_velocity to current_velocity - acceleration * h.
+                    set Cdistance to Cdistance + (current_velocity + new_velocity) * h / 2.
+                    set current_velocity to new_velocity.
+                }
+
+                return Cdistance.
+            }
+
+
+
+            lock CancelDist to CalcCancelTime().
+            lock Dist2LandProc to vxcl(up:vector, ship:position - landingzone:position):mag - CancelDist - 500 - 3 * groundspeed.
+
+            until vxcl(up:vector, ship:position - landingzone:position):mag < CancelDist + 500 + 3 * groundspeed or cancelconfirmed and not ClosingIsRunning {
                 ReEntryData().
-                //print "CancelTime: " + round(CancelTime).
-                //print "CancelDist: " + round(CancelDist).
-                //print "Dist: " + round(vxcl(up:vector, ship:position - landingzone:position):mag).
-                print "Dist2LandProc: " + round(vxcl(up:vector, ship:position - landingzone:position):mag - CancelDist).
                 wait 0.001.
             }
 
@@ -7781,6 +7847,16 @@ function ReEntrySteering {
         print "MaxOutput: " + round(PitchPID:maxoutput, 2).
         print "YawCtrl: " + round(yawctrl, 2).
 
+        if ship:body:atm:sealevelpressure < 0.5 {
+            print " ".
+            print "Mass: " + round(ship:mass).
+            print " ".
+            print "CancelTime: " + round(CancelTime).
+            print "CancelDist: " + round(CancelDist).
+            print "Dist: " + round(vxcl(up:vector, ship:position - landingzone:position):mag).
+            print "Dist2LandProc: " + round(Dist2LandProc).
+        }
+
         set TimeSinceLastSteering to time:seconds.
         set SteeringIsRunning to false.
         return result.
@@ -7798,7 +7874,7 @@ function ReEntryData {
     if airspeed < 450 and kuniverse:timewarp:warp > 1 {set kuniverse:timewarp:warp to 1.}
     if RadarAlt < 1500 and kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
     if ship:body:atm:sealevelpressure < 0.5 {
-        if vxcl(up:vector, ship:position - landingzone:position):mag < CancelDist + 2500 and kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
+        if vxcl(up:vector, ship:position - landingzone:position):mag < CancelDist + 10000 and kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
     }
 
     if airspeed > 300 {
@@ -7833,7 +7909,7 @@ function ReEntryData {
     if result = V(0,0,0) {
         set result to lookdirup(facing:forevector, facing:topvector).
     }
-    if altitude < ship:body:atm:height - 5000 and vang(facing:forevector, result:vector) > 29 {
+    if altitude < ship:body:atm:height - 5000 and vang(facing:forevector, result:vector) > 29 or CargoMass > 25000 * Scale {
         Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
         set tt to time:seconds.
@@ -7844,26 +7920,29 @@ function ReEntryData {
         Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 9).
     }
 
-    if DynamicPitch {
-        if time:seconds > t + 10 {
+    if DynamicPitch and altitude < 0.6 * ship:body:atm:height {
+        if time:seconds > t + 15 {
             set PitchInput to SLEngines[0]:gimbal:pitchangle.
             set t to time:seconds.
-            set FWDFlapDefault to max(min(60 - (PitchInput * 5 / Scale),62.5),57.5).
-            set AFTFlapDefault to max(min(60 + (PitchInput * 5 / Scale),62.5),57.5).
+            set FWDFlapDefault to max(min(60 - (PitchInput * 10 / Scale),65),55).
+            set AFTFlapDefault to max(min(60 + (PitchInput * 10 / Scale),65),55).
             if airspeed > 300 {
                 if ship:body:atm:sealevelpressure < 0.5 {
-                    setflaps(FWDFlapDefault - 20, AFTFlapDefault - 20, 1, 20).
+                    setflaps(FWDFlapDefault - 20, AFTFlapDefault - 20, 1, 10).
                 }
                 else {
-                    setflaps(FWDFlapDefault, AFTFlapDefault, 1, 20).
+                    setflaps(FWDFlapDefault, AFTFlapDefault, 1, 10).
                 }
             }
             else {
                 if ship:body:atm:sealevelpressure < 0.5 {
                     setflaps(FWDFlapDefault - 20, AFTFlapDefault - 20, 1, 10).
                 }
-                else {
+                else if not (RSS) or altitude > 10000 {
                     setflaps(FWDFlapDefault, AFTFlapDefault, 1, 10).
+                }
+                else {
+                    setflaps(FWDFlapDefault, AFTFlapDefault, 1, 5).
                 }
             }
         }
@@ -7983,13 +8062,20 @@ function ReEntryData {
                 set message1:text to "<b>Radar / Flip Altitude:</b>        " + round(RadarAlt) + "m / " + round(FlipAltitude) + "m".
             }
         }
+
         if DistanceToTarget < 10 {
             set message2:text to "<b>Distance to Target:</b>           " + round(DistanceToTarget, 2) + "km".
         }
         else {
-            set message2:text to "<b>Distance to Target:</b>           " + round(DistanceToTarget) + "km".
+            if ship:body:atm:sealevelpressure > 0.5 {
+                set message2:text to "<b>Distance to Target:</b>           " + round(DistanceToTarget) + "km".
+            }
+            else {
+                set message2:text to "<b>Distance to Target:</b>           " + round(DistanceToTarget) + "km <color=grey>/ " + round(Dist2LandProc / 1000) + "km</color>".
+            }
         }
-        if abs(LngLatErrorList[0]) < 100 and abs(LngLatErrorList[1]) < 100 and RadarAlt < 10000 {
+
+        if abs(LngLatErrorList[0]) < 100 and abs(LngLatErrorList[1]) < 100 and RadarAlt < 10000 and ship:body:atm:sealevelpressure > 0.5 {
             set message3:text to "<b>Track/X-Trk Error:</b>             " + round(LngLatErrorList[0]) + "m  " + round(LngLatErrorList[1]) + "m".
         }
         else if vang(ApproachVector, velocity:surface) < 90 {
@@ -8013,7 +8099,7 @@ function ReEntryData {
             }
         }
         if ship:body:atm:sealevelpressure < 0.5 {
-            if abs(LngLatErrorList[0]) > 5000 or abs(LngLatErrorList[1]) > 150 {
+            if abs(LngLatErrorList[0]) > 7500 * Scale or abs(LngLatErrorList[1]) > 150 {
                 set message3:style:textcolor to yellow.
             }
             else {
@@ -8039,6 +8125,7 @@ function ReEntryData {
 
         if LandButtonIsRunning and not LaunchButtonIsRunning and not cancelconfirmed {
             set config:ipu to 1000.
+            unlock throttle.
             rcs off.
             set LandingFlipStart to time:seconds.
             setflaps(0, 80, 1, 0).
@@ -8048,13 +8135,17 @@ function ReEntryData {
             set ThrottleMin to 0.33.
             if STOCK {
                 set FlipAngleFactor to 0.5.
+                set CatchVS to -0.25.
             }
             else if KSRSS {
                 set FlipAngleFactor to 0.75.
+                set CatchVS to -0.1.
             }
             else {
                 set FlipAngleFactor to 0.75.
+                set CatchVS to -0.1.
             }
+            wait 0.001.
             lock throttle to 0.5.
 
             if ship:body:atm:sealevelpressure > 0.5 {
@@ -8078,9 +8169,7 @@ function ReEntryData {
             }
             else {
                 set FlipAngleFactor to 0.75.
-                for eng in VACEngines {
-                    eng:shutdown.
-                }
+                set CancelVelocityHasStarted to true.
             }
 
             InhibitButtons(1, 1, 1).
@@ -8096,7 +8185,6 @@ function ReEntryData {
             set maxDecel to 0.
             set maxG to 3.
             set DesiredDecel to 0.
-            set LRmD to 0.
             lock steering to LandingVector().
 
             set message1:text to "<b>Performing Landing Flip..</b>".
@@ -8113,7 +8201,7 @@ function ReEntryData {
                 set config:ipu to CPUSPEED.
                 setflaps(60, 60, 1, 0).
                 if not (TargetOLM = "false") and not (LandSomewhereElse) and not (FindNewTarget) {
-                    lock RadarAlt to vdot(up:vector, FLflap:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position) - 8.25 * Scale.
+                    lock RadarAlt to vdot(up:vector, FLflap:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position) - 8.25 * Scale.
                 }
                 set ship:control:neutralize to true.
                 set LandingBurnStarted to true.
@@ -8154,29 +8242,28 @@ function ReEntryData {
                     }
                 }
                 if ship:body:atm:sealevelpressure < 0.5 {
-                    when LngError < 10 or groundspeed < 2.5 then {
-                        set CancelVelocityHasFinished to true.
-                    }
-                }
-            }
-
-            when verticalspeed > -30 and LRmD < 0.67 then {
-                if STOCK and ship:body:atm:sealevelpressure > 0.5 {}
-                else {
-                    SLEngines[1]:shutdown.
-                    SLEngines[1]:getmodule("ModuleSEPRaptor"):DoAction("toggle actuate out", true).
-                    LogToFile("3rd engine shutdown; performing a 2-engine landing..").
-                    if ship:body:atm:sealevelpressure < 0.5 {
-                        when LRmD < 0.5 then {
-                            SLEngines[2]:shutdown.
-                            SLEngines[2]:getmodule("ModuleSEPRaptor"):DoAction("toggle actuate out", true).
-                            LogToFile("2nd engine shutdown; performing a single engine landing..").
+                    when LngError < 25 or vang(up:vector, facing:forevector) < 20 and groundspeed < 25 and RSS then {
+                        for eng in VACEngines {
+                            eng:shutdown.
                         }
+                        set CancelVelocityHasFinished to true.
+                        set t to time:seconds.
                     }
                 }
             }
 
-            until verticalspeed > -0.1 and RadarAlt < 15 * Scale or Hover {
+            when verticalspeed > -30 and throttle < ThrottleMin + 0.001 and groundspeed < 2 and ThrottleMin * 3 * max(SLEngines[0]:availablethrust, 0.000001) / ship:mass > Planet1G then {
+                SLEngines[1]:shutdown.
+                SLEngines[1]:getmodule("ModuleSEPRaptor"):DoAction("toggle actuate out", true).
+                LogToFile("3rd engine shutdown; performing a 2-engine landing..").
+                when ThrottleMin * 2 * max(SLEngines[0]:availablethrust, 0.000001) / ship:mass > Planet1G and throttle < ThrottleMin + 0.001 and groundspeed < 0.5 and verticalspeed > -1 then {
+                    SLEngines[2]:shutdown.
+                    SLEngines[2]:getmodule("ModuleSEPRaptor"):DoAction("toggle actuate out", true).
+                    LogToFile("2nd engine shutdown; performing a single engine landing..").
+                }
+            }
+
+            until verticalspeed > CatchVS and RadarAlt < 15 * Scale and groundspeed < 1 or Hover and groundspeed < 1 {
                 SendPing().
                 if ship:body:atm:sealevelpressure > 0.5 {
                     if ErrorVector:MAG > (Scale * 1.5 * RadarAlt + 25) and RadarAlt > 5 and not (LandSomewhereElse) or RadarAlt < -1 and not (LandSomewhereElse) or verticalspeed > -15 and ErrorVector:MAG > 15 * Scale {
@@ -8196,7 +8283,7 @@ function ReEntryData {
                     BackGroundUpdate().
                 }
                 else {
-                    set DesiredDecel to 11.
+                    set DesiredDecel to 11 - Planet1G.
                 }
                 if KUniverse:activevessel = ship {}
                 else {
@@ -8208,7 +8295,7 @@ function ReEntryData {
             if not (TargetOLM = "False") {
                 set t to time:seconds.
                 lock steering to lookDirUp(up:vector - 0.025 * vxcl(up:vector, velocity:surface), RollVector).
-                lock throttle to (Planet1G + (verticalspeed / -0.1 - 1)) / (max(ship:availablethrust, 0.000001) / ship:mass * 1/cos(vang(-velocity:surface, up:vector))).
+                lock throttle to (Planet1G + (verticalspeed / CatchVS - 1)) / (max(ship:availablethrust, 0.000001) / ship:mass * 1/cos(vang(-velocity:surface, up:vector))).
                 until time:seconds > t + 8 or ship:status = "LANDED" and verticalspeed > -0.01 or RadarAlt < -1 {
                     SendPing().
                     BackGroundUpdate().
@@ -8252,11 +8339,11 @@ function LandingThrottle {
     if LandSomewhereElse {
         set minDecel to (Planet1G - 2.5) / (max(ship:availablethrust, 0.000001) / ship:mass * 1/cos(vang(-velocity:surface, up:vector))).
     }
-    if verticalspeed > -0.1 and not (TargetOLM = "False") {
+    if verticalspeed > CatchVS {
         set Hover to true.
         return minDecel.
     }
-    set maxDecel to max(ship:availablethrust, 0.000001) / ship:mass.
+    set maxDecel to max(ship:availablethrust, 0.000001) / ship:mass - Planet1G.
     set DesiredDecel to 0.5 * maxDecel.
     set stopTime to airspeed / DesiredDecel.
     set stopDist to 0.5 * airspeed * stopTime.
@@ -8267,23 +8354,15 @@ function LandingThrottle {
         set landingRatio to stopDist / RadarAlt.
     }
 
-    if SLEngines[1]:getmodule("ModuleEnginesFX"):hasevent("activate engine") {
-        set LRmD to (0.5 * airspeed * (airspeed / (0.5 * maxDecel * cos(vang(-velocity:surface, up:vector)) - Planet1G))) / RadarAlt.
-    }
-    else {
-        set LRmD to (0.5 * airspeed * (airspeed / (0.67 * maxDecel * cos(vang(-velocity:surface, up:vector)) - Planet1G))) / RadarAlt.
-    }
     if ship:body:atm:sealevelpressure > 0.5 {
         return max(max(min((landingRatio * (DesiredDecel + Planet1G)) / maxDecel, maxG * Planet1G / maxDecel), minDecel), ThrottleMin).
     }
     else {
-        set CancelTime to airspeed / brakeDecel.
-        set CancelDist to 0.5 * airspeed * CancelTime.
         if not (CancelVelocityHasFinished) {
-            return min(brakeDecel * (CancelDist / vxcl(up:vector, ship:position - landingzone:position):mag) / maxDecel, 3 * Planet1G / maxDecel).
+            return max(CancelDist / (vxcl(up:vector, ship:position - landingzone:position):mag - 200) * CancelDist / (vxcl(up:vector, ship:position - landingzone:position):mag - 200) * 0.825 * maxDecel / maxDecel, ThrottleMin).
         }
         else {
-            return max(max(min((landingRatio * (DesiredDecel + Planet1G)) / maxDecel, maxG * Planet1G / maxDecel), minDecel), ThrottleMin).
+            return max(max(min((landingRatio * (DesiredDecel + Planet1G)) / maxDecel, maxG * Planet1G / maxDecel), minDecel), 0.5 * ThrottleMin).
         }
     }
     wait 0.001.
@@ -8368,8 +8447,14 @@ function LandingVector {
                     if not (CancelVelocityHasFinished) {
                         set result to -velocity:surface.
                     }
+                    else if RadarAlt > 400 {
+                        set result to ship:up:vector - 0.01 * vxcl(up:vector, velocity:surface) - 0.01 * ErrorVector.
+                    }
+                    else if verticalspeed < -5 and RadarAlt > 25 {
+                        set result to ship:up:vector - 0.0125 * vxcl(up:vector, velocity:surface) - 0.0125 * ErrorVector.
+                    }
                     else {
-                        set result to ship:up:vector - 0.015 * vxcl(up:vector, velocity:surface) - 0.015 * ErrorVector.
+                        set result to ship:up:vector - 0.035 * vxcl(up:vector, velocity:surface).
                     }
                 }
                 set message2:text to "<b>Target Error:</b>                " + round(vdot(LandingForwardDirection, vxcl(up:vector, ship:position - landingzone:position))) + "m " + round(vdot(LandingLateralDirection, vxcl(up:vector, ship:position - landingzone:position))) + "m".
@@ -8382,12 +8467,17 @@ function LandingVector {
 
         clearscreen.
         print "Radar Altitude: " + round(RadarAlt, 2).
-        print "Landing Ratio:  " + round(landingRatio, 2).
-        print "L/R Max Decel:  " + round(LRmD, 2).
+        if ship:body:atm:sealevelpressure > 0.5 {
+            print "Landing Ratio:  " + round(landingRatio, 2).
+        }
+        else {
+            print "Landing Ratio:  " + round(CancelDist / vxcl(up:vector, ship:position - landingzone:position):mag, 2).
+        }
         print "desired decel:  " + round(DesiredDecel, 2).
         print "max decel: " + round(maxDecel, 2) + "m/s2".
         print "Ship Rotation:  " + round(ShipRot, 1).
         print "Ship Mass: " + round(ship:mass, 3).
+
         //if not maxDecel = 0 {
         //    print "current decel: " + round(throttle * maxDecel, 2) + "m/s2".
         //    print "vs: " + round(verticalspeed,2).
@@ -8481,8 +8571,6 @@ function LandingVector {
             }
             Nose:getmodule("ModuleRCSFX"):SetField("thrust limiter", 100).
             Tank:getmodule("ModuleRCSFX"):SetField("thrust limiter", 0).
-            //Nose:shutdown.
-            //Tank:shutdown.
             set message1:text to "<b><color=green>Vehicle Self-Check OK!</color></b>".
             set message1:style:textcolor to white.
             set message2:text to "<b>Re-Entry & Land Program completed..</b>".
@@ -8493,6 +8581,7 @@ function LandingVector {
             unlock steering.
             LogToFile("Self-Check Complete, Re-Entry & Land Program Complete.").
             set textbox:style:bg to "starship_img/starship_main_square_bg".
+            wait 3.
             ClearInterfaceAndSteering().
             if TargetOLM and not (RSS) {
                 HUDTEXT("Loading current Ship quicksave for safe docking! (Avoid Kraken..)", 10, 2, 20, green, false).
@@ -8513,6 +8602,7 @@ function LandingVector {
     }.
 }.
 print "De-Orbit & Land Program Ended".
+reboot.
 
 
 
@@ -8533,7 +8623,7 @@ function LngLatError {
             else if periapsis > 0 and vang(positionat(ship, time:seconds + eta:periapsis) - ship:body:position, ApproachUPVector) > 90 {
                 set ApproachVector to -vxcl(ApproachUPVector, velocityat(ship, time:seconds + eta:periapsis):surface):normalized.
             }
-            else if RadarAlt < 10000 {
+            else if RadarAlt < 10000 and ship:body:atm:sealevelpressure > 0.5 {
                 set ApproachVector to vxcl(up:vector, facing:forevector):normalized.
             }
             else {
@@ -8578,18 +8668,18 @@ function LngLatError {
         if ship:body:atm:sealevelpressure > 0.5 {
             if TargetOLM {
                 if STOCK {
-                    set LngLatOffset to -60.
+                    set LngLatOffset to -49.
                 }
                 else if KSRSS {
                     set LngLatOffset to -105.
                 }
                 else {
-                    set LngLatOffset to -170.
+                    set LngLatOffset to -172.5.
                 }
             }
             else {
                 if STOCK {
-                    set LngLatOffset to -67.5.
+                    set LngLatOffset to -57.5.
                 }
                 else if KSRSS {
                     set LngLatOffset to -110.
@@ -8600,10 +8690,10 @@ function LngLatError {
             }
             if ShipType = "Crew" {
                 if STOCK {
-                    set LngLatOffset to LngLatOffset - 4.
+                    set LngLatOffset to LngLatOffset - 8.
                 }
                 if KSRSS {
-                    set LngLatOffset to LngLatOffset + 7.5.
+                    set LngLatOffset to LngLatOffset + 8.5.
                 }
                 else {
                     set LngLatOffset to LngLatOffset + 12.5.
@@ -8612,13 +8702,13 @@ function LngLatError {
         }
         else if ship:body:atm:sealevelpressure < 0.5 and ship:body:atm:exists {
             if RSS {
-                set LngLatOffset to 1000.
+                set LngLatOffset to (ship:mass - 125) / 150 * 20000.
             }
             else if KSRSS {
-                set LngLatOffset to 500.
+                set LngLatOffset to ship:mass / 125 * 1000.
             }
             else {
-                set LngLatOffset to 300.
+                set LngLatOffset to ship:mass / 100 * 100.
             }
         }
         else {
@@ -11064,6 +11154,10 @@ function SetPlanetData {
             set LongitudinalAcceptanceLimit to 150000.
             set LateralAcceptanceLimit to 50000.
         }
+        else if KSRSS {
+            set LongitudinalAcceptanceLimit to 100000.
+            set LateralAcceptanceLimit to 50000.
+        }
         else {
             set LongitudinalAcceptanceLimit to 25000.
             set LateralAcceptanceLimit to 15000.
@@ -11456,7 +11550,7 @@ function CheckLZReachable {
         LogToFile("Dense Atmo Planet Automated Landing Activated").
     }
     else if ship:body:atm:sealevelpressure < 0.5 and ship:body:atm:exists {
-        if abs(LngLatErrorList[0]) > 7500 and not (RSS) or abs(LngLatErrorList[0]) > 25000 and RSS or abs(LngLatErrorList[1]) > 250 {
+        if abs(LngLatErrorList[0]) > 7500 and not (RSS) or abs(LngLatErrorList[0]) > 200000 and RSS or abs(LngLatErrorList[1]) > 250 and not (RSS) or abs(LngLatErrorList[1]) > 10000 and RSS {
             set AvailableLandingSpots to CheckSlope(1).
             wait 0.1.
             set FindNewTarget to true.
@@ -12909,14 +13003,14 @@ function SetShipBGPage {
 
 function GetShipRotation {
     if not (TargetOLM = "false") {
-        set TowerHeadingVector to AngleAxis(8, up:vector) * vxcl(up:vector, Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position - Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Base")[0]:position).
+        set TowerHeadingVector to AngleAxis(8, up:vector) * vxcl(up:vector, Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position - Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Base")[0]:position).
         //print vang(TowerHeadingVector, heading(90,0):vector).
 
-        set varR to vang(vxcl(up:vector, Nose:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position), AngleAxis(-30, up:vector) * TowerHeadingVector) - 22.
+        set varR to vang(vxcl(up:vector, Nose:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position), AngleAxis(-30, up:vector) * TowerHeadingVector) - 22.
 
         //set THVd to vecdraw(v(0, 0, 0), TowerHeadingVector, blue, "Tower Heading", 20, true, 0.005, true, true).
         //set THVc to vecdraw(v(0, 0, 0), AngleAxis(-30, up:vector) * TowerHeadingVector, red, "Tower Arms Measuring", 20, true, 0.005, true, true).
-        //set ShpAng to vecdraw(v(0, 0, 0), vxcl(up:vector, Nose:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position), yellow, "Ship Angle", 20, true, 0.005, true, true).
+        //set ShpAng to vecdraw(v(0, 0, 0), vxcl(up:vector, Nose:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position), yellow, "Ship Angle", 20, true, 0.005, true, true).
 
         return min(max(varR, -22), 38).
     }

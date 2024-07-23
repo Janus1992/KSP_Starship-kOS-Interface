@@ -119,6 +119,7 @@ if bodyexists("Earth") {
         set Scale to 1.6.
         set CorrFactor to 0.7.
         set PIDFactor to 15.
+        set CatchVS to -0.1.
     }
     else {
         set KSRSS to true.
@@ -142,6 +143,7 @@ if bodyexists("Earth") {
         set Scale to 1.
         set CorrFactor to 0.75.
         set PIDFactor to 5.
+        set CatchVS to -0.1.
     }
 }
 else {
@@ -171,6 +173,7 @@ else {
         set Scale to 1.
         set CorrFactor to 0.75.
         set PIDFactor to 5.
+        set CatchVS to -0.1.
     }
     else {
         set STOCK to true.
@@ -194,6 +197,7 @@ else {
         set Scale to 1.
         set CorrFactor to 0.725.
         set PIDFactor to 5.
+        set CatchVS to -0.25.
     }
 }
 lock RadarAlt to alt:radar - BoosterHeight.
@@ -560,7 +564,7 @@ function Boostback {
     when RadarAlt < 1500 and not (LandSomewhereElse) then {
         if not (TargetOLM = "false") and TowerExists {
             if Vessel(TargetOLM):distance < 2250 {
-                lock RadarAlt to vdot(up:vector, GridFins[0]:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position) - LiftingPointToGridFinDist.
+                lock RadarAlt to vdot(up:vector, GridFins[0]:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position) - LiftingPointToGridFinDist.
 
                 when vxcl(up:vector, landingzone:position - BoosterCore:position):mag < 20 * Scale and RadarAlt < 7.5 * BoosterHeight and not (WobblyTower) then {
                     sendMessage(Vessel(TargetOLM), "MechazillaArms,8,10,90,true").
@@ -617,7 +621,7 @@ function Boostback {
         SetGridFinAuthority(2.5).
     }
 
-    until verticalspeed > -0.1 and RadarAlt < 1 or verticalspeed > -0.01 or hover {
+    until verticalspeed > CatchVS and RadarAlt < 1 or verticalspeed > -0.01 or hover {
         SteeringCorrections().
         if kuniverse:timewarp:warp > 0 {set kuniverse:timewarp:warp to 0.}
         if RadarAlt > 500 {
@@ -638,7 +642,7 @@ function Boostback {
     else if not (TargetOLM = "False") {
         lock steering to lookDirUp(up:vector - 0.025 * vxcl(up:vector, velocity:surface), RollVector).
     }
-    lock throttle to (Planet1G + (verticalspeed / -0.1 - 1)) / (max(ship:availablethrust, 0.000001) / ship:mass * 1/cos(vang(-velocity:surface, up:vector))).
+    lock throttle to (Planet1G + (verticalspeed / CatchVS - 1)) / (max(ship:availablethrust, 0.000001) / ship:mass * 1/cos(vang(-velocity:surface, up:vector))).
     until time:seconds > t + 8 or ship:status = "LANDED" and verticalspeed > -0.01 or RadarAlt < -1 {
         SteeringCorrections().
         print "slowly lowering down booster..".
@@ -871,7 +875,7 @@ FUNCTION SteeringCorrections {
 
 
 function LandingThrottle {
-    if verticalspeed > -0.1 {
+    if verticalspeed > CatchVS {
         set minDecel to (Planet1G - 0.025) / (max(ship:availablethrust, 0.000001) / ship:mass * 1/cos(vang(-velocity:surface, up:vector))).
         set Hover to true.
         return minDecel.
@@ -1223,9 +1227,9 @@ function setTowerHeadingVector {
 
 function GetBoosterRotation {
     if not (TargetOLM = "false") and RadarAlt < 100 {
-        set TowerHeadingVector to AngleAxis(8, up:vector) * vxcl(up:vector, Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position - Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Base")[0]:position).
+        set TowerHeadingVector to AngleAxis(8, up:vector) * vxcl(up:vector, Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position - Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Base")[0]:position).
 
-        set varR to vang(vxcl(up:vector, HSR[0]:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ.KOS")[0]:position), AngleAxis(-30, up:vector) * TowerHeadingVector) - 22 + 1.
+        set varR to vang(vxcl(up:vector, HSR[0]:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position), AngleAxis(-30, up:vector) * TowerHeadingVector) - 22 + 1.
 
         return min(max(varR, -22), 38).
     }

@@ -7,8 +7,8 @@
 User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 
 ## Current State:
-- unstable.
-- Duna Landings overhaul in progress, landings currently don't work.
+- unstable (after all the recent changes in SEP/SLE). Awaiting bug reports.
+- Duna Landings overhaul complete. Awaiting bug reports.
 
 ## Installation:
 - Download and install all requirements listed below.
@@ -57,14 +57,17 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
     - This is a feature that stops launches _before they fail_ in-flight, and generally an indication that the fuel tanks are the wrong size and something got messed up along the way.
     - **Kopernicus**: If you use stock Kerbin with _Kopernicus_ (it's a requirement for using _Parallax_) installed, please install the optional _SEPkOS patch for stock Kerbin with Kopernicus.cfg_ patch.
     - Your .craft may also be messed up, so load a fresh one from the stock category in the VAB.
-- **Multiple ships of the same name:**
+    - Check that you don't have multiple planet mods installed simultaneously, like Rescale 2.5 and OPM.
+- **Multiple ships/towers of the same name:**
     - Can cause issues where the wrong ship gets loaded during launch.
 - **Booster crashes into the Orbital Launch Mount on landing:**
     - Stock Kerbin: You may need to install the optional _SEPkOS patch for stock Kerbin with Kopernicus.cfg_ patch.
 - **Booster runs out of fuel on return to the launch site:**
     - Load a fresh .craft from the stock category in the VAB.
     - Mechjeb Q or G Limiter could cause launch/catch failures.
-- On non-stock Kerbin the tower may be glitching upon booster-catch due to the Kraken.
+- **On non-stock Kerbin the tower may be glitching upon booster-catch due to the Kraken**.
+- **Engines are engaged and gimballing during re-entry. This is important for the scripts to be able to read pitch commands**.
+- **Occasionally there may be glitches in the script, like not finding a suitable trajectory or crashing on something silly. There's usually not a lot I can do about these things. Sorry..**
 
 
 ### Bug support guide:

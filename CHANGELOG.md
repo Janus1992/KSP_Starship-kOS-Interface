@@ -1,3 +1,10 @@
+# V2.4.3 (2024-07-23)
+- Reworked the Duna landings on stock/KSRSS/RSS.
+- Slight change in engine shutdown on landing. Engines only shutting down when absolutely necessary.
+- Calibrated stock ship catches, as my landings were falling short by a few meters after the recent changes.
+- Parts and crafts updated to work with the latest SLE dev, including the SQD and steel plate.
+- I'm not copying the SLE parts anymore, as I can nearly use SLE by default now.
+
 # V2.4.2 (2024-07-10)
 - Took out selecting a target during re-entry again. Too unreliable for now.
 - Beginning of duna-landing overhaul. Currently not working.
