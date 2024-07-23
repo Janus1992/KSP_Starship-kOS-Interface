@@ -4,6 +4,7 @@
 - Calibrated stock ship catches, as my landings were falling short by a few meters after the recent changes.
 - Parts and crafts updated to work with the latest SLE dev, including the SQD and steel plate.
 - I'm not copying the SLE parts anymore, as I can nearly use SLE by default now.
+- Fix for SLE deluge effects.
 
 # V2.4.2 (2024-07-10)
 - Took out selecting a target during re-entry again. Too unreliable for now.

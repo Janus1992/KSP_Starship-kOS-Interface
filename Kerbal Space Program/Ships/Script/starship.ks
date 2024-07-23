@@ -572,7 +572,9 @@ function FindParts {
         set OLM:getmodule("kOSProcessor"):volume:name to "OrbitalLaunchMount".
         set TowerBase to ship:partstitled("Starship Orbital Launch Integration Tower Base")[0].
         set TowerCore to ship:partstitled("Starship Orbital Launch Integration Tower Core")[0].
-        Set TowerTop to ship:partstitled("Starship Orbital Launch Integration Tower Rooftop")[0].
+        set TowerTop to ship:partstitled("Starship Orbital Launch Integration Tower Rooftop")[0].
+        set SQD to ship:partstitled("Starship Quick Disconnect Arm")[0].
+        set SteelPlate to ship:partstitled("Water Cooled Steel Plate")[0].
         Set Mechazilla to ship:partsnamed("SLE.SS.OLIT.MZ")[0].
         if RSS {
             set ArmsHeight to (Mechazilla:position - ship:body:position):mag - SHIP:BODY:RADIUS - ship:geoposition:terrainheight + 12.
@@ -6337,8 +6339,8 @@ if addons:tr:available and not startup {
                     BackGroundUpdate().
                     wait 0.001.
                 }
-                if ship:partstitled("Starship Quick Disconnect Arm")[0]:getmodule("ModuleAnimateGeneric"):hasevent("Full Extension") {
-                    ship:partstitled("Starship Quick Disconnect Arm")[0]:getmodule("ModuleAnimateGeneric"):DOEVENT("Full Extension").
+                if SQD:getmodule("ModuleAnimateGeneric"):hasevent("Full Extension") {
+                    SQD:getmodule("ModuleAnimateGeneric"):DOEVENT("Full Extension").
                 }
                 HUDTEXT("Starship Re-stacked! Rebooting..", 5, 2, 20, green, false).
                 wait 1.
@@ -6513,19 +6515,21 @@ function Launch {
                 }
                 else {
                     set message2:text to "<b>Booster/Ship:             <color=green>Start-Up Confirmed..</color></b>".
-                    if ship:partstitled("Starship Quick Disconnect Arm")[0]:getmodule("ModuleAnimateGeneric"):hasevent("Full Retraction") and x - time:seconds < 3 {
-                        ship:partstitled("Starship Quick Disconnect Arm")[0]:getmodule("ModuleAnimateGeneric"):DOEVENT("Full Retraction").
+                    if SQD:getmodule("ModuleAnimateGeneric"):hasevent("Full Retraction") and x - time:seconds < 3 {
+                        SQD:getmodule("ModuleAnimateGeneric"):DOEVENT("Full Retraction").
                     }
                 }
                 if x - time:seconds < 2.5 {
-                    if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesFX") {
-                        if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("activate engine") {
-                            ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("activate engine").
+                    for x in list(OLM,SteelPlate) {
+                        if x:hasmodule("ModuleEnginesFX") {
+                            if x:getmodule("ModuleEnginesFX"):hasevent("activate engine") {
+                                x:getmodule("ModuleEnginesFX"):doevent("activate engine").
+                            }
                         }
-                    }
-                    if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesRF") {
-                        if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):hasevent("activate engine") {
-                            ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):doevent("activate engine").
+                        if x:hasmodule("ModuleEnginesRF") {
+                            if x:getmodule("ModuleEnginesRF"):hasevent("activate engine") {
+                                x:getmodule("ModuleEnginesRF"):doevent("activate engine").
+                            }
                         }
                     }
                 }
@@ -6538,12 +6542,24 @@ function Launch {
                 set message3:text to "".
                 if time:seconds > x - 3 {
                     set t to time:seconds.
+                    for x in list(OLM,SteelPlate) {
+                        if x:hasmodule("ModuleEnginesFX") {
+                            if x:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
+                                x:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
+                            }
+                        }
+                        if x:hasmodule("ModuleEnginesRF") {
+                            if x:getmodule("ModuleEnginesRF"):hasevent("shutdown engine") {
+                                x:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
+                            }
+                        }
+                    }
                     until time:seconds > t + 31 {
                         SendPing().
                         set message1:text to "<b><color=yellow>ABORT IN PROGRESS..</color></b>".
                         set message2:text to "<b>Please standby..</b> (" + round(t + 31 - time:seconds) + "s)".
-                        if ship:partstitled("Starship Quick Disconnect Arm")[0]:getmodule("ModuleAnimateGeneric"):hasevent("Full Extension") {
-                            ship:partstitled("Starship Quick Disconnect Arm")[0]:getmodule("ModuleAnimateGeneric"):DOEVENT("Full Extension").
+                        if SQD:getmodule("ModuleAnimateGeneric"):hasevent("Full Extension") {
+                            SQD:getmodule("ModuleAnimateGeneric"):DOEVENT("Full Extension").
                         }
                     }
                 }
@@ -6586,14 +6602,16 @@ function Launch {
             lock throttle to 1.
             if cancelconfirmed {
                 BoosterEngines[0]:shutdown.
-                if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesFX") {
-                    if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
-                        ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
+                for x in list(OLM,SteelPlate) {
+                    if x:hasmodule("ModuleEnginesFX") {
+                        if x:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
+                            x:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
+                        }
                     }
-                }
-                if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesRF") {
-                    if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):hasevent("shutdown engine") {
-                        ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
+                    if x:hasmodule("ModuleEnginesRF") {
+                        if x:getmodule("ModuleEnginesRF"):hasevent("shutdown engine") {
+                            x:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
+                        }
                     }
                 }
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
@@ -6613,14 +6631,16 @@ function Launch {
                 set message1:style:textcolor to yellow.
                 set textbox:style:bg to "starship_img/starship_main_square_bg".
                 wait 3.
-                if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesFX") {
-                    if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
-                        ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
+                for x in list(OLM,SteelPlate) {
+                    if x:hasmodule("ModuleEnginesFX") {
+                        if x:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
+                            x:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
+                        }
                     }
-                }
-                if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesRF") {
-                    if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):hasevent("shutdown engine") {
-                        ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
+                    if x:hasmodule("ModuleEnginesRF") {
+                        if x:getmodule("ModuleEnginesRF"):hasevent("shutdown engine") {
+                            x:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
+                        }
                     }
                 }
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
@@ -6668,14 +6688,16 @@ function Launch {
                 set textbox:style:bg to "starship_img/starship_main_square_bg".
                 HUDTEXT("Clamp Failure! Please refuel (tower page) and try again..", 10, 2, 20, red, false).
                 wait 3.
-                if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesFX") {
-                    if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
-                        ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
+                for x in list(OLM,SteelPlate) {
+                    if x:hasmodule("ModuleEnginesFX") {
+                        if x:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
+                            x:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
+                        }
                     }
-                }
-                if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesRF") {
-                    if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):hasevent("shutdown engine") {
-                        ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
+                    if x:hasmodule("ModuleEnginesRF") {
+                        if x:getmodule("ModuleEnginesRF"):hasevent("shutdown engine") {
+                            x:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
+                        }
                     }
                 }
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").

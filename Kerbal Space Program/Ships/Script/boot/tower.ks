@@ -29,8 +29,10 @@ else {
 set OLM to ship:partstitled("Starship Orbital Launch Mount")[0].
 set TowerBase to ship:partstitled("Starship Orbital Launch Integration Tower Base")[0].
 set TowerCore to ship:partstitled("Starship Orbital Launch Integration Tower Core")[0].
-Set TowerTop to ship:partstitled("Starship Orbital Launch Integration Tower Rooftop")[0].
-Set Mechazilla to ship:partsnamed("SLE.SS.OLIT.MZ")[0].
+set TowerTop to ship:partstitled("Starship Orbital Launch Integration Tower Rooftop")[0].
+set Mechazilla to ship:partsnamed("SLE.SS.OLIT.MZ")[0].
+set SQD to ship:partstitled("Starship Quick Disconnect Arm")[0].
+set SteelPlate to ship:partstitled("Water Cooled Steel Plate")[0].
 set PrevTime to time:seconds.
 clearscreen.
 
@@ -120,8 +122,8 @@ for x in range(0, OLM:modules:length) {
 }
 print "Fueling: " + NrforFueling.
 
-for x in range(0, OLM:modules:length) {
-    if OLM:getmodulebyindex(x):hasaction("toggle water loading") {
+for x in range(0, SteelPlate:modules:length) {
+    if SteelPlate:getmodulebyindex(x):hasaction("toggle water loading") {
         set NrforDelugeRefill to x.
         break.
     }
@@ -238,14 +240,16 @@ function LiftOff {
     MechazillaHeight("6.5", "0.5").
     MechazillaArms("8","10","97.5","true").
     set ship:type to "Base".
-    if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesFX") {
-        if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
-            ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
+    for x in list(OLM,SteelPlate) {
+        if x:hasmodule("ModuleEnginesFX") {
+            if x:getmodule("ModuleEnginesFX"):hasevent("shutdown engine") {
+                x:getmodule("ModuleEnginesFX"):doevent("shutdown engine").
+            }
         }
-    }
-    if ship:partstitled("Starship Orbital Launch Mount")[0]:hasmodule("ModuleEnginesRF") {
-        if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):hasevent("shutdown engine") {
-            ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
+        if x:hasmodule("ModuleEnginesRF") {
+            if x:getmodule("ModuleEnginesRF"):hasevent("shutdown engine") {
+                x:getmodule("ModuleEnginesRF"):doevent("shutdown engine").
+            }
         }
     }
 }
@@ -324,16 +328,16 @@ function ToggleReFueling {
         if OLM:getmodulebyindex(NrforFueling):HasEvent("start fueling") {
             OLM:getmodulebyindex(NrforFueling):DoEvent("start fueling").
         }
-        if OLM:getmodulebyindex(NrforDelugeRefill):HasEvent("reload water") {
-            OLM:getmodulebyindex(NrforDelugeRefill):DoEvent("reload water").
+        if SteelPlate:getmodulebyindex(NrforDelugeRefill):HasEvent("reload water") {
+            SteelPlate:getmodulebyindex(NrforDelugeRefill):DoEvent("reload water").
         }
     }
     else {
         if OLM:getmodulebyindex(NrforFueling):HasEvent("stop fueling") {
             OLM:getmodulebyindex(NrforFueling):DoEvent("stop fueling").
         }
-        if OLM:getmodulebyindex(NrforDelugeRefill):HasEvent("stop reloading water") {
-            OLM:getmodulebyindex(NrforDelugeRefill):DoEvent("stop reloading water").
+        if SteelPlate:getmodulebyindex(NrforDelugeRefill):HasEvent("stop reloading water") {
+            SteelPlate:getmodulebyindex(NrforDelugeRefill):DoEvent("stop reloading water").
         }
     }
 }
