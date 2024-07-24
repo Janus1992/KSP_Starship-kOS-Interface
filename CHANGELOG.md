@@ -1,3 +1,7 @@
+# V2.4.4 (2024-07-24)
+- Rotated SteelPlate for stock/KSRSS crafts.
+- Modified OrbitalLaunchMount craft to have opened arms/SQD.
+
 # V2.4.3 (2024-07-23)
 - Reworked the Duna landings on stock/KSRSS/RSS.
 - Slight change in engine shutdown on landing. Engines only shutting down when absolutely necessary.

@@ -4,7 +4,7 @@ description =
 type = VAB
 size = 7.55181885,77.7673492,11.2243443
 steamPublishedFileId = 0
-persistentId = 3225056928
+persistentId = 1794016420
 rot = 0,0,0,0
 missionFlag = Squad/Flags/default
 vesselType = Ship
@@ -16,7 +16,7 @@ PART
 {
 	part = SEP.23.SHIP.BODY_4293813928
 	partName = Part
-	persistentId = 609620562
+	persistentId = 991542406
 	pos = -1.43051147E-05,67.3911667,-4.76837158E-07
 	attPos = 0,18.5911903,0
 	attPos0 = -1.43051147E-05,48.7999763,-4.76837158E-07
@@ -667,7 +667,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 18677
 		MaxPartId = 100
-		RequiredPower = 0.0399999991
+		RequiredPower = 0.100000001
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -735,8 +735,8 @@ PART
 {
 	part = SEP.23.SHIP.AFT.LEFT_4293797826
 	partName = Part
-	persistentId = 1140849095
-	pos = -1.52587891E-05,62.3651695,3.19153523
+	persistentId = 4089779834
+	pos = -1.52587891E-05,62.3651695,3.19153619
 	attPos = 0,0,0
 	attPos0 = -3.19153309,-5.02599716,-7.15255737E-07
 	rot = 0.488304615,-0.488304257,0.511428416,-0.511428177
@@ -961,8 +961,8 @@ PART
 {
 	part = SEP.23.SHIP.AFT.RIGHT_4293797510
 	partName = Part
-	persistentId = 29882912
-	pos = -1.28746033E-05,62.3651695,-3.19153571
+	persistentId = 2903052955
+	pos = -1.28746033E-05,62.3651695,-3.19153666
 	attPos = 0,0,0
 	attPos0 = 3.19153261,-5.02599621,1.1920929E-06
 	rot = -0.511428118,-0.511428118,-0.488304615,-0.488304615
@@ -1187,8 +1187,8 @@ PART
 {
 	part = SEP.23.RAPTOR2.SL.RC_4293753032
 	partName = Part
-	persistentId = 1938362250
-	pos = -0.585817397,59.3085938,0.00347965956
+	persistentId = 1499260761
+	pos = -0.585817516,59.3085938,0.00347965956
 	attPos = 0,0,0
 	attPos0 = -0.00348018226,-8.08257294,-0.585802794
 	rot = 0,-0.707106829,0,-0.707106829
@@ -1604,8 +1604,8 @@ PART
 {
 	part = SEP.23.RAPTOR2.SL.RC_4293749520
 	partName = Part
-	persistentId = 342355622
-	pos = 0.295901984,59.3085938,0.505580306
+	persistentId = 1074641042
+	pos = 0.295902044,59.3085938,0.505580425
 	attPos = 0,0,0
 	attPos0 = -0.505580485,-8.08257294,0.2959162
 	rot = 0,-0.965925932,0,0.258819133
@@ -2013,8 +2013,8 @@ PART
 {
 	part = SEP.23.RAPTOR2.SL.RC_4293749238
 	partName = Part
-	persistentId = 3228096292
-	pos = 0.289874285,59.3085938,-0.509061337
+	persistentId = 2161239897
+	pos = 0.289874345,59.3085938,-0.509061456
 	attPos = 0,0,0
 	attPos0 = 0.509060621,-8.08257294,0.289888382
 	rot = 0,-0.258818954,0,0.965925813
@@ -2422,8 +2422,8 @@ PART
 {
 	part = SEP.23.RAPTOR.VAC_4293748142
 	partName = Part
-	persistentId = 1096246117
-	pos = 1.93219388,59.6608124,1.1920929E-07
+	persistentId = 2656772428
+	pos = 1.93219435,59.6608124,1.1920929E-07
 	attPos = 0,0,0
 	attPos0 = -4.9975165E-07,-7.73035431,1.93220687
 	rot = 0,-0.707106829,0,-0.707106829
@@ -2682,8 +2682,8 @@ PART
 {
 	part = SEP.23.RAPTOR.VAC_4293747620
 	partName = Part
-	persistentId = 2620460592
-	pos = -0.966120601,59.6608124,-1.67333972
+	persistentId = 241314074
+	pos = -0.966120958,59.6608124,-1.67334032
 	attPos = 0,0,0
 	attPos0 = 1.67333758,-7.73035431,-0.96610558
 	rot = 0,-0.965925932,0,0.258819133
@@ -2934,8 +2934,8 @@ PART
 {
 	part = SEP.23.RAPTOR.VAC_4293747520
 	partName = Part
-	persistentId = 3621206171
-	pos = -0.966121137,59.6608124,1.67333817
+	persistentId = 2255427222
+	pos = -0.966121376,59.6608124,1.67333865
 	attPos = 0,0,0
 	attPos0 = -1.67333746,-7.73035431,-0.966106057
 	rot = 0,-0.258818954,0,0.965925813
@@ -3569,7 +3569,7 @@ PART
 	part = SEP.23.BOOSTER.INTEGRATED_4293732090
 	partName = Part
 	persistentId = 931812894
-	pos = -1.05053123E-05,34.2223816,-4.76836703E-07
+	pos = -1.05053105E-05,34.2223816,-4.76836703E-07
 	attPos = 0,0,0
 	attPos0 = -8.46106984E-13,-22.8750038,2.38418534E-06
 	rot = 0,-0.707106829,0,-0.707106829
@@ -4826,7 +4826,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 0
 		MaxPartId = 100
-		RequiredPower = 0.0399999991
+		RequiredPower = 0.100000001
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -4938,24 +4938,13 @@ PART
 		{
 		}
 	}
-	RESOURCE
-	{
-		name = ElectricCharge
-		amount = 1600
-		maxAmount = 1600
-		flowState = True
-		isTweakable = True
-		hideFlow = False
-		isVisible = True
-		flowMode = Both
-	}
 }
 PART
 {
 	part = SEP.23.BOOSTER.CLUSTER_4293709678
 	partName = Part
 	persistentId = 1929112353
-	pos = -7.63682965E-06,13.3666458,-4.76836249E-07
+	pos = -7.6368251E-06,13.3666458,-4.76836249E-07
 	attPos = 0,0,0
 	attPos0 = -1.98951952E-13,-20.8557358,2.86847285E-06
 	rot = 0,0.707106829,0,0.707106829
@@ -5725,7 +5714,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4293634742
 	partName = Part
 	persistentId = 3164071282
-	pos = 1.8462882,56.5328903,3.19803286
+	pos = 1.84628963,56.5328903,3.19803524
 	attPos = 0,0,0
 	attPos0 = -3.19802523,22.3105087,1.84629416
 	rot = -0.5,5.45420598E-08,0.866025448,-5.45420313E-08
@@ -5945,7 +5934,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4293634106
 	partName = Part
 	persistentId = 3817065590
-	pos = -1.84631288,56.5328903,3.19803143
+	pos = -1.84631383,56.5328903,3.19803333
 	attPos = 0,0,0
 	attPos0 = -3.19802523,22.3105087,-1.84629881
 	rot = -0.866025388,-4.86962577E-08,0.50000006,4.86962364E-08
@@ -6157,7 +6146,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4293633830
 	partName = Part
 	persistentId = 3271232990
-	pos = -1.84631634,56.5328903,-3.19803524
+	pos = -1.84631777,56.5328903,-3.19803762
 	attPos = 0,0,0
 	attPos0 = 3.19802666,22.3105087,-1.84630132
 	rot = 0.866025448,4.86962435E-08,0.5,4.86962435E-08
@@ -6369,7 +6358,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4293633564
 	partName = Part
 	persistentId = 152055766
-	pos = 1.84628689,56.5328903,-3.19803429
+	pos = 1.84628785,56.5328903,-3.19803619
 	attPos = 0,0,0
 	attPos0 = 3.19802713,22.3105087,1.84629381
 	rot = 0.5,-5.45420455E-08,0.866025448,-5.45420455E-08
@@ -6580,7 +6569,7 @@ PART
 {
 	part = SEP.23.SHIP.TANKER_4293561700
 	partName = Part
-	persistentId = 2437424713
+	persistentId = 1938188974
 	pos = -1.60932541E-05,82.9389572,-4.76837272E-07
 	attPos = 0,0,0
 	attPos0 = 5.68434053E-14,15.5477905,-1.78813923E-06
@@ -7165,7 +7154,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 0
 		MaxPartId = 100
-		RequiredPower = 0.0399999991
+		RequiredPower = 0.100000001
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -7288,8 +7277,8 @@ PART
 {
 	part = SEP.23.SHIP.FWD.RIGHT_4293798264
 	partName = Part
-	persistentId = 4244109257
-	pos = 0.000147819534,83.6565475,-2.81042528
+	persistentId = 3819758773
+	pos = 0.000147819534,83.6565475,-2.81042576
 	attPos = 0,0,0
 	attPos0 = 2.8104229,0.717590332,0.000163674311
 	rot = 0.556381404,0.455661774,0.54245919,0.434223711
@@ -7514,8 +7503,8 @@ PART
 {
 	part = SEP.23.SHIP.FWD.LEFT_4293593668
 	partName = Part
-	persistentId = 2021079070
-	pos = 0.000148296371,83.6565475,2.81042576
+	persistentId = 1256272008
+	pos = 0.000148296371,83.6565475,2.81042624
 	attPos = 0,0,0
 	attPos0 = -2.81042433,0.717590332,0.000164627985
 	rot = -0.542459369,0.434223741,-0.556381345,0.455661684
@@ -7732,7 +7721,7 @@ PART
 {
 	part = SEP.23.SHIP.HEADER_4293799050
 	partName = Part
-	persistentId = 784149288
+	persistentId = 2976430612
 	pos = -1.93044471E-05,88.2645035,-4.76840796E-07
 	attPos = 0,0,0
 	attPos0 = 3.18323037E-12,5.32554626,-3.21119364E-06
@@ -7882,7 +7871,7 @@ PART
 	part = SLE.SS.OLM_4293305532
 	partName = Part
 	persistentId = 4272849300
-	pos = -6.93587208E-06,9.41698456,-8.39415861E-07
+	pos = -6.93586753E-06,9.41698456,-8.39415861E-07
 	attPos = 0,0,0
 	attPos0 = 3.62579726E-07,-3.94966125,7.00957571E-07
 	rot = 0.000768006255,0,8.94651748E-08,0.999999821
@@ -8280,7 +8269,7 @@ PART
 		baseModuleMass = 0
 		additionalCost = 0
 		MaxPartId = 100
-		RequiredPower = 0.0399999991
+		RequiredPower = 0.100000001
 		stagingEnabled = True
 		activated = True
 		EVENTS
@@ -8422,7 +8411,7 @@ PART
 	pos = -20.8920326,4.09697723,-0.736675739
 	attPos = 0,0,0
 	attPos0 = -20.8920288,-5.32112885,-0.728504241
-	rot = 0.000433440844,0,-0.000779167458,0.999999702
+	rot = 0.000433440873,0,-0.0007791674,0.999999702
 	attRot = 0,0,0,1
 	attRot0 = -0.000334565237,-6.25848713E-07,-0.000779256574,0.999999642
 	mir = 1,1,1
@@ -8706,30 +8695,7 @@ PART
 	MODULE
 	{
 		name = LaunchClamp
-		isEnabled = True
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = LaunchClamp
-		isEnabled = True
+		isEnabled = False
 		scaleFactor = 1
 		height = 0
 		stagingEnabled = False
@@ -8830,10 +8796,10 @@ PART
 	part = SLE.SS.OLIT.Core_4293286220
 	partName = Part
 	persistentId = 2542037417
-	pos = -20.8857384,7.61593628,-0.758677006
+	pos = -20.8857422,7.61593628,-0.758677006
 	attPos = 0,0,0
 	attPos0 = 0.000812053389,3.51894379,-0.0250519458
-	rot = -0.000433161447,0,0.000779078284,-0.999999702
+	rot = -0.000433161476,0,0.000779078226,-0.999999702
 	attRot = 0,0,0,-0.999999881
 	attRot0 = 2.79367555E-07,2.23963015E-10,-8.91159075E-08,-1
 	mir = 1,1,1
@@ -8967,30 +8933,7 @@ PART
 	MODULE
 	{
 		name = LaunchClamp
-		isEnabled = True
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = LaunchClamp
-		isEnabled = True
+		isEnabled = False
 		scaleFactor = 1
 		height = 0
 		stagingEnabled = False
@@ -9031,10 +8974,10 @@ PART
 	part = SLE.SS.OLIT.Top_4293285634
 	partName = Part
 	persistentId = 2713981401
-	pos = -20.7709579,81.0947495,-0.716623783
+	pos = -20.7709618,81.0947495,-0.716623783
 	attPos = 0,0,0
 	attPos0 = 0.000289311953,73.4789047,-0.0216034651
-	rot = 0.000433288049,0,-0.00077897415,0.999999702
+	rot = 0.000433288078,0,-0.00077897415,0.999999702
 	attRot = 0,0,0,1
 	attRot0 = -1.26601691E-07,-5.27671518E-11,-1.04133484E-07,-1
 	mir = 1,1,1
@@ -9146,30 +9089,7 @@ PART
 	MODULE
 	{
 		name = LaunchClamp
-		isEnabled = True
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = LaunchClamp
-		isEnabled = True
+		isEnabled = False
 		scaleFactor = 1
 		height = 0
 		stagingEnabled = False
@@ -9210,10 +9130,10 @@ PART
 	part = SLE.SS.OLIT.MZ_4293285464
 	partName = Part
 	persistentId = 569585141
-	pos = -15.4034843,79.4206848,0.00323438644
+	pos = -15.4034882,79.4206924,0.00323343277
 	attPos = 0,0,0
 	attPos0 = 5.37035608,71.8138275,0.699702561
-	rot = 0.000818025903,0.999965191,0.000117425603,-0.0083193779
+	rot = 0.000818025786,0.999965131,0.000117425574,-0.00831931829
 	attRot = 0,0.99999994,0,0
 	attRot0 = -4.25782018E-05,-0.99996531,0.000322201842,0.00831896067
 	mir = 1,1,1
@@ -9797,6 +9717,27 @@ PART
 	}
 	MODULE
 	{
+		name = ModulePhysicMaterial
+		isEnabled = True
+		bounceCombine = Average
+		bounciness = 0
+		dynamicFriction = 0.400000006
+		staticFriction = 0.400000006
+		frictionCombine = Average
+		activePhysicMaterialName = MediumGrip
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = LaunchClamp
 		isEnabled = True
 		scaleFactor = 1
@@ -9813,27 +9754,6 @@ PART
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
 			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModulePhysicMaterial
-		isEnabled = True
-		bounceCombine = Average
-		bounciness = 0
-		dynamicFriction = 0.400000006
-		staticFriction = 0.400000006
-		frictionCombine = Average
-		activePhysicMaterialName = MediumGrip
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
 		}
 		UPGRADESAPPLIED
 		{
@@ -9860,10 +9780,10 @@ PART
 	part = SLE.SS.OLIT.SQD_4293284944
 	partName = Part
 	persistentId = 2562014453
-	pos = -19.4872894,57.1305809,-1.50834894
+	pos = -19.4872932,57.1305847,-1.50834894
 	attPos = 0,0,0
 	attPos0 = 1.3212955,49.5160942,-0.792566836
-	rot = 0.000756846857,0.997030079,-0.000136561546,0.0770112872
+	rot = 0.000756846683,0.997030139,-0.000136561517,0.0770113766
 	attRot = 0,0.99999994,0,0
 	attRot0 = 5.32760641E-05,-0.997030139,0.000508438563,-0.0770117119
 	mir = 1,1,1
@@ -10181,12 +10101,12 @@ PART
 	part = SLE.SS.SteelPlate_4293276078
 	partName = Part
 	persistentId = 33585811
-	pos = -0.00152742735,0.608818054,-0.0270562265
+	pos = -0.00152742735,0.608818054,-0.0270562414
 	attPos = 0,0,0
 	attPos0 = -0.00152206398,-8.80819798,-0.0135259181
-	rot = 8.63396563E-05,0.999998927,0.00153624301,0
-	attRot = 0,0.99999994,0,0
-	attRot0 = 8.64291214E-05,0.999999762,0.000768237107,5.96046448E-08
+	rot = -0.0015361238,0,8.63396563E-05,-0.999998927
+	attRot = 0,0,0,-0.999999881
+	attRot0 = -0.000768117781,5.96046448E-08,8.64290923E-05,-0.999999762
 	mir = 1,1,1
 	symMethod = Radial
 	autostrutMode = Off

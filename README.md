@@ -9,6 +9,7 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 ## Current State:
 - unstable (after all the recent changes in SEP/SLE). Awaiting bug reports.
 - Duna Landings overhaul complete. Awaiting bug reports.
+- OrbitalLaunchMount currently can't be used, as SLE seems to have a bug that deletes its size.
 
 ## Installation:
 - Download and install all requirements listed below.

@@ -41,8 +41,8 @@ PART
 	link = SLE.SS.SteelPlate_4293651566
 	link = SLE.SS.OLIT.Base_4293560008
 	attN = node_stack_top,Null_0_-7.7941877E-07|3.24417663|-0.00498275785_1.30796707E-10|0.999998808|-0.0015360117_-7.7941877E-07|3.24417663|-0.00498275785_1.30796707E-10|0.999998808|-0.0015360117
-	attN = connect01,SLE.SS.OLIT.Base_4293560008_-33.4400101|-14.1137772|-1.14632416_0.00155866146|0.999998569|-0.000669568777_-33.4400101|-14.1137772|-1.14632416_0.00155866146|0.999998569|-0.000669568777
 	attN = connect01,SLE.SS.SteelPlate_4293651566_-0.0024353012|-14.0931244|-0.0216414407_0.000172857544|0.999998808|0.00153635361_-0.0024353012|-14.0931244|-0.0216414407_0.000172857544|0.999998808|0.00153635361
+	attN = connect01,Null_0_-0.0024353012|-14.0931244|-0.0216414407_0.000172857544|0.999998808|0.00153635361_-0.0024353012|-14.0931244|-0.0216414407_0.000172857544|0.999998808|0.00153635361
 	EVENTS
 	{
 	}
@@ -1706,30 +1706,7 @@ PART
 	MODULE
 	{
 		name = LaunchClamp
-		isEnabled = True
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = LaunchClamp
-		isEnabled = True
+		isEnabled = False
 		scaleFactor = 1
 		height = 0
 		stagingEnabled = False
@@ -1967,30 +1944,7 @@ PART
 	MODULE
 	{
 		name = LaunchClamp
-		isEnabled = True
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = LaunchClamp
-		isEnabled = True
+		isEnabled = False
 		scaleFactor = 1
 		height = 0
 		stagingEnabled = False
@@ -2031,7 +1985,7 @@ PART
 	part = SLE.SS.OLIT.Top_4293539994
 	partName = Part
 	persistentId = 603239922
-	pos = -33.2334976,130.232391,-1.32276213
+	pos = -33.2334976,130.232407,-1.32276213
 	attPos = 0,0,0
 	attPos0 = 0.000459807314,117.566261,-0.0345655382
 	rot = -0.000334718061,-6.25836151E-07,-0.00077906315,0.999999642
@@ -2146,30 +2100,7 @@ PART
 	MODULE
 	{
 		name = LaunchClamp
-		isEnabled = True
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = LaunchClamp
-		isEnabled = True
+		isEnabled = False
 		scaleFactor = 1
 		height = 0
 		stagingEnabled = False
@@ -2213,7 +2144,7 @@ PART
 	pos = -24.6455345,127.555603,-0.166871071
 	attPos = 0,0,0
 	attPos0 = 8.59257126,114.902138,1.11952543
-	rot = 0.000824504532,0.999964893,-0.000650553033,-0.00831877906
+	rot = 0.000824504474,0.999964893,-0.000650553033,-0.00831877999
 	attRot = 0,0.99999994,0,0
 	attRot0 = 4.25782018E-05,0.99996531,-0.000322201842,-0.00831896067
 	mir = 1,1,1
@@ -2358,9 +2289,9 @@ PART
 	{
 		name = ModuleSLEAnimate
 		isEnabled = True
-		AnimatePosition = 5.70484591
+		AnimatePosition = 1.74008811
 		AnimationLength = 10
-		ExtensionLimit = 64.75
+		ExtensionLimit = 19.75
 		ExtensionSpeed = 10
 		stagingEnabled = True
 		EVENTS
@@ -2407,9 +2338,9 @@ PART
 	{
 		name = ModuleSLEAnimate
 		isEnabled = True
-		AnimatePosition = 4.29515409
+		AnimatePosition = 0.330396473
 		AnimationLength = 10
-		ExtensionLimit = 48.75
+		ExtensionLimit = 3.75
 		ExtensionSpeed = 10
 		stagingEnabled = True
 		EVENTS
@@ -2554,11 +2485,11 @@ PART
 	{
 		name = ModuleSLEController
 		isEnabled = True
-		CurrentOpenCloseLimit = 20
-		OpenClose = False
+		CurrentOpenCloseLimit = 90
+		OpenClose = True
 		ExtensionLimit = 8
 		ExtensionSpeed = 10
-		OpenCloseLimit = 20
+		OpenCloseLimit = 90
 		stagingEnabled = True
 		EVENTS
 		{
@@ -2797,6 +2728,27 @@ PART
 	}
 	MODULE
 	{
+		name = ModulePhysicMaterial
+		isEnabled = True
+		bounceCombine = Average
+		bounciness = 0
+		dynamicFriction = 0.400000006
+		staticFriction = 0.400000006
+		frictionCombine = Average
+		activePhysicMaterialName = MediumGrip
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = LaunchClamp
 		isEnabled = True
 		scaleFactor = 1
@@ -2813,27 +2765,6 @@ PART
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
 			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModulePhysicMaterial
-		isEnabled = True
-		bounceCombine = Average
-		bounciness = 0
-		dynamicFriction = 0.400000006
-		staticFriction = 0.400000006
-		frictionCombine = Average
-		activePhysicMaterialName = MediumGrip
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
 		}
 		UPGRADESAPPLIED
 		{
@@ -2947,9 +2878,9 @@ PART
 		name = ModuleAnimateGeneric
 		isEnabled = True
 		aniState = LOCKED
-		animSwitch = True
-		animTime = 0
-		animSpeed = 1
+		animSwitch = False
+		animTime = 1
+		animSpeed = 150
 		deployPercent = 100
 		animationIsDisabled = False
 		stagingEnabled = True
