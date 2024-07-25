@@ -1,5 +1,6 @@
 # V2.4.5 (2024-07-25)
 - Fixes for overnight SLE changes.
+- Minor tweaks to re-entry flaps setting and hover throttle.
 
 # V2.4.4 (2024-07-24)
 - Rotated SteelPlate for stock/KSRSS crafts.

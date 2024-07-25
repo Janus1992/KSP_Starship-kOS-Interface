@@ -7602,7 +7602,7 @@ function ReEntryAndLand {
             setflaps(FWDFlapDefault - 20, AFTFlapDefault - 20, 1, 10).
             ActivateEngines(1).
         }
-        else {
+        if ship:body:atm:sealevelpressure > 0.5 {
             setflaps(FWDFlapDefault, AFTFlapDefault, 1, 10).
         }
 
@@ -7654,8 +7654,8 @@ function ReEntryAndLand {
         lock STEERING to ReEntrySteering().
         
         when altitude < body:atm:height then {
-            set quickstatus1:pressed to true.
-            LogToFile("<Atmosphere Height, Body-Flaps Activated").
+            //set quickstatus1:pressed to true.
+            //LogToFile("<Atmosphere Height, Body-Flaps Activated").
             when airspeed < 2150 then {
                 set t to time:seconds.
                 if ship:body:atm:sealevelpressure < 0.5 {
@@ -8318,9 +8318,11 @@ function ReEntryData {
                 wait 0.01.
             }
             if not (TargetOLM = "False") {
+                unlock throttle.
+                wait 0.001.
                 set t to time:seconds.
                 lock steering to lookDirUp(up:vector - 0.025 * vxcl(up:vector, velocity:surface), RollVector).
-                lock throttle to (Planet1G + (verticalspeed / CatchVS - 1)) / (max(ship:availablethrust, 0.000001) / ship:mass * 1/cos(vang(-velocity:surface, up:vector))).
+                lock throttle to max((Planet1G + (verticalspeed / CatchVS - 1)) / (max(ship:availablethrust, 0.000001) / ship:mass * 1/cos(vang(-velocity:surface, up:vector))), ThrottleMin).
                 until time:seconds > t + 8 or ship:status = "LANDED" and verticalspeed > -0.01 or RadarAlt < -1 {
                     SendPing().
                     BackGroundUpdate().
@@ -8364,7 +8366,7 @@ function LandingThrottle {
     if LandSomewhereElse {
         set minDecel to (Planet1G - 2.5) / (max(ship:availablethrust, 0.000001) / ship:mass * 1/cos(vang(-velocity:surface, up:vector))).
     }
-    if verticalspeed > CatchVS {
+    if verticalspeed > CatchVS or Hover {
         set Hover to true.
         return minDecel.
     }
@@ -11162,7 +11164,7 @@ function SetPlanetData {
         }
         if RSS {
             set LongitudinalAcceptanceLimit to 500000.
-            set LateralAcceptanceLimit to 200000.
+            set LateralAcceptanceLimit to 100000.
         }
         else if KSRSS {
             set LongitudinalAcceptanceLimit to 75000.
