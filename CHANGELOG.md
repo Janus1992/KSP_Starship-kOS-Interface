@@ -2,6 +2,7 @@
 - Fixes for overnight SLE changes.
 - Minor tweaks to re-entry flaps setting and hover throttle.
 - Fix for launching multiple ships with the same name.
+- Fix for Booster recovery tower operations. MZ arms don't clip the SQD anymore on reset.
 
 # V2.4.4 (2024-07-24)
 - Rotated SteelPlate for stock/KSRSS crafts.

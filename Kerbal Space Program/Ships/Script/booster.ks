@@ -1084,7 +1084,7 @@ function setTargetOLM {
 
 
 function BoosterDocking {
-    wait 1.
+    wait 3.
     setTowerHeadingVector().
     setTargetOLM().
     set t to time:seconds.
@@ -1119,7 +1119,7 @@ function BoosterDocking {
             set t to time:seconds.
             preserve.
         }
-        until time:seconds > t + 10 {}
+        until time:seconds > t + 15 {}
 
         sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (29.9 * Scale) + ",0.5")).
         DeactivateGridFins().
@@ -1142,25 +1142,28 @@ function BoosterDocking {
         when BoosterDocked then {
             HUDTEXT("Booster Docked! Resetting tower..", 20, 2, 20, green, false).
             sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (32.5 * Scale) + ",0.5")).
-            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,2.5,60,true").
+            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,2.5,35,true").
             set DockedTime to time:seconds.
             if ship:partstitled("Starship Orbital Launch Mount"):length > 0 {
                 if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleAnimateGeneric"):hasevent("open clamps + qd") {
                     ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleAnimateGeneric"):DoAction("toggle clamps + qd", true).
                 }
             }
-            when time:seconds > DockedTime + 12.5 then {
+            when time:seconds > DockedTime + 7.5 then {
                 sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
-                sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,90,true").
+                sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,35,true").
                 sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,1," + (12.5 * Scale) + ",true")).
                 sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
-                when time:seconds > DockedTime + 30 then {
-                    set TowerReset to true.
-                    HUDTEXT("Booster recovery complete, tower has been reset!", 10, 2, 20, green, false).
-                    //if BoosterCore:getmodule("ModuleSepPartSwitchAction"):getfield("current decouple system") = "Decoupler" {
-                    //BoosterCore:getmodule("ModuleSepPartSwitchAction"):DoAction("next decouple system", true).
-                    //}
-                    reboot.
+                when time:seconds > DockedTime + 20 then {
+                    sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,90,true").
+                    when time:seconds > DockedTime + 30 then {
+                        set TowerReset to true.
+                        HUDTEXT("Booster recovery complete, tower has been reset!", 10, 2, 20, green, false).
+                        //if BoosterCore:getmodule("ModuleSepPartSwitchAction"):getfield("current decouple system") = "Decoupler" {
+                        //BoosterCore:getmodule("ModuleSepPartSwitchAction"):DoAction("next decouple system", true).
+                        //}
+                        reboot.
+                    }
                 }
             }
         }
@@ -1169,8 +1172,8 @@ function BoosterDocking {
         clearscreen.
         print "Automated Booster Docking not safe..".
         print "Continue manually with great care..".
-        HUDTEXT("Automated Booster Docking not safe..", 10, 2, 20, yellow, false).
-        HUDTEXT("Continue manually with great care..", 10, 2, 20, yellow, false).
+        HUDTEXT("Automated Booster Docking currently not safe..", 10, 2, 20, yellow, false).
+        HUDTEXT("Continue manually or toggle power on the kOS unit (booster) and try again..", 10, 2, 20, yellow, false).
         shutdown.
     }
 }
