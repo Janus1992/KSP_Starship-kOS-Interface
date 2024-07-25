@@ -6417,6 +6417,8 @@ function Launch {
         if ship:name:contains("OrbitalLaunchMount") {
             set ship:name to ("Starship " + ShipType).
         }
+        list targets in shiplist.
+        RenameShip().
         SaveToSettings("Ship Name", ship:name).
 
         set targetincl to setting3:text:split("°")[0]:toscalar(0).
@@ -6852,6 +6854,8 @@ function Launch {
                 if CPUSPEED < 1000 {
                     set config:ipu to 1000.
                 }
+                list targets in shiplist.
+                RenameShip().
             }
         }
         else {
