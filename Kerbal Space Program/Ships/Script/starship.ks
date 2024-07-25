@@ -613,6 +613,9 @@ if OnOrbitalMount {
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.2,0.7,false").
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaStabilizers,0").
     }
+    if SQD:getmodule("ModuleSLESequentialAnimate"):hasevent("Full Retraction") {
+        SQD:getmodule("ModuleSLESequentialAnimate"):DOEVENT("Full Retraction").
+    }
 }
 set ship:type to "Ship".
 ShipsInOrbit().
@@ -6339,8 +6342,8 @@ if addons:tr:available and not startup {
                     BackGroundUpdate().
                     wait 0.001.
                 }
-                if SQD:getmodule("ModuleAnimateGeneric"):hasevent("Full Extension") {
-                    SQD:getmodule("ModuleAnimateGeneric"):DOEVENT("Full Extension").
+                if SQD:getmodule("ModuleSLESequentialAnimate"):hasevent("Full Extension") {
+                    SQD:getmodule("ModuleSLESequentialAnimate"):DOEVENT("Full Extension").
                 }
                 HUDTEXT("Starship Re-stacked! Rebooting..", 5, 2, 20, green, false).
                 wait 1.
@@ -6515,8 +6518,8 @@ function Launch {
                 }
                 else {
                     set message2:text to "<b>Booster/Ship:             <color=green>Start-Up Confirmed..</color></b>".
-                    if SQD:getmodule("ModuleAnimateGeneric"):hasevent("Full Retraction") and x - time:seconds < 3 {
-                        SQD:getmodule("ModuleAnimateGeneric"):DOEVENT("Full Retraction").
+                    if SQD:getmodule("ModuleSLESequentialAnimate"):hasevent("Full Retraction") and x - time:seconds < 3 {
+                        SQD:getmodule("ModuleSLESequentialAnimate"):DOEVENT("Full Retraction").
                     }
                 }
                 if x - time:seconds < 2.5 {
@@ -6558,8 +6561,8 @@ function Launch {
                         SendPing().
                         set message1:text to "<b><color=yellow>ABORT IN PROGRESS..</color></b>".
                         set message2:text to "<b>Please standby..</b> (" + round(t + 31 - time:seconds) + "s)".
-                        if SQD:getmodule("ModuleAnimateGeneric"):hasevent("Full Extension") {
-                            SQD:getmodule("ModuleAnimateGeneric"):DOEVENT("Full Extension").
+                        if SQD:getmodule("ModuleSLESequentialAnimate"):hasevent("Full Extension") {
+                            SQD:getmodule("ModuleSLESequentialAnimate"):DOEVENT("Full Extension").
                         }
                     }
                 }

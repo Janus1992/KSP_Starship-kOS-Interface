@@ -1,3 +1,6 @@
+# V2.4.5 (2024-07-25)
+- Fixes for overnight SLE changes.
+
 # V2.4.4 (2024-07-24)
 - Rotated SteelPlate for stock/KSRSS crafts.
 - Modified OrbitalLaunchMount craft to have opened arms/SQD.
