@@ -613,8 +613,8 @@ if OnOrbitalMount {
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.2,0.7,false").
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaStabilizers,0").
     }
-    if SQD:getmodule("ModuleSLESequentialAnimate"):hasevent("Full Retraction") {
-        SQD:getmodule("ModuleSLESequentialAnimate"):DOEVENT("Full Retraction").
+    if SQD:getmodule("ModuleSLESequentialAnimate"):hasevent("Full Extension") {
+        SQD:getmodule("ModuleSLESequentialAnimate"):DOEVENT("Full Extension").
     }
 }
 set ship:type to "Ship".
@@ -6518,11 +6518,8 @@ function Launch {
                 }
                 else {
                     set message2:text to "<b>Booster/Ship:             <color=green>Start-Up Confirmed..</color></b>".
-                    if SQD:getmodule("ModuleSLESequentialAnimate"):hasevent("Full Retraction") and x - time:seconds < 3 {
-                        SQD:getmodule("ModuleSLESequentialAnimate"):DOEVENT("Full Retraction").
-                    }
                 }
-                if x - time:seconds < 2.5 {
+                if x - time:seconds < 1 {
                     for x in list(OLM,SteelPlate) {
                         if x:hasmodule("ModuleEnginesFX") {
                             if x:getmodule("ModuleEnginesFX"):hasevent("activate engine") {
@@ -6535,6 +6532,9 @@ function Launch {
                             }
                         }
                     }
+                    if SQD:getmodule("ModuleSLESequentialAnimate"):hasevent("Full Retraction") {
+                        SQD:getmodule("ModuleSLESequentialAnimate"):DOEVENT("Full Retraction").
+                    }
                 }
             }
             if cancelconfirmed {
@@ -6543,7 +6543,7 @@ function Launch {
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (4 * Scale) + ",0.5")).
                 set message3:text to "".
-                if time:seconds > x - 3 {
+                if time:seconds > x - 1 {
                     set t to time:seconds.
                     for x in list(OLM,SteelPlate) {
                         if x:hasmodule("ModuleEnginesFX") {

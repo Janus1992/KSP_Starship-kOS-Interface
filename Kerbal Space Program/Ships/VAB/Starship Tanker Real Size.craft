@@ -2,7 +2,7 @@ ship = Starship Tanker Real Size
 version = 1.12.5
 description = For use with RSS
 type = VAB
-size = 12.0829086,124.427734,17.9589615
+size = 59.3046036,145.015076,27.8364067
 steamPublishedFileId = 0
 persistentId = 4216856511
 rot = 0,0,0,0
@@ -736,7 +736,7 @@ PART
 	part = SEP.23.SHIP.AFT.LEFT_4293795120
 	partName = Part
 	persistentId = 2763847092
-	pos = -8.34465141E-07,100.266869,5.10646296
+	pos = -8.34465141E-07,100.266869,5.10646391
 	attPos = 0,0,0
 	attPos0 = -5.10645199,-8.04159451,-9.53674316E-07
 	rot = -0.488304585,0.488304257,-0.511428475,0.511428177
@@ -962,7 +962,7 @@ PART
 	part = SEP.23.SHIP.AFT.RIGHT_4293781910
 	partName = Part
 	persistentId = 251697968
-	pos = 1.07288383E-06,100.266869,-5.10645199
+	pos = 1.07288383E-06,100.266869,-5.10645294
 	attPos = 0,0,0
 	attPos0 = 5.10645151,-8.04159355,1.90734863E-06
 	rot = 0.511428118,0.511428118,0.488304615,0.488304615
@@ -1188,7 +1188,7 @@ PART
 	part = SEP.23.RAPTOR2.SL.RC_4293779880
 	partName = Part
 	persistentId = 2459392492
-	pos = -0.937286377,95.3763428,0.0055731535
+	pos = -0.937286615,95.3763428,0.0055731535
 	attPos = 0,0,0
 	attPos0 = -0.0055682743,-12.9321175,-0.937284708
 	rot = 0,0.707106829,0,0.707106829
@@ -1605,7 +1605,7 @@ PART
 	part = SEP.23.RAPTOR2.SL.RC_4293777978
 	partName = Part
 	persistentId = 2416796630
-	pos = 0.473466814,95.3763428,0.808935463
+	pos = 0.473466992,95.3763428,0.808935761
 	attPos = 0,0,0
 	attPos0 = -0.808929086,-12.9321175,0.473466098
 	rot = 0,0.965925932,0,-0.258819133
@@ -2014,7 +2014,7 @@ PART
 	part = SEP.23.RAPTOR2.SL.RC_4293777690
 	partName = Part
 	persistentId = 2295988290
-	pos = 0.463821709,95.3763428,-0.814493835
+	pos = 0.463821828,95.3763428,-0.814494073
 	attPos = 0,0,0
 	attPos0 = 0.814497232,-12.9321175,0.46382153
 	rot = 0,0.258818954,0,-0.965925813
@@ -2423,7 +2423,7 @@ PART
 	part = SEP.23.RAPTOR.VAC_4293776324
 	partName = Part
 	persistentId = 1686766701
-	pos = 3.09153652,95.9398956,5.24520874E-06
+	pos = 3.09153748,95.9398956,5.24520874E-06
 	attPos = 0,0,0
 	attPos0 = -8.6051665E-07,-12.3685684,3.09153175
 	rot = 0,0.707106829,0,0.707106829
@@ -2683,7 +2683,7 @@ PART
 	part = SEP.23.RAPTOR.VAC_4293775340
 	partName = Part
 	persistentId = 961870506
-	pos = -1.54577267,95.9398956,-2.6773386
+	pos = -1.54577315,95.9398956,-2.67733908
 	attPos = 0,0,0
 	attPos0 = 2.67734098,-12.3685684,-1.54576945
 	rot = 0,0.965925932,0,-0.258819133
@@ -2935,7 +2935,7 @@ PART
 	part = SEP.23.RAPTOR.VAC_4293775234
 	partName = Part
 	persistentId = 2718313704
-	pos = -1.54577291,95.9398956,2.67734814
+	pos = -1.54577339,95.9398956,2.67734861
 	attPos = 0,0,0
 	attPos0 = -2.67734051,-12.3685684,-1.54577017
 	rot = 0,0.258819014,0,-0.965925932
@@ -3187,7 +3187,7 @@ PART
 	part = SEP.23.BOOSTER.HSR_4293774742
 	partName = Part
 	persistentId = 3638955853
-	pos = 1.19209585E-06,91.8384094,4.76837249E-06
+	pos = 1.19209631E-06,91.8384094,4.76837249E-06
 	attPos = 0,0,0
 	attPos0 = -1.13686849E-12,-16.4700508,1.54972122E-06
 	rot = 0,0.707106829,0,-0.707106829
@@ -3569,7 +3569,7 @@ PART
 	part = SEP.23.BOOSTER.INTEGRATED_4293766290
 	partName = Part
 	persistentId = 4158974772
-	pos = 5.00680062E-06,55.2384071,4.76837158E-06
+	pos = 5.00680244E-06,55.2384071,4.76837158E-06
 	attPos = 0,0,0
 	attPos0 = -6.82121135E-13,-36.6000061,-3.81469772E-06
 	rot = 0,0.707106829,0,0.707106829
@@ -4944,7 +4944,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4293756338
 	partName = Part
 	persistentId = 3138072533
-	pos = 2.95407963,90.9352264,-5.11685085
+	pos = 2.95408058,90.9352264,-5.11685276
 	attPos = 0,0,0
 	attPos0 = 5.11684513,35.6968155,2.95407009
 	rot = 0.500000179,-5.45420349E-08,0.866025507,-5.45420349E-08
@@ -5164,7 +5164,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4293755874
 	partName = Part
 	persistentId = 2369224915
-	pos = -2.9540782,90.9352264,-5.1168499
+	pos = -2.9540782,90.9352264,-5.11685181
 	attPos = 0,0,0
 	attPos0 = 5.11684513,35.6968155,-2.95408273
 	rot = 0.866025448,4.86962328E-08,0.49999997,4.86962328E-08
@@ -5376,7 +5376,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4293755604
 	partName = Part
 	persistentId = 883940320
-	pos = 2.9540863,90.9352264,5.11685658
+	pos = 2.95408821,90.9352264,5.11685848
 	attPos = 0,0,0
 	attPos0 = -5.11684227,35.6968155,2.95407081
 	rot = 0.499999881,-5.45420598E-08,-0.866025567,5.45420313E-08
@@ -5588,7 +5588,7 @@ PART
 	part = SEP.23.BOOSTER.GRIDFIN_4293755296
 	partName = Part
 	persistentId = 569903444
-	pos = -2.9540782,90.9352264,5.11685753
+	pos = -2.95407915,90.9352264,5.11685944
 	attPos = 0,0,0
 	attPos0 = -5.11684227,35.6968155,-2.95407867
 	rot = 0.866025507,4.8696247E-08,-0.500000179,-4.86962257E-08
@@ -5800,7 +5800,7 @@ PART
 	part = SEP.23.BOOSTER.CLUSTER_4293751018
 	partName = Part
 	persistentId = 2933475274
-	pos = 9.59637509E-06,21.8692398,4.76837067E-06
+	pos = 9.59637964E-06,21.8692398,4.76837067E-06
 	attPos = 0,0,0
 	attPos0 = 4.54747459E-13,-33.3691711,4.58955901E-06
 	rot = 0,0.707106829,0,0.707106829
@@ -6570,7 +6570,7 @@ PART
 	part = SEP.23.SHIP.TANKER_4293667336
 	partName = Part
 	persistentId = 2048780882
-	pos = -3.2186565E-06,133.184937,4.76837158E-06
+	pos = -3.21865741E-06,133.184937,4.76837158E-06
 	attPos = 0,0,0
 	attPos0 = 4.54747351E-13,24.8764801,-2.86102363E-06
 	rot = 0,0.707106829,0,0.707106829
@@ -7278,7 +7278,7 @@ PART
 	part = SEP.23.SHIP.FWD.LEFT_4293797024
 	partName = Part
 	persistentId = 1432882729
-	pos = 0.000260472327,134.333099,4.49669075
+	pos = 0.000260472327,134.333099,4.4966917
 	attPos = 0,0,0
 	attPos0 = -4.49668074,1.14814758,0.000263214111
 	rot = -0.542459369,0.434223801,-0.556381226,0.455661684
@@ -7504,7 +7504,7 @@ PART
 	part = SEP.23.SHIP.FWD.RIGHT_4293796592
 	partName = Part
 	persistentId = 423889351
-	pos = 0.000258088141,134.333099,-4.49667883
+	pos = 0.000258088141,134.333099,-4.49667978
 	attPos = 0,0,0
 	attPos0 = 4.49667835,1.14814758,0.0002617836
 	rot = 0.556381404,0.455661833,0.54245919,0.434223652
@@ -7730,7 +7730,7 @@ PART
 	part = SEP.23.SHIP.HEADER_4293808530
 	partName = Part
 	persistentId = 1181559077
-	pos = -8.35657829E-06,141.705811,4.76835703E-06
+	pos = -8.35658011E-06,141.705811,4.76835703E-06
 	attPos = 0,0,0
 	attPos0 = 1.4551917E-11,8.52087402,-5.13791656E-06
 	rot = 0,0.707106829,0,0.707106829
@@ -7879,7 +7879,7 @@ PART
 	part = SLE.SS.OLM_4293309622
 	partName = Part
 	persistentId = 675744306
-	pos = 1.07179058E-05,15.5497894,4.18830223E-06
+	pos = 1.07179103E-05,15.5497894,4.18830223E-06
 	attPos = 0,0,0
 	attPos0 = 5.80068047E-07,-6.31945038,1.12153066E-06
 	rot = 0.000768006255,0,8.94651748E-08,0.999999821
@@ -7903,7 +7903,7 @@ PART
 	link = SLE.SS.SteelPlate_4293296210
 	link = SLE.SS.OLIT.Base_4293296058
 	attN = node_stack_top,SEP.23.BOOSTER.CLUSTER_4293751018_-7.7941877E-07|3.24417663|-0.00498275785_1.30796707E-10|0.999998808|-0.0015360117_-7.7941877E-07|3.24417663|-0.00498275785_1.30796707E-10|0.999998808|-0.0015360117
-	attN = connect01,SLE.SS.SteelPlate_4293296210_-0.0024353012|-14.0931244|-0.0216414407_0.000172857544|0.999998808|0.00153635361_-0.0024353012|-14.0931244|-0.0216414407_0.000172857544|0.999998808|0.00153635361
+	attN = connect01,Null_0_-0.0024353012|-14.0931244|-0.0216414407_0.000172857544|0.999998808|0.00153635361_-0.0024353012|-14.0931244|-0.0216414407_0.000172857544|0.999998808|0.00153635361
 	attN = connect01,Null_0_-0.0024353012|-14.0931244|-0.0216414407_0.000172857544|0.999998808|0.00153635361_-0.0024353012|-14.0931244|-0.0216414407_0.000172857544|0.999998808|0.00153635361
 	EVENTS
 	{
@@ -8253,6 +8253,29 @@ PART
 	}
 	MODULE
 	{
+		name = LaunchClamp
+		isEnabled = False
+		scaleFactor = 1
+		height = 0
+		stagingEnabled = False
+		towerRot = 0,0,0,0
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+			ReleaseClamp
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
 		name = KOSNameTag
 		isEnabled = True
 		nameTag = 
@@ -8316,29 +8339,6 @@ PART
 				wasActiveBeforePartWasAdjusted = False
 			}
 			ToggleSuppressAutopilot
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = LaunchClamp
-		isEnabled = False
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
 			{
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
@@ -8416,7 +8416,7 @@ PART
 	part = SLE.SS.SteelPlate_4293296210
 	partName = Part
 	persistentId = 238022112
-	pos = -0.0024205409,1.45671082,-0.0432842597
+	pos = -0.0024205409,1.45671082,-0.0432842709
 	attPos = 0,0,0
 	attPos0 = -0.00243530143,-14.0931292,-0.0216414463
 	rot = 0.0015361238,0,-8.63396563E-05,0.999998927
@@ -8431,7 +8431,7 @@ PART
 	dstg = 0
 	sidx = -1
 	sqor = -1
-	sepI = 0
+	sepI = 2
 	attm = 0
 	sameVesselCollision = False
 	modCost = 0
@@ -8645,29 +8645,6 @@ PART
 	}
 	MODULE
 	{
-		name = LaunchClamp
-		isEnabled = True
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = ModuleB9PartInfo
 		isEnabled = False
 		stagingEnabled = True
@@ -8698,10 +8675,10 @@ PART
 	part = SLE.SS.OLIT.Base_4293296058
 	partName = Part
 	persistentId = 1732506165
-	pos = -33.4272499,7.03779602,-1.17867947
+	pos = -33.4272575,7.03779602,-1.17868328
 	attPos = 0,0,0
 	attPos0 = -33.4272537,-8.51378727,-1.16561139
-	rot = 0.000433440844,0,-0.000779167458,0.999999702
+	rot = 0.000433440873,0,-0.0007791674,0.999999702
 	attRot = 0,0,0,1
 	attRot0 = -0.000334565237,-6.25848713E-07,-0.000779256574,0.999999642
 	mir = 1,1,1
@@ -8985,30 +8962,7 @@ PART
 	MODULE
 	{
 		name = LaunchClamp
-		isEnabled = True
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = LaunchClamp
-		isEnabled = True
+		isEnabled = False
 		scaleFactor = 1
 		height = 0
 		stagingEnabled = False
@@ -9109,10 +9063,10 @@ PART
 	part = SLE.SS.OLIT.Core_4293290158
 	partName = Part
 	persistentId = 3092790800
-	pos = -33.4171791,12.6681366,-1.21388531
+	pos = -33.4171867,12.6681366,-1.21388531
 	attPos = 0,0,0
 	attPos0 = 0.00129699835,5.63030958,-0.0400854014
-	rot = 0.000433161535,0,-0.000779078226,0.999999702
+	rot = 0.000433161622,0,-0.000779078342,0.999999702
 	attRot = 0,0,0,1
 	attRot0 = -2.79367555E-07,-2.23963015E-10,8.91159075E-08,1
 	mir = 1,1,1
@@ -9132,11 +9086,11 @@ PART
 	modSize = 0,0,0
 	link = SLE.SS.OLIT.Top_4293289572
 	link = SLE.SS.OLIT.MZ_4293289402
-	link = SLE.SS.OLIT.SQD_4293288882
+	link = SLE.SS.OLIT.SQD_4293568928
 	attN = top,SLE.SS.OLIT.Top_4293289572_-0.0081131449|16.7680016|0.0780770332_1.1920929E-07|1|3.05473804E-07_0|117.566246|0_1.1920929E-07|1|3.05473804E-07
 	attN = bottom,SLE.SS.OLIT.Base_4293296058_-0.00533769652|-0.0367195159|0.0556194596_-2.98023224E-07|-0.999999881|-4.02331352E-07_-0.00533769652|-0.0367195159|0.0556194596_-2.98023224E-07|-0.999999881|-4.02331352E-07
 	attN = node_stack_connect01,SLE.SS.OLIT.MZ_4293289402_8.72818279|113.763283|1.13519835_0.992446542|5.96046448E-08|0.122678101_8.72818279|113.763283|1.13519835_0.992446542|5.96046448E-08|0.122678101
-	attN = node_stack_connect02,SLE.SS.OLIT.SQD_4293288882_-8.88173199|72.7684708|-1.3610481_-0.999632418|-1.1920929E-07|0.0271069407_-8.88173199|72.7684708|-1.3610481_-0.999632418|-1.1920929E-07|0.0271069407
+	attN = node_stack_connect02,SLE.SS.OLIT.SQD_4293568928_-8.88173199|72.7684708|-1.3610481_-0.999632418|-1.1920929E-07|0.0271069407_-8.88173199|72.7684708|-1.3610481_-0.999632418|-1.1920929E-07|0.0271069407
 	EVENTS
 	{
 	}
@@ -9246,30 +9200,7 @@ PART
 	MODULE
 	{
 		name = LaunchClamp
-		isEnabled = True
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = LaunchClamp
-		isEnabled = True
+		isEnabled = False
 		scaleFactor = 1
 		height = 0
 		stagingEnabled = False
@@ -9310,10 +9241,10 @@ PART
 	part = SLE.SS.OLIT.Top_4293289572
 	partName = Part
 	persistentId = 2378785128
-	pos = -33.2335281,130.234268,-1.14659786
+	pos = -33.2335358,130.234283,-1.14659786
 	attPos = 0,0,0
 	attPos0 = 0.000459807314,117.566261,-0.0345655382
-	rot = 0.00043328802,0,-0.000778973917,0.999999702
+	rot = 0.000433288078,0,-0.000778973917,0.999999702
 	attRot = 0,0,0,1
 	attRot0 = 1.26601691E-07,5.27671518E-11,1.04133484E-07,1
 	mir = 1,1,1
@@ -9425,30 +9356,7 @@ PART
 	MODULE
 	{
 		name = LaunchClamp
-		isEnabled = True
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = LaunchClamp
-		isEnabled = True
+		isEnabled = False
 		scaleFactor = 1
 		height = 0
 		stagingEnabled = False
@@ -9489,10 +9397,10 @@ PART
 	part = SLE.SS.OLIT.MZ_4293289402
 	partName = Part
 	persistentId = 2387660496
-	pos = -24.6455593,127.555695,0.00517940521
+	pos = -24.6455669,127.555695,0.00517940521
 	attPos = 0,0,0
 	attPos0 = 8.59257126,114.902138,1.11952543
-	rot = 0.000818025903,0.999965191,0.000117425603,-0.0083193779
+	rot = 0.000818025786,0.999965131,0.000117425574,-0.00831931829
 	attRot = 0,0.99999994,0,0
 	attRot0 = 4.25782018E-05,0.99996531,-0.000322201842,-0.00831896067
 	mir = 1,1,1
@@ -9603,6 +9511,16 @@ PART
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
 			}
+			Action2
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action3
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
 		}
 		AXISGROUPS
 		{
@@ -9648,6 +9566,16 @@ PART
 		ACTIONS
 		{
 			Action1
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action2
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action3
 			{
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
@@ -9701,51 +9629,12 @@ PART
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
 			}
-		}
-		AXISGROUPS
-		{
-			ExtensionLimit
+			Action2
 			{
-				axisGroup = None
-				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				axisSpeedMultiplier = 0
-				axisInverted = None
-				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
 			}
-			ExtensionSpeed
-			{
-				axisGroup = None
-				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				axisSpeedMultiplier = 0
-				axisInverted = None
-				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleSLEAnimate
-		isEnabled = True
-		AnimatePosition = 4.71999979
-		AnimationLength = 10
-		ExtensionLimit = 9.43999958
-		ExtensionSpeed = 1.60000002
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			Action1
+			Action3
 			{
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
@@ -9795,6 +9684,75 @@ PART
 		ACTIONS
 		{
 			Action1
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action2
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action3
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+		}
+		AXISGROUPS
+		{
+			ExtensionLimit
+			{
+				axisGroup = None
+				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				axisSpeedMultiplier = 0
+				axisInverted = None
+				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+			}
+			ExtensionSpeed
+			{
+				axisGroup = None
+				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				axisSpeedMultiplier = 0
+				axisInverted = None
+				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleSLEAnimate
+		isEnabled = True
+		AnimatePosition = 4.71999979
+		AnimationLength = 10
+		ExtensionLimit = 9.43999958
+		ExtensionSpeed = 1.60000002
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+			Action1
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action2
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action3
 			{
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
@@ -9980,6 +9938,16 @@ PART
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
 			}
+			Action2
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action3
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
 		}
 		AXISGROUPS
 		{
@@ -10076,29 +10044,6 @@ PART
 	}
 	MODULE
 	{
-		name = LaunchClamp
-		isEnabled = True
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = ModulePhysicMaterial
 		isEnabled = True
 		bounceCombine = Average
@@ -10136,15 +10081,15 @@ PART
 }
 PART
 {
-	part = SLE.SS.OLIT.SQD_4293288882
+	part = SLE.SS.OLIT.SQD_4293568928
 	partName = Part
-	persistentId = 817591637
-	pos = -31.1796646,91.8915405,-2.41335964
+	persistentId = 3369522107
+	pos = -31.1796703,91.8915787,-2.41338825
 	attPos = 0,0,0
-	attPos0 = 2.11406422,79.2257538,-1.26810706
-	rot = 0.000756846857,0.997030139,-0.000136561546,0.0770113766
+	attPos0 = 2.11406755,79.2257614,-1.26813745
+	rot = 0.000756623689,0.997030139,-0.000138695497,0.0770113766
 	attRot = 0,0.99999994,0,0
-	attRot0 = -5.32760641E-05,0.997030139,-0.000508438563,0.0770117119
+	attRot0 = -5.34993087E-05,0.997030079,-0.000510572514,0.0770117864
 	mir = 1,1,1
 	symMethod = Radial
 	autostrutMode = Off
@@ -10223,92 +10168,12 @@ PART
 	}
 	MODULE
 	{
-		name = ModuleAnimateGeneric
-		isEnabled = True
-		aniState = LOCKED
-		animSwitch = True
-		animTime = 0
-		animSpeed = 1
-		deployPercent = 100
-		animationIsDisabled = False
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ToggleAction
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		AXISGROUPS
-		{
-			deployPercent
-			{
-				axisGroup = None
-				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				axisSpeedMultiplier = 0
-				axisInverted = None
-				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ModuleAnimateGeneric
-		isEnabled = True
-		aniState = LOCKED
-		animSwitch = True
-		animTime = 0
-		animSpeed = 1
-		deployPercent = 100
-		animationIsDisabled = False
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-			ToggleAction
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
-		}
-		AXISGROUPS
-		{
-			deployPercent
-			{
-				axisGroup = None
-				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				axisSpeedMultiplier = 0
-				axisInverted = None
-				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
-			}
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = ModuleSLEAnimate
 		isEnabled = True
-		AnimatePosition = 4.98139429
+		AnimatePosition = 0
 		AnimationLength = 5.00000048
-		ExtensionLimit = 100
-		ExtensionSpeed = 2
+		ExtensionLimit = 0
+		ExtensionSpeed = 1
 		stagingEnabled = True
 		EVENTS
 		{
@@ -10316,6 +10181,16 @@ PART
 		ACTIONS
 		{
 			Action1
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action2
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action3
 			{
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
@@ -10354,10 +10229,10 @@ PART
 	{
 		name = ModuleSLEAnimate
 		isEnabled = True
-		AnimatePosition = 5.36139441
-		AnimationLength = 5.375
-		ExtensionLimit = 90
-		ExtensionSpeed = 2
+		AnimatePosition = 0
+		AnimationLength = 10
+		ExtensionLimit = 0
+		ExtensionSpeed = 9
 		stagingEnabled = True
 		EVENTS
 		{
@@ -10365,6 +10240,16 @@ PART
 		ACTIONS
 		{
 			Action1
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action2
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action3
 			{
 				actionGroup = None
 				wasActiveBeforePartWasAdjusted = False
@@ -10393,6 +10278,90 @@ PART
 				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleSLEAnimate
+		isEnabled = True
+		AnimatePosition = 0
+		AnimationLength = 12.6999998
+		ExtensionLimit = 0
+		ExtensionSpeed = 3.5
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+			Action1
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action2
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			Action3
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+		}
+		AXISGROUPS
+		{
+			ExtensionLimit
+			{
+				axisGroup = None
+				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				axisSpeedMultiplier = 0
+				axisInverted = None
+				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+			}
+			ExtensionSpeed
+			{
+				axisGroup = None
+				axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				axisSpeedMultiplier = 0
+				axisInverted = None
+				overrideIncremental0 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental1 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental2 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+				overrideIncremental3 = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
+			}
+		}
+		UPGRADESAPPLIED
+		{
+		}
+	}
+	MODULE
+	{
+		name = ModuleSLESequentialAnimate
+		isEnabled = True
+		stagingEnabled = True
+		EVENTS
+		{
+		}
+		ACTIONS
+		{
+			RetractAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
+			}
+			ExtendAction
+			{
+				actionGroup = None
+				wasActiveBeforePartWasAdjusted = False
 			}
 		}
 		UPGRADESAPPLIED
@@ -10417,9 +10386,8 @@ PART
 	}
 	MODULE
 	{
-		name = KOSNameTag
+		name = FXModuleLookAtConstraint
 		isEnabled = True
-		nameTag = 
 		stagingEnabled = True
 		EVENTS
 		{
@@ -10433,22 +10401,15 @@ PART
 	}
 	MODULE
 	{
-		name = LaunchClamp
+		name = KOSNameTag
 		isEnabled = True
-		scaleFactor = 1
-		height = 0
-		stagingEnabled = False
-		towerRot = 0,0,0,0
+		nameTag = 
+		stagingEnabled = True
 		EVENTS
 		{
 		}
 		ACTIONS
 		{
-			ReleaseClamp
-			{
-				actionGroup = None
-				wasActiveBeforePartWasAdjusted = False
-			}
 		}
 		UPGRADESAPPLIED
 		{
