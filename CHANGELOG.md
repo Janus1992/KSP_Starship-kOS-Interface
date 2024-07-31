@@ -1,3 +1,6 @@
+# V2.4.6 (2024-07-31)
+- Fix for XyphosAerospace mods that are not kOS-for-all.
+
 # V2.4.5 (2024-07-25)
 - Fixes for overnight SLE changes.
 - Minor tweaks to re-entry flaps setting and hover throttle.
