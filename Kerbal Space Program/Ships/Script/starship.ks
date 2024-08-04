@@ -603,13 +603,13 @@ unlock throttle.
 if OnOrbitalMount {
     if RSS {
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,6.4,0.5").
-        sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,1,97.5,false").
+        sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8.2,1,97.5,false").
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.2,1.12,false").
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaStabilizers,0").
     }
     else {
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,4,0.5").
-        sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,1,97.5,false").
+        sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8.2,1,97.5,false").
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,0.2,0.7,false").
         sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaStabilizers,0").
     }
@@ -6497,13 +6497,13 @@ function Launch {
             set cancel:text to "<b>ABORT</b>".
             set cancel:style:textcolor to red.
             if RSS {
-                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8.15,5,97.5,true").
+                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8.2,5,97.5,true").
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,2,20,true").
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaStabilizers,0").
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,12,0.5").
             }
             else {
-                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8.15,5,97.5,true").
+                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8.2,5,97.5,true").
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaPushers,0,2,12.5,true").
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaStabilizers,0").
                 sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaHeight,8,0.5").
@@ -6540,7 +6540,7 @@ function Launch {
                 }
             }
             if cancelconfirmed {
-                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
+                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8.2,5,97.5,false").
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers,0,0.25," + (0.7 * Scale) + ",false")).
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (4 * Scale) + ",0.5")).
@@ -6619,7 +6619,7 @@ function Launch {
                         }
                     }
                 }
-                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
+                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8.2,5,97.5,false").
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers,0,0.25," + (0.7 * Scale) + ",false")).
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (4 * Scale) + ",0.5")).
@@ -6648,7 +6648,7 @@ function Launch {
                         }
                     }
                 }
-                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
+                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8.2,5,97.5,false").
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers,0,0.25," + (0.7 * Scale) + ",false")).
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (4 * Scale) + ",0.5")).
@@ -6705,7 +6705,7 @@ function Launch {
                         }
                     }
                 }
-                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8,5,97.5,false").
+                sendMessage(Processor(volume("OrbitalLaunchMount")), "MechazillaArms,8.2,5,97.5,false").
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaPushers,0,0.25," + (0.7 * Scale) + ",false")).
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaStabilizers," + maxstabengage)).
                 sendMessage(Processor(volume("OrbitalLaunchMount")), ("MechazillaHeight," + (4 * Scale) + ",0.5")).
@@ -8257,7 +8257,7 @@ function ReEntryData {
                         when WobblyTower then {
                             HUDTEXT("Wobbly Tower detected..", 3, 2, 20, red, false).
                             HUDTEXT("Landing at nearest suitable location..", 3, 2, 20, yellow, false).
-                            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,10,113.5,true").
+                            sendMessage(Vessel(TargetOLM), "MechazillaArms,8.2,10,113.5,true").
                             set landingzone to ship:body:geopositionof(landingzone:position - 15 * Scale * TowerHeadingVector:normalized).
                             set LandSomewhereElse to true.
                             SetRadarAltitude().
@@ -8575,7 +8575,7 @@ function LandingVector {
                 sendMessage(Vessel(TargetOLM), ("MechazillaStabilizers," + maxstabengage)).
                 when time:seconds > ShutdownProcedureStart + 5 then {
                     sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.25," + (0.7 * Scale) + ",false")).
-                    sendMessage(Vessel(TargetOLM), ("MechazillaArms,8,0.25,60,false")).
+                    sendMessage(Vessel(TargetOLM), ("MechazillaArms,8.2,0.25,60,false")).
                 }
                 when time:seconds > ShutdownProcedureStart + 10 then {
                     sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.1," + (0.7 * Scale) + ",false")).
@@ -11395,7 +11395,7 @@ function LandAtOLM {
                                 when Vessel(TargetOLM):unpacked then {
                                     wait 0.001.
                                     sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
-                                    sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,90,true").
+                                    sendMessage(Vessel(TargetOLM), "MechazillaArms,8.2,5,90,true").
                                     sendMessage(Vessel(TargetOLM), "MechazillaPushers,0,1,12,false").
                                     sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
                                     if RSS {
@@ -13037,7 +13037,7 @@ function GetShipRotation {
         set TowerHeadingVector to AngleAxis(8, up:vector) * vxcl(up:vector, Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position - Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Base")[0]:position).
         //print vang(TowerHeadingVector, heading(90,0):vector).
 
-        set varR to vang(vxcl(up:vector, Nose:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position), AngleAxis(-30, up:vector) * TowerHeadingVector) - 22.
+        set varR to vang(vxcl(up:vector, Nose:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position), AngleAxis(-30, up:vector) * TowerHeadingVector) - 21.8.
 
         //set THVd to vecdraw(v(0, 0, 0), TowerHeadingVector, blue, "Tower Heading", 20, true, 0.005, true, true).
         //set THVc to vecdraw(v(0, 0, 0), AngleAxis(-30, up:vector) * TowerHeadingVector, red, "Tower Arms Measuring", 20, true, 0.005, true, true).

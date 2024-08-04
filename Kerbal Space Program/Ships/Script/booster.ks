@@ -567,7 +567,7 @@ function Boostback {
                 lock RadarAlt to vdot(up:vector, GridFins[0]:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position) - LiftingPointToGridFinDist.
 
                 when vxcl(up:vector, landingzone:position - BoosterCore:position):mag < 20 * Scale and RadarAlt < 7.5 * BoosterHeight and not (WobblyTower) then {
-                    sendMessage(Vessel(TargetOLM), "MechazillaArms,8,10,90,true").
+                    sendMessage(Vessel(TargetOLM), "MechazillaArms,8.2,10,90,true").
                     sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
                     when RadarAlt < 1.5 * BoosterHeight then {
                         sendMessage(Vessel(TargetOLM), ("MechazillaArms," + round(BoosterRot, 1) + ",10,5,true")).
@@ -584,7 +584,7 @@ function Boostback {
                 when WobblyTower and RadarAlt < 100 then {
                     HUDTEXT("Wobbly Tower detected..", 3, 2, 20, red, false).
                     HUDTEXT("Trying to land in the OLM..", 3, 2, 20, yellow, false).
-                    sendMessage(Vessel(TargetOLM), "MechazillaArms,8,10,60,true").
+                    sendMessage(Vessel(TargetOLM), "MechazillaArms,8.2,10,60,true").
                     lock RadarAlt to alt:radar - BoosterHeight.
                     ADDONS:TR:SETTARGET(landingzone).
                 }
@@ -685,7 +685,7 @@ function Boostback {
 
             when time:seconds > LandingTime + 5 then {
                 sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.25," + round(0.2 * Scale, 2) + ",false")).
-                sendMessage(Vessel(TargetOLM), "MechazillaArms,8,0.25,60,false").
+                sendMessage(Vessel(TargetOLM), "MechazillaArms,8.2,0.25,60,false").
                 when time:seconds > LandingTime + 10 * Scale then {
                     sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,0.1," + round(0.2 * Scale, 2) + ",false")).
                     when kuniverse:canquicksave and time:seconds > LandingTime + 32 and L["Auto-Stack"] = true and not (RSS) and not (LandSomewhereElse) then {
@@ -1089,7 +1089,7 @@ function BoosterDocking {
     setTargetOLM().
     set t to time:seconds.
     lock RollAngle to vang(facing:starvector, AngleAxis(-90, up:vector) * RollVector).
-    lock PosDiff to vxcl(up:vector, BoosterEngines[0]:position - Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Mount")[0]:position):mag.
+    lock PosDiff to vxcl(up:vector, BoosterEngines[0]:position - Vessel(TargetOLM):dockingports[0]:nodeposition):mag.
     when ship:partstitled("Starship Orbital Launch Integration Tower Base"):length = 0 then {
         clearscreen.
         print "Roll Angle: " + round(RollAngle,1) + "".
@@ -1142,7 +1142,7 @@ function BoosterDocking {
         when BoosterDocked then {
             HUDTEXT("Booster Docked! Resetting tower..", 20, 2, 20, green, false).
             sendMessage(Vessel(TargetOLM), ("MechazillaHeight," + (32.5 * Scale) + ",0.5")).
-            sendMessage(Vessel(TargetOLM), "MechazillaArms,8,2.5,35,true").
+            sendMessage(Vessel(TargetOLM), "MechazillaArms,8.2,2.5,35,true").
             set DockedTime to time:seconds.
             if ship:partstitled("Starship Orbital Launch Mount"):length > 0 {
                 if ship:partstitled("Starship Orbital Launch Mount")[0]:getmodule("ModuleAnimateGeneric"):hasevent("open clamps + qd") {
@@ -1151,11 +1151,11 @@ function BoosterDocking {
             }
             when time:seconds > DockedTime + 7.5 then {
                 sendMessage(Vessel(TargetOLM), "MechazillaHeight,0,2").
-                sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,35,true").
+                sendMessage(Vessel(TargetOLM), "MechazillaArms,8.2,5,35,true").
                 sendMessage(Vessel(TargetOLM), ("MechazillaPushers,0,1," + (12.5 * Scale) + ",true")).
                 sendMessage(Vessel(TargetOLM), "MechazillaStabilizers,0").
                 when time:seconds > DockedTime + 20 then {
-                    sendMessage(Vessel(TargetOLM), "MechazillaArms,8,5,90,true").
+                    sendMessage(Vessel(TargetOLM), "MechazillaArms,8.2,5,90,true").
                     when time:seconds > DockedTime + 30 then {
                         set TowerReset to true.
                         HUDTEXT("Booster recovery complete, tower has been reset!", 10, 2, 20, green, false).
@@ -1232,7 +1232,7 @@ function GetBoosterRotation {
     if not (TargetOLM = "false") and RadarAlt < 100 {
         set TowerHeadingVector to AngleAxis(8, up:vector) * vxcl(up:vector, Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position - Vessel(TargetOLM):PARTSTITLED("Starship Orbital Launch Integration Tower Base")[0]:position).
 
-        set varR to vang(vxcl(up:vector, HSR[0]:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position), AngleAxis(-30, up:vector) * TowerHeadingVector) - 22 + 1.
+        set varR to vang(vxcl(up:vector, HSR[0]:position - Vessel(TargetOLM):PARTSNAMED("SLE.SS.OLIT.MZ")[0]:position), AngleAxis(-30, up:vector) * TowerHeadingVector) - 21.8.
 
         return min(max(varR, -22), 38).
     }

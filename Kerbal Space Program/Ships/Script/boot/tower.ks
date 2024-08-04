@@ -21,6 +21,7 @@ else {
         set LaunchSites to lexicon("KSC", "-0.0972,-74.5577", "Dessert", "-6.5604,-143.95", "Woomerang", "45.2896,136.11", "Baikerbanur", "20.6635,-146.4210").
     }
 }
+set TowerOLMAngle to 1.332.
 
 
 //------------Find Parts--------------//
@@ -35,6 +36,7 @@ set SQD to ship:partstitled("Starship Quick Disconnect Arm")[0].
 set SteelPlate to ship:partstitled("Water Cooled Steel Plate")[0].
 set PrevTime to time:seconds.
 clearscreen.
+
 
 
 //-------------Get Module Order-------------//
@@ -216,7 +218,7 @@ until False {
         if not (ship:name:contains("OrbitalLaunchMount")) and SHIP:PARTSNAMED("SEP.23.BOOSTER.INTEGRATED"):length = 0 {
             RenameOLM().
         }
-        SaveToSettings("TowerHeadingVector", AngleAxis(2.9, up:vector) * vxcl(up:vector, TowerBase:position - OLM:position)).
+        SaveToSettings("TowerHeadingVector", AngleAxis(1.332, up:vector) * vxcl(up:vector, TowerBase:position - OLM:position)).
         set PrevTime to time:seconds.
     }
 }

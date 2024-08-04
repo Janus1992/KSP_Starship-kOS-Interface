@@ -1,3 +1,6 @@
+# V2.4.7 (2024-08-04)
+- New craft files to incorporate the latest SLE dev changes.
+
 # V2.4.6 (2024-07-31)
 - Fix for XyphosAerospace mods that are not kOS-for-all.
 
