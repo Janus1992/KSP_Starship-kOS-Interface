@@ -1,3 +1,6 @@
+# V2.4.8 (2024-08-05)
+- New crafts for modified SEP engines. RSS crafts will take a while longer as SEP bugs need to be fixed first.
+
 # V2.4.7 (2024-08-04)
 - New craft files to incorporate the latest SLE dev changes.
 
