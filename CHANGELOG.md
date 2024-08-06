@@ -1,3 +1,6 @@
+# V2.4.9 (2024-08-06)
+- The project is currently on hold indefinitely until I feel like returning to it.
+
 # V2.4.8 (2024-08-05)
 - New crafts for modified SEP engines. RSS crafts will take a while longer as SEP bugs need to be fixed first.
 
