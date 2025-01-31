@@ -6,6 +6,9 @@
 
 User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 
+## Nubro has continued development of the scripts after I stopped:
+- https://github.com/Nubro24/KSP_Starship-kOS-Interface
+
 ## Current State:
 - Ship landings/catches don't work anymore due to the many changes in SEP dev.
 - The project is currently on hold indefinitely until I feel like returning to it.
