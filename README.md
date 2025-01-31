@@ -10,8 +10,10 @@ User guide: [Wiki](https://github.com/Janus1992/KSP_Starship-kOS-Interface/wiki)
 - https://github.com/Nubro24/KSP_Starship-kOS-Interface
 
 ## Current State:
-- Ship landings/catches don't work anymore due to the many changes in SEP dev.
-- The project is currently on hold indefinitely until I feel like returning to it.
+- The guidance doesn't work anymore due to the many changes in SEP dev.
+- Project development has stopped and I don't see myself returning to it.
+
+
 
 ## Installation:
 - Download and install all requirements listed below.
